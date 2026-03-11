@@ -1,0 +1,2 @@
+# Only exclude videos over 100MB (Vercel file size limit)
+public/videos/JRT IV - 2026.mp4

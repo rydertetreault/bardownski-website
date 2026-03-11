@@ -6,7 +6,8 @@ import { FadeUp, StaggerContainer, StaggerItem, GlowCard } from "@/components/ui
 interface Highlight {
   id: string;
   title: string;
-  src: string; // path relative to public/, e.g. "/videos/clip1.mp4"
+  src?: string; // path relative to public/, e.g. "/videos/clip1.mp4"
+  youtube?: string; // YouTube embed ID
 }
 
 // Drop your video files into public/videos/ and add entries here
@@ -14,7 +15,7 @@ const highlights: Highlight[] = [
   {
     id: "1",
     title: "JRT IV - 2026",
-    src: "/videos/JRT IV - 2026.mp4",
+    youtube: "aGrVfM6HsO0",
   },
   {
     id: "2",
@@ -48,24 +49,36 @@ function HighlightCard({ clip }: { clip: Highlight }) {
 
   return (
     <GlowCard className="bg-surface border border-border rounded-xl overflow-hidden h-full">
-      <div className="aspect-video relative cursor-pointer" onClick={handleClick}>
-        <video
-          ref={videoRef}
-          src={clip.src}
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="w-full h-full object-cover"
-        />
-        {!expanded && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity">
-            <svg className="w-12 h-12 text-white/80" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </div>
-        )}
-      </div>
+      {clip.youtube ? (
+        <div className="aspect-video">
+          <iframe
+            src={`https://www.youtube.com/embed/${clip.youtube}?rel=0`}
+            title={clip.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full"
+          />
+        </div>
+      ) : (
+        <div className="aspect-video relative cursor-pointer" onClick={handleClick}>
+          <video
+            ref={videoRef}
+            src={clip.src}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-full object-cover"
+          />
+          {!expanded && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity">
+              <svg className="w-12 h-12 text-white/80" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+          )}
+        </div>
+      )}
       <div className="p-4">
         <h3 className="text-sm font-bold line-clamp-2">
           {clip.title}

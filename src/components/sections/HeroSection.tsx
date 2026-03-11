@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import { useState, useEffect, useRef, useCallback } from "react";
 
 const highlightVideos = [
-  "/videos/JRT IV - 2026.mp4",
   "/videos/GottaBe - Trap Edition.mov",
   "/videos/Slobby Robby 2026.mov",
 ];
