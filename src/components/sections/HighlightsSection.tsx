@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { FadeUp, StaggerContainer, StaggerItem, GlowCard } from "@/components/ui/Animate";
 
 interface Highlight {
@@ -33,6 +33,24 @@ function HighlightCard({ clip }: { clip: Highlight }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [expanded, setExpanded] = useState(false);
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !clip.src) return;
+    const src = clip.src;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.src = src;
+          video.play();
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [clip.src]);
+
   const handleClick = () => {
     const video = videoRef.current;
     if (!video) return;
@@ -63,8 +81,6 @@ function HighlightCard({ clip }: { clip: Highlight }) {
         <div className="aspect-video relative cursor-pointer" onClick={handleClick}>
           <video
             ref={videoRef}
-            src={clip.src}
-            autoPlay
             muted
             loop
             playsInline

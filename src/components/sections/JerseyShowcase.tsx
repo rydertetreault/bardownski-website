@@ -1,6 +1,29 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import { FadeUp, StaggerContainer, StaggerItem, GlowCard } from "@/components/ui/Animate";
+
+function LazyVideo({ src, className }: { src: string; className?: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const video = ref.current;
+    if (!video) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.src = src;
+          video.play();
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [src]);
+
+  return <video ref={ref} loop muted playsInline className={className} />;
+}
 
 const jerseys = [
   {
@@ -49,12 +72,8 @@ export default function JerseyShowcase() {
                   </p>
                   <div className="flex justify-center">
                     <div className="relative w-52 h-64 overflow-hidden rounded-t-lg">
-                      <video
+                      <LazyVideo
                         src={jersey.video}
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
                         className="absolute top-[-15%] left-[-20%] w-[140%] h-[130%] object-cover object-[60%_15%]"
                       />
                       <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/80 to-transparent" />

@@ -35,7 +35,7 @@ export default function HeroSection() {
             autoPlay
             muted
             playsInline
-            className="w-full h-full object-cover blur-xl scale-110 opacity-35"
+            className="w-full h-full object-cover blur-md scale-105 opacity-25"
             loop
           />
         </div>
