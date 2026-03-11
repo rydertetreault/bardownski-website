@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 80" fill="none">
+  <!-- BARDOWNSKI wordmark -->
+  <text x="0" y="62" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="64" letter-spacing="6" fill="#e8e8e8">BARDOWNSKI</text>
+  <!-- Red underline accent -->
+  <rect x="0" y="72" width="600" height="4" rx="2" fill="#cc1533"/>
+</svg>

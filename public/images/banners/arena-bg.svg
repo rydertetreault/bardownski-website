@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" fill="none">
+  <!-- Dark arena atmosphere background -->
+  <!-- Base gradient -->
+  <rect width="1920" height="1080" fill="#0b0f1a"/>
+
+  <!-- Ice surface glow -->
+  <ellipse cx="960" cy="900" rx="900" ry="300" fill="#1a2744" opacity="0.3"/>
+  <ellipse cx="960" cy="950" rx="700" ry="150" fill="#243352" opacity="0.2"/>
+
+  <!-- Overhead lights -->
+  <circle cx="480" cy="80" r="8" fill="#e8e8e8" opacity="0.8"/>
+  <circle cx="960" cy="60" r="10" fill="#e8e8e8" opacity="0.9"/>
+  <circle cx="1440" cy="80" r="8" fill="#e8e8e8" opacity="0.8"/>
+
+  <!-- Light beams -->
+  <polygon points="480,80 380,400 580,400" fill="url(#beam1)" opacity="0.06"/>
+  <polygon points="960,60 800,500 1120,500" fill="url(#beam2)" opacity="0.08"/>
+  <polygon points="1440,80 1340,400 1540,400" fill="url(#beam1)" opacity="0.06"/>
+
+  <!-- Rink boards suggestion -->
+  <rect x="160" y="580" width="1600" height="8" rx="4" fill="#1a2744" opacity="0.5"/>
+  <rect x="160" y="580" width="1600" height="2" rx="1" fill="#cc1533" opacity="0.3"/>
+
+  <!-- Center ice circle -->
+  <circle cx="960" cy="780" rx="120" ry="40" fill="none" stroke="#cc1533" stroke-width="2" opacity="0.15"/>
+  <circle cx="960" cy="780" rx="6" ry="2" fill="#cc1533" opacity="0.2"/>
+
+  <!-- Red line -->
+  <rect x="955" y="600" width="10" height="380" rx="2" fill="#cc1533" opacity="0.1"/>
+
+  <!-- Blue lines -->
+  <rect x="560" y="600" width="8" height="380" rx="2" fill="#1a2744" opacity="0.15"/>
+  <rect x="1352" y="600" width="8" height="380" rx="2" fill="#1a2744" opacity="0.15"/>
+
+  <!-- Face-off dots -->
+  <circle cx="640" cy="700" r="5" fill="#cc1533" opacity="0.15"/>
+  <circle cx="640" cy="860" r="5" fill="#cc1533" opacity="0.15"/>
+  <circle cx="1280" cy="700" r="5" fill="#cc1533" opacity="0.15"/>
+  <circle cx="1280" cy="860" r="5" fill="#cc1533" opacity="0.15"/>
+
+  <!-- Atmospheric particles -->
+  <circle cx="200" cy="200" r="1" fill="#e8e8e8" opacity="0.3"/>
+  <circle cx="500" cy="150" r="1.5" fill="#e8e8e8" opacity="0.2"/>
+  <circle cx="800" cy="300" r="1" fill="#e8e8e8" opacity="0.25"/>
+  <circle cx="1100" cy="180" r="1.5" fill="#e8e8e8" opacity="0.2"/>
+  <circle cx="1400" cy="250" r="1" fill="#e8e8e8" opacity="0.3"/>
+  <circle cx="1700" cy="150" r="1.5" fill="#e8e8e8" opacity="0.2"/>
+  <circle cx="300" cy="400" r="1" fill="#e8e8e8" opacity="0.15"/>
+  <circle cx="1600" cy="380" r="1" fill="#e8e8e8" opacity="0.15"/>
+
+  <defs>
+    <linearGradient id="beam1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8e8e8"/>
+      <stop offset="100%" stop-color="#e8e8e8" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="beam2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8e8e8"/>
+      <stop offset="100%" stop-color="#e8e8e8" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+</svg>
