@@ -27,10 +27,11 @@ const players: PlayerHighlights[] = [
   },
   {
     id: "dylan",
-    name: "Dylan",
+    name: "Xavier Laflamme",
     clips: [
-      { id: "d1", title: "Dylan — Clip 1", src: "/videos/Dylan1.mp4" },
-      { id: "d2", title: "Dylan — Clip 2", src: "/videos/Dylan2.mp4" },
+      { id: "d1", title: "Xavier Laflamme — Clip 1", src: "/videos/Dylan1.mp4" },
+      { id: "d2", title: "Xavier Laflamme — Clip 2", src: "/videos/Dylan2.mp4" },
+      { id: "d3", title: "Xavier Laflamme — 2026", src: "/videos/dylan - 2026.mp4" },
     ],
   },
   {

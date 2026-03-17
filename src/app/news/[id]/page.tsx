@@ -51,8 +51,17 @@ export default async function ArticlePage({
           {article.title}
         </h1>
 
-        {/* Hero image */}
-        {article.image && (
+        {/* Hero video or image */}
+        {article.video ? (
+          <div className="relative w-full rounded-xl overflow-hidden mb-10 border border-border aspect-video">
+            <video
+              src={article.video}
+              controls
+              playsInline
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ) : article.image ? (
           <div className="relative w-full h-64 md:h-80 rounded-xl overflow-hidden mb-10 border border-border">
             <Image
               src={article.image}
@@ -62,7 +71,7 @@ export default async function ArticlePage({
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
           </div>
-        )}
+        ) : null}
 
         {/* Red rule */}
         <div className="h-px bg-gradient-to-r from-[#cc1533] via-[#cc1533]/30 to-transparent mb-10" />

@@ -24,7 +24,8 @@ const clips: Clip[] = [
   { id: "g4", title: "Ryder — Clip 1", src: "/videos/Ryder1.mp4" },
   { id: "g5", title: "Ryder — Clip 2", src: "/videos/Ryder2.mp4" },
   { id: "g6", title: "Kaden — Clip 1", src: "/videos/Kaden1.mp4" },
-  { id: "g7", title: "Dylan", src: "/videos/Dylan1.mp4" },
+  { id: "g7", title: "Xavier Laflamme", src: "/videos/Dylan1.mp4" },
+  { id: "g8", title: "Xavier Laflamme — 2026", src: "/videos/dylan - 2026.mp4" },
 ];
 
 function ThumbCard({ clip }: { clip: Clip }) {
