@@ -13,6 +13,7 @@ function LazyVideo({ src, className }: { src: string; className?: string }) {
       ([entry]) => {
         if (entry.isIntersecting) {
           video.src = src;
+          video.play().catch(() => {});
           observer.disconnect();
         }
       },
@@ -28,9 +29,8 @@ function LazyVideo({ src, className }: { src: string; className?: string }) {
       loop
       muted
       playsInline
+      autoPlay
       className={className}
-      onMouseEnter={() => ref.current?.play().catch(() => {})}
-      onMouseLeave={() => ref.current?.pause()}
     />
   );
 }
