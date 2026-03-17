@@ -129,8 +129,8 @@ export default function JerseyShowcase() {
         >
           {jerseys.map((jersey, i) => (
             <StaggerItem key={jersey.label}>
-              {/* translateY cascades cards upward left→right to follow the diagonal divider */}
-              <div style={{ transform: `translateY(${i * -28}px)` }}>
+              {/* translateY cascades cards upward left→right to follow the diagonal divider (desktop only) */}
+              <div className={i === 1 ? "md:-translate-y-7" : i === 2 ? "md:-translate-y-14" : ""}>
               <motion.div
                 whileHover={{
                   y: -4,

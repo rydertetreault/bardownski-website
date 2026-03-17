@@ -51,7 +51,7 @@ export default function HeroSection() {
         {/* Team name */}
         <motion.h1
           {...fadeUp(0.25)}
-          className="text-7xl md:text-9xl font-black tracking-tighter text-white leading-none mb-4"
+          className="text-5xl sm:text-7xl md:text-9xl font-black tracking-tighter text-white leading-none mb-4"
         >
           BARDOWNSKI
         </motion.h1>

@@ -17,14 +17,14 @@ const seasons: SeasonSummary[] = [
   {
     year: "2020",
     rosterSize: 3,
-    captain: "Matt",
+    captain: "Dylan",
     summary:
       "Where it all began. Bardownski was founded and hit the ice for the first time, laying the foundation for everything to come.",
   },
   {
     year: "2021",
     rosterSize: 5,
-    captain: "Dylan",
+    captain: "Matt",
     summary:
       "Bardownski kept grinding through another season, developing a core group of players.",
   },
@@ -33,7 +33,7 @@ const seasons: SeasonSummary[] = [
     rosterSize: 6,
     captain: "Matt",
     summary:
-      "Matt returned to the captaincy for a second stint. The roster grew and the club continued to build chemistry, finding its identity heading into year three.",
+      "Matt continued leading the club into year three. The roster grew and the team continued to build chemistry, finding its identity as a competitive unit.",
   },
   {
     year: "2023",
@@ -169,7 +169,7 @@ export default function WhoWeAreSection() {
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
         >
           <span
-            className="absolute bottom-0 right-0 text-[160px] md:text-[220px] font-black leading-none select-none pointer-events-none text-white"
+            className="absolute bottom-0 right-0 text-[80px] sm:text-[160px] md:text-[220px] font-black leading-none select-none pointer-events-none text-white"
             style={{ opacity: 0.05 }}
             aria-hidden="true"
           >
@@ -184,7 +184,7 @@ export default function WhoWeAreSection() {
               </span>
             </div>
 
-            <h2 className="text-4xl md:text-5xl font-extrabold text-white leading-tight mb-5">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight mb-5">
               Built in Newfoundland.
             </h2>
 

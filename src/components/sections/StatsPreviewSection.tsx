@@ -55,9 +55,9 @@ export default function StatsPreviewSection({ messages }: { messages: unknown[] 
           {topPlayers.map((player, i) => {
             return (
               <StatsCard key={player.name}>
-                <div className="flex items-center justify-between p-6 gap-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-6 gap-4">
                   <div className="flex items-center gap-4">
-                    <span className="text-6xl font-black leading-none select-none" style={{ color: "rgba(91,155,213,0.18)" }}>
+                    <span className="text-4xl sm:text-6xl font-black leading-none select-none" style={{ color: "rgba(91,155,213,0.18)" }}>
                       #{i + 1}
                     </span>
                     <div>
@@ -70,7 +70,7 @@ export default function StatsPreviewSection({ messages }: { messages: unknown[] 
                     </div>
                   </div>
 
-                  <div className="flex gap-3">
+                  <div className="flex gap-2 sm:gap-3">
                     {[
                       { label: "GP", value: player.gamesPlayed, style: "default" as const },
                       { label: "G", value: player.goals, style: "default" as const },
