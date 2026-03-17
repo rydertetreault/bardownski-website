@@ -410,6 +410,10 @@ export function parseStats(messages: unknown[]): ParsedStats | null {
   return parseContent(normalizeUnicode(statsMessage.content));
 }
 
+const DATE_OVERRIDES: Record<string, string> = {
+  "2023": "06/10/23",
+};
+
 export function parseAllSeasons(messages: unknown[]): SeasonData[] {
   const seen = new Set<string>();
   const seasons: SeasonData[] = [];
@@ -423,6 +427,7 @@ export function parseAllSeasons(messages: unknown[]): SeasonData[] {
 
     const stats = parseContent(normalized);
     if (stats) {
+      if (DATE_OVERRIDES[season]) stats.date = DATE_OVERRIDES[season];
       seen.add(season);
       seasons.push({ season, stats });
     }
@@ -658,6 +663,89 @@ export function computeSeasonMVPs(seasons: SeasonData[]): SeasonMVP[] {
   }
 
   return mvps;
+}
+
+// --- Player of the Cycle ---
+
+export interface CyclePlayer {
+  name: string;
+  position: string;
+  isGoalie: boolean;
+  deltaGoals: number;
+  deltaAssists: number;
+  deltaPoints: number;
+  deltaHits: number;
+  deltaSaves: number;
+  cycleScore: number;
+}
+
+export function computePlayerOfCycle(messages: unknown[]): CyclePlayer | null {
+  // Filter to BARDOWNSKI STATS messages — Discord returns newest first
+  const statMessages = (messages as any[]).filter((msg) => {
+    const normalized = normalizeUnicode(msg.content || "");
+    return normalized.includes("BARDOWNSKI STATS");
+  });
+
+  if (statMessages.length < 2) return null;
+
+  const current = parseContent(normalizeUnicode(statMessages[0].content));
+  const previous = parseContent(normalizeUnicode(statMessages[1].content));
+
+  if (!current || !previous) return null;
+
+  // Build previous-stat lookup maps
+  const prevGoals = Object.fromEntries(previous.goals.map((e) => [e.name, e.value]));
+  const prevAssists = Object.fromEntries(previous.assists.map((e) => [e.name, e.value]));
+  const prevHits = Object.fromEntries(previous.hits.map((e) => [e.name, e.value]));
+  const prevSaves = Object.fromEntries(previous.saves.map((e) => [e.name, e.value]));
+
+  // All players appearing in the current stats
+  const allNames = new Set([
+    ...current.goals.map((e) => e.name),
+    ...current.assists.map((e) => e.name),
+    ...current.saves.map((e) => e.name),
+  ]);
+
+  let best: CyclePlayer | null = null;
+
+  for (const name of allNames) {
+    const isGoalie = current.saves.some((e) => e.name === name);
+
+    const curGoals = current.goals.find((e) => e.name === name)?.value ?? 0;
+    const curAssists = current.assists.find((e) => e.name === name)?.value ?? 0;
+    const curHits = current.hits.find((e) => e.name === name)?.value ?? 0;
+    const curSaves = current.saves.find((e) => e.name === name)?.value ?? 0;
+
+    const deltaGoals = Math.max(0, curGoals - (prevGoals[name] ?? 0));
+    const deltaAssists = Math.max(0, curAssists - (prevAssists[name] ?? 0));
+    const deltaHits = Math.max(0, curHits - (prevHits[name] ?? 0));
+    const deltaSaves = Math.max(0, curSaves - (prevSaves[name] ?? 0));
+    const deltaPoints = deltaGoals + deltaAssists;
+
+    const score = isGoalie
+      ? deltaSaves * 0.5
+      : deltaPoints * 3 + deltaHits * 0.2;
+
+    if (!best || score > best.cycleScore) {
+      const rosterEntry = current.roster.find((r) => r.name === name);
+      best = {
+        name,
+        position: rosterEntry?.position ?? (isGoalie ? "G" : "—"),
+        isGoalie,
+        deltaGoals,
+        deltaAssists,
+        deltaPoints,
+        deltaHits,
+        deltaSaves,
+        cycleScore: score,
+      };
+    }
+  }
+
+  // Only return if there was actual movement this cycle
+  if (!best || best.cycleScore <= 0) return null;
+
+  return best;
 }
 
 // --- Enriched player data ---

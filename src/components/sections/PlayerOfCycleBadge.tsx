@@ -1,0 +1,158 @@
+"use client";
+
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import type { CyclePlayer } from "@/lib/discord";
+import { getNickname } from "@/lib/nicknames";
+
+interface Props {
+  player: CyclePlayer;
+}
+
+export default function PlayerOfCycleBadge({ player }: Props) {
+  const [collapsed, setCollapsed] = useState(false);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const onScroll = () => {
+      setVisible(window.scrollY < window.innerHeight * 2.5);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const nickname = getNickname(player.name);
+  const topStat = player.isGoalie
+    ? `+${player.deltaSaves} SVS`
+    : `+${player.deltaPoints} PTS`;
+
+  const statPills = player.isGoalie
+    ? [player.deltaSaves > 0 && `+${player.deltaSaves} SVS`]
+    : [
+        player.deltaGoals > 0 && `+${player.deltaGoals} G`,
+        player.deltaAssists > 0 && `+${player.deltaAssists} A`,
+        player.deltaHits > 0 && `+${player.deltaHits} HIT`,
+      ].filter(Boolean) as string[];
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          className="fixed right-0 top-24 z-40 hidden md:flex flex-col items-end"
+          initial={{ x: 220, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: 220, opacity: 0 }}
+          transition={{ delay: 1.8, type: "spring", stiffness: 180, damping: 24 }}
+        >
+          <AnimatePresence initial={false}>
+            {!collapsed && (
+              <motion.div
+                key="expanded"
+                initial={{ x: 220, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: 220, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 220, damping: 26 }}
+                className="relative bg-[#0d1528]/95 backdrop-blur-sm border border-white/10 border-r-0 rounded-l-2xl overflow-hidden w-52"
+              >
+                {/* Red top accent */}
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#cc1533] to-[#cc1533]/30" />
+
+                {/* Collapse button */}
+                <button
+                  onClick={() => setCollapsed(true)}
+                  className="absolute top-3 right-3 text-white/20 hover:text-white/60 transition-colors z-10"
+                  aria-label="Collapse"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+
+                <Link href="/stats" className="block px-5 py-5 pr-7">
+                  {/* Label */}
+                  <p className="text-[#cc1533] text-[9px] font-bold uppercase tracking-[0.22em] mb-4">
+                    Player of the Cycle
+                  </p>
+
+                  {/* Player name */}
+                  <p className="text-white font-black text-2xl leading-none mb-1">
+                    {nickname}
+                  </p>
+                  <p className="text-white/30 text-[10px] uppercase tracking-widest mb-5">
+                    {player.position}
+                  </p>
+
+                  {/* Divider */}
+                  <div className="h-px bg-white/10 mb-5" />
+
+                  {/* Top stat big */}
+                  <p className="text-[#cc1533] font-black text-3xl leading-none mb-1">
+                    {topStat}
+                  </p>
+                  <p className="text-white/30 text-[9px] uppercase tracking-widest mb-5">
+                    This cycle
+                  </p>
+
+                  {/* Stat breakdown pills */}
+                  {statPills.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {statPills.map((s) => (
+                        <span
+                          key={s}
+                          className="text-[10px] bg-white/5 border border-white/10 text-white/40 px-2.5 py-1 rounded-md"
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* CTA */}
+                  <p className="text-[#cc1533]/60 text-[9px] uppercase tracking-widest mt-5 font-bold">
+                    View stats →
+                  </p>
+                </Link>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Collapsed tab */}
+          <AnimatePresence initial={false}>
+            {collapsed && (
+              <motion.button
+                key="collapsed"
+                onClick={() => setCollapsed(false)}
+                initial={{ x: 100, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: 100, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 220, damping: 26 }}
+                className="relative bg-[#0d1528]/95 backdrop-blur-sm border border-white/10 border-r-0 rounded-l-xl overflow-hidden px-3 py-4 flex flex-col items-center gap-3"
+                aria-label="Expand player of the cycle"
+              >
+                {/* Red top accent */}
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#cc1533]" />
+
+                {/* Rotated label */}
+                <span
+                  className="text-[#cc1533] text-[8px] font-bold uppercase tracking-[0.2em] whitespace-nowrap"
+                  style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
+                >
+                  Player of the Cycle
+                </span>
+
+                {/* Red dot */}
+                <span className="w-1.5 h-1.5 rounded-full bg-[#cc1533]" />
+
+                {/* Player initials */}
+                <span className="text-white font-black text-xs">
+                  {nickname.slice(0, 3)}
+                </span>
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}

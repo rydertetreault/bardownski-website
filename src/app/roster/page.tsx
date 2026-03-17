@@ -148,50 +148,82 @@ export default async function RosterPage() {
   const goalies = players.filter((p) => p.positionGroup === "goalie");
 
   return (
-    <div className="min-h-screen">
-      {/* Locker room header */}
-      <div className="relative pt-16">
-        <div className="relative h-56 md:h-64 overflow-hidden bg-navy-dark">
-          {/* Locker room texture — subtle vertical lines */}
-          <div className="absolute inset-0 opacity-[0.03]">
-            {Array.from({ length: 20 }).map((_, i) => (
-              <div
-                key={i}
-                className="absolute top-0 bottom-0 w-px bg-white"
-                style={{ left: `${(i + 1) * 5}%` }}
-              />
-            ))}
-          </div>
+    <div className="min-h-screen relative">
+      {/* Red diagonal streak background */}
+      <div
+        className="fixed inset-0 pointer-events-none overflow-hidden"
+        style={{ zIndex: -1 }}
+      >
+        {/* Wide diffuse beam — left */}
+        <div
+          style={{
+            position: "absolute",
+            width: "220px",
+            height: "300%",
+            left: "10%",
+            top: "-100%",
+            transform: "rotate(-38deg)",
+            background:
+              "linear-gradient(90deg, transparent, rgba(200,16,46,0.04) 40%, rgba(200,16,46,0.06) 50%, rgba(200,16,46,0.04) 60%, transparent)",
+          }}
+        />
+        {/* Thin sharp streak — left */}
+        <div
+          style={{
+            position: "absolute",
+            width: "1px",
+            height: "300%",
+            left: "18%",
+            top: "-100%",
+            transform: "rotate(-38deg)",
+            background:
+              "linear-gradient(to bottom, transparent 0%, rgba(200,16,46,0.2) 25%, rgba(200,16,46,0.35) 50%, rgba(200,16,46,0.2) 75%, transparent 100%)",
+          }}
+        />
+        {/* Wide diffuse beam — right */}
+        <div
+          style={{
+            position: "absolute",
+            width: "300px",
+            height: "300%",
+            left: "58%",
+            top: "-100%",
+            transform: "rotate(-38deg)",
+            background:
+              "linear-gradient(90deg, transparent, rgba(200,16,46,0.03) 40%, rgba(200,16,46,0.05) 50%, rgba(200,16,46,0.03) 60%, transparent)",
+          }}
+        />
+        {/* Thin sharp streak — right */}
+        <div
+          style={{
+            position: "absolute",
+            width: "1px",
+            height: "300%",
+            left: "74%",
+            top: "-100%",
+            transform: "rotate(-38deg)",
+            background:
+              "linear-gradient(to bottom, transparent 0%, rgba(200,16,46,0.18) 25%, rgba(200,16,46,0.3) 50%, rgba(200,16,46,0.18) 75%, transparent 100%)",
+          }}
+        />
+      </div>
 
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 to-background" />
-
-          {/* Logo */}
-          <div className="absolute top-6 left-1/2 -translate-x-1/2 w-16 h-16 opacity-10">
-            <Image
-              src="/images/logo/BD - logo.png"
-              alt=""
-              fill
-              className="object-contain"
-            />
+      {/* Page title */}
+      <div className="pt-24 pb-8">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-4">
+            <div className="h-px w-8 bg-red/40" />
+            <h1 className="text-3xl md:text-4xl font-black uppercase tracking-[0.15em]">
+              Roster
+            </h1>
           </div>
-
-          {/* Title */}
-          <div className="absolute inset-0 flex flex-col items-center justify-end pb-8">
-            <div className="flex items-center gap-4 mb-2">
-              <div className="h-px w-12 bg-red/50" />
-              <h1 className="text-4xl md:text-5xl font-black uppercase tracking-[0.15em]">
-                Roster
-              </h1>
-              <div className="h-px w-12 bg-red/50" />
-            </div>
-            <p className="text-muted text-sm uppercase tracking-widest">
-              The Bardownski Squad
-            </p>
-          </div>
+          <p className="text-muted text-sm uppercase tracking-widest mt-1 ml-12">
+            The Bardownski Squad
+          </p>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         {players.length === 0 ? (
           <div className="text-center py-24 bg-navy border border-border rounded-xl">
             <div className="w-20 h-20 mx-auto mb-6 relative overflow-hidden rounded-xl opacity-20">

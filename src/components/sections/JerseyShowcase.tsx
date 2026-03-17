@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import { FadeUp, StaggerContainer, StaggerItem, GlowCard } from "@/components/ui/Animate";
+import { motion } from "framer-motion";
+import { FadeUp, StaggerContainer, StaggerItem } from "@/components/ui/Animate";
 
 function LazyVideo({ src, className }: { src: string; className?: string }) {
   const ref = useRef<HTMLVideoElement>(null);
@@ -12,7 +13,6 @@ function LazyVideo({ src, className }: { src: string; className?: string }) {
       ([entry]) => {
         if (entry.isIntersecting) {
           video.src = src;
-          video.play();
           observer.disconnect();
         }
       },
@@ -22,69 +22,185 @@ function LazyVideo({ src, className }: { src: string; className?: string }) {
     return () => observer.disconnect();
   }, [src]);
 
-  return <video ref={ref} loop muted playsInline className={className} />;
+  return (
+    <video
+      ref={ref}
+      loop
+      muted
+      playsInline
+      className={className}
+      onMouseEnter={() => ref.current?.play().catch(() => {})}
+      onMouseLeave={() => ref.current?.pause()}
+    />
+  );
 }
 
-const jerseys = [
+interface JerseyData {
+  label: string;
+  description: string;
+  video: string;
+  accentColor: string;
+  glowColor: string;
+  cardBg: string;
+}
+
+const jerseys: JerseyData[] = [
   {
-    label: "Home",
+    label: "HOME",
     description: "Navy with red & white trim",
     video: "/videos/BD - Home.mp4",
-    bg: "from-navy to-navy-dark",
+    accentColor: "#5b9bd5",
+    glowColor: "rgba(91, 155, 213, 0.35)",
+    cardBg: "#1a3a6e",
   },
   {
-    label: "Away",
+    label: "AWAY",
     description: "White with navy & red trim",
     video: "/videos/BD - Away.mp4",
-    bg: "from-gray-400 to-gray-600",
+    accentColor: "#c8d8e8",
+    glowColor: "rgba(200, 216, 232, 0.3)",
+    cardBg: "#1b2a4a",
   },
   {
-    label: "Alternate",
+    label: "ALTERNATE",
     description: "Red with eagle crest",
     video: "/videos/BD - Alt.mp4",
-    bg: "from-red-dark to-[#6b0a18]",
+    accentColor: "#9b0c23",
+    glowColor: "rgba(155, 12, 35, 0.4)",
+    cardBg: "#1a080e",
   },
 ];
 
 export default function JerseyShowcase() {
   return (
-    <section className="py-20">
+    <section
+      className="relative pt-44 pb-32"
+      style={{
+        // BACKGROUND STYLE: white core — swap to change the look
+        background:
+          "radial-gradient(ellipse at 50% 45%, rgba(255,255,255,0.28) 0%, #303030 40%, #111113 100%)",
+      }}
+    >
+      {/* TOP DIVIDER: same 3-layer stadium light — mirrors the bottom */}
+      <div
+        className="absolute top-0 left-0 right-0 pointer-events-none"
+        style={{
+          height: "140px",
+          background:
+            "linear-gradient(90deg, #ff1a3d 0%, rgba(255, 40, 70, 0.6) 50%, transparent 100%)",
+          clipPath: "polygon(0 0, 100% 0, 0 100%)",
+          filter: "blur(14px)",
+        }}
+      />
+      <div
+        className="absolute top-0 left-0 right-0 pointer-events-none"
+        style={{
+          height: "122px",
+          background:
+            "linear-gradient(90deg, #ffffff 0%, #ff2244 8%, rgba(255, 40, 70, 0.4) 55%, transparent 100%)",
+          clipPath: "polygon(0 0, 100% 0, 0 100%)",
+          filter: "blur(2px)",
+        }}
+      />
+      <div
+        className="absolute top-0 left-0 right-0 pointer-events-none"
+        style={{
+          height: "108px",
+          backgroundColor: "#0b0f1a",
+          clipPath: "polygon(0 0, 100% 0, 0 100%)",
+        }}
+      />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <FadeUp>
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold uppercase tracking-wider mb-3">
-              Our Jerseys
+            <h2 className="text-4xl font-black uppercase tracking-widest text-white mb-3">
+              THE GEAR
             </h2>
-            <p className="text-muted">Home, away, and alternate kits.</p>
+            <p className="text-muted text-sm tracking-wider uppercase">
+              Home, away, and alternate kits
+            </p>
           </div>
         </FadeUp>
 
-        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8" stagger={0.15}>
-          {jerseys.map((jersey) => (
+        <StaggerContainer
+          className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          stagger={0.15}
+        >
+          {jerseys.map((jersey, i) => (
             <StaggerItem key={jersey.label}>
-              <GlowCard className="relative rounded-xl overflow-hidden border border-border">
-                <div className={`bg-gradient-to-b ${jersey.bg} p-6 pb-0`}>
-                  <h3 className="text-center text-sm font-bold uppercase tracking-[0.2em] text-white/80 mb-1">
+              {/* translateY cascades cards upward left→right to follow the diagonal divider */}
+              <div style={{ transform: `translateY(${i * -28}px)` }}>
+              <motion.div
+                whileHover={{
+                  y: -4,
+                  boxShadow: `0 16px 48px ${jersey.glowColor}`,
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                className="group relative overflow-hidden border border-border cursor-pointer"
+                style={{
+                  height: "480px",
+                  backgroundColor: jersey.cardBg,
+                  // Slashed top & bottom edges — same / angle as the section dividers
+                  clipPath: "polygon(0 20px, 100% 0, 100% calc(100% - 20px), 0 100%)",
+                }}
+              >
+                {/* Jersey video — plays immediately, zoomed in to crop to player */}
+                <LazyVideo
+                  src={jersey.video}
+                  className="absolute inset-0 w-full h-full object-cover scale-[1.2] object-[70%_50%]"
+                />
+
+                {/* Bottom gradient + label */}
+                <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/95 via-black/60 to-transparent pt-20 pb-6 px-6">
+                  <h3 className="text-white font-black text-xl uppercase tracking-[0.25em] mb-1">
                     {jersey.label}
                   </h3>
-                  <p className="text-center text-xs text-white/40 mb-4">
+                  <p className="text-white/50 text-xs tracking-wide">
                     {jersey.description}
                   </p>
-                  <div className="flex justify-center">
-                    <div className="relative w-52 h-64 overflow-hidden rounded-t-lg">
-                      <LazyVideo
-                        src={jersey.video}
-                        className="absolute top-[-15%] left-[-20%] w-[140%] h-[130%] object-cover object-[60%_15%]"
-                      />
-                      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/80 to-transparent" />
-                    </div>
-                  </div>
                 </div>
-              </GlowCard>
+              </motion.div>
+              </div>
             </StaggerItem>
           ))}
         </StaggerContainer>
       </div>
+
+      {/* SECTION DIVIDER: angled cut — stadium light glow */}
+      {/* Swap clipPath or colors on any layer to change the style */}
+
+      {/* Wide diffuse outer glow */}
+      <div
+        className="absolute bottom-0 left-0 right-0 pointer-events-none"
+        style={{
+          height: "140px",
+          background:
+            "linear-gradient(90deg, #ff1a3d 0%, rgba(255, 40, 70, 0.6) 50%, transparent 100%)",
+          clipPath: "polygon(0 100%, 100% 0, 100% 100%)",
+          filter: "blur(14px)",
+        }}
+      />
+      {/* Tight bright core line */}
+      <div
+        className="absolute bottom-0 left-0 right-0 pointer-events-none"
+        style={{
+          height: "122px",
+          background:
+            "linear-gradient(90deg, #ffffff 0%, #ff2244 8%, rgba(255, 40, 70, 0.4) 55%, transparent 100%)",
+          clipPath: "polygon(0 100%, 100% 0, 100% 100%)",
+          filter: "blur(2px)",
+        }}
+      />
+      {/* Bg fill — sits on top, slightly smaller to expose the glow edge */}
+      <div
+        className="absolute bottom-0 left-0 right-0 pointer-events-none"
+        style={{
+          height: "108px",
+          backgroundColor: "#0b0f1a",
+          clipPath: "polygon(0 100%, 100% 0, 100% 100%)",
+        }}
+      />
     </section>
   );
 }

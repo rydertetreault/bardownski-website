@@ -1,6 +1,5 @@
 import Link from "next/link";
 import {
-  fetchChannelMessages,
   parseStats,
   getEnrichedPlayers,
 } from "@/lib/discord";
@@ -11,8 +10,7 @@ import {
   StatsCard,
 } from "./StatsPreviewWrapper";
 
-export default async function StatsPreviewSection() {
-  const messages = await fetchChannelMessages();
+export default function StatsPreviewSection({ messages }: { messages: unknown[] }) {
   const stats = parseStats(messages);
 
   if (!stats) {
@@ -20,16 +18,11 @@ export default async function StatsPreviewSection() {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <StatsPreviewAnimated>
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-1 h-7 bg-[#cc1533] rounded-full" />
               <h2 className="text-2xl font-bold uppercase tracking-wider">
                 Top Players
               </h2>
-              <Link
-                href="/stats"
-                className="text-sm text-red hover:text-red-light transition-colors font-medium"
-              >
-                Full Stats →
-              </Link>
             </div>
             <div className="text-center py-16 bg-navy border border-border rounded-xl">
               <p className="text-muted">Stats coming soon.</p>
@@ -44,66 +37,88 @@ export default async function StatsPreviewSection() {
   const topPlayers = players
     .filter((p) => p.points !== undefined)
     .sort((a, b) => (b.points ?? 0) - (a.points ?? 0))
-    .slice(0, 3);
+    .slice(0, 2);
 
   return (
     <section className="py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <StatsPreviewAnimated>
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-1 h-7 bg-[#cc1533] rounded-full" />
             <h2 className="text-2xl font-bold uppercase tracking-wider">
               Top Players
             </h2>
-            <Link
-              href="/stats"
-              className="text-sm text-red hover:text-red-light transition-colors font-medium"
-            >
-              Full Stats →
-            </Link>
           </div>
         </StatsPreviewAnimated>
 
         <StatsGrid>
-          {topPlayers.map((player, i) => (
-            <StatsCard key={player.name}>
-              <div className="relative p-6 pb-4">
-                <span className="absolute top-4 right-4 text-5xl font-black text-white/5">
-                  #{i + 1}
-                </span>
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-red/10 rounded-full flex items-center justify-center border border-red/30">
-                    <span className="text-red font-bold text-lg">
-                      {player.position}
+          {topPlayers.map((player, i) => {
+            return (
+              <StatsCard key={player.name}>
+                <div className="flex items-center justify-between p-6 gap-6">
+                  <div className="flex items-center gap-4">
+                    <span className="text-6xl font-black leading-none select-none" style={{ color: "rgba(91,155,213,0.18)" }}>
+                      #{i + 1}
                     </span>
+                    <div>
+                      <p className="font-bold text-xl text-white">
+                        {getNickname(player.name)}
+                      </p>
+                      <p className="text-sm text-muted uppercase tracking-wider">
+                        {player.position}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-bold text-lg">{getNickname(player.name)}</p>
-                    <p className="text-sm text-muted">{player.position}</p>
-                  </div>
-                </div>
-              </div>
 
-              <div className="grid grid-cols-4 gap-2 text-center px-6 pb-6">
-                <div className="bg-surface-light rounded-lg py-3">
-                  <p className="text-[10px] text-muted uppercase tracking-wider">GP</p>
-                  <p className="font-bold text-lg">{player.gamesPlayed ?? "-"}</p>
+                  <div className="flex gap-3">
+                    {[
+                      { label: "GP", value: player.gamesPlayed, style: "default" as const },
+                      { label: "G", value: player.goals, style: "default" as const },
+                      { label: "A", value: player.assists, style: "blue" as const },
+                      { label: "PTS", value: player.points, style: "red" as const },
+                    ].map(({ label, value, style }) => (
+                      <div
+                        key={label}
+                        className={`text-center rounded-lg py-3 px-3 min-w-[52px] ${
+                          style === "red"
+                            ? "bg-red/10 border border-red/20"
+                            : style === "blue"
+                            ? "border border-[#5b9bd5]/20"
+                            : "bg-surface-light"
+                        }`}
+                        style={style === "blue" ? { backgroundColor: "rgba(91,155,213,0.07)" } : undefined}
+                      >
+                        <p
+                          className={`text-[10px] uppercase tracking-wider ${
+                            style === "red" ? "text-red" : style === "blue" ? "text-[#5b9bd5]" : "text-muted"
+                          }`}
+                        >
+                          {label}
+                        </p>
+                        <p
+                          className={`font-bold text-lg ${
+                            style === "red" ? "text-red" : style === "blue" ? "text-[#5b9bd5]" : "text-white"
+                          }`}
+                        >
+                          {value ?? "-"}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="bg-surface-light rounded-lg py-3">
-                  <p className="text-[10px] text-muted uppercase tracking-wider">G</p>
-                  <p className="font-bold text-lg">{player.goals ?? "-"}</p>
-                </div>
-                <div className="bg-surface-light rounded-lg py-3">
-                  <p className="text-[10px] text-muted uppercase tracking-wider">A</p>
-                  <p className="font-bold text-lg">{player.assists ?? "-"}</p>
-                </div>
-                <div className="bg-red/10 border border-red/20 rounded-lg py-3">
-                  <p className="text-[10px] text-red uppercase tracking-wider">PTS</p>
-                  <p className="font-bold text-lg text-red">{player.points ?? "-"}</p>
-                </div>
-              </div>
-            </StatsCard>
-          ))}
+              </StatsCard>
+            );
+          })}
         </StatsGrid>
+
+        <div className="flex justify-end mt-4">
+          <Link
+            href="/stats"
+            className="text-sm text-[#cc1533] hover:text-red-light transition-colors font-medium uppercase tracking-wider"
+          >
+            View Full Stats →
+          </Link>
+        </div>
       </div>
     </section>
   );

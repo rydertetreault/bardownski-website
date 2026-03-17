@@ -32,9 +32,9 @@ function Nameplate({
           hasScouting ? "cursor-pointer" : "cursor-default"
         } ${
           isCaptain
-            ? "border-red/40 hover:border-red/70 bg-gradient-to-r from-red/[0.07] via-navy to-navy"
+            ? "border-red/40 hover:border-red/70 bg-navy bg-gradient-to-r from-red/[0.07] via-transparent to-transparent"
             : isAssistant
-              ? "border-white/20 hover:border-white/40 bg-gradient-to-r from-white/[0.06] via-navy to-navy"
+              ? "border-white/20 hover:border-white/40 bg-navy bg-gradient-to-r from-white/[0.06] via-transparent to-transparent"
               : "border-border hover:border-red/30 bg-navy"
         }`}
       >
@@ -164,10 +164,10 @@ function Nameplate({
           <div
             className={`px-5 py-4 border border-t-0 rounded-b-lg ${
               isCaptain
-                ? "bg-red/[0.04] border-red/20"
+                ? "bg-navy-dark border-red/20"
                 : isAssistant
-                  ? "bg-white/[0.02] border-white/10"
-                  : "bg-navy-dark/50 border-border"
+                  ? "bg-navy-dark border-white/10"
+                  : "bg-navy-dark border-border"
             }`}
           >
             <div className="flex items-start gap-4">
@@ -205,7 +205,7 @@ function LeadershipCard({
 }) {
   const [open, setOpen] = useState(false);
   const isCaptain = player.leadership === "C";
-  const label = isCaptain ? "Meet the Captain" : "Meet the Asst. Captain";
+  const label = isCaptain ? "Meet the Captain" : "Meet the A";
 
   return (
     <motion.div
@@ -215,8 +215,8 @@ function LeadershipCard({
       transition={{ duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
       className={`relative rounded-xl border overflow-hidden ${
         isCaptain
-          ? "border-red/40 bg-gradient-to-b from-red/[0.08] via-navy to-navy-dark"
-          : "border-white/20 bg-gradient-to-b from-white/[0.05] via-navy to-navy-dark"
+          ? "border-red/40 bg-navy-dark bg-gradient-to-b from-red/[0.08] via-transparent to-transparent"
+          : "border-white/20 bg-navy-dark bg-gradient-to-b from-white/[0.05] via-transparent to-transparent"
       }`}
     >
       {/* Top accent */}
@@ -227,7 +227,7 @@ function LeadershipCard({
       )}
 
       <div className="p-6 text-center">
-        {/* Number + badge */}
+        {/* Number */}
         <div className="flex items-center justify-center gap-3 mb-2">
           <span
             className={`text-4xl font-black font-mono leading-none ${
@@ -235,15 +235,6 @@ function LeadershipCard({
             }`}
           >
             {player.number}
-          </span>
-          <span
-            className={`px-2 py-0.5 rounded text-[10px] font-black tracking-wider ${
-              isCaptain
-                ? "bg-red text-white"
-                : "bg-white/20 text-white border border-white/30"
-            }`}
-          >
-            {isCaptain ? "CAPTAIN" : "ASST. CAPTAIN"}
           </span>
         </div>
 

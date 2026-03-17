@@ -350,7 +350,7 @@ function StatsDisplay({ stats }: { stats: ParsedStats }) {
 
       {/* Podium for top category */}
       {podiumCategory && (
-        <div className="mb-12 py-8 rounded-xl bg-gradient-to-b from-navy-dark/50 to-transparent border border-border/30">
+        <div className="mb-12 py-8 rounded-xl bg-navy-dark border border-border/30">
           <Podium
             entries={podiumCategory.entries}
             label={podiumCategory.label}
@@ -461,7 +461,7 @@ export default function StatsClient({
     <>
       {/* Scoreboard-style season tabs */}
       {seasons.length > 1 && (
-        <div className="flex gap-1 mb-10 flex-wrap bg-navy-dark/50 border border-border rounded-lg p-1 w-fit">
+        <div className="flex gap-1 mb-10 flex-wrap bg-navy-dark border border-border rounded-lg p-1 w-fit">
           {seasons.map(({ season }) => (
             <button
               key={season}

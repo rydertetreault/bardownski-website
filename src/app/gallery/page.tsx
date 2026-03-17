@@ -1,122 +1,81 @@
-import Image from "next/image";
 import GalleryClient from "./GalleryClient";
+import GalleryBackground from "./GalleryBackground";
 
-// General gallery photos
-export interface GalleryItem {
+export interface GalleryPhoto {
   src: string;
   alt: string;
 }
 
-const galleryItems: GalleryItem[] = [
-  { src: "/images/logo/BD - stadium.png", alt: "Bardownski Arena" },
-  { src: "/images/logo/BD - logos + branding.png", alt: "Logos and branding" },
-  { src: "/images/logo/BD - logo.png", alt: "Primary logo" },
-  { src: "/images/logo/IMG_3371.png", alt: "Newfoundland mascot logo" },
-  { src: "/images/players/BD - home skt.png", alt: "Home jersey - Skater" },
-  { src: "/images/players/BD - home goalie.png", alt: "Home jersey - Goalie" },
-  { src: "/images/players/BD - away skt.png", alt: "Away jersey - Skater" },
-  { src: "/images/players/BD - away goalie.png", alt: "Away jersey - Goalie" },
-  { src: "/images/players/BD - alt skt.png", alt: "Alternate jersey - Skater" },
-  { src: "/images/players/BD - alt goalie.png", alt: "Alternate jersey - Goalie" },
-];
-
-// Jersey wall — current set + past jerseys by season
-export interface JerseyCard {
-  year: string;
-  name: string;
-  description: string;
-  video: string;
-  current?: boolean;
+export interface GalleryVideo {
+  src: string;
+  label: string;
 }
 
-const jerseys: JerseyCard[] = [
-  // Current set
-  {
-    year: "2025",
-    name: "Home Navy",
-    description: "Navy base with red striping and the iconic B crest.",
-    video: "/videos/BD - Home.mp4",
-    current: true,
-  },
-  {
-    year: "2025",
-    name: "Away White",
-    description: "White body with navy and red accents.",
-    video: "/videos/BD - Away.mp4",
-    current: true,
-  },
-  {
-    year: "2025",
-    name: "Alternate Red",
-    description: "All red with the eagle crest and stars.",
-    video: "/videos/BD - Alt.mp4",
-    current: true,
-  },
-  // Past jerseys — update with real videos/images when available
-  {
-    year: "2024",
-    name: "Home Navy",
-    description: "Placeholder — update with the actual jersey.",
-    video: "/videos/BD - Home.mp4",
-  },
-  {
-    year: "2023",
-    name: "Home Navy",
-    description: "Placeholder — update with the actual jersey.",
-    video: "/videos/BD - Home.mp4",
-  },
-  {
-    year: "2022",
-    name: "Home Navy",
-    description: "Placeholder — update with the actual jersey.",
-    video: "/videos/BD - Home.mp4",
-  },
-  {
-    year: "2021",
-    name: "Home Navy",
-    description: "Placeholder — update with the actual jersey.",
-    video: "/videos/BD - Home.mp4",
-  },
-  {
-    year: "2020",
-    name: "Home Navy",
-    description: "Placeholder — update with the actual jersey.",
-    video: "/videos/BD - Home.mp4",
-  },
+const photos: GalleryPhoto[] = [
+  { src: "/images/gallery/screenshots/team.png", alt: "Team" },
+  { src: "/images/gallery/screenshots/IMG_3288.png", alt: "Bardownski" },
+  { src: "/images/gallery/screenshots/IMG_3294.jpg", alt: "Bardownski" },
+  { src: "/images/gallery/screenshots/IMG_3428.png", alt: "Bardownski" },
+  { src: "/images/gallery/screenshots/t.png", alt: "Bardownski" },
+  { src: "/images/gallery/screenshots/Screenshot 2026-03-16 183502.png", alt: "Screenshot" },
+  { src: "/images/gallery/screenshots/Screenshot 2026-03-16 183710.png", alt: "Screenshot" },
+  { src: "/images/gallery/screenshots/Screenshot 2026-03-16 183904.png", alt: "Screenshot" },
+  { src: "/images/gallery/screenshots/Screenshot 2026-03-16 183953.png", alt: "Screenshot" },
+  { src: "/images/gallery/screenshots/Screenshot 2026-03-16 184232.png", alt: "Screenshot" },
+];
+
+const videos: GalleryVideo[] = [
+  { src: "/videos/JRT IV - 2026.mp4", label: "JRT IV – 2026" },
+  { src: "/videos/dylan1.mov", label: "Dylan – Final Cut" },
+  { src: "/videos/GottaBe - Trap Edition.mov", label: "Gotta Be – Trap Edition" },
+  { src: "/videos/Slobby Robby 2026.mov", label: "Slobby Robby 2026" },
+  { src: "/videos/Ryder1.mp4", label: "Ryder – Clip 1" },
+  { src: "/videos/Ryder2.mp4", label: "Ryder – Clip 2" },
+  { src: "/videos/Kaden1.mp4", label: "Kaden – Clip 1" },
+  { src: "/videos/BD - Home.mp4", label: "Home Jersey" },
+  { src: "/videos/BD - Away.mp4", label: "Away Jersey" },
+  { src: "/videos/BD - Alt.mp4", label: "Alternate Jersey" },
 ];
 
 export default function GalleryPage() {
   return (
     <div className="min-h-screen">
+      <GalleryBackground />
+
       {/* Header */}
-      <div className="relative pt-16">
-        <div className="relative h-56 md:h-64 overflow-hidden bg-navy-dark">
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 to-background" />
-          <div className="absolute top-6 left-1/2 -translate-x-1/2 w-16 h-16 opacity-10">
-            <Image
-              src="/images/logo/BD - logo.png"
-              alt=""
-              fill
-              className="object-contain"
-            />
-          </div>
-          <div className="absolute inset-0 flex flex-col items-center justify-end pb-8">
-            <div className="flex items-center gap-4 mb-2">
-              <div className="h-px w-12 bg-red/50" />
-              <h1 className="text-4xl md:text-5xl font-black uppercase tracking-[0.15em]">
-                Gallery
-              </h1>
-              <div className="h-px w-12 bg-red/50" />
-            </div>
-            <p className="text-muted text-sm uppercase tracking-widest">
-              Jerseys, screenshots & branding
-            </p>
+      <div className="relative pt-24 pb-16 overflow-hidden">
+        {/* Powder blue top rule */}
+        <div
+          className="absolute top-0 left-0 right-0 h-px pointer-events-none"
+          style={{ background: "linear-gradient(to right, transparent, rgba(125,211,252,0.4), transparent)" }}
+        />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p
+            className="text-xs font-bold uppercase tracking-[0.4em] mb-5"
+            style={{ color: "#7dd3fc" }}
+          >
+            Bardownski · Newfoundland
+          </p>
+          <h1 className="text-7xl md:text-9xl font-black uppercase tracking-tight text-white mb-6 leading-none">
+            Gallery
+          </h1>
+          <div className="flex items-center justify-center gap-6 text-xs uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.3)" }}>
+            <span>{photos.length} Photos</span>
+            <span className="w-1 h-1 rounded-full" style={{ backgroundColor: "#cc1533" }} />
+            <span>{videos.length} Videos</span>
           </div>
         </div>
+
+        {/* Red bottom accent */}
+        <div
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 h-px w-32"
+          style={{ backgroundColor: "#cc1533" }}
+        />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <GalleryClient photos={galleryItems} jerseys={jerseys} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 pt-8">
+        <GalleryClient photos={photos} videos={videos} />
       </div>
     </div>
   );

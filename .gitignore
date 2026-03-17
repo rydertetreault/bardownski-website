@@ -42,3 +42,5 @@ public/videos/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vercel

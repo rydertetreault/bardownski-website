@@ -1,16 +1,48 @@
 import Image from "next/image";
-import { fetchChannelMessages, parseAllSeasons } from "@/lib/discord";
+import { fetchChannelMessages, parseAllSeasons, computePlayerOfCycle } from "@/lib/discord";
 import StatsClient from "./StatsClient";
+import PlayerOfCycleSection from "@/components/sections/PlayerOfCycleSection";
 
 export default async function StatsPage() {
   const messages = await fetchChannelMessages();
   const seasons = parseAllSeasons(messages);
+  const cyclePlayer = computePlayerOfCycle(messages);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      {/* Analytical grid background */}
+      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: -1 }}>
+        {/* Minor gridlines */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
+            backgroundSize: "30px 30px",
+          }}
+        />
+        {/* Major gridlines every 3rd cell */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px)",
+            backgroundSize: "90px 90px",
+          }}
+        />
+        {/* Soft white glow at top — chart area highlight */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255,255,255,0.04) 0%, transparent 100%)",
+          }}
+        />
+      </div>
+
       {/* Scoreboard-style header */}
       <div className="relative pt-16">
-        <div className="relative h-56 md:h-64 overflow-hidden bg-navy-dark">
+        <div className="relative h-56 md:h-64 overflow-hidden">
           {/* Rink-line subtle background pattern */}
           <div className="absolute inset-0 opacity-[0.04]">
             {/* Center red line */}
@@ -51,6 +83,8 @@ export default async function StatsPage() {
           </div>
         </div>
       </div>
+
+      {cyclePlayer && <PlayerOfCycleSection player={cyclePlayer} />}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {seasons.length === 0 ? (
