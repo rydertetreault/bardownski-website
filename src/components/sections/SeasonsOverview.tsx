@@ -39,19 +39,19 @@ const seasons: SeasonSummary[] = [
     rosterSize: 6,
     captain: "Matt",
     summary:
-      "Matt returned to the captaincy for a second stint. The roster grew to seven and the club continued to build chemistry, finding its identity heading into year three.",
+      "Matt continued leading the club into year three. The roster grew to six and the team continued to build chemistry, finding its identity as a competitive unit.",
   },
   {
     year: "2021",
     rosterSize: 5,
-    captain: "Dylan",
+    captain: "Matt",
     summary:
       "Bardownski kept grinding through another season, developing a core group of players.",
   },
   {
     year: "2020",
     rosterSize: 3,
-    captain: "Matt",
+    captain: "Dylan",
     summary:
       "Where it all began. Bardownski was founded and hit the ice for the first time, laying the foundation for everything to come.",
   },

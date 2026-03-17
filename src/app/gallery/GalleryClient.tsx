@@ -5,10 +5,18 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { GalleryPhoto, GalleryVideo } from "./page";
 
-// Loads video metadata + seeks to first frame when scrolled into view
+function getYouTubeId(src: string): string | null {
+  const m = src.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([^?&]+)/);
+  return m ? m[1] : null;
+}
+
+// Shows YouTube thumbnail or seeks local video to first frame
 function VideoThumb({ src, className }: { src: string; className?: string }) {
+  const ytId = getYouTubeId(src);
   const ref = useRef<HTMLVideoElement>(null);
+
   useEffect(() => {
+    if (ytId) return;
     const video = ref.current;
     if (!video) return;
     const observer = new IntersectionObserver(
@@ -25,7 +33,18 @@ function VideoThumb({ src, className }: { src: string; className?: string }) {
     );
     observer.observe(video);
     return () => observer.disconnect();
-  }, [src]);
+  }, [src, ytId]);
+
+  if (ytId) {
+    return (
+      <Image
+        src={`https://img.youtube.com/vi/${ytId}/hqdefault.jpg`}
+        alt="YouTube thumbnail"
+        fill
+        className={className}
+      />
+    );
+  }
   return <video ref={ref} preload="metadata" muted playsInline className={className} />;
 }
 
@@ -189,13 +208,25 @@ function VideoModal({ video, onClose }: { video: GalleryVideo; onClose: () => vo
         className="relative max-w-5xl w-full"
         onClick={(e) => e.stopPropagation()}
       >
-        <video
-          src={video.src}
-          controls
-          autoPlay
-          className="w-full max-h-[82vh] rounded bg-black"
-          style={{ borderRadius: "4px" }}
-        />
+        {getYouTubeId(video.src) ? (
+          <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+            <iframe
+              src={`https://www.youtube.com/embed/${getYouTubeId(video.src)}?autoplay=1`}
+              allow="autoplay; fullscreen"
+              allowFullScreen
+              className="absolute inset-0 w-full h-full rounded bg-black"
+              style={{ borderRadius: "4px" }}
+            />
+          </div>
+        ) : (
+          <video
+            src={video.src}
+            controls
+            autoPlay
+            className="w-full max-h-[82vh] rounded bg-black"
+            style={{ borderRadius: "4px" }}
+          />
+        )}
         <p
           className="text-center text-xs mt-3 uppercase tracking-widest"
           style={{ color: "rgba(255,255,255,0.3)" }}
