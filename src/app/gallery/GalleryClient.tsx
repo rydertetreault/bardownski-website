@@ -1,29 +1,20 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { GalleryPhoto, GalleryVideo } from "./page";
 
-// Loads only video metadata (first frame) when scrolled into view — no playback.
-function VideoThumb({ src, className }: { src: string; className?: string }) {
-  const ref = useRef<HTMLVideoElement>(null);
-  useEffect(() => {
-    const video = ref.current;
-    if (!video) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          video.src = src;
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.05 }
-    );
-    observer.observe(video);
-    return () => observer.disconnect();
-  }, [src]);
-  return <video ref={ref} preload="metadata" muted playsInline className={className} />;
+// Static placeholder — videos are not hosted on Vercel (too large)
+function VideoThumb({ className }: { src: string; className?: string }) {
+  return (
+    <div
+      className={className}
+      style={{
+        background: "linear-gradient(135deg, #0d1528 0%, #0b1220 50%, #080d18 100%)",
+      }}
+    />
+  );
 }
 
 // ─── Section heading ────────────────────────────────────────────────────────────
