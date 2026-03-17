@@ -28,7 +28,7 @@ export default function PlayerOfCycleBadge({ player }: Props) {
     : `+${player.deltaPoints} PTS`;
 
   const statPills = player.isGoalie
-    ? [player.deltaSaves > 0 && `+${player.deltaSaves} SVS`]
+    ? ([player.deltaSaves > 0 && `+${player.deltaSaves} SVS`].filter(Boolean) as string[])
     : [
         player.deltaGoals > 0 && `+${player.deltaGoals} G`,
         player.deltaAssists > 0 && `+${player.deltaAssists} A`,
