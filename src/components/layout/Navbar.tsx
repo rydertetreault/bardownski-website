@@ -105,7 +105,7 @@ export default function Navbar() {
                 className="hidden md:inline-flex items-center px-4 py-2 rounded text-xs font-bold uppercase tracking-widest text-white transition-all hover:brightness-110 active:scale-95"
                 style={{ backgroundColor: "#cc1533" }}
               >
-                2026 Season
+                2025 Season
               </Link>
 
               <button
