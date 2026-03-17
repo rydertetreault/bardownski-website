@@ -567,6 +567,7 @@ export interface SeasonMVP {
 // Manual MVP overrides for seasons decided by the team
 const MVP_OVERRIDES: Record<string, { player: string; isGoalie: boolean }> = {
   "2023": { player: "MATT", isGoalie: false },
+  "2024": { player: "MATT", isGoalie: false },
 };
 
 // Seasons still in progress get a "Projected" label
@@ -653,7 +654,7 @@ export function computeSeasonMVPs(seasons: SeasonData[]): SeasonMVP[] {
 
       const maxSkater = Math.max(...skaters.map((s) => s.score), 1);
       const maxGoalie = Math.max(...goalies.map((g) => g.score), 1);
-      const GOALIE_BONUS = 1.15;
+      const GOALIE_FACTOR = 0.35;
 
       let bestScore = -Infinity;
       for (const s of skaters) {
@@ -661,7 +662,7 @@ export function computeSeasonMVPs(seasons: SeasonData[]): SeasonMVP[] {
         if (norm > bestScore) { bestScore = norm; bestName = s.name; }
       }
       for (const g of goalies) {
-        const norm = Math.min((g.score / maxGoalie) * GOALIE_BONUS, 1.15);
+        const norm = (g.score / maxGoalie) * GOALIE_FACTOR;
         if (norm > bestScore) { bestScore = norm; bestName = g.name; }
       }
     }
