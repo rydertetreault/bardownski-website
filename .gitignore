@@ -36,8 +36,8 @@ yarn-error.log*
 # vercel
 .vercel
 
-# large video files (host externally)
-public/videos/
+# JRT IV is too large for GitHub (142MB) — served via YouTube instead
+"public/videos/JRT IV - 2026.mp4"
 
 # typescript
 *.tsbuildinfo
