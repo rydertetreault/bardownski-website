@@ -21,15 +21,39 @@ const clips: Clip[] = [
 ];
 
 function ThumbCard({ clip }: { clip: Clip }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.src = clip.src;
+          video.play().catch(() => {});
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [clip.src]);
+
   return (
     <motion.div
       whileHover={{ scale: 1.04 }}
       transition={{ duration: 0.18, ease: "easeOut" as const }}
       className="flex-shrink-0 w-48 sm:w-56 group cursor-pointer"
     >
-      <div className="rounded-lg overflow-hidden aspect-video relative ring-1 ring-white/5 group-hover:ring-[#cc1533]/40 transition-all duration-200"
-        style={{ background: "linear-gradient(135deg, #0d1528 0%, #0b1220 50%, #080d18 100%)" }}
-      >
+      <div className="rounded-lg overflow-hidden aspect-video bg-[#1a2744] relative ring-1 ring-white/5 group-hover:ring-[#cc1533]/40 transition-all duration-200">
+        <video
+          ref={videoRef}
+          muted
+          loop
+          playsInline
+          className="w-full h-full object-cover"
+        />
         <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-colors duration-200">
           <div className="w-8 h-8 rounded-full bg-white/10 group-hover:bg-[#cc1533]/60 border border-white/20 group-hover:border-[#cc1533]/60 flex items-center justify-center transition-all duration-200">
             <svg className="w-3.5 h-3.5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
