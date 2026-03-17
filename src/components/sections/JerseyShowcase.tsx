@@ -6,6 +6,8 @@ import { FadeUp, StaggerContainer, StaggerItem } from "@/components/ui/Animate";
 
 function LazyVideo({ src, className }: { src: string; className?: string }) {
   const ref = useRef<HTMLVideoElement>(null);
+
+  // Load src + seek to first frame when scrolled into view
   useEffect(() => {
     const video = ref.current;
     if (!video) return;
@@ -13,7 +15,9 @@ function LazyVideo({ src, className }: { src: string; className?: string }) {
       ([entry]) => {
         if (entry.isIntersecting) {
           video.src = src;
-          video.play().catch(() => {});
+          video.load();
+          const onLoaded = () => { video.currentTime = 0; };
+          video.addEventListener("loadedmetadata", onLoaded, { once: true });
           observer.disconnect();
         }
       },
@@ -26,11 +30,17 @@ function LazyVideo({ src, className }: { src: string; className?: string }) {
   return (
     <video
       ref={ref}
-      loop
       muted
       playsInline
-      autoPlay
+      preload="metadata"
       className={className}
+      onMouseEnter={() => ref.current?.play().catch(() => {})}
+      onMouseLeave={() => {
+        const v = ref.current;
+        if (!v) return;
+        v.pause();
+        v.currentTime = 0;
+      }}
     />
   );
 }
@@ -76,9 +86,8 @@ export default function JerseyShowcase() {
     <section
       className="relative pt-44 pb-32"
       style={{
-        // BACKGROUND STYLE: white core — swap to change the look
         background:
-          "radial-gradient(ellipse at 50% 45%, rgba(255,255,255,0.28) 0%, #303030 40%, #111113 100%)",
+          "radial-gradient(ellipse at 50% 45%, #ddedf5 0%, #a8c5d8 45%, #7a9fb8 100%)",
       }}
     >
       {/* TOP DIVIDER: same 3-layer stadium light — mirrors the bottom */}
