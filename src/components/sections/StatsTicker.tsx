@@ -1,4 +1,5 @@
 import { parseStats } from "@/lib/discord";
+import { getNickname } from "@/lib/nicknames";
 
 const STATIC_ITEMS = [
   "BARDOWNSKI HC",
@@ -25,21 +26,21 @@ export default function StatsTicker({ messages }: { messages: unknown[] }) {
     const statItems: string[] = [];
 
     if (stats.points[0])
-      statItems.push(`PTS LEADER: ${stats.points[0].name} ${stats.points[0].value}`);
+      statItems.push(`PTS LEADER: ${getNickname(stats.points[0].name)} ${stats.points[0].value}`);
     if (stats.goals[0])
-      statItems.push(`GOALS LEADER: ${stats.goals[0].name} ${stats.goals[0].value}`);
+      statItems.push(`GOALS LEADER: ${getNickname(stats.goals[0].name)} ${stats.goals[0].value}`);
     if (stats.assists[0])
-      statItems.push(`ASSISTS LEADER: ${stats.assists[0].name} ${stats.assists[0].value}`);
+      statItems.push(`ASSISTS LEADER: ${getNickname(stats.assists[0].name)} ${stats.assists[0].value}`);
     if (stats.hits[0])
-      statItems.push(`HITS LEADER: ${stats.hits[0].name} ${stats.hits[0].value}`);
+      statItems.push(`HITS LEADER: ${getNickname(stats.hits[0].name)} ${stats.hits[0].value}`);
     if (stats.plusMinus[0]) {
       const pm = stats.plusMinus[0];
-      statItems.push(`+/- LEADER: ${pm.name} ${pm.value > 0 ? "+" : ""}${pm.value}`);
+      statItems.push(`+/- LEADER: ${getNickname(pm.name)} ${pm.value > 0 ? "+" : ""}${pm.value}`);
     }
     if (stats.saves[0]?.secondary != null)
-      statItems.push(`SV% LEADER: ${stats.saves[0].name} ${stats.saves[0].secondary!.toFixed(1)}%`);
+      statItems.push(`SV% LEADER: ${getNickname(stats.saves[0].name)} ${stats.saves[0].secondary!.toFixed(1)}%`);
     if (stats.shutouts[0])
-      statItems.push(`SHUTOUTS LEADER: ${stats.shutouts[0].name} ${stats.shutouts[0].value}`);
+      statItems.push(`SHUTOUTS LEADER: ${getNickname(stats.shutouts[0].name)} ${stats.shutouts[0].value}`);
 
     if (statItems.length > 0) items = [...STATIC_ITEMS, ...statItems];
   }
