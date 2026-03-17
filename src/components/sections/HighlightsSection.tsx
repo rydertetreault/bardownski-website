@@ -1,8 +1,14 @@
 "use client";
 
 import { useRef, useEffect } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import Link from "next/link";
+
+function getYouTubeId(src: string): string | null {
+  const m = src.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([^?&]+)/);
+  return m ? m[1] : null;
+}
 
 interface Clip {
   id: string;
@@ -11,6 +17,7 @@ interface Clip {
 }
 
 const clips: Clip[] = [
+  { id: "g0", title: "JRT IV — 2026", src: "https://youtu.be/aGrVfM6HsO0" },
   { id: "g1", title: "GottaBe — Trap Edition", src: "/videos/GottaBe - Trap Edition.mov" },
   { id: "g2", title: "Slobby Robby 2026", src: "/videos/Slobby Robby 2026.mov" },
 
@@ -47,13 +54,22 @@ function ThumbCard({ clip }: { clip: Clip }) {
       className="flex-shrink-0 w-48 sm:w-56 group cursor-pointer"
     >
       <div className="rounded-lg overflow-hidden aspect-video bg-[#1a2744] relative ring-1 ring-white/5 group-hover:ring-[#cc1533]/40 transition-all duration-200">
-        <video
-          ref={videoRef}
-          muted
-          loop
-          playsInline
-          className="w-full h-full object-cover"
-        />
+        {getYouTubeId(clip.src) ? (
+          <Image
+            src={`https://img.youtube.com/vi/${getYouTubeId(clip.src)}/hqdefault.jpg`}
+            alt={clip.title}
+            fill
+            className="object-cover"
+          />
+        ) : (
+          <video
+            ref={videoRef}
+            muted
+            loop
+            playsInline
+            className="w-full h-full object-cover"
+          />
+        )}
         <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-colors duration-200">
           <div className="w-8 h-8 rounded-full bg-white/10 group-hover:bg-[#cc1533]/60 border border-white/20 group-hover:border-[#cc1533]/60 flex items-center justify-center transition-all duration-200">
             <svg className="w-3.5 h-3.5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">

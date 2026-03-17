@@ -1,8 +1,14 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import type { PlayerHighlights, PlayerClip } from "./page";
+
+function getYouTubeId(src: string): string | null {
+  const m = src.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([^?&]+)/);
+  return m ? m[1] : null;
+}
 
 // ─── Lazy video thumbnail ─────────────────────────────────────────────────────
 function LazyVideo({ src, className }: { src: string; className?: string }) {
@@ -61,13 +67,25 @@ function VideoModal({ clip, onClose }: { clip: PlayerClip; onClose: () => void }
         className="relative max-w-5xl w-full"
         onClick={(e) => e.stopPropagation()}
       >
-        <video
-          src={clip.src}
-          controls
-          autoPlay
-          className="w-full max-h-[82vh] rounded bg-black"
-          style={{ borderRadius: "4px" }}
-        />
+        {getYouTubeId(clip.src) ? (
+          <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+            <iframe
+              src={`https://www.youtube.com/embed/${getYouTubeId(clip.src)}?autoplay=1`}
+              allow="autoplay; fullscreen"
+              allowFullScreen
+              className="absolute inset-0 w-full h-full rounded bg-black"
+              style={{ borderRadius: "4px" }}
+            />
+          </div>
+        ) : (
+          <video
+            src={clip.src}
+            controls
+            autoPlay
+            className="w-full max-h-[82vh] rounded bg-black"
+            style={{ borderRadius: "4px" }}
+          />
+        )}
         <p
           className="text-center text-xs mt-3 uppercase tracking-widest"
           style={{ color: "rgba(255,255,255,0.3)" }}
@@ -122,7 +140,16 @@ function ClipCard({ clip, onClick }: { clip: PlayerClip; onClick: () => void }) 
           (e.currentTarget as HTMLElement).style.borderColor = "rgba(125,211,252,0.12)";
         }}
       >
-        <LazyVideo src={clip.src} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
+        {getYouTubeId(clip.src) ? (
+          <Image
+            src={`https://img.youtube.com/vi/${getYouTubeId(clip.src)}/hqdefault.jpg`}
+            alt={clip.title}
+            fill
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+          />
+        ) : (
+          <LazyVideo src={clip.src} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
+        )}
 
         {/* Scrim */}
         <div className="absolute inset-0 transition-opacity duration-300" style={{ backgroundColor: "rgba(11,15,26,0.4)" }} />

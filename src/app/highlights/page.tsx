@@ -20,6 +20,7 @@ const players: PlayerHighlights[] = [
     id: "ryder",
     name: "Ryder",
     clips: [
+      { id: "r1", title: "JRT IV — 2026", src: "https://youtu.be/aGrVfM6HsO0" },
       { id: "r2", title: "Ryder — Clip 1", src: "/videos/Ryder1.mp4" },
       { id: "r3", title: "Ryder — Clip 2", src: "/videos/Ryder2.mp4" },
     ],
