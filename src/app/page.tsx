@@ -17,10 +17,10 @@ export default async function Home() {
       {cyclePlayer && <PlayerOfCycleBadge player={cyclePlayer} />}
       <HeroSection />
       <StatsTicker messages={messages} />
+      <NewsSection />
       <WhoWeAreSection />
       <JerseyShowcase />
       <StatsPreviewSection messages={messages} />
-      <NewsSection />
       <HighlightsSection />
     </>
   );
