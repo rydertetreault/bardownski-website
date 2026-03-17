@@ -17,7 +17,7 @@ const seasons: SeasonSummary[] = [
   {
     year: "2020",
     rosterSize: 3,
-    captain: "Dylan",
+    captain: "Xavier Laflamme",
     summary:
       "Where it all began. Bardownski was founded and hit the ice for the first time, laying the foundation for everything to come.",
   },
@@ -45,9 +45,9 @@ const seasons: SeasonSummary[] = [
   {
     year: "2024",
     rosterSize: 10,
-    captain: "Ryder",
+    captain: "JRT IV",
     summary:
-      "A breakout year. Ryder became the first goaltender named captain in club history. The roster solidified and the team started climbing the ranks.",
+      "A breakout year. JRT IV became the first goaltender named captain in club history. The roster solidified and the team started climbing the ranks.",
   },
   {
     year: "2025",

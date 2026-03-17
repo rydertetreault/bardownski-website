@@ -18,11 +18,11 @@ export interface PlayerHighlights {
 const players: PlayerHighlights[] = [
   {
     id: "ryder",
-    name: "Ryder",
+    name: "JRT IV",
     clips: [
       { id: "r1", title: "JRT IV — 2026", src: "https://youtu.be/aGrVfM6HsO0" },
-      { id: "r2", title: "Ryder — Clip 1", src: "/videos/Ryder1.mp4" },
-      { id: "r3", title: "Ryder — Clip 2", src: "/videos/Ryder2.mp4" },
+      { id: "r2", title: "JRT IV — Clip 1", src: "/videos/Ryder1.mp4" },
+      { id: "r3", title: "JRT IV — Clip 2", src: "/videos/Ryder2.mp4" },
     ],
   },
   {
@@ -36,10 +36,10 @@ const players: PlayerHighlights[] = [
   },
   {
     id: "kaden",
-    name: "Kaden",
+    name: "Gotta Be",
     clips: [
-      { id: "k1", title: "GottaBe — Trap Edition", src: "/videos/GottaBe - Trap Edition.mov" },
-      { id: "k2", title: "Kaden — Clip 1", src: "/videos/Kaden1.mp4" },
+      { id: "k1", title: "Gotta Be — Trap Edition", src: "/videos/GottaBe - Trap Edition.mov" },
+      { id: "k2", title: "Gotta Be — Clip 1", src: "/videos/Kaden1.mp4" },
     ],
   },
   {

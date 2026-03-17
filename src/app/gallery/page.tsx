@@ -31,9 +31,9 @@ const videos: GalleryVideo[] = [
   { src: "/videos/dylan - 2026.mp4", label: "Xavier Laflamme – 2026" },
   { src: "/videos/GottaBe - Trap Edition.mov", label: "Gotta Be – Trap Edition" },
   { src: "/videos/Slobby Robby 2026.mov", label: "Slobby Robby 2026" },
-  { src: "/videos/Ryder1.mp4", label: "Ryder – Clip 1" },
-  { src: "/videos/Ryder2.mp4", label: "Ryder – Clip 2" },
-  { src: "/videos/Kaden1.mp4", label: "Kaden – Clip 1" },
+  { src: "/videos/Ryder1.mp4", label: "JRT IV – Clip 1" },
+  { src: "/videos/Ryder2.mp4", label: "JRT IV – Clip 2" },
+  { src: "/videos/Kaden1.mp4", label: "Gotta Be – Clip 1" },
 ];
 
 export default function GalleryPage() {
