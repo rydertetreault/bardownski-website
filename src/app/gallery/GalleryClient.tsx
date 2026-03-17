@@ -256,17 +256,19 @@ function VideoModal({ video, onClose }: { video: GalleryVideo; onClose: () => vo
 // ─── Bento span patterns ────────────────────────────────────────────────────────
 // Each entry: [colSpan, rowSpan] for a 4-column grid
 const PHOTO_SPANS: [number, number][] = [
-  [2, 2], // 0 — hero
-  [1, 1], // 1
-  [1, 2], // 2 — tall
-  [1, 1], // 3
+  [2, 2], // 0 — hero (team)
+  [1, 1], // 1 — team over
+  [1, 2], // 2 — team shot (tall)
+  [1, 1], // 3 — team2
   [1, 1], // 4
-  [2, 1], // 5 — wide
-  [1, 1], // 6
-  [1, 2], // 7 — tall
-  [1, 1], // 8
-  [2, 1], // 9 — wide
-  [1, 1], // 10
+  [1, 1], // 5
+  [2, 1], // 6 — wide
+  [1, 1], // 7
+  [1, 2], // 8 — tall
+  [1, 1], // 9
+  [2, 1], // 10 — wide
+  [1, 1], // 11
+  [1, 1], // 12
 ];
 
 const VIDEO_SPANS: [number, number][] = [

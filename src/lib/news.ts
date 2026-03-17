@@ -42,7 +42,7 @@ export const articles: Article[] = [
     summary:
       "Bardownski competed in the highest division of Club Finals (Div 1). After a rocky start, the squad managed to fight their way into the second round but ultimately fell short due to time constraints. A strong showing against top-tier competition.",
     date: "2026-03-09",
-    image: "/images/gallery/screenshots/Screenshot 2026-03-16 183953.png",
+    image: "/images/gallery/screenshots/team2.png",
     category: "Results",
   },
   {
@@ -51,7 +51,7 @@ export const articles: Article[] = [
     summary:
       "The official Bardownski website is now live. Stay tuned for roster updates, match results, and player stats from our Newfoundland-based club.",
     date: "2026-03-09",
-    image: "/images/gallery/screenshots/t.png",
+    image: "/images/gallery/screenshots/team over.png",
     category: "Club News",
   },
 ];

@@ -151,8 +151,8 @@ export default function WhoWeAreSection() {
           transition={{ duration: 0.7, ease: "easeOut" }}
         >
           <Image
-            src="/images/gallery/screenshots/t.png"
-            alt="Bardownski Hockey Club — players celebrating"
+            src="/images/gallery/screenshots/team shot.png"
+            alt="Bardownski Hockey Club — team celebration"
             fill
             className="object-cover object-top"
             sizes="(max-width: 768px) 100vw, 50vw"
