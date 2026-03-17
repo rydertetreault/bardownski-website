@@ -31,9 +31,18 @@ export default function NewsSection() {
             <StaggerItem key={item.id}>
               <Link href={`/news/${item.id}`} className="block group">
                 <GlowCard className="bg-[#0d1528] border border-border rounded-xl overflow-hidden flex flex-col h-[400px] border-t-[#cc1533] border-t-2">
-                  {/* Image — 55% of card height */}
+                  {/* Image or video — 55% of card height */}
                   <div className="relative overflow-hidden flex-shrink-0" style={{ height: "55%" }}>
-                    {item.image ? (
+                    {item.video ? (
+                      <video
+                        src={item.video}
+                        muted
+                        autoPlay
+                        loop
+                        playsInline
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : item.image ? (
                       <Image
                         src={item.image}
                         alt={item.title}

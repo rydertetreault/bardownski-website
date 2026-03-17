@@ -11,10 +11,11 @@ type NewsItemWithCategory = {
   summary: string;
   date: string;
   image?: string;
+  video?: string;
   category: string;
 };
 
-const CATEGORIES = ["All", "Results", "Club News", "Stats", "Announcements"];
+const CATEGORIES = ["All", "Highlights", "Results", "Club News", "Stats", "Announcements"];
 
 export default function NewsClient({ items }: { items: NewsItemWithCategory[] }) {
   const [active, setActive] = useState("All");
@@ -48,7 +49,16 @@ export default function NewsClient({ items }: { items: NewsItemWithCategory[] })
               <div className="grid grid-cols-1 md:grid-cols-5">
                 {/* Image — 3/5 on desktop */}
                 <div className="relative md:col-span-3 h-64 md:h-80 overflow-hidden">
-                  {featured.image ? (
+                  {featured.video ? (
+                    <video
+                      src={featured.video}
+                      muted
+                      autoPlay
+                      loop
+                      playsInline
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : featured.image ? (
                     <Image
                       src={featured.image}
                       alt={featured.title}
@@ -99,7 +109,16 @@ export default function NewsClient({ items }: { items: NewsItemWithCategory[] })
               <Link href={`/news/${item.id}`} className="block group">
                 <GlowCard className="bg-[#0d1528] border border-border border-t-2 border-t-[#cc1533] rounded-xl overflow-hidden h-[380px] flex flex-col">
                   <div className="relative flex-shrink-0 overflow-hidden" style={{ height: "55%" }}>
-                    {item.image ? (
+                    {item.video ? (
+                      <video
+                        src={item.video}
+                        muted
+                        autoPlay
+                        loop
+                        playsInline
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : item.image ? (
                       <Image
                         src={item.image}
                         alt={item.title}
