@@ -13,8 +13,8 @@ export interface GalleryVideo {
 
 const photos: GalleryPhoto[] = [
   { src: "/images/gallery/screenshots/team.png", alt: "Team" },
-  { src: "/images/gallery/screenshots/team over.png", alt: "Team Overhead" },
-  { src: "/images/gallery/screenshots/team shot.png", alt: "Team Celebration" },
+  { src: "/images/gallery/screenshots/team%20over.png", alt: "Team Overhead" },
+  { src: "/images/gallery/screenshots/team%20shot.png", alt: "Team Celebration" },
   { src: "/images/gallery/screenshots/team2.png", alt: "Team Win" },
   { src: "/images/gallery/screenshots/IMG_3288.png", alt: "Bardownski" },
   { src: "/images/gallery/screenshots/IMG_3294.jpg", alt: "Bardownski" },

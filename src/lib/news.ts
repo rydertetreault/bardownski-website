@@ -51,7 +51,7 @@ export const articles: Article[] = [
     summary:
       "The official Bardownski website is now live. Stay tuned for roster updates, match results, and player stats from our Newfoundland-based club.",
     date: "2026-03-09",
-    image: "/images/gallery/screenshots/team over.png",
+    image: "/images/gallery/screenshots/team%20over.png",
     category: "Club News",
   },
 ];
