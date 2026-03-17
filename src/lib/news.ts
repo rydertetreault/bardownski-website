@@ -31,7 +31,7 @@ export const articles: Article[] = [
     id: "5",
     title: "Xavier Laflamme Drops 2026 Highlight Reel",
     summary:
-      "Xavier Laflamme has officially released his 2026 highlight video — and it doesn't disappoint. The reel showcases the full range of his game: the hands, the vision, and the relentless physical play that's made him one of the most dominant forces in the league this season.\n\nWith 846 points on the year and milestones in goals, assists, and hits all stacking up, Xavier Laflamme's tape is a reminder of why he's sitting at the top of the leaderboard. From top-shelf snipes to tape-to-tape feeds, this one's worth a watch.",
+      "Xavier Laflamme has officially released his 2026 highlight video — and it doesn't disappoint. The reel showcases the full range of his game: the hands, the vision, and the relentless physical play that's made him one of the most dominant forces in the league this season.\n\nWith 776 points on the year and milestones in goals, assists, and hits all stacking up, Xavier Laflamme's tape is a reminder of why he's sitting at the top of the leaderboard. From top-shelf snipes to tape-to-tape feeds, this one's worth a watch.",
     date: "2026-03-17",
     video: "/videos/dylan - 2026.mp4",
     category: "Highlights",
