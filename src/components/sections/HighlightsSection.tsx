@@ -13,11 +13,11 @@ interface Clip {
 const clips: Clip[] = [
   { id: "g1", title: "GottaBe — Trap Edition", src: "/videos/GottaBe - Trap Edition.mov" },
   { id: "g2", title: "Slobby Robby 2026", src: "/videos/Slobby Robby 2026.mov" },
-  { id: "g3", title: "JRT IV — 2026", src: "/videos/JRT IV - 2026.mp4" },
+
   { id: "g4", title: "Ryder — Clip 1", src: "/videos/Ryder1.mp4" },
   { id: "g5", title: "Ryder — Clip 2", src: "/videos/Ryder2.mp4" },
   { id: "g6", title: "Kaden — Clip 1", src: "/videos/Kaden1.mp4" },
-  { id: "g7", title: "Dylan", src: "/videos/dylan1.mov" },
+  { id: "g7", title: "Dylan", src: "/videos/Dylan1.mp4" },
 ];
 
 function ThumbCard({ clip }: { clip: Clip }) {
@@ -62,7 +62,6 @@ function ThumbCard({ clip }: { clip: Clip }) {
           </div>
         </div>
       </div>
-      <p className="mt-1.5 text-xs font-semibold text-white/60 group-hover:text-white/90 transition-colors duration-200 truncate">{clip.title}</p>
     </motion.div>
   );
 }

@@ -25,8 +25,7 @@ const photos: GalleryPhoto[] = [
 ];
 
 const videos: GalleryVideo[] = [
-  { src: "/videos/JRT IV - 2026.mp4", label: "JRT IV – 2026" },
-  { src: "/videos/dylan1.mov", label: "Dylan – Final Cut" },
+  { src: "/videos/Dylan1.mp4", label: "Dylan – Final Cut" },
   { src: "/videos/GottaBe - Trap Edition.mov", label: "Gotta Be – Trap Edition" },
   { src: "/videos/Slobby Robby 2026.mov", label: "Slobby Robby 2026" },
   { src: "/videos/Ryder1.mp4", label: "Ryder – Clip 1" },
