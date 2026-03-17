@@ -10,7 +10,7 @@ function getYouTubeId(src: string): string | null {
   return m ? m[1] : null;
 }
 
-// Shows YouTube thumbnail or seeks local video to first frame
+// Shows YouTube thumbnail or seeks local video to first frame, plays on hover
 function VideoThumb({ src, className }: { src: string; className?: string }) {
   const ytId = getYouTubeId(src);
   const ref = useRef<HTMLVideoElement>(null);
@@ -24,6 +24,20 @@ function VideoThumb({ src, className }: { src: string; className?: string }) {
     }, { once: true });
   }, [src, ytId]);
 
+  const handleMouseEnter = () => {
+    const video = ref.current;
+    if (!video) return;
+    video.currentTime = 0;
+    video.play().catch(() => {});
+  };
+
+  const handleMouseLeave = () => {
+    const video = ref.current;
+    if (!video) return;
+    video.pause();
+    video.currentTime = 0.001;
+  };
+
   if (ytId) {
     return (
       <Image
@@ -34,7 +48,19 @@ function VideoThumb({ src, className }: { src: string; className?: string }) {
       />
     );
   }
-  return <video ref={ref} src={src} preload="metadata" muted playsInline className={className} />;
+  return (
+    <video
+      ref={ref}
+      src={src}
+      preload="metadata"
+      muted
+      loop
+      playsInline
+      className={className}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    />
+  );
 }
 
 // ─── Section heading ────────────────────────────────────────────────────────────
@@ -251,6 +277,8 @@ const VIDEO_SPANS: [number, number][] = [
   [1, 1], // 4
   [1, 1], // 5
   [2, 1], // 6 — wide
+  [1, 1], // 7
+  [1, 1], // 8
 ];
 
 // ─── Card shared styles ─────────────────────────────────────────────────────────
