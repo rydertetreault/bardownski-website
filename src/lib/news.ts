@@ -10,10 +10,28 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    id: "7",
+    title: "Stats Drop: Xavier Laflamme Takes Goals Crown, Gotta Be Crosses 100",
+    summary:
+      "The March 17th stats drop reshuffled the leaderboard again. Xavier Laflamme added 70 points in a single cycle — 44 goals and 26 assists — pushing his totals to 846 points, 479 goals, and 367 assists. He officially overtook Matt Hut for the all-time goals lead (479 to 456) and extended his points lead to 73. He also crossed the 350 assists milestone.\n\nGotta Be continued his tear with another monster cycle: 32 goals and 24 assists for 56 points added, bringing him to 291 points and 107 goals. He crossed 100 goals and 250 points in the same drop and jumped past Wolfgang Mozart into 3rd in points. His shot percentage sits at 35.2% — the best on the team.\n\nMilestones were flying across the board: JRT IV hit 100 goalie games played, Wolfgang Mozart crossed 150 assists, and Slobby Robby also hit 150 assists. The gap at the top continues to widen, but the middle of the pack is tightening up fast.",
+    date: "2026-03-17",
+    image: "/images/gallery/screenshots/team%20shot.png",
+    category: "Stats",
+  },
+  {
+    id: "6",
+    title: "Player of the Cycle: Xavier Laflamme Runs It Back With a 70-Point Explosion",
+    summary:
+      "Xavier Laflamme takes Player of the Cycle honors for the second straight drop — and this time it wasn't close. A 70-point cycle (44 goals, 26 assists) is absurd production by any standard, but doing it while overtaking Matt Hut for the all-time goals lead makes it historic.\n\nGotta Be put up another strong case with 56 points added and a 35.2% shot percentage, but the sheer volume from Xavier Laflamme was too much. He now leads every major offensive category: points (846), goals (479), assists (367), and hits (1618). The gap is widening.\n\nJRT IV held steady in net with 1162 saves and 109 goalie games played, crossing the 100 GGP milestone this cycle. Seven shutouts on the season remain the best in the league.",
+    date: "2026-03-17",
+    image: "/images/gallery/screenshots/team2.png",
+    category: "Announcements",
+  },
+  {
     id: "5",
     title: "Xavier Laflamme Drops 2026 Highlight Reel",
     summary:
-      "Xavier Laflamme has officially released his 2026 highlight video — and it doesn't disappoint. The reel showcases the full range of his game: the hands, the vision, and the relentless physical play that's made him one of the most dominant forces in the league this season.\n\nWith 776 points on the year and milestones in goals, assists, and hits all stacking up, Xavier Laflamme's tape is a reminder of why he's sitting at the top of the leaderboard. From top-shelf snipes to tape-to-tape feeds, this one's worth a watch.",
+      "Xavier Laflamme has officially released his 2026 highlight video — and it doesn't disappoint. The reel showcases the full range of his game: the hands, the vision, and the relentless physical play that's made him one of the most dominant forces in the league this season.\n\nWith 846 points on the year and milestones in goals, assists, and hits all stacking up, Xavier Laflamme's tape is a reminder of why he's sitting at the top of the leaderboard. From top-shelf snipes to tape-to-tape feeds, this one's worth a watch.",
     date: "2026-03-17",
     video: "/videos/dylan - 2026.mp4",
     category: "Highlights",
