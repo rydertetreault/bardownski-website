@@ -31,15 +31,20 @@ function Snow() {
       opacity: Math.random() * 0.6 + 0.2,
     }));
 
-    const draw = () => {
+    let lastTime = performance.now();
+
+    const draw = (now: number) => {
+      const delta = (now - lastTime) / 16.67; // Normalize to 60fps baseline
+      lastTime = now;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       for (const f of flakes) {
         ctx.beginPath();
         ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(255,255,255,${f.opacity})`;
         ctx.fill();
-        f.y += f.speed;
-        f.x += f.drift;
+        f.y += f.speed * delta;
+        f.x += f.drift * delta;
         if (f.y > canvas.height) { f.y = -f.r; f.x = Math.random() * canvas.width; }
         if (f.x > canvas.width) f.x = 0;
         if (f.x < 0) f.x = canvas.width;
@@ -47,7 +52,7 @@ function Snow() {
       animId = requestAnimationFrame(draw);
     };
 
-    draw();
+    animId = requestAnimationFrame(draw);
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener("resize", resize);
