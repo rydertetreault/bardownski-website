@@ -576,20 +576,26 @@ export function computeSeasonMVPs(seasons: SeasonData[]): SeasonMVP[] {
   const mvps: SeasonMVP[] = [];
 
   for (const { season, stats } of seasons) {
-    // Build player data directly from stat entries (works even without a roster)
+    // Confirmed goalies from roster only — don't mark skaters who appear in saves
+    const rosterGoalies = new Set(
+      stats.roster
+        .filter((r) => /\b(goalie|gk|g)\b/i.test(r.position))
+        .map((r) => r.name)
+    );
+
     const playerMap: Record<string, {
       points: number; goals: number; assists: number;
       plusMinus: number; hits: number;
       saves: number; savePercentage: number; shutouts: number;
-      goalieGamesPlayed: number; isGoalie: boolean;
+      shutoutPeriods: number; goalieGamesPlayed: number; isGoalie: boolean;
     }> = {};
 
     const ensure = (name: string) => {
       if (!playerMap[name]) {
         playerMap[name] = {
           points: 0, goals: 0, assists: 0, plusMinus: 0, hits: 0,
-          saves: 0, savePercentage: 0, shutouts: 0, goalieGamesPlayed: 0,
-          isGoalie: false,
+          saves: 0, savePercentage: 0, shutouts: 0, shutoutPeriods: 0,
+          goalieGamesPlayed: 0, isGoalie: rosterGoalies.has(name),
         };
       }
       return playerMap[name];
@@ -605,15 +611,11 @@ export function computeSeasonMVPs(seasons: SeasonData[]): SeasonMVP[] {
       p.saves = e.value;
       p.savePercentage = e.secondary ?? 0;
       p.goalieGamesPlayed = (e as SaveEntry).ggp ?? 0;
-      p.isGoalie = true;
     }
-    for (const e of stats.shutouts) { ensure(e.name).shutouts = e.value; }
-
-    // Also mark goalies from the roster if available
-    for (const r of stats.roster) {
-      if (/^(goalie|g)$/i.test(r.position)) {
-        ensure(r.name).isGoalie = true;
-      }
+    for (const e of stats.shutouts) {
+      const p = ensure(e.name);
+      p.shutouts = e.value;
+      p.shutoutPeriods = e.secondary ?? 0;
     }
 
     let bestName = "";
@@ -625,31 +627,42 @@ export function computeSeasonMVPs(seasons: SeasonData[]): SeasonMVP[] {
       bestName = override.player;
       forceGoalie = override.isGoalie;
     } else {
-      let bestScore = -Infinity;
+      // Score skaters and goalies separately, then normalize to compare fairly
+      const skaters: { name: string; score: number }[] = [];
+      const goalies: { name: string; score: number }[] = [];
 
       for (const [name, p] of Object.entries(playerMap)) {
-        let score: number;
-
         if (p.isGoalie) {
-          // Goalies need minimum 10 games to qualify
           if (p.goalieGamesPlayed < 10) continue;
-          score =
-            p.savePercentage * 1.1 +
-            p.shutouts * 8 +
-            p.saves * 0.015 +
-            p.goalieGamesPlayed * 0.3;
+          const score =
+            p.savePercentage * 2.0 +
+            p.shutouts * 12 +
+            p.shutoutPeriods * 3 +
+            p.saves * 0.02 +
+            p.goalieGamesPlayed * 0.5;
+          goalies.push({ name, score });
         } else {
-          score =
+          const score =
             p.points * 2.5 +
             p.goals * 0.5 +
             Math.max(p.plusMinus, 0) * 1.0 +
             p.hits * 0.15;
+          skaters.push({ name, score });
         }
+      }
 
-        if (score > bestScore) {
-          bestScore = score;
-          bestName = name;
-        }
+      const maxSkater = Math.max(...skaters.map((s) => s.score), 1);
+      const maxGoalie = Math.max(...goalies.map((g) => g.score), 1);
+      const GOALIE_BONUS = 1.15;
+
+      let bestScore = -Infinity;
+      for (const s of skaters) {
+        const norm = s.score / maxSkater;
+        if (norm > bestScore) { bestScore = norm; bestName = s.name; }
+      }
+      for (const g of goalies) {
+        const norm = Math.min((g.score / maxGoalie) * GOALIE_BONUS, 1.15);
+        if (norm > bestScore) { bestScore = norm; bestName = g.name; }
       }
     }
 
@@ -687,6 +700,155 @@ export function computeSeasonMVPs(seasons: SeasonData[]): SeasonMVP[] {
   return mvps;
 }
 
+// --- MVP Odds ---
+
+export interface MvpOddsEntry {
+  name: string;
+  position: string;
+  score: number;
+  probability: number;
+  americanOdds: string;
+  isGoalie: boolean;
+  highlights: string[];
+}
+
+export function computeMvpOdds(messages: unknown[]): MvpOddsEntry[] {
+  const stats = parseStats(messages);
+  if (!stats) return [];
+
+  // Build player data — collect all stats for every player
+  const playerMap: Record<string, {
+    points: number; goals: number; assists: number;
+    plusMinus: number; hits: number;
+    saves: number; savePercentage: number; shutouts: number;
+    shutoutPeriods: number; goalieGamesPlayed: number;
+  }> = {};
+
+  const ensure = (name: string) => {
+    if (!playerMap[name]) {
+      playerMap[name] = {
+        points: 0, goals: 0, assists: 0, plusMinus: 0, hits: 0,
+        saves: 0, savePercentage: 0, shutouts: 0, shutoutPeriods: 0,
+        goalieGamesPlayed: 0,
+      };
+    }
+    return playerMap[name];
+  };
+
+  for (const e of stats.points) { ensure(e.name).points = e.value; }
+  for (const e of stats.goals) { ensure(e.name).goals = e.value; }
+  for (const e of stats.assists) { ensure(e.name).assists = e.value; }
+  for (const e of stats.plusMinus) { ensure(e.name).plusMinus = e.value; }
+  for (const e of stats.hits) { ensure(e.name).hits = e.value; }
+  for (const e of stats.saves) {
+    const p = ensure(e.name);
+    p.saves = e.value;
+    p.savePercentage = e.secondary ?? 0;
+    p.goalieGamesPlayed = (e as SaveEntry).ggp ?? 0;
+  }
+  for (const e of stats.shutouts) {
+    const p = ensure(e.name);
+    p.shutouts = e.value;
+    p.shutoutPeriods = e.secondary ?? 0;
+  }
+
+  // Players can have BOTH a skater entry and a goalie entry if they have
+  // meaningful stats in both roles (skater stats > 0 AND goalie GGP >= 10)
+  const skaters: { name: string; score: number }[] = [];
+  const goalies: { name: string; score: number }[] = [];
+
+  for (const [name, p] of Object.entries(playerMap)) {
+    // Skater entry: anyone with points, goals, or hits
+    const hasSkaterStats = p.points > 0 || p.goals > 0 || p.hits > 0;
+    if (hasSkaterStats) {
+      const score =
+        p.points * 2.5 +
+        p.goals * 0.5 +
+        Math.max(p.plusMinus, 0) * 1.0 +
+        p.hits * 0.15;
+      skaters.push({ name, score });
+    }
+
+    // Goalie entry: anyone with 10+ goalie games played
+    if (p.goalieGamesPlayed >= 10) {
+      const score =
+        p.savePercentage * 2.0 +
+        p.shutouts * 12 +
+        p.shutoutPeriods * 3 +
+        p.saves * 0.02 +
+        p.goalieGamesPlayed * 0.5;
+      goalies.push({ name, score });
+    }
+  }
+
+  if (skaters.length === 0 && goalies.length === 0) return [];
+
+  // Normalize each group to 0–1, then apply a goalie factor
+  const maxSkater = Math.max(...skaters.map((s) => s.score), 1);
+  const maxGoalie = Math.max(...goalies.map((g) => g.score), 1);
+  const GOALIE_FACTOR = 0.35;
+
+  const all = [
+    ...skaters.map((s) => ({
+      name: s.name,
+      normalizedScore: s.score / maxSkater,
+      isGoalie: false,
+    })),
+    ...goalies.map((g) => ({
+      name: g.name,
+      normalizedScore: (g.score / maxGoalie) * GOALIE_FACTOR,
+      isGoalie: true,
+    })),
+  ];
+
+  all.sort((a, b) => b.normalizedScore - a.normalizedScore);
+  const top5 = all.slice(0, 5);
+
+  // Probabilities sum to 100% across the displayed top 5
+  const totalScore = top5.reduce((s, e) => s + e.normalizedScore, 0);
+
+  return top5.map((entry) => {
+    const p = playerMap[entry.name];
+    const prob = totalScore > 0 ? entry.normalizedScore / totalScore : 0;
+
+    // Convert to American odds
+    let odds: string;
+    if (prob >= 0.5) {
+      odds = `${Math.round(-(prob / (1 - prob)) * 100)}`;
+    } else if (prob > 0) {
+      odds = `+${Math.round(((1 - prob) / prob) * 100)}`;
+    } else {
+      odds = "—";
+    }
+
+    const rosterEntry = stats.roster.find((r) => r.name === entry.name);
+    const rosterPos = rosterEntry?.position ?? "Skater";
+    // Show role-specific position label for dual players
+    const position = entry.isGoalie ? "Goalie" : rosterPos;
+
+    const highlights: string[] = [];
+    if (entry.isGoalie) {
+      highlights.push(`${(p.savePercentage || 0).toFixed(1)}% SV`);
+      highlights.push(`${p.shutouts} SO`);
+      highlights.push(`${p.shutoutPeriods} SOP`);
+    } else {
+      highlights.push(`${p.points} PTS`);
+      highlights.push(`${p.goals} G`);
+      highlights.push(`${p.assists} A`);
+    }
+
+    return {
+      name: entry.name,
+      position,
+      score: entry.normalizedScore,
+      probability: prob,
+      americanOdds: odds,
+      isGoalie: entry.isGoalie,
+      highlights: highlights.slice(0, 3),
+    };
+  });
+}
+
 // --- Player of the Cycle ---
 
 export interface CyclePlayer {
@@ -708,10 +870,12 @@ export function computePlayerOfCycle(messages: unknown[]): CyclePlayer | null {
     return normalized.includes("BARDOWNSKI STATS");
   });
 
+  // Compare against 2 drops back to combine the last two cycles
+  const compareIndex = statMessages.length >= 3 ? 2 : 1;
   if (statMessages.length < 2) return null;
 
   const current = parseContent(normalizeUnicode(statMessages[0].content));
-  const previous = parseContent(normalizeUnicode(statMessages[1].content));
+  const previous = parseContent(normalizeUnicode(statMessages[compareIndex].content));
 
   if (!current || !previous) return null;
 

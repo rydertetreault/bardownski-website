@@ -2,6 +2,7 @@ import Image from "next/image";
 import { fetchChannelMessages, parseAllSeasons, computePlayerOfCycle } from "@/lib/discord";
 import StatsClient from "./StatsClient";
 import PlayerOfCycleSection from "@/components/sections/PlayerOfCycleSection";
+import MvpOddsSection from "@/components/sections/MvpOddsSection";
 
 export default async function StatsPage() {
   const messages = await fetchChannelMessages();
@@ -87,6 +88,7 @@ export default async function StatsPage() {
       {cyclePlayer && <PlayerOfCycleSection player={cyclePlayer} />}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <MvpOddsSection messages={messages} />
         {seasons.length === 0 ? (
           <div className="text-center py-24 bg-navy border border-border rounded-xl">
             <div className="w-20 h-20 mx-auto mb-6 relative overflow-hidden rounded-xl opacity-20">

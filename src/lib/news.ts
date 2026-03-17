@@ -10,24 +10,6 @@ export interface Article {
 
 export const articles: Article[] = [
   {
-    id: "7",
-    title: "Stats Drop: Xavier Laflamme Takes Goals Crown, Gotta Be Crosses 100",
-    summary:
-      "The March 17th stats drop reshuffled the leaderboard again. Xavier Laflamme added 70 points in a single cycle — 44 goals and 26 assists — pushing his totals to 846 points, 479 goals, and 367 assists. He officially overtook Matt Hut for the all-time goals lead (479 to 456) and extended his points lead to 73. He also crossed the 350 assists milestone.\n\nGotta Be continued his tear with another monster cycle: 32 goals and 24 assists for 56 points added, bringing him to 291 points and 107 goals. He crossed 100 goals and 250 points in the same drop and jumped past Wolfgang Mozart into 3rd in points. His shot percentage sits at 35.2% — the best on the team.\n\nMilestones were flying across the board: JRT IV hit 100 goalie games played, Wolfgang Mozart crossed 150 assists, and Slobby Robby also hit 150 assists. The gap at the top continues to widen, but the middle of the pack is tightening up fast.",
-    date: "2026-03-17",
-    image: "/images/gallery/screenshots/team%20shot.png",
-    category: "Stats",
-  },
-  {
-    id: "6",
-    title: "Player of the Cycle: Xavier Laflamme Runs It Back With a 70-Point Explosion",
-    summary:
-      "Xavier Laflamme takes Player of the Cycle honors for the second straight drop — and this time it wasn't close. A 70-point cycle (44 goals, 26 assists) is absurd production by any standard, but doing it while overtaking Matt Hut for the all-time goals lead makes it historic.\n\nGotta Be put up another strong case with 56 points added and a 35.2% shot percentage, but the sheer volume from Xavier Laflamme was too much. He now leads every major offensive category: points (846), goals (479), assists (367), and hits (1618). The gap is widening.\n\nJRT IV held steady in net with 1162 saves and 109 goalie games played, crossing the 100 GGP milestone this cycle. Seven shutouts on the season remain the best in the league.",
-    date: "2026-03-17",
-    image: "/images/gallery/screenshots/team2.png",
-    category: "Announcements",
-  },
-  {
     id: "5",
     title: "Xavier Laflamme Drops 2026 Highlight Reel",
     summary:
@@ -38,20 +20,20 @@ export const articles: Article[] = [
   },
   {
     id: "4",
-    title: "Player of the Cycle: Xavier Laflamme Edges Out Gotta Be in One of the Closest Votes of the Season",
+    title: "Player of the Cycle: Xavier Laflamme Dominates Back-to-Back Drops With 183 Combined Points",
     summary:
-      "After the March 16th stats drop, the Player of the Cycle vote was one of the tightest in recent memory — and for good reason. Xavier Laflamme earned the nod, but Gotta Be pushed him harder than anyone has this season, and JRT IV made a case that's hard to ignore from the crease.\n\nXavier Laflamme's numbers speak for themselves: 67 goals, 46 assists, and 136 hits in the cycle — 113 points added in a single drop. He simultaneously crossed the 1500 hits, 400 goals, and 300 assists milestones, a triple-milestone cycle that may never be matched. His total of 776 points puts him at the top of the leaderboard and his physical dominance continued to be a difference-maker every shift. Volume, efficiency, and milestone impact: Xavier Laflamme had all three.\n\nGotta Be, though, made this genuinely difficult. He went from flying under the radar to forcing his way into every conversation — 24 goals in a single cycle (51 to 75), cracking the top 5 in both points (235) and assists (160) for the first time. His shot percentage sat at 32.3% and his pass percentage at 78.0%, both among the best on the team. He also hit the 100 and 150 assists milestones in the same drop. The argument for Gotta Be was efficiency and momentum — he looked like the hottest player on the team. Had the vote been purely about trajectory, he wins.\n\nJRT IV also put forward a goalie's case: 3 shutouts this cycle, pushing his season total to 7, and crossing 1000 career saves. Three shutouts in a single drop is elite-level goaltending, and it kept Bardownski in games where the skaters needed time. He wasn't far off.\n\nUltimately, Xavier Laflamme's combination of raw production, milestone achievements, and sustained dominance at the top of every leaderboard made him the selection — but this was the closest it's been all season. Gotta Be is knocking loud.",
-    date: "2026-03-16",
-    image: "/images/gallery/screenshots/Screenshot 2026-03-16 183904.png",
+      "Across two consecutive stats drops (March 16th and 17th), Xavier Laflamme put together one of the most dominant stretches in club history — 111 goals, 72 assists, and 272 hits for 183 combined points. He seized the points lead, overtook Matt Hut for the all-time goals crown (479 to 456), and crossed the 1500 hits, 400 goals, 300 assists, and 350 assists milestones along the way. His totals now sit at 846 points, 479 goals, 367 assists, and 1618 hits — leading every major offensive category.\n\nGotta Be made his presence felt across both cycles as well — 56 goals and 48 assists for 104 points added, rocketing from the fringes of the top 5 to 3rd in points (291), 3rd in goals (107), and 3rd in assists (184). His shot percentage peaked at 35.2%, the best on the team. But Xavier Laflamme's volume was simply on another level.\n\nJRT IV crossed 1000 career saves and 100 goalie games played over the two cycles, adding 3 shutouts to hold at 7 on the season. In the end, the combined output from Xavier Laflamme made this an easy call — 183 points in two drops is a pace no one else has come close to matching.",
+    date: "2026-03-17",
+    image: "/images/gallery/screenshots/team2.png",
     category: "Announcements",
   },
   {
     id: "3",
-    title: "Stats Drop: Xavier Laflamme Seizes Points Lead as Gotta Be Breaks Into Every Leaderboard",
+    title: "Stats Drop: Shakeup at the Top of the Goals Race, Gotta Be Cracks Top 3",
     summary:
-      "The March 16th stats drop was one of the biggest cycles in recent memory. Xavier Laflamme overtook Matt Hut at the top of the points leaderboard with 776 points to Matt Hut's 773 — a three-point gap after a massive two weeks that saw Xavier Laflamme add 67 goals, 46 assists, and 136 hits, also crossing the 1500 hits, 400 goals, and 300 assists milestones in a single cycle. Matt Hut answered with milestones of his own: 450 goals, 300 assists, and 1000 hits. The story of the cycle though is Gotta Be. After flying under the radar, he exploded onto every leaderboard — jumping from 5th in goals (51) to 4th with 75, cracking the top 5 in both points (235) and assists (160) for the first time, and doing it with some of the best efficiency numbers on the team at 32.3% shot percentage and 78.0% pass percentage. He hit the 100 and 150 assists milestones in the same drop. Meanwhile in net, JRT IV crossed 1000 career saves and added two more shutouts to move to 7 on the season. Jimmy Lemons quietly hit 100 assists. The race at the top of the leaderboard is razor thin — this season is far from over.",
-    date: "2026-03-16",
-    image: "/images/gallery/screenshots/Screenshot 2026-03-16 183502.png",
+      "The March 16th and 17th stats drops combined for one of the biggest shakeups of the season. Xavier Laflamme added 183 points across two cycles — 111 goals, 72 assists, and 272 hits — seizing the points lead with 846 and overtaking Matt Hut for the all-time goals crown (479 to 456). He crossed the 1500 hits, 400 goals, 300 assists, and 350 assists milestones. Matt Hut answered with milestones of his own: 450 goals, 300 assists, and 1000 hits.\n\nThe story of the stretch though is Gotta Be. After flying under the radar, he exploded onto every leaderboard — going from the fringes of the top 5 to 3rd in points (291), 3rd in goals (107), and 3rd in assists (184). He crossed 100 goals, 150 assists, and 250 points along the way, all while posting a 35.2% shot percentage — the best on the team.\n\nMilestones were flying across the board: JRT IV hit 1000 career saves and 100 goalie games played, Wolfgang Mozart crossed 150 assists, Slobby Robby hit 150 assists, and Jimmy Lemons quietly reached 100 assists. The gap at the top is widening, but the middle of the pack is tighter than ever.",
+    date: "2026-03-17",
+    image: "/images/gallery/screenshots/team%20shot.png",
     category: "Stats",
   },
   {

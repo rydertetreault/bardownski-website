@@ -9,6 +9,7 @@ import {
   StatsGrid,
   StatsCard,
 } from "./StatsPreviewWrapper";
+import { MvpOddsBanner } from "./MvpOddsSection";
 
 export default function StatsPreviewSection({ messages }: { messages: unknown[] }) {
   const stats = parseStats(messages);
@@ -119,6 +120,8 @@ export default function StatsPreviewSection({ messages }: { messages: unknown[] 
             View Full Stats →
           </Link>
         </div>
+
+        <MvpOddsBanner messages={messages} />
       </div>
     </section>
   );
