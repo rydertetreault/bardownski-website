@@ -37,7 +37,11 @@ function ThumbCard({ clip }: { clip: Clip }) {
       ([entry]) => {
         if (entry.isIntersecting) {
           video.src = clip.src;
-          video.play().catch(() => {});
+          video.load();
+          video.addEventListener("loadedmetadata", () => {
+            video.currentTime = 0;
+            video.play().catch(() => {});
+          }, { once: true });
           observer.disconnect();
         }
       },

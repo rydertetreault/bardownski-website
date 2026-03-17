@@ -4,10 +4,68 @@ import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem } from "@/components/ui/Animate";
 
+function Snow() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animId: number;
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const flakes = Array.from({ length: 280 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 2.5 + 0.3,
+      speed: Math.random() * 5 + 2,
+      drift: Math.random() * 2 - 1,
+      opacity: Math.random() * 0.6 + 0.2,
+    }));
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const f of flakes) {
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${f.opacity})`;
+        ctx.fill();
+        f.y += f.speed;
+        f.x += f.drift;
+        if (f.y > canvas.height) { f.y = -f.r; f.x = Math.random() * canvas.width; }
+        if (f.x > canvas.width) f.x = 0;
+        if (f.x < 0) f.x = canvas.width;
+      }
+      animId = requestAnimationFrame(draw);
+    };
+
+    draw();
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full pointer-events-none"
+      style={{ zIndex: 1 }}
+    />
+  );
+}
+
 function LazyVideo({ src, className }: { src: string; className?: string }) {
   const ref = useRef<HTMLVideoElement>(null);
 
-  // Load src + seek to first frame when scrolled into view
   useEffect(() => {
     const video = ref.current;
     if (!video) return;
@@ -51,6 +109,7 @@ interface JerseyData {
   video: string;
   accentColor: string;
   glowColor: string;
+  borderHover: string;
   cardBg: string;
 }
 
@@ -61,7 +120,8 @@ const jerseys: JerseyData[] = [
     video: "/videos/BD - Home.mp4",
     accentColor: "#5b9bd5",
     glowColor: "rgba(91, 155, 213, 0.35)",
-    cardBg: "#1a3a6e",
+    borderHover: "rgba(91, 155, 213, 0.8)",
+    cardBg: "#152840",
   },
   {
     label: "AWAY",
@@ -69,7 +129,8 @@ const jerseys: JerseyData[] = [
     video: "/videos/BD - Away.mp4",
     accentColor: "#c8d8e8",
     glowColor: "rgba(200, 216, 232, 0.3)",
-    cardBg: "#1b2a4a",
+    borderHover: "rgba(255, 255, 255, 0.8)",
+    cardBg: "#152840",
   },
   {
     label: "ALTERNATE",
@@ -77,23 +138,28 @@ const jerseys: JerseyData[] = [
     video: "/videos/BD - Alt.mp4",
     accentColor: "#9b0c23",
     glowColor: "rgba(155, 12, 35, 0.4)",
-    cardBg: "#1a080e",
+    borderHover: "rgba(204, 21, 51, 0.9)",
+    cardBg: "#152840",
   },
 ];
 
 export default function JerseyShowcase() {
   return (
     <section
-      className="relative pt-44 pb-32"
+      className="relative pt-44 pb-32 overflow-hidden"
       style={{
         background:
-          "radial-gradient(ellipse at 50% 45%, #ddedf5 0%, #a8c5d8 45%, #7a9fb8 100%)",
+          "radial-gradient(ellipse at 50% 0%, #2a5278 0%, #152840 50%, #0a1220 100%)",
       }}
     >
-      {/* TOP DIVIDER: same 3-layer stadium light — mirrors the bottom */}
+      {/* Falling snow */}
+      <Snow />
+
+      {/* TOP DIVIDER */}
       <div
         className="absolute top-0 left-0 right-0 pointer-events-none"
         style={{
+          zIndex: 2,
           height: "140px",
           background:
             "linear-gradient(90deg, #ff1a3d 0%, rgba(255, 40, 70, 0.6) 50%, transparent 100%)",
@@ -104,6 +170,7 @@ export default function JerseyShowcase() {
       <div
         className="absolute top-0 left-0 right-0 pointer-events-none"
         style={{
+          zIndex: 2,
           height: "122px",
           background:
             "linear-gradient(90deg, #ffffff 0%, #ff2244 8%, rgba(255, 40, 70, 0.4) 55%, transparent 100%)",
@@ -114,13 +181,14 @@ export default function JerseyShowcase() {
       <div
         className="absolute top-0 left-0 right-0 pointer-events-none"
         style={{
+          zIndex: 2,
           height: "108px",
           backgroundColor: "#0b0f1a",
           clipPath: "polygon(0 0, 100% 0, 0 100%)",
         }}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style={{ zIndex: 3 }}>
         <FadeUp>
           <div className="text-center mb-12">
             <h2 className="text-4xl font-black uppercase tracking-widest text-white mb-3">
@@ -138,26 +206,37 @@ export default function JerseyShowcase() {
         >
           {jerseys.map((jersey, i) => (
             <StaggerItem key={jersey.label}>
-              {/* translateY cascades cards upward left→right to follow the diagonal divider (desktop only) */}
               <div className={i === 1 ? "md:-translate-y-7" : i === 2 ? "md:-translate-y-14" : ""}>
               <motion.div
-                whileHover={{
-                  y: -4,
-                  boxShadow: `0 16px 48px ${jersey.glowColor}`,
+                whileHover="hovered"
+                initial="rest"
+                animate="rest"
+                variants={{
+                  rest: { y: 0 },
+                  hovered: { y: -4 },
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="group relative overflow-hidden border border-border cursor-pointer"
+                className="relative overflow-hidden cursor-pointer"
                 style={{
                   height: "480px",
                   backgroundColor: jersey.cardBg,
-                  // Slashed top & bottom edges — same / angle as the section dividers
                   clipPath: "polygon(0 20px, 100% 0, 100% calc(100% - 20px), 0 100%)",
                 }}
               >
-                {/* Jersey video — plays immediately, zoomed in to crop to player */}
                 <LazyVideo
                   src={jersey.video}
                   className="absolute inset-0 w-full h-full object-cover scale-[1.2] object-[70%_50%]"
+                />
+
+                {/* Hover border overlay — inside clipPath so it follows the angled shape */}
+                <motion.div
+                  variants={{
+                    rest: { opacity: 0 },
+                    hovered: { opacity: 1 },
+                  }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute inset-0 z-20 pointer-events-none"
+                  style={{ border: `2px solid ${jersey.borderHover}` }}
                 />
 
                 {/* Bottom gradient + label */}
@@ -176,13 +255,11 @@ export default function JerseyShowcase() {
         </StaggerContainer>
       </div>
 
-      {/* SECTION DIVIDER: angled cut — stadium light glow */}
-      {/* Swap clipPath or colors on any layer to change the style */}
-
-      {/* Wide diffuse outer glow */}
+      {/* BOTTOM DIVIDER */}
       <div
         className="absolute bottom-0 left-0 right-0 pointer-events-none"
         style={{
+          zIndex: 2,
           height: "140px",
           background:
             "linear-gradient(90deg, #ff1a3d 0%, rgba(255, 40, 70, 0.6) 50%, transparent 100%)",
@@ -190,10 +267,10 @@ export default function JerseyShowcase() {
           filter: "blur(14px)",
         }}
       />
-      {/* Tight bright core line */}
       <div
         className="absolute bottom-0 left-0 right-0 pointer-events-none"
         style={{
+          zIndex: 2,
           height: "122px",
           background:
             "linear-gradient(90deg, #ffffff 0%, #ff2244 8%, rgba(255, 40, 70, 0.4) 55%, transparent 100%)",
@@ -201,10 +278,10 @@ export default function JerseyShowcase() {
           filter: "blur(2px)",
         }}
       />
-      {/* Bg fill — sits on top, slightly smaller to expose the glow edge */}
       <div
         className="absolute bottom-0 left-0 right-0 pointer-events-none"
         style={{
+          zIndex: 2,
           height: "108px",
           backgroundColor: "#0b0f1a",
           clipPath: "polygon(0 100%, 100% 0, 100% 100%)",
