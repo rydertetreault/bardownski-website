@@ -18,8 +18,11 @@ export const metadata: Metadata = {
   title: "Bardownski | Hockey Club",
   description: "Official website of Bardownski Hockey Club. Based in Newfoundland. Roster, stats, matches, and news.",
   icons: {
-    icon: "/favicon.png",
-    apple: "/favicon.png",
+    icon: [
+      { url: "/favicon.png", sizes: "512x512", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
   },
 };
 
