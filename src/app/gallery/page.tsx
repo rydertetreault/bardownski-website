@@ -32,9 +32,6 @@ const videos: GalleryVideo[] = [
   { src: "/videos/Ryder1.mp4", label: "Ryder – Clip 1" },
   { src: "/videos/Ryder2.mp4", label: "Ryder – Clip 2" },
   { src: "/videos/Kaden1.mp4", label: "Kaden – Clip 1" },
-  { src: "/videos/BD - Home.mp4", label: "Home Jersey" },
-  { src: "/videos/BD - Away.mp4", label: "Away Jersey" },
-  { src: "/videos/BD - Alt.mp4", label: "Alternate Jersey" },
 ];
 
 export default function GalleryPage() {

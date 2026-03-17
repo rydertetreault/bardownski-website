@@ -19,20 +19,9 @@ function VideoThumb({ src, className }: { src: string; className?: string }) {
     if (ytId) return;
     const video = ref.current;
     if (!video) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          video.src = src;
-          video.addEventListener("loadedmetadata", () => {
-            video.currentTime = 0.001;
-          }, { once: true });
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.05 }
-    );
-    observer.observe(video);
-    return () => observer.disconnect();
+    video.addEventListener("loadedmetadata", () => {
+      video.currentTime = 0.001;
+    }, { once: true });
   }, [src, ytId]);
 
   if (ytId) {
@@ -45,7 +34,7 @@ function VideoThumb({ src, className }: { src: string; className?: string }) {
       />
     );
   }
-  return <video ref={ref} preload="metadata" muted playsInline className={className} />;
+  return <video ref={ref} src={src} preload="metadata" muted playsInline className={className} />;
 }
 
 // ─── Section heading ────────────────────────────────────────────────────────────
@@ -262,10 +251,6 @@ const VIDEO_SPANS: [number, number][] = [
   [1, 1], // 4
   [1, 1], // 5
   [2, 1], // 6 — wide
-  [1, 1], // 7
-  [1, 2], // 8 — tall
-  [1, 1], // 9
-  [2, 1], // 10 — wide
 ];
 
 // ─── Card shared styles ─────────────────────────────────────────────────────────

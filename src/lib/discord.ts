@@ -414,6 +414,14 @@ const DATE_OVERRIDES: Record<string, string> = {
   "2023": "06/10/23",
 };
 
+// Corrections for known typos in Discord messages
+// Format: { [season]: { [stat]: { [player]: correctedValue } } }
+const STAT_CORRECTIONS: Record<string, Partial<Record<keyof ParsedStats, Record<string, number>>>> = {
+  "2025": {
+    goals: { COLIN: 98 },
+  },
+};
+
 export function parseAllSeasons(messages: unknown[]): SeasonData[] {
   const seen = new Set<string>();
   const seasons: SeasonData[] = [];
@@ -428,6 +436,20 @@ export function parseAllSeasons(messages: unknown[]): SeasonData[] {
     const stats = parseContent(normalized);
     if (stats) {
       if (DATE_OVERRIDES[season]) stats.date = DATE_OVERRIDES[season];
+      // Apply typo corrections
+      const corrections = STAT_CORRECTIONS[season];
+      if (corrections) {
+        for (const [stat, playerMap] of Object.entries(corrections)) {
+          const entries = stats[stat as keyof ParsedStats] as StatEntry[] | undefined;
+          if (Array.isArray(entries)) {
+            for (const entry of entries) {
+              if (entry.name in (playerMap as Record<string, number>)) {
+                entry.value = (playerMap as Record<string, number>)[entry.name];
+              }
+            }
+          }
+        }
+      }
       seen.add(season);
       seasons.push({ season, stats });
     }

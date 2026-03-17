@@ -1,26 +1,6 @@
 import NewsBackground from "./NewsBackground";
 import NewsClient from "./NewsClient";
-
-const newsItems = [
-  {
-    id: "2",
-    title: "Bardownski Competes in Div 1 Club Finals",
-    summary:
-      "Bardownski competed in the highest division of Club Finals (Div 1). After a rocky start, the squad managed to fight their way into the second round but ultimately fell short due to time constraints. A strong showing against top-tier competition.",
-    date: "2026-03-09",
-    image: "/images/gallery/screenshots/Screenshot 2026-03-16 183953.png",
-    category: "Results",
-  },
-  {
-    id: "1",
-    title: "Welcome to Bardownski",
-    summary:
-      "The official Bardownski website is now live. Stay tuned for roster updates, match results, and player stats from our Newfoundland-based club.",
-    date: "2026-03-09",
-    image: "/images/gallery/screenshots/t.png",
-    category: "Club News",
-  },
-];
+import { articles as newsItems } from "@/lib/news";
 
 export default function NewsPage() {
   return (
