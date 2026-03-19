@@ -45,6 +45,15 @@ export interface ParsedStats {
   saves: SaveEntry[];
   shutouts: StatEntry[];
   milestones: Milestone[];
+  // Extended stats (populated by chelstats, absent for Discord seasons)
+  shots?: StatEntry[];
+  gwg?: StatEntry[];
+  takeaways?: StatEntry[];
+  blockedShots?: StatEntry[];
+  giveaways?: StatEntry[];
+  pim?: StatEntry[];
+  interceptions?: StatEntry[];
+  faceoffPct?: StatEntry[];
 }
 
 export interface SeasonData {
@@ -69,6 +78,15 @@ export interface EnrichedPlayer {
   goalieGamesPlayed?: number;
   shutouts?: number;
   shutoutPeriods?: number;
+  // Extended stats (chelstats only)
+  shots?: number;
+  gwg?: number;
+  takeaways?: number;
+  giveaways?: number;
+  blockedShots?: number;
+  interceptions?: number;
+  faceoffPct?: number;
+  gaa?: number;
 }
 
 export interface AllTimeRecord {
@@ -949,6 +967,14 @@ export function getEnrichedPlayers(stats: ParsedStats): EnrichedPlayer[] {
       | undefined;
     const so = stats.shutouts.find((e) => e.name === player.name);
 
+    // Extended stats (chelstats seasons only)
+    const sh = stats.shots?.find((e) => e.name === player.name);
+    const gwgEntry = stats.gwg?.find((e) => e.name === player.name);
+    const tk = stats.takeaways?.find((e) => e.name === player.name);
+    const gv = stats.giveaways?.find((e) => e.name === player.name);
+    const bs = stats.blockedShots?.find((e) => e.name === player.name);
+    const pimEntry = stats.pim?.find((e) => e.name === player.name);
+
     return {
       name: player.name,
       position: player.position,
@@ -958,7 +984,7 @@ export function getEnrichedPlayers(stats: ParsedStats): EnrichedPlayer[] {
       assists: a?.value,
       plusMinus: pm?.value,
       hits: h?.value,
-      pim: h?.secondary,
+      pim: pimEntry?.value ?? h?.secondary,
       shotPercentage: g?.secondary,
       passPercentage: a?.secondary,
       saves: sv?.value,
@@ -966,6 +992,13 @@ export function getEnrichedPlayers(stats: ParsedStats): EnrichedPlayer[] {
       goalieGamesPlayed: sv?.ggp,
       shutouts: so?.value,
       shutoutPeriods: so?.secondary,
+      shots: sh?.value,
+      gwg: gwgEntry?.value,
+      takeaways: tk?.value,
+      giveaways: gv?.value,
+      blockedShots: bs?.value,
+      interceptions: stats.interceptions?.find((e) => e.name === player.name)?.value,
+      faceoffPct: stats.faceoffPct?.find((e) => e.name === player.name)?.value,
     };
   });
 }

@@ -39,33 +39,33 @@ export default function PlayerOfCycleBadge({ player }: Props) {
     <AnimatePresence>
       {visible && (
         <motion.div
-          className="fixed right-0 top-24 z-40 hidden md:flex flex-col items-end"
-          initial={{ x: 220, opacity: 0 }}
+          className="fixed left-0 top-24 z-40 hidden md:flex flex-col items-start"
+          initial={{ x: -220, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          exit={{ x: 220, opacity: 0 }}
+          exit={{ x: -220, opacity: 0 }}
           transition={{ delay: 1.8, type: "spring", stiffness: 180, damping: 24 }}
         >
           <AnimatePresence initial={false}>
             {!collapsed && (
               <motion.div
                 key="expanded"
-                initial={{ x: 220, opacity: 0 }}
+                initial={{ x: -220, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                exit={{ x: 220, opacity: 0 }}
+                exit={{ x: -220, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 220, damping: 26 }}
-                className="relative bg-[#0d1528]/95 backdrop-blur-sm border border-white/10 border-r-0 rounded-l-2xl overflow-hidden w-52"
+                className="relative bg-[#0d1528]/95 backdrop-blur-sm border border-white/10 border-l-0 rounded-r-2xl overflow-hidden w-52"
               >
                 {/* Red top accent */}
-                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#cc1533] to-[#cc1533]/30" />
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-l from-[#cc1533] to-[#cc1533]/30" />
 
                 {/* Collapse button */}
                 <button
                   onClick={() => setCollapsed(true)}
-                  className="absolute top-3 right-3 text-white/20 hover:text-white/60 transition-colors z-10"
+                  className="absolute top-3 left-3 text-white/20 hover:text-white/60 transition-colors z-10"
                   aria-label="Collapse"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 5l-7 7 7 7" />
                   </svg>
                 </button>
 
@@ -123,11 +123,11 @@ export default function PlayerOfCycleBadge({ player }: Props) {
               <motion.button
                 key="collapsed"
                 onClick={() => setCollapsed(false)}
-                initial={{ x: 100, opacity: 0 }}
+                initial={{ x: -100, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                exit={{ x: 100, opacity: 0 }}
+                exit={{ x: -100, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 220, damping: 26 }}
-                className="relative bg-[#0d1528]/95 backdrop-blur-sm border border-white/10 border-r-0 rounded-l-xl overflow-hidden px-3 py-4 flex flex-col items-center gap-3"
+                className="relative bg-[#0d1528]/95 backdrop-blur-sm border border-white/10 border-l-0 rounded-r-xl overflow-hidden px-3 py-4 flex flex-col items-center gap-3"
                 aria-label="Expand player of the cycle"
               >
                 {/* Red top accent */}

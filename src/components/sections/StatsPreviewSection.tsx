@@ -9,9 +9,10 @@ import {
   StatsGrid,
   StatsCard,
 } from "./StatsPreviewWrapper";
+import type { MvpOddsEntry } from "@/lib/discord";
 import { MvpOddsBanner } from "./MvpOddsSection";
 
-export default function StatsPreviewSection({ messages }: { messages: unknown[] }) {
+export default function StatsPreviewSection({ messages, mvpOdds }: { messages: unknown[]; mvpOdds: MvpOddsEntry[] }) {
   const stats = parseStats(messages);
 
   if (!stats) {
@@ -121,7 +122,7 @@ export default function StatsPreviewSection({ messages }: { messages: unknown[] 
           </Link>
         </div>
 
-        <MvpOddsBanner messages={messages} />
+        <MvpOddsBanner odds={mvpOdds} />
       </div>
     </section>
   );

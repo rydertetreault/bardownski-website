@@ -5,56 +5,60 @@ import {
   computeAllTimeRecords,
   computeSeasonMVPs,
 } from "@/lib/discord";
+import type { SeasonData } from "@/lib/discord";
+import { fetchChelstatsData, chelstatsToSeasonData } from "@/lib/chelstats";
 import RecordsClient from "./RecordsClient";
+import RecordsBackground from "./RecordsBackground";
+
 
 export default async function RecordsPage() {
-  const messages = await fetchChannelMessages();
-  const seasons = parseAllSeasons(messages);
+  const [messages, chelstats] = await Promise.all([
+    fetchChannelMessages(),
+    fetchChelstatsData(),
+  ]);
+
+  // Discord seasons (2023, 2024 — 2025 comes from chelstats)
+  const discordSeasons = parseAllSeasons(messages).filter(
+    (s) => s.season !== "2025"
+  );
+
+  // Chelstats 2025 season (live from EA)
+  const chelstatsSeason = chelstats
+    ? chelstatsToSeasonData(chelstats.members)
+    : null;
+
+  // Combine: 2025 first, then historical
+  const seasons: SeasonData[] = [
+    ...(chelstatsSeason ? [chelstatsSeason] : []),
+    ...discordSeasons,
+  ];
+
   const records = computeAllTimeRecords(seasons);
   const mvps = computeSeasonMVPs(seasons);
 
   return (
-    <div className="min-h-screen">
-      {/* Stadium hero header */}
-      <div className="relative pt-16">
-        <div className="relative h-64 md:h-80 overflow-hidden">
-          {/* Stadium background */}
-          <Image
-            src="/images/logo/BD - stadium.png"
-            alt=""
-            fill
-            className="object-cover object-center"
-            priority
-          />
-          {/* Dark overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-navy-dark/80 to-background" />
+    <div className="min-h-screen relative">
+      <RecordsBackground />
 
-          {/* Centered logo crest */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="relative w-28 h-28 md:w-36 md:h-36 opacity-15">
-              <Image
-                src="/images/logo/BD - logo.png"
-                alt=""
-                fill
-                className="object-contain"
-              />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12">
+        {/* Page title */}
+        <div className="mb-12">
+          <div className="flex flex-col gap-px mb-4">
+            <div className="h-px bg-gradient-to-r from-[#cc1533]/50 via-[#cc1533]/20 to-transparent" />
+            <div className="h-px bg-gradient-to-r from-[#5b9bd5]/30 via-[#5b9bd5]/10 to-transparent" />
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="block w-1 h-8 bg-[#cc1533] rounded-sm" />
+            <div>
+              <h1 className="text-3xl md:text-4xl font-black uppercase tracking-[0.15em]">
+                Records
+              </h1>
+              <p className="text-muted text-xs uppercase tracking-widest mt-1">
+                All-time records & awards
+              </p>
             </div>
           </div>
-
-          {/* Title content */}
-          <div className="absolute inset-0 flex flex-col items-center justify-end pb-8">
-            <h1 className="text-5xl md:text-6xl font-black uppercase tracking-[0.2em] text-center">
-              Records
-            </h1>
-            <div className="w-24 h-1 bg-red mt-3 rounded-full" />
-            <p className="text-muted mt-3 text-sm uppercase tracking-widest">
-              All-time Bardownski records & awards
-            </p>
-          </div>
         </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {records.length === 0 && mvps.length === 0 ? (
           <div className="text-center py-24 bg-navy border border-border rounded-xl">
             <div className="w-20 h-20 mx-auto mb-6 relative overflow-hidden rounded-xl opacity-20">
@@ -71,7 +75,11 @@ export default async function RecordsPage() {
             </p>
           </div>
         ) : (
-          <RecordsClient records={records} mvps={mvps} />
+          <RecordsClient
+            records={records}
+            mvps={mvps}
+            seasons={seasons}
+          />
         )}
       </div>
     </div>

@@ -127,14 +127,14 @@ function Nameplate({
           </div>
 
           {/* Right side — number echo + expand hint */}
-          <div className="hidden sm:flex items-center gap-4 pr-5 shrink-0">
-            <div className="text-right">
+          <div className="flex items-center gap-4 pr-5 shrink-0">
+            <div className="text-right hidden sm:block">
               <p className="text-xs text-muted uppercase tracking-wider">
                 #{player.number}
               </p>
             </div>
             <div
-              className={`w-8 h-8 rounded-full border flex items-center justify-center ${
+              className={`hidden sm:flex w-8 h-8 rounded-full border items-center justify-center ${
                 isAssistant ? "border-white/20" : "border-border"
               }`}
             >
@@ -146,6 +146,22 @@ function Nameplate({
                     : "F"}
               </span>
             </div>
+            {hasScouting && (
+              <motion.div
+                animate={{ rotate: expanded ? 180 : 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="#38bdf8"
+                  strokeWidth={2.5}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </motion.div>
+            )}
           </div>
         </div>
       </motion.button>
@@ -203,9 +219,8 @@ function LeadershipCard({
   player: RosterPlayer;
   index: number;
 }) {
-  const [open, setOpen] = useState(false);
   const isCaptain = player.leadership === "C";
-  const label = isCaptain ? "Meet the Captain" : "Meet the A";
+  const label = isCaptain ? "Captain" : "Assistant Captain";
 
   return (
     <motion.div
@@ -251,69 +266,35 @@ function LeadershipCard({
           {player.position}
         </p>
 
-        {/* Meet the Captain button */}
-        {player.scouting && (
-          <button
-            onClick={() => setOpen(!open)}
-            className={`mt-4 w-full px-4 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
-              open
-                ? isCaptain
-                  ? "bg-red/20 text-red border border-red/30"
-                  : "bg-white/10 text-white border border-white/20"
-                : isCaptain
-                  ? "bg-red/10 text-red border border-red/30 hover:bg-red/20"
-                  : "bg-white/5 text-white/80 border border-white/15 hover:bg-white/10 hover:text-white"
-            }`}
-          >
-            {open ? "Close" : label}
-          </button>
-        )}
-      </div>
-
-      {/* Scouting report */}
-      {player.scouting && (
-        <motion.div
-          initial={false}
-          animate={{
-            height: open ? "auto" : 0,
-            opacity: open ? 1 : 0,
-          }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="overflow-hidden"
+        {/* Role label */}
+        <p
+          className={`mt-3 text-xs font-bold uppercase tracking-widest ${
+            isCaptain ? "text-red" : "text-white/60"
+          }`}
         >
-          <div className="px-6 pb-6">
-            {/* Role badge */}
-            <div className="flex justify-center mb-3">
-              <span
-                className={`px-3 py-1 rounded text-[10px] font-black uppercase tracking-widest ${
-                  isCaptain
-                    ? "bg-red/15 text-red border border-red/20"
-                    : "bg-white/10 text-white border border-white/15"
-                }`}
-              >
-                {player.scouting.role}
-              </span>
-            </div>
-            {/* Description */}
-            <p className="text-sm text-muted leading-relaxed text-center">
-              {player.scouting.description}
-            </p>
-          </div>
-        </motion.div>
-      )}
+          {label}
+        </p>
+      </div>
     </motion.div>
   );
 }
 
-/* ── Position group divider (red center-ice line style) ── */
-function PositionDivider({ label }: { label: string }) {
+/* ── Position group divider (homepage-style accent bar + dual lines) ── */
+function PositionDivider({ label, isFirst = false }: { label: string; isFirst?: boolean }) {
   return (
-    <div className="flex items-center gap-4 mb-4 mt-2">
-      <div className="h-[2px] flex-1 bg-gradient-to-r from-red/60 via-red/30 to-transparent rounded-full" />
-      <span className="text-sm font-black uppercase tracking-[0.25em] text-red whitespace-nowrap">
-        {label}
-      </span>
-      <div className="h-[2px] flex-1 bg-gradient-to-l from-red/60 via-red/30 to-transparent rounded-full" />
+    <div className={isFirst ? "mb-5" : "mb-5 mt-4"}>
+      {/* Dual hairlines */}
+      <div className="flex flex-col gap-px mb-4">
+        <div className="h-px bg-gradient-to-r from-red/50 via-red/20 to-transparent" />
+        <div className="h-px bg-gradient-to-r from-[#5b9bd5]/30 via-[#5b9bd5]/10 to-transparent" />
+      </div>
+      {/* Accent bar + label */}
+      <div className="flex items-center gap-3">
+        <span className="block w-1 h-5 bg-red rounded-sm" />
+        <span className="text-sm font-black uppercase tracking-[0.25em] text-white whitespace-nowrap">
+          {label}
+        </span>
+      </div>
     </div>
   );
 }
@@ -348,7 +329,7 @@ export default function RosterClient({
       {/* Leadership spotlight */}
       {leaders.length > 0 && (
         <section>
-          <PositionDivider label="Leadership" />
+          <PositionDivider label="Leadership" isFirst />
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {leaders.map((player, i) => (
               <LeadershipCard key={player.name} player={player} index={i} />

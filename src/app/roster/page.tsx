@@ -1,33 +1,39 @@
 import Image from "next/image";
-import {
-  fetchChannelMessages,
-  parseStats,
-  getEnrichedPlayers,
-  type EnrichedPlayer,
-} from "@/lib/discord";
-import { getDisplayName, getNickname } from "@/lib/nicknames";
+import { fetchChelstatsData, type ClubMember } from "@/lib/chelstats";
+import { getNickname, getDisplayName } from "@/lib/nicknames";
 import RosterClient from "./RosterClient";
 
-// Captain and assistant captains
-const CAPTAIN = "ROB";
-const ASSISTANTS = ["KADEN", "COLIN"];
-
-// Position overrides (when Discord data doesn't reflect the correct position)
-const POSITION_OVERRIDES: Record<string, string> = {
-  KADEN: "D",
-  JIMMY: "D",
+// Gamertag → real name (for looking up nicknames, jersey numbers, etc.)
+// Fill in the empty ones with the player's real name
+const GAMERTAG_TO_NAME: Record<string, string> = {
+  Rydayro: "RYDER",
+  S1obbyRobby: "ROB",
+  Mhut8: "MATT",
+  "u4 Pablo": "DYLAN",
+  "oP wet": "COLIN",
+  "u4 Hood": "KADEN",
+  "Julio 3026": "JIMMY",
+  "oP Ding1633": "LOGAN",
 };
 
-// Jersey numbers
+function resolveName(gamertag: string): string {
+  return GAMERTAG_TO_NAME[gamertag] || gamertag;
+}
+
+// Captain and assistant captains (by real name or gamertag)
+const CAPTAIN = "ROB";
+const ASSISTANTS = ["COLIN", "KADEN"];
+
+// Jersey numbers (by real name or gamertag)
 const JERSEY_NUMBERS: Record<string, number> = {
   RYDER: 14,
   DYLAN: 4,
   MATT: 8,
+  ROB: 1,
+  COLIN: 2,
   KADEN: 9,
   JIMMY: 69,
   LOGAN: 6,
-  ROB: 1,
-  COLIN: 2,
 };
 
 // Scouting reports / play style descriptions
@@ -75,9 +81,8 @@ const PLAYER_SCOUTING: Record<string, { role: string; description: string }> = {
 };
 
 function getLeadershipRole(name: string): "C" | "A" | null {
-  const upper = name.toUpperCase();
-  if (upper === CAPTAIN) return "C";
-  if (ASSISTANTS.includes(upper)) return "A";
+  if (name === CAPTAIN) return "C";
+  if (ASSISTANTS.includes(name)) return "A";
   return null;
 }
 
@@ -85,9 +90,8 @@ function getPositionGroup(
   position: string
 ): "forward" | "defense" | "goalie" {
   const pos = position.toUpperCase();
-  if (pos.includes("GK") || pos === "G") return "goalie";
-  if (pos.includes("D") && !pos.includes("W") && !pos.includes("C"))
-    return "defense";
+  if (pos === "G" || pos === "GK") return "goalie";
+  if (pos === "D") return "defense";
   return "forward";
 }
 
@@ -110,38 +114,40 @@ export type RosterPlayer = {
   savePercentage?: number;
   goalieGamesPlayed?: number;
   shutouts?: number;
+  overallRating?: number;
 };
 
 export default async function RosterPage() {
-  const messages = await fetchChannelMessages();
-  const stats = parseStats(messages);
-  const enriched = stats
-    ? getEnrichedPlayers(stats).map((p) => {
-        const override = POSITION_OVERRIDES[p.name.toUpperCase()];
-        return override ? { ...p, position: override } : p;
-      })
-    : [];
+  const chelstats = await fetchChelstatsData();
+  const members = chelstats?.members ?? [];
 
-  const players: RosterPlayer[] = enriched.map((p) => ({
-    name: p.name,
-    position: p.position,
-    number: JERSEY_NUMBERS[p.name.toUpperCase()] ?? 0,
-    leadership: getLeadershipRole(p.name),
-    positionGroup: getPositionGroup(p.position),
-    nickname: getNickname(p.name),
-    displayName: getDisplayName(p.name),
-    scouting: PLAYER_SCOUTING[p.name.toUpperCase()],
-    gamesPlayed: p.gamesPlayed,
-    points: p.points,
-    goals: p.goals,
-    assists: p.assists,
-    plusMinus: p.plusMinus,
-    hits: p.hits,
-    saves: p.saves,
-    savePercentage: p.savePercentage,
-    goalieGamesPlayed: p.goalieGamesPlayed,
-    shutouts: p.shutouts,
-  }));
+  const players: RosterPlayer[] = members.map((m) => {
+    const name = resolveName(m.username);
+    const svPct =
+      m.savePct > 1 ? m.savePct : m.savePct * 100;
+
+    return {
+      name,
+      position: m.position,
+      number: JERSEY_NUMBERS[name] ?? 0,
+      leadership: getLeadershipRole(name),
+      positionGroup: getPositionGroup(m.position),
+      nickname: getNickname(name),
+      displayName: getDisplayName(name),
+      scouting: PLAYER_SCOUTING[name],
+      gamesPlayed: m.gamesPlayed,
+      points: m.points,
+      goals: m.goals,
+      assists: m.assists,
+      plusMinus: m.plusMinus,
+      hits: m.hits,
+      saves: m.goalieGP > 0 ? m.goalieSaves : undefined,
+      savePercentage: m.goalieGP > 0 ? svPct : undefined,
+      goalieGamesPlayed: m.goalieGP > 0 ? m.goalieGP : undefined,
+      shutouts: m.goalieGP > 0 ? m.shutouts : undefined,
+      overallRating: m.overallRating,
+    };
+  });
 
   const forwards = players.filter((p) => p.positionGroup === "forward");
   const defense = players.filter((p) => p.positionGroup === "defense");
@@ -154,7 +160,6 @@ export default async function RosterPage() {
         className="fixed inset-0 pointer-events-none overflow-hidden"
         style={{ zIndex: -1 }}
       >
-        {/* Wide diffuse beam — left */}
         <div
           style={{
             position: "absolute",
@@ -167,7 +172,6 @@ export default async function RosterPage() {
               "linear-gradient(90deg, transparent, rgba(200,16,46,0.04) 40%, rgba(200,16,46,0.06) 50%, rgba(200,16,46,0.04) 60%, transparent)",
           }}
         />
-        {/* Thin sharp streak — left */}
         <div
           style={{
             position: "absolute",
@@ -180,7 +184,6 @@ export default async function RosterPage() {
               "linear-gradient(to bottom, transparent 0%, rgba(200,16,46,0.2) 25%, rgba(200,16,46,0.35) 50%, rgba(200,16,46,0.2) 75%, transparent 100%)",
           }}
         />
-        {/* Wide diffuse beam — right */}
         <div
           style={{
             position: "absolute",
@@ -193,7 +196,6 @@ export default async function RosterPage() {
               "linear-gradient(90deg, transparent, rgba(200,16,46,0.03) 40%, rgba(200,16,46,0.05) 50%, rgba(200,16,46,0.03) 60%, transparent)",
           }}
         />
-        {/* Thin sharp streak — right */}
         <div
           style={{
             position: "absolute",
@@ -236,7 +238,7 @@ export default async function RosterPage() {
             </div>
             <p className="text-muted text-lg">Roster coming soon.</p>
             <p className="text-muted/50 text-sm mt-2">
-              Player data will be synced from Discord.
+              Unable to load roster from chelstats.
             </p>
           </div>
         ) : (

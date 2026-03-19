@@ -1,28 +1,67 @@
 import Image from "next/image";
-import type { Match } from "@/types";
+import MatchesBackground from "./MatchesBackground";
+import MatchesClient from "./MatchesClient";
+import { fetchChelstatsData } from "@/lib/chelstats";
+import type { Match, ClubRecord } from "@/types";
 
-const matches: Match[] = [];
+export default async function MatchesPage() {
+  const chelstats = await fetchChelstatsData();
 
-export default function MatchesPage() {
+  const matches: Match[] = chelstats
+    ? chelstats.matches.map((m) => ({
+        id: m.id,
+        timestamp: m.timestamp,
+        date: m.date,
+        opponent: m.opponent,
+        homeAway: m.homeAway,
+        scoreUs: m.scoreUs,
+        scoreThem: m.scoreThem,
+        status: "final" as const,
+        matchType: m.matchType,
+        shotsUs: m.shotsUs,
+        shotsThem: m.shotsThem,
+        toaUs: m.toaUs,
+        toaThem: m.toaThem,
+        passCompUs: m.passCompUs,
+        passCompThem: m.passCompThem,
+        players: m.players,
+        threeStars: m.threeStars,
+      }))
+    : [];
+
+  const clubRecord: ClubRecord | null = chelstats
+    ? {
+        wins: chelstats.clubStats.wins,
+        losses: chelstats.clubStats.losses,
+        otl: chelstats.clubStats.otl,
+      }
+    : null;
+
   return (
-    <div className="min-h-screen py-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative rounded-xl overflow-hidden mb-12">
-          <div className="relative h-48">
+    <div className="min-h-screen relative">
+      <MatchesBackground />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+        {/* Page title */}
+        <div className="mb-10 flex flex-col items-center">
+          <div className="relative w-12 h-12 md:w-16 md:h-16 mb-4 opacity-20">
             <Image
-              src="/images/logo/BD - stadium.png"
-              alt="Arena"
+              src="/images/logo/BD - logo.png"
+              alt=""
               fill
-              className="object-cover object-[center_30%]"
+              className="object-contain"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-navy-dark via-navy-dark/80 to-transparent" />
           </div>
-          <div className="absolute inset-0 flex items-center px-8">
-            <div>
-              <h1 className="text-4xl font-black uppercase tracking-wider mb-1">Matches</h1>
-              <p className="text-muted">Schedule and results.</p>
-            </div>
+          <div className="flex items-center gap-4">
+            <div className="h-px w-12 bg-red/30" />
+            <h1 className="text-3xl md:text-4xl font-black uppercase tracking-[0.2em] text-center">
+              Scores
+            </h1>
+            <div className="h-px w-12 bg-red/30" />
           </div>
+          <p className="text-muted/50 text-xs uppercase tracking-widest mt-2">
+            Season Results & Trends
+          </p>
         </div>
 
         {matches.length === 0 ? (
@@ -36,38 +75,12 @@ export default function MatchesPage() {
               />
             </div>
             <p className="text-muted text-lg">Match schedule coming soon.</p>
-            <p className="text-muted/50 text-sm mt-2">Results will be synced from Discord.</p>
+            <p className="text-muted/50 text-sm mt-2">
+              Results will be synced from chelstats.
+            </p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {matches.map((match) => (
-              <div
-                key={match.id}
-                className="bg-navy border border-border rounded-xl p-6 flex items-center justify-between hover:border-red/50 transition-colors"
-              >
-                <div>
-                  <p className="text-xs text-red font-medium uppercase tracking-wider mb-1">{match.date}</p>
-                  <p className="font-bold text-lg">
-                    {match.homeAway === "home"
-                      ? `Bardownski vs ${match.opponent}`
-                      : `${match.opponent} vs Bardownski`}
-                  </p>
-                  <p className="text-sm text-muted capitalize">{match.homeAway}</p>
-                </div>
-                <div className="text-right">
-                  {match.status === "final" ? (
-                    <p className="text-3xl font-black">
-                      {match.scoreUs} <span className="text-muted">-</span> {match.scoreThem}
-                    </p>
-                  ) : (
-                    <span className="text-sm text-red font-bold uppercase px-4 py-2 bg-red/10 border border-red/20 rounded-lg">
-                      {match.status}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+          <MatchesClient matches={matches} clubRecord={clubRecord} />
         )}
       </div>
     </div>

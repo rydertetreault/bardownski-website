@@ -17,26 +17,26 @@ export default function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/90" />
       </div>
 
-      {/* Diagonal slash accents — red left, light blue right */}
+      {/* Diagonal slash accents — light blue left, red right */}
       <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
         <svg
-          className="absolute -left-16 top-0 h-full w-[60%] opacity-10"
+          className="absolute -left-16 top-0 h-full w-[60%] opacity-[0.07]"
           viewBox="0 0 400 900"
           preserveAspectRatio="none"
         >
-          <polygon points="120,0 220,0 100,900 0,900" fill="#cc1533" />
+          <polygon points="120,0 220,0 100,900 0,900" fill="#5b9bd5" />
         </svg>
         <svg
-          className="absolute -right-16 top-0 h-full w-[60%] opacity-[0.07]"
+          className="absolute -right-16 top-0 h-full w-[60%] opacity-10"
           viewBox="0 0 400 900"
           preserveAspectRatio="none"
         >
-          <polygon points="280,0 400,0 300,900 180,900" fill="#5b9bd5" />
+          <polygon points="280,0 400,0 300,900 180,900" fill="#cc1533" />
         </svg>
       </div>
 
       {/* Content */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 flex flex-col items-center md:items-start text-center md:text-left">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 lg:pr-[400px] xl:pr-[440px] flex flex-col items-center md:items-start text-center md:text-left">
         {/* Label */}
         <motion.div
           {...fadeUp(0.1)}
@@ -51,7 +51,7 @@ export default function HeroSection() {
         {/* Team name */}
         <motion.h1
           {...fadeUp(0.25)}
-          className="text-5xl sm:text-7xl md:text-9xl font-black tracking-tighter text-white leading-none mb-4"
+          className="text-5xl sm:text-7xl md:text-9xl lg:text-8xl xl:text-9xl font-black tracking-tighter text-white leading-none mb-4"
         >
           BARDOWNSKI
         </motion.h1>
@@ -70,16 +70,16 @@ export default function HeroSection() {
           className="flex flex-col sm:flex-row gap-4"
         >
           <Link
-            href="/highlights"
+            href="/matches"
             className="px-8 py-3.5 bg-[#cc1533] hover:bg-[#a8102a] text-white font-bold uppercase tracking-wider text-sm transition-colors rounded"
           >
-            Watch Highlights
+            Matches
           </Link>
           <Link
-            href="/roster"
+            href="/highlights"
             className="px-8 py-3.5 border border-white/60 hover:border-[#cc1533] text-white font-bold uppercase tracking-wider text-sm transition-colors rounded"
           >
-            Meet the Team
+            Watch Highlights
           </Link>
         </motion.div>
       </div>

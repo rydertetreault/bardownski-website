@@ -1,4 +1,5 @@
-import { parseStats } from "@/lib/discord";
+import { parseStats, type ParsedStats } from "@/lib/discord";
+import { chelstatsToSeasonData, type ClubMember } from "@/lib/chelstats";
 import { getNickname } from "@/lib/nicknames";
 
 const STATIC_ITEMS = [
@@ -18,30 +19,51 @@ const LOOP_DIVIDER = (
   </span>
 );
 
-export default function StatsTicker({ messages }: { messages: unknown[] }) {
+function buildStatItems(stats: ParsedStats): string[] {
+  const statItems: string[] = [];
+
+  if (stats.points[0])
+    statItems.push(`PTS LEADER: ${getNickname(stats.points[0].name)} ${stats.points[0].value}`);
+  if (stats.goals[0])
+    statItems.push(`GOALS LEADER: ${getNickname(stats.goals[0].name)} ${stats.goals[0].value}`);
+  if (stats.assists[0])
+    statItems.push(`ASSISTS LEADER: ${getNickname(stats.assists[0].name)} ${stats.assists[0].value}`);
+  if (stats.hits[0])
+    statItems.push(`HITS LEADER: ${getNickname(stats.hits[0].name)} ${stats.hits[0].value}`);
+  if (stats.plusMinus[0]) {
+    const pm = stats.plusMinus[0];
+    statItems.push(`+/- LEADER: ${getNickname(pm.name)} ${pm.value > 0 ? "+" : ""}${pm.value}`);
+  }
+  if (stats.pim?.[0])
+    statItems.push(`PIM LEADER: ${getNickname(stats.pim[0].name)} ${stats.pim[0].value}`);
+  if (stats.shots?.[0])
+    statItems.push(`SOG LEADER: ${getNickname(stats.shots[0].name)} ${stats.shots[0].value}`);
+  if (stats.gwg?.[0])
+    statItems.push(`GWG LEADER: ${getNickname(stats.gwg[0].name)} ${stats.gwg[0].value}`);
+  if (stats.takeaways?.[0])
+    statItems.push(`TK LEADER: ${getNickname(stats.takeaways[0].name)} ${stats.takeaways[0].value}`);
+  if (stats.giveaways?.[0])
+    statItems.push(`GV LEADER: ${getNickname(stats.giveaways[0].name)} ${stats.giveaways[0].value}`);
+  if (stats.blockedShots?.[0])
+    statItems.push(`BS LEADER: ${getNickname(stats.blockedShots[0].name)} ${stats.blockedShots[0].value}`);
+  if (stats.saves[0]?.secondary != null)
+    statItems.push(`SV% LEADER: ${getNickname(stats.saves[0].name)} ${stats.saves[0].secondary!.toFixed(1)}%`);
+  if (stats.shutouts[0])
+    statItems.push(`SHUTOUTS LEADER: ${getNickname(stats.shutouts[0].name)} ${stats.shutouts[0].value}`);
+
+  return statItems;
+}
+
+export default function StatsTicker({ messages, members }: { messages: unknown[]; members?: ClubMember[] }) {
   let items = STATIC_ITEMS;
 
-  const stats = parseStats(messages);
+  // Prefer chelstats data (has all stat categories) over Discord-parsed data
+  const chelstatsStats = members?.length ? chelstatsToSeasonData(members).stats : null;
+  const discordStats = parseStats(messages);
+  const stats = chelstatsStats || discordStats;
+
   if (stats) {
-    const statItems: string[] = [];
-
-    if (stats.points[0])
-      statItems.push(`PTS LEADER: ${getNickname(stats.points[0].name)} ${stats.points[0].value}`);
-    if (stats.goals[0])
-      statItems.push(`GOALS LEADER: ${getNickname(stats.goals[0].name)} ${stats.goals[0].value}`);
-    if (stats.assists[0])
-      statItems.push(`ASSISTS LEADER: ${getNickname(stats.assists[0].name)} ${stats.assists[0].value}`);
-    if (stats.hits[0])
-      statItems.push(`HITS LEADER: ${getNickname(stats.hits[0].name)} ${stats.hits[0].value}`);
-    if (stats.plusMinus[0]) {
-      const pm = stats.plusMinus[0];
-      statItems.push(`+/- LEADER: ${getNickname(pm.name)} ${pm.value > 0 ? "+" : ""}${pm.value}`);
-    }
-    if (stats.saves[0]?.secondary != null)
-      statItems.push(`SV% LEADER: ${getNickname(stats.saves[0].name)} ${stats.saves[0].secondary!.toFixed(1)}%`);
-    if (stats.shutouts[0])
-      statItems.push(`SHUTOUTS LEADER: ${getNickname(stats.shutouts[0].name)} ${stats.shutouts[0].value}`);
-
+    const statItems = buildStatItems(stats);
     if (statItems.length > 0) items = [...STATIC_ITEMS, ...statItems];
   }
 
