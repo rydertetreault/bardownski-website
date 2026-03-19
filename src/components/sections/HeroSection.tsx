@@ -31,7 +31,7 @@ export default function HeroSection() {
           viewBox="0 0 400 900"
           preserveAspectRatio="none"
         >
-          <polygon points="180,0 400,0 400,900 300,900" fill="#5b9bd5" />
+          <polygon points="280,0 400,0 300,900 180,900" fill="#5b9bd5" />
         </svg>
       </div>
 
@@ -70,7 +70,7 @@ export default function HeroSection() {
           className="flex flex-col sm:flex-row gap-4"
         >
           <Link
-            href="/matches"
+            href="/highlights"
             className="px-8 py-3.5 bg-[#cc1533] hover:bg-[#a8102a] text-white font-bold uppercase tracking-wider text-sm transition-colors rounded"
           >
             Watch Highlights

@@ -10,55 +10,60 @@ function getYouTubeId(src: string): string | null {
   return m ? m[1] : null;
 }
 
-// Shows YouTube thumbnail or seeks local video to first frame, plays on hover
-function VideoThumb({ src, className }: { src: string; className?: string }) {
-  const ytId = getYouTubeId(src);
+// ─── Lazy thumbnail video (loads metadata only when in view, plays on hover) ─
+function ThumbnailVideo({
+  src,
+  className,
+  playing,
+}: {
+  src: string;
+  className?: string;
+  playing: boolean;
+}) {
   const ref = useRef<HTMLVideoElement>(null);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (ytId) return;
     const video = ref.current;
     if (!video) return;
-    video.addEventListener("loadedmetadata", () => {
-      video.currentTime = 0.001;
-    }, { once: true });
-  }, [src, ytId]);
-
-  const handleMouseEnter = () => {
-    const video = ref.current;
-    if (!video) return;
-    video.currentTime = 0;
-    video.play().catch(() => {});
-  };
-
-  const handleMouseLeave = () => {
-    const video = ref.current;
-    if (!video) return;
-    video.pause();
-    video.currentTime = 0.001;
-  };
-
-  if (ytId) {
-    return (
-      <Image
-        src={`https://img.youtube.com/vi/${ytId}/hqdefault.jpg`}
-        alt="YouTube thumbnail"
-        fill
-        className={className}
-      />
+    const observer = new IntersectionObserver(
+      ([entry]) => setVisible(entry.isIntersecting),
+      { rootMargin: "200px" }
     );
-  }
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const video = ref.current;
+    if (!video) return;
+    if (visible) {
+      if (!video.getAttribute("src")) video.src = src;
+    } else {
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+    }
+  }, [visible, src]);
+
+  useEffect(() => {
+    const video = ref.current;
+    if (!video || !visible) return;
+    if (playing) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [playing, visible]);
+
   return (
     <video
       ref={ref}
-      src={src}
-      preload="metadata"
-      muted
       loop
+      muted
       playsInline
+      preload="metadata"
       className={className}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     />
   );
 }
@@ -123,7 +128,6 @@ function PhotoLightbox({
       style={{ backgroundColor: "rgba(0,0,0,0.92)" }}
       onClick={onClose}
     >
-      {/* Prev */}
       {index > 0 && (
         <button
           className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full transition-colors z-10"
@@ -136,7 +140,6 @@ function PhotoLightbox({
         </button>
       )}
 
-      {/* Next */}
       {index < items.length - 1 && (
         <button
           className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full transition-colors z-10"
@@ -149,7 +152,6 @@ function PhotoLightbox({
         </button>
       )}
 
-      {/* Close */}
       <button
         className="absolute top-4 right-4 p-2 transition-colors"
         style={{ color: "rgba(255,255,255,0.5)" }}
@@ -254,38 +256,20 @@ function VideoModal({ video, onClose }: { video: GalleryVideo; onClose: () => vo
 }
 
 // ─── Bento span patterns ────────────────────────────────────────────────────────
-// Each entry: [colSpan, rowSpan] for a 4-column grid
 const PHOTO_SPANS: [number, number][] = [
-  [2, 2], // 0 — hero (team)
-  [1, 1], // 1 — team over
-  [1, 2], // 2 — team shot (tall)
-  [1, 1], // 3 — team2
-  [1, 1], // 4
-  [1, 1], // 5
-  [2, 1], // 6 — wide
-  [1, 1], // 7
-  [1, 2], // 8 — tall
-  [1, 1], // 9
-  [2, 1], // 10 — wide
-  [1, 1], // 11
-  [1, 1], // 12
+  [2, 2], [1, 1], [1, 2], [1, 1], [1, 1], [1, 1], [2, 1], [1, 1],
+  [1, 2], [1, 1], [2, 1], [1, 1], [1, 1],
 ];
 
 const VIDEO_SPANS: [number, number][] = [
-  [2, 2], // 0 — hero
-  [1, 1], // 1
-  [1, 2], // 2 — tall
-  [1, 1], // 3
-  [1, 1], // 4
-  [1, 1], // 5
-  [2, 1], // 6 — wide
-  [1, 1], // 7
-  [1, 1], // 8
+  [2, 2], [1, 1], [1, 2], [1, 1], [1, 1], [1, 1], [2, 1], [1, 1],
+  [1, 1], [1, 1], [2, 1], [1, 1], [1, 2], [1, 1], [1, 1], [2, 1],
+  [1, 1], [1, 1],
 ];
 
 // ─── Card shared styles ─────────────────────────────────────────────────────────
 const cardBase =
-  "relative overflow-hidden cursor-pointer group transition-[border-color,box-shadow] duration-300";
+  "relative overflow-hidden cursor-pointer group transition-[border-color,box-shadow] duration-200";
 
 const cardStyle = {
   borderRadius: "3px",
@@ -293,7 +277,7 @@ const cardStyle = {
   border: "1px solid rgba(125,211,252,0.15)",
 };
 
-// ─── Photo bento ────────────────────────────────────────────────────────────────
+// ─── Photo bento (CSS only, no Framer Motion on grid items) ──────────────────
 function PhotoBento({ photos }: { photos: GalleryPhoto[] }) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
@@ -317,12 +301,8 @@ function PhotoBento({ photos }: { photos: GalleryPhoto[] }) {
         {photos.map((photo, i) => {
           const [col, row] = PHOTO_SPANS[i] ?? [1, 1];
           return (
-            <motion.div
+            <div
               key={photo.src}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true, amount: 0.05 }}
-              transition={{ duration: 0.3, delay: i * 0.025 }}
               className={cardBase}
               style={{
                 ...cardStyle,
@@ -347,7 +327,6 @@ function PhotoBento({ photos }: { photos: GalleryPhoto[] }) {
                 className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
               />
 
-              {/* Hover overlay */}
               <div
                 className="absolute inset-0 flex items-end p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                 style={{ background: "linear-gradient(to top, rgba(11,15,26,0.85) 0%, transparent 60%)" }}
@@ -357,15 +336,14 @@ function PhotoBento({ photos }: { photos: GalleryPhoto[] }) {
                 </span>
               </div>
 
-              {/* Powder blue corner bracket */}
               <div
-                className="absolute top-0 left-0 w-5 h-5 pointer-events-none transition-colors duration-300"
+                className="absolute top-0 left-0 w-5 h-5 pointer-events-none"
                 style={{
                   borderTop: "2px solid rgba(125,211,252,0.35)",
                   borderLeft: "2px solid rgba(125,211,252,0.35)",
                 }}
               />
-            </motion.div>
+            </div>
           );
         })}
       </div>
@@ -385,7 +363,87 @@ function PhotoBento({ photos }: { photos: GalleryPhoto[] }) {
   );
 }
 
-// ─── Video bento ─────────────────────────────────────────────────────────────────
+// ─── Video card ──────────────────────────────────────────────────────────────────
+function VideoCard({ video, style, onClick }: { video: GalleryVideo; style?: React.CSSProperties; onClick: () => void }) {
+  const [hovered, setHovered] = useState(false);
+  const ytId = getYouTubeId(video.src);
+
+  return (
+    <div
+      className={cardBase}
+      style={{ ...cardStyle, ...style }}
+      onClick={onClick}
+      onMouseEnter={(e) => {
+        setHovered(true);
+        (e.currentTarget as HTMLElement).style.borderColor = "rgba(204,21,51,0.55)";
+        (e.currentTarget as HTMLElement).style.boxShadow = "0 0 0 1px rgba(204,21,51,0.2)";
+      }}
+      onMouseLeave={(e) => {
+        setHovered(false);
+        (e.currentTarget as HTMLElement).style.borderColor = "rgba(125,211,252,0.12)";
+        (e.currentTarget as HTMLElement).style.boxShadow = "none";
+      }}
+    >
+      {ytId ? (
+        <Image
+          src={`https://img.youtube.com/vi/${ytId}/hqdefault.jpg`}
+          alt="YouTube thumbnail"
+          fill
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      ) : (
+        <ThumbnailVideo
+          src={video.src}
+          playing={hovered}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      )}
+
+      {/* Scrim */}
+      <div className="absolute inset-0" style={{ backgroundColor: "rgba(11,15,26,0.45)" }} />
+
+      {/* Play button */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div
+          className="w-11 h-11 rounded-full flex items-center justify-center transition-transform duration-200 group-hover:scale-110"
+          style={{ backgroundColor: "rgba(120,120,120,0.7)" }}
+        >
+          <svg
+            className="w-5 h-5 text-white"
+            style={{ marginLeft: "2px" }}
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </div>
+      </div>
+
+      {/* Label */}
+      {video.label && (
+        <div
+          className="absolute bottom-0 left-0 right-0 p-3"
+          style={{ background: "linear-gradient(to top, rgba(11,15,26,0.9) 0%, transparent 100%)" }}
+        >
+          <p className="text-[10px] font-bold text-white uppercase tracking-wider truncate">
+            {video.label}
+          </p>
+        </div>
+      )}
+
+      {/* Powder blue corner bracket */}
+      <div
+        className="absolute top-0 left-0 w-5 h-5 pointer-events-none"
+        style={{
+          borderTop: "2px solid rgba(125,211,252,0.35)",
+          borderLeft: "2px solid rgba(125,211,252,0.35)",
+        }}
+      />
+    </div>
+  );
+}
+
+// ─── Video bento (CSS only, no Framer Motion on grid items) ──────────────────
 function VideoBento({ videos }: { videos: GalleryVideo[] }) {
   const [activeVideo, setActiveVideo] = useState<GalleryVideo | null>(null);
 
@@ -400,76 +458,15 @@ function VideoBento({ videos }: { videos: GalleryVideo[] }) {
         {videos.map((video, i) => {
           const [col, row] = VIDEO_SPANS[i] ?? [1, 1];
           return (
-            <motion.div
+            <VideoCard
               key={video.src}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true, amount: 0.05 }}
-              transition={{ duration: 0.3, delay: i * 0.025 }}
-              className={cardBase}
+              video={video}
               style={{
-                ...cardStyle,
                 gridColumn: `span ${col}`,
                 gridRow: `span ${row}`,
               }}
               onClick={() => setActiveVideo(video)}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = "rgba(204,21,51,0.55)";
-                (e.currentTarget as HTMLElement).style.boxShadow = "0 0 0 1px rgba(204,21,51,0.2)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = "rgba(125,211,252,0.12)";
-                (e.currentTarget as HTMLElement).style.boxShadow = "none";
-              }}
-            >
-              {/* First-frame thumbnail — no playback */}
-              <VideoThumb
-                src={video.src}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-
-              {/* Scrim */}
-              <div
-                className="absolute inset-0 transition-opacity duration-300"
-                style={{ backgroundColor: "rgba(11,15,26,0.45)" }}
-              />
-
-              {/* Play button */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div
-                  className="w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110"
-                  style={{ backgroundColor: "rgba(204,21,51,0.85)" }}
-                >
-                  <svg
-                    className="w-5 h-5 text-white"
-                    style={{ marginLeft: "2px" }}
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
-              </div>
-
-              {/* Label */}
-              <div
-                className="absolute bottom-0 left-0 right-0 p-3"
-                style={{ background: "linear-gradient(to top, rgba(11,15,26,0.9) 0%, transparent 100%)" }}
-              >
-                <p className="text-[10px] font-bold text-white uppercase tracking-wider truncate">
-                  {video.label}
-                </p>
-              </div>
-
-              {/* Powder blue corner bracket */}
-              <div
-                className="absolute top-0 left-0 w-5 h-5 pointer-events-none"
-                style={{
-                  borderTop: "2px solid rgba(125,211,252,0.35)",
-                  borderLeft: "2px solid rgba(125,211,252,0.35)",
-                }}
-              />
-            </motion.div>
+            />
           );
         })}
       </div>

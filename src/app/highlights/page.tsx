@@ -23,6 +23,7 @@ const players: PlayerHighlights[] = [
       { id: "r1", title: "JRT IV — 2026", src: "https://youtu.be/aGrVfM6HsO0" },
       { id: "r2", title: "JRT IV — Clip 1", src: "/videos/Ryder1.mp4" },
       { id: "r3", title: "JRT IV — Clip 2", src: "/videos/Ryder2.mp4" },
+      { id: "r4", title: "JRT IV — Clip 3", src: "/videos/ryder3.mp4" },
     ],
   },
   {
@@ -38,7 +39,7 @@ const players: PlayerHighlights[] = [
     id: "kaden",
     name: "Gotta Be",
     clips: [
-      { id: "k1", title: "Gotta Be — Trap Edition", src: "/videos/GottaBe - Trap Edition.mov" },
+      { id: "k1", title: "Gotta Be — Trap Edition", src: "/videos/GottaBe - Trap Edition.mp4" },
       { id: "k2", title: "Gotta Be — Clip 1", src: "/videos/Kaden1.mp4" },
     ],
   },
@@ -46,7 +47,20 @@ const players: PlayerHighlights[] = [
     id: "slobby-robby",
     name: "Slobby Robby",
     clips: [
-      { id: "sr1", title: "Slobby Robby 2026", src: "/videos/Slobby Robby 2026.mov" },
+      { id: "sr1", title: "Slobby Robby 2026", src: "/videos/Slobby Robby 2026.mp4" },
+    ],
+  },
+  {
+    id: "matt",
+    name: "Matt",
+    clips: [
+      { id: "m1", title: "Matt — Clip 1", src: "/videos/matt1.mp4" },
+      { id: "m2", title: "Matt — Clip 2", src: "/videos/matt2.mp4" },
+      { id: "m3", title: "Matt — Clip 3", src: "/videos/matt3.mp4" },
+      { id: "m4", title: "Matt — Clip 4", src: "/videos/matt4.mp4" },
+      { id: "m5", title: "Matt — Clip 5", src: "/videos/matt5.mp4" },
+      { id: "m6", title: "Matt — Clip 6", src: "/videos/matt6.mp4" },
+      { id: "m7", title: "Matt — Clip 7", src: "/videos/matt7.mp4" },
     ],
   },
 ];

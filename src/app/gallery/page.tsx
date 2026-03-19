@@ -28,15 +28,24 @@ const photos: GalleryPhoto[] = [
 ];
 
 const videos: GalleryVideo[] = [
-  { src: "https://youtu.be/aGrVfM6HsO0", label: "JRT IV – 2026" },
-  { src: "/videos/Dylan1.mp4", label: "Xavier Laflamme – Final Cut" },
-  { src: "/videos/Dylan2.mp4", label: "Xavier Laflamme – Clip 2" },
-  { src: "/videos/dylan - 2026.mp4", label: "Xavier Laflamme – 2026" },
-  { src: "/videos/GottaBe - Trap Edition.mov", label: "Gotta Be – Trap Edition" },
-  { src: "/videos/Slobby Robby 2026.mov", label: "Slobby Robby 2026" },
-  { src: "/videos/Ryder1.mp4", label: "JRT IV – Clip 1" },
-  { src: "/videos/Ryder2.mp4", label: "JRT IV – Clip 2" },
-  { src: "/videos/Kaden1.mp4", label: "Gotta Be – Clip 1" },
+  { src: "https://youtu.be/aGrVfM6HsO0", label: "" },
+  { src: "/videos/team clip.mp4", label: "" },
+  { src: "/videos/Dylan1.mp4", label: "" },
+  { src: "/videos/Dylan2.mp4", label: "" },
+  { src: "/videos/dylan - 2026.mp4", label: "" },
+  { src: "/videos/GottaBe - Trap Edition.mp4", label: "" },
+  { src: "/videos/Slobby Robby 2026.mp4", label: "" },
+  { src: "/videos/Ryder1.mp4", label: "" },
+  { src: "/videos/Ryder2.mp4", label: "" },
+  { src: "/videos/ryder3.mp4", label: "" },
+  { src: "/videos/Kaden1.mp4", label: "" },
+  { src: "/videos/matt1.mp4", label: "" },
+  { src: "/videos/matt2.mp4", label: "" },
+  { src: "/videos/matt3.mp4", label: "" },
+  { src: "/videos/matt4.mp4", label: "" },
+  { src: "/videos/matt5.mp4", label: "" },
+  { src: "/videos/matt6.mp4", label: "" },
+  { src: "/videos/matt7.mp4", label: "" },
 ];
 
 export default function GalleryPage() {

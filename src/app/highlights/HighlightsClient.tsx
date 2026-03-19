@@ -10,27 +10,62 @@ function getYouTubeId(src: string): string | null {
   return m ? m[1] : null;
 }
 
-// ─── Lazy video thumbnail ─────────────────────────────────────────────────────
-function LazyVideo({ src, className }: { src: string; className?: string }) {
+// ─── Thumbnail video (lazy-loads metadata only when in view) ─────────────────
+function ThumbnailVideo({
+  src,
+  className,
+  playing,
+}: {
+  src: string;
+  className?: string;
+  playing: boolean;
+}) {
   const ref = useRef<HTMLVideoElement>(null);
+  const [visible, setVisible] = useState(false);
+
   useEffect(() => {
     const video = ref.current;
     if (!video) return;
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          if (!video.src) video.src = src;
-          video.play().catch(() => {});
-        } else {
-          video.pause();
-        }
-      },
-      { threshold: 0.15 }
+      ([entry]) => setVisible(entry.isIntersecting),
+      { rootMargin: "200px" }
     );
     observer.observe(video);
     return () => observer.disconnect();
-  }, [src]);
-  return <video ref={ref} loop muted playsInline preload="none" className={className} />;
+  }, []);
+
+  useEffect(() => {
+    const video = ref.current;
+    if (!video) return;
+    if (visible) {
+      if (!video.getAttribute("src")) video.src = src;
+    } else {
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+    }
+  }, [visible, src]);
+
+  useEffect(() => {
+    const video = ref.current;
+    if (!video || !visible) return;
+    if (playing) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [playing, visible]);
+
+  return (
+    <video
+      ref={ref}
+      loop
+      muted
+      playsInline
+      preload="metadata"
+      className={className}
+    />
+  );
 }
 
 // ─── Full-screen video modal ──────────────────────────────────────────────────
@@ -97,47 +132,73 @@ function VideoModal({ clip, onClose }: { clip: PlayerClip; onClose: () => void }
   );
 }
 
-// ─── Drag-to-scroll ───────────────────────────────────────────────────────────
-function useDragScroll() {
+// ─── Scroll with arrows ──────────────────────────────────────────────────────
+function useScrollArrows() {
   const ref = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const update = () => {
+    const el = ref.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+  };
+
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    let isDown = false;
-    let startX = 0;
-    let scrollLeft = 0;
-    const onDown = (e: MouseEvent) => { isDown = true; el.style.cursor = "grabbing"; startX = e.pageX - el.offsetLeft; scrollLeft = el.scrollLeft; };
-    const onUp = () => { isDown = false; el.style.cursor = "grab"; };
-    const onMove = (e: MouseEvent) => { if (!isDown) return; e.preventDefault(); el.scrollLeft = scrollLeft - (e.pageX - el.offsetLeft - startX); };
-    el.style.cursor = "grab";
-    el.addEventListener("mousedown", onDown);
-    window.addEventListener("mouseup", onUp);
-    el.addEventListener("mousemove", onMove);
-    return () => { el.removeEventListener("mousedown", onDown); window.removeEventListener("mouseup", onUp); el.removeEventListener("mousemove", onMove); };
+    update();
+    el.addEventListener("scroll", update, { passive: true });
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => { el.removeEventListener("scroll", update); ro.disconnect(); };
   }, []);
-  return ref;
+
+  const scroll = (direction: "left" | "right") => {
+    const el = ref.current;
+    if (!el) return;
+    const amount = el.clientWidth * 0.75;
+    el.scrollBy({ left: direction === "right" ? amount : -amount, behavior: "smooth" });
+  };
+
+  return { ref, canScrollLeft, canScrollRight, scroll };
 }
 
-// ─── Clip card ────────────────────────────────────────────────────────────────
-function ClipCard({ clip, onClick }: { clip: PlayerClip; onClick: () => void }) {
+function ScrollArrow({ direction, onClick }: { direction: "left" | "right"; onClick: () => void }) {
   return (
-    <motion.div
-      whileHover={{ scale: 1.04 }}
-      transition={{ duration: 0.18, ease: "easeOut" }}
-      className="flex-shrink-0 w-52 sm:w-64 group cursor-pointer"
+    <button
       onClick={onClick}
+      className="absolute top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
+      style={{
+        [direction === "right" ? "right" : "left"]: "6px",
+        backgroundColor: "rgba(204,21,51,0.85)",
+        boxShadow: "0 2px 12px rgba(0,0,0,0.5)",
+      }}
+    >
+      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d={direction === "right" ? "M9 5l7 7-7 7" : "M15 19l-7-7 7-7"} />
+      </svg>
+    </button>
+  );
+}
+
+// ─── Clip card (CSS only, no Framer Motion) ──────────────────────────────────
+function ClipCard({ clip, onClick }: { clip: PlayerClip; onClick: () => void }) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div
+      className="flex-shrink-0 w-52 sm:w-64 cursor-pointer transition-transform duration-200 ease-out hover:scale-[1.04]"
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <div
-        className="rounded overflow-hidden aspect-video relative"
+        className="rounded overflow-hidden aspect-video relative transition-colors duration-200"
         style={{
           backgroundColor: "#0b0f1a",
-          border: "1px solid rgba(125,211,252,0.12)",
-        }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.borderColor = "rgba(204,21,51,0.5)";
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLElement).style.borderColor = "rgba(125,211,252,0.12)";
+          border: `1px solid ${hovered ? "rgba(204,21,51,0.5)" : "rgba(125,211,252,0.12)"}`,
         }}
       >
         {getYouTubeId(clip.src) ? (
@@ -145,20 +206,24 @@ function ClipCard({ clip, onClick }: { clip: PlayerClip; onClick: () => void }) 
             src={`https://img.youtube.com/vi/${getYouTubeId(clip.src)}/hqdefault.jpg`}
             alt={clip.title}
             fill
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+            className="absolute inset-0 w-full h-full object-cover"
           />
         ) : (
-          <LazyVideo src={clip.src} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
+          <ThumbnailVideo
+            src={clip.src}
+            playing={hovered}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
         )}
 
         {/* Scrim */}
-        <div className="absolute inset-0 transition-opacity duration-300" style={{ backgroundColor: "rgba(11,15,26,0.4)" }} />
+        <div className="absolute inset-0" style={{ backgroundColor: "rgba(11,15,26,0.4)" }} />
 
         {/* Play button */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110"
-            style={{ backgroundColor: "rgba(204,21,51,0.85)" }}
+            className="w-10 h-10 rounded-full flex items-center justify-center transition-transform duration-200 hover:scale-110"
+            style={{ backgroundColor: "rgba(120,120,120,0.7)" }}
           >
             <svg className="w-4 h-4 text-white" style={{ marginLeft: "2px" }} fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z" />
@@ -175,28 +240,21 @@ function ClipCard({ clip, onClick }: { clip: PlayerClip; onClick: () => void }) 
           }}
         />
       </div>
-    </motion.div>
+    </div>
   );
 }
 
-// ─── Player section ───────────────────────────────────────────────────────────
-function PlayerSection({ player, index }: { player: PlayerHighlights; index: number }) {
+// ─── Player section (CSS fade-in, no Framer Motion) ──────────────────────────
+function PlayerSection({ player }: { player: PlayerHighlights }) {
   const [activeClip, setActiveClip] = useState<PlayerClip | null>(null);
-  const scrollRef = useDragScroll();
+  const { ref: scrollRef, canScrollLeft, canScrollRight, scroll } = useScrollArrows();
   const isTeam = player.id === "team";
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.15 }}
-        transition={{ duration: 0.4, delay: index * 0.05 }}
-        className="mb-14"
-      >
+      <div className="mb-14">
         {/* Player header */}
         <div className="flex items-center gap-5 mb-5">
-          {/* Left accent bar */}
           <div
             className="w-1 self-stretch rounded-full flex-shrink-0"
             style={{ backgroundColor: isTeam ? "#cc1533" : "#7dd3fc", minHeight: "48px" }}
@@ -223,7 +281,6 @@ function PlayerSection({ player, index }: { player: PlayerHighlights; index: num
             </div>
           </div>
 
-          {/* Clip count badge */}
           <div
             className="flex-shrink-0 px-3 py-1 rounded text-xs font-black uppercase tracking-wider"
             style={{
@@ -244,10 +301,22 @@ function PlayerSection({ player, index }: { player: PlayerHighlights; index: num
 
         {/* Scrollable clip row */}
         <div className="relative">
-          <div
-            className="pointer-events-none absolute right-0 top-0 h-full w-16 z-10"
-            style={{ background: "linear-gradient(to left, #06080e, transparent)" }}
-          />
+          {canScrollLeft && (
+            <div
+              className="pointer-events-none absolute left-0 top-0 h-full w-16 z-10"
+              style={{ background: "linear-gradient(to right, #06080e, transparent)" }}
+            />
+          )}
+          {canScrollRight && (
+            <div
+              className="pointer-events-none absolute right-0 top-0 h-full w-16 z-10"
+              style={{ background: "linear-gradient(to left, #06080e, transparent)" }}
+            />
+          )}
+
+          {canScrollLeft && <ScrollArrow direction="left" onClick={() => scroll("left")} />}
+          {canScrollRight && <ScrollArrow direction="right" onClick={() => scroll("right")} />}
+
           <div
             ref={scrollRef}
             className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide select-none"
@@ -257,7 +326,7 @@ function PlayerSection({ player, index }: { player: PlayerHighlights; index: num
             ))}
           </div>
         </div>
-      </motion.div>
+      </div>
 
       <AnimatePresence>
         {activeClip && (
@@ -272,8 +341,8 @@ function PlayerSection({ player, index }: { player: PlayerHighlights; index: num
 export default function HighlightsClient({ players }: { players: PlayerHighlights[] }) {
   return (
     <div>
-      {players.map((player, i) => (
-        <PlayerSection key={player.id} player={player} index={i} />
+      {players.map((player) => (
+        <PlayerSection key={player.id} player={player} />
       ))}
     </div>
   );
