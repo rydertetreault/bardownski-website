@@ -58,7 +58,7 @@ function getWeekPeriods(matches: Match[]): WeekPeriod[] {
     weekStart.setUTCDate(weekStart.getUTCDate() + 7);
   }
 
-  return weeks;
+  return weeks.reverse();
 }
 
 function getResult(match: Match): "W" | "L" | null {
