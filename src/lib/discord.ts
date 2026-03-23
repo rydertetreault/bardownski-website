@@ -823,21 +823,23 @@ export function computeMvpOdds(messages: unknown[]): MvpOddsEntry[] {
   all.sort((a, b) => b.normalizedScore - a.normalizedScore);
   const top5 = all.slice(0, 5);
 
-  // Probabilities sum to 100% across the displayed top 5
-  const totalScore = top5.reduce((s, e) => s + e.normalizedScore, 0);
+  // Concentrate probability toward top players using power scaling
+  const maxScore = top5[0]?.normalizedScore ?? 1;
+  const SHARPNESS = 4;
+  const weights = top5.map((e) => Math.pow(e.normalizedScore / maxScore, SHARPNESS));
+  const totalWeight = weights.reduce((s, w) => s + w, 0);
 
   return top5.map((entry, index) => {
     const p = playerMap[entry.name];
-    const prob = totalScore > 0 ? entry.normalizedScore / totalScore : 0;
+    const prob = totalWeight > 0 ? weights[index] / totalWeight : 0;
 
-    // Convert to American odds (favorite always gets negative odds)
+    // Convert to American odds
     let odds: string;
-    if (prob >= 0.5) {
-      odds = `${Math.round(-(prob / (1 - prob)) * 100)}`;
-    } else if (prob > 0 && index === 0) {
-      odds = `${Math.round(-(prob / (1 - prob)) * 100)}`;
-    } else if (prob > 0) {
-      odds = `+${Math.round(((1 - prob) / prob) * 100)}`;
+    if (prob > 0) {
+      const raw = prob >= 0.5
+        ? Math.round(-(prob / (1 - prob)) * 100)
+        : Math.round(((1 - prob) / prob) * 100);
+      odds = prob >= 0.5 ? `${raw}` : `+${raw}`;
     } else {
       odds = "—";
     }

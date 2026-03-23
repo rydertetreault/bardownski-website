@@ -5,6 +5,110 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp } from "@/components/ui/Animate";
 import { getNickname } from "@/lib/nicknames";
 
+/* ── Info Modal ── */
+
+function MvpInfoModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+      <div
+        className="relative bg-navy border border-border rounded-xl max-w-lg w-full max-h-[80vh] overflow-y-auto p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-muted hover:text-white transition-colors cursor-pointer"
+        >
+          ✕
+        </button>
+
+        <h3 className="text-lg font-bold uppercase tracking-wider mb-4">
+          How MVP Odds Are Calculated
+        </h3>
+
+        <div className="space-y-4 text-sm text-muted leading-relaxed">
+          <p className="text-white/80">
+            Every player gets a <span className="text-white font-semibold">per-game rating</span> based
+            on their stats, multiplied by <span className="text-white font-semibold">sqrt(games played)</span> to
+            reward volume without letting it dominate.
+          </p>
+
+          <div>
+            <h4 className="text-xs font-bold uppercase tracking-widest text-[#cc1533] mb-2">
+              Skater Score
+            </h4>
+            <div className="bg-navy-dark/50 rounded-lg p-3 space-y-1 text-xs font-mono">
+              <p>PPG <span className="text-muted/60">* 20</span> <span className="text-muted/40">// offensive production</span></p>
+              <p>Goals/GP <span className="text-muted/60">* 15</span> <span className="text-muted/40">// goal scoring</span></p>
+              <p>+/- per GP <span className="text-muted/60">* 8</span> <span className="text-muted/40">// two-way impact</span></p>
+              <p>GWG/GP <span className="text-muted/60">* 30</span> <span className="text-muted/40">// clutch factor</span></p>
+              <p>Shot % <span className="text-muted/60">* 0.3</span> <span className="text-muted/40">// efficiency</span></p>
+              <p>Hits/GP <span className="text-muted/60">* 0.5</span> <span className="text-muted/40">// physicality</span></p>
+              <p>Takeaways/GP <span className="text-muted/60">* 0.5</span> <span className="text-muted/40">// defense</span></p>
+              <p>Giveaways/GP <span className="text-muted/60">* -0.3</span> <span className="text-muted/40">// turnover penalty</span></p>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-xs font-bold uppercase tracking-widest text-[#cc1533] mb-2">
+              Goalie Score
+            </h4>
+            <div className="bg-navy-dark/50 rounded-lg p-3 space-y-1 text-xs font-mono">
+              <p>Save % <span className="text-muted/60">* 0.5</span> <span className="text-muted/40">// core goalie stat</span></p>
+              <p>10 - GAA <span className="text-muted/60">* 3</span> <span className="text-muted/40">// goals against efficiency</span></p>
+              <p>Shutouts/GP <span className="text-muted/60">* 200</span> <span className="text-muted/40">// elite performances</span></p>
+              <p>Win % <span className="text-muted/60">* 0.3</span> <span className="text-muted/40">// results</span></p>
+              <p>Saves/GP <span className="text-muted/60">* 0.5</span> <span className="text-muted/40">// workload</span></p>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-xs font-bold uppercase tracking-widest text-[#cc1533] mb-2">
+              Why sqrt(GP)?
+            </h4>
+            <p>
+              A player with 200 games doesn&apos;t get 4x the score of someone with 50
+              games - they get ~2x. You can&apos;t just rack up games with average stats
+              to climb the board, but playing more games with good stats does reward you.
+              Part-time players with inflated rate stats from small samples get naturally pulled down.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="text-xs font-bold uppercase tracking-widest text-[#cc1533] mb-2">
+              Odds Conversion
+            </h4>
+            <p>
+              Scores are normalized against the top player, raised to the 3rd power
+              to create separation, then converted to probabilities and American odds.
+              Minimum 5 GP to qualify.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function MvpInfoButton() {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="w-5 h-5 rounded-full border border-border text-[10px] font-bold text-muted hover:text-white hover:border-white/40 transition-colors cursor-pointer flex items-center justify-center"
+        title="How are odds calculated?"
+      >
+        i
+      </button>
+      {open && <MvpInfoModal onClose={() => setOpen(false)} />}
+    </>
+  );
+}
+
 export function MvpOddsAnimations({ children }: { children: ReactNode }) {
   return <FadeUp>{children}</FadeUp>;
 }

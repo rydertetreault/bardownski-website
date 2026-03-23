@@ -206,6 +206,7 @@ export interface ClubMember {
   faceoffPct: number;
   passCompPct: number;
   goalieGP: number;
+  goalieWins: number;
   goalieRecord: string;
   goalieSaves: number;
   goalieShots: number;
@@ -436,6 +437,7 @@ function transformMember(raw: RawMember): ClubMember {
     faceoffPct: flt(raw["FO %"] as string),
     passCompPct: flt(raw["Pass %"] as string),
     goalieGP: num(raw["Goalie games played"]),
+    goalieWins: num(raw["Goalie wins"]),
     goalieRecord: (raw["Goalie record"] as string) || "0-0-0",
     goalieSaves: num(raw["Goalie saves"]),
     goalieShots: num(raw["Goalie shots"]),
@@ -667,72 +669,67 @@ export function computeMvpOddsFromMembers(
 ): MvpOddsEntry[] {
   if (members.length === 0) return [];
 
-  const skaters: { member: ClubMember; score: number }[] = [];
-  const goalies: { member: ClubMember; score: number }[] = [];
-
   // Exclude specific players from skater odds (goalie-only in MVP race)
   const SKATER_EXCLUDE = new Set(["Rydayro"]);
+  const MIN_GP = 5;
+
+  const entries: { member: ClubMember; score: number; isGoalie: boolean }[] = [];
 
   for (const m of members) {
-    if (m.gamesPlayed > 0 && !SKATER_EXCLUDE.has(m.username)) {
-      const score =
-        m.ppg * 40 +
-        m.points * 1.5 +
-        m.goals * 1.0 +
-        m.gwg * 5 +
-        Math.max(m.plusMinus, 0) * 0.8 +
-        m.hits * 0.1 +
-        m.shotPct * 0.3;
-      skaters.push({ member: m, score });
+    // --- Skater score ---
+    // Per-game rate stats measure quality, sqrt(GP) rewards volume.
+    if (m.gamesPlayed >= MIN_GP && !SKATER_EXCLUDE.has(m.username)) {
+      const gp = m.gamesPlayed;
+      const perGame =
+        m.ppg * 20 +                          // offensive production rate
+        (m.goals / gp) * 15 +                 // goal-scoring rate
+        Math.max(m.plusMinus, 0) / gp * 8 +   // two-way impact
+        (m.gwg / gp) * 30 +                   // clutch factor
+        m.shotPct * 0.3 +                     // shooting efficiency
+        (m.hits / gp) * 0.5 +                 // physical presence
+        (m.takeaways / gp) * 0.5 -            // defensive play
+        (m.giveaways / gp) * 0.3;             // turnover penalty
+      const score = perGame * Math.sqrt(gp);
+      entries.push({ member: m, score, isGoalie: false });
     }
 
-    if (m.goalieGP >= 5) {
-      const score =
-        m.savePct * 2.0 +
-        m.shutouts * 15 +
-        (m.gaa > 0 ? (10 / m.gaa) * 5 : 0) +
-        m.goalieGP * 1.0;
-      goalies.push({ member: m, score });
+    // --- Goalie score ---
+    // Rate stats calibrated so an elite goalie season ≈ elite skater season.
+    if (m.goalieGP >= MIN_GP) {
+      const ggp = m.goalieGP;
+      const goalieWinPct = ggp > 0 ? (m.goalieWins / ggp) * 100 : 0;
+      const perGame =
+        m.savePct * 0.5 +                     // save percentage (core stat)
+        Math.max(10 - m.gaa, 0) * 3 +         // GAA inverted (lower = better)
+        (m.shutouts / ggp) * 200 +            // shutout rate
+        goalieWinPct * 0.3 +                  // win percentage
+        (m.goalieSaves / ggp) * 0.5;          // workload per game
+      const score = perGame * Math.sqrt(ggp);
+      entries.push({ member: m, score, isGoalie: true });
     }
   }
 
-  if (skaters.length === 0 && goalies.length === 0) return [];
+  if (entries.length === 0) return [];
 
-  // Scale goalie scores into skater range so they compete on the same axis
-  const maxSkater = Math.max(...skaters.map((s) => s.score), 1);
-  const maxGoalie = Math.max(...goalies.map((g) => g.score), 1);
-  const GOALIE_FACTOR = 0.35;
-  const goalieScale = (maxSkater * GOALIE_FACTOR) / maxGoalie;
+  entries.sort((a, b) => b.score - a.score);
 
-  const all = [
-    ...skaters.map((s) => ({
-      member: s.member,
-      normalizedScore: s.score,
-      isGoalie: false,
-    })),
-    ...goalies.map((g) => ({
-      member: g.member,
-      normalizedScore: g.score * goalieScale,
-      isGoalie: true,
-    })),
-  ];
+  // Raise normalized scores to a power to concentrate probability toward top
+  // players, producing realistic sportsbook-style odds.
+  const maxScore = entries[0].score;
+  const SHARPNESS = 3;
+  const weights = entries.map((e) => Math.pow(e.score / maxScore, SHARPNESS));
+  const totalWeight = weights.reduce((s, w) => s + w, 0);
 
-  all.sort((a, b) => b.normalizedScore - a.normalizedScore);
-
-  const totalScore = all.reduce((s, e) => s + e.normalizedScore, 0);
-
-  return all.map((entry, index) => {
+  return entries.map((entry, index) => {
     const m = entry.member;
-    const prob = totalScore > 0 ? entry.normalizedScore / totalScore : 0;
+    const prob = totalWeight > 0 ? weights[index] / totalWeight : 0;
 
     let odds: string;
-    if (prob >= 0.5) {
-      odds = `${Math.round(-(prob / (1 - prob)) * 100)}`;
-    } else if (prob > 0 && index === 0) {
-      // Favorite always gets negative odds even if under 50%
-      odds = `${Math.round(-(prob / (1 - prob)) * 100)}`;
-    } else if (prob > 0) {
-      odds = `+${Math.round(((1 - prob) / prob) * 100)}`;
+    if (prob > 0) {
+      const raw = prob >= 0.5
+        ? Math.round(-(prob / (1 - prob)) * 100)
+        : Math.round(((1 - prob) / prob) * 100);
+      odds = prob >= 0.5 ? `${raw}` : `+${raw}`;
     } else {
       odds = "—";
     }
@@ -756,7 +753,7 @@ export function computeMvpOddsFromMembers(
     return {
       name: resolveName(m.username),
       position: entry.isGoalie ? "Goalie" : m.position,
-      score: entry.normalizedScore,
+      score: entry.score,
       probability: prob,
       americanOdds: odds,
       isGoalie: entry.isGoalie,

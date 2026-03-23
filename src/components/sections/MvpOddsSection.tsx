@@ -1,6 +1,6 @@
 import type { MvpOddsEntry } from "@/lib/discord";
 import { getNickname } from "@/lib/nicknames";
-import { MvpOddsAnimations, MvpOddsSpin, MvpOddsTable } from "./MvpOddsClient";
+import { MvpOddsAnimations, MvpOddsSpin, MvpOddsTable, MvpInfoButton } from "./MvpOddsClient";
 
 /** Compact banner for the homepage — sits right under Top Players */
 export function MvpOddsBanner({ odds }: { odds: MvpOddsEntry[] }) {
@@ -38,6 +38,7 @@ export default function MvpOddsSection({ odds }: { odds: MvpOddsEntry[] }) {
           <span className="text-xs text-muted uppercase tracking-wider">
             Live from EA
           </span>
+          <MvpInfoButton />
         </div>
 
         <MvpOddsTable odds={odds} />
