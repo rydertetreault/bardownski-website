@@ -496,7 +496,7 @@ export default function RecordsClient({
         <SectionBanner
           title="Skater Records"
           subtitle="Hanging in the rafters"
-          imageSrc="/images/gallery/screenshots/Screenshot 2026-03-16 183710.png"
+          imageSrc="/images/gallery/screenshots/Screenshot 2026-03-16 183710.webp"
           imageAlt="Bardownski skater"
           objectPosition="0% 75%"
         />
@@ -513,7 +513,7 @@ export default function RecordsClient({
           <SectionBanner
             title="Goalie Records"
             subtitle="Between the pipes"
-            imageSrc="/images/gallery/screenshots/Screenshot 2026-03-16 183710.png"
+            imageSrc="/images/gallery/screenshots/Screenshot 2026-03-16 183710.webp"
             imageAlt="Bardownski goalie making a save"
             objectPosition="70% 50%"
           />

@@ -12,19 +12,19 @@ export interface GalleryVideo {
 }
 
 const photos: GalleryPhoto[] = [
-  { src: "/images/gallery/screenshots/team.png", alt: "Team" },
-  { src: "/images/gallery/screenshots/team%20over.png", alt: "Team Overhead" },
-  { src: "/images/gallery/screenshots/team%20shot.png", alt: "Team Celebration" },
-  { src: "/images/gallery/screenshots/team2.png", alt: "Team Win" },
-  { src: "/images/gallery/screenshots/IMG_3288.png", alt: "Bardownski" },
+  { src: "/images/gallery/screenshots/team.webp", alt: "Team" },
+  { src: "/images/gallery/screenshots/team%20over.webp", alt: "Team Overhead" },
+  { src: "/images/gallery/screenshots/team%20shot.webp", alt: "Team Celebration" },
+  { src: "/images/gallery/screenshots/team2.webp", alt: "Team Win" },
+  { src: "/images/gallery/screenshots/IMG_3288.webp", alt: "Bardownski" },
   { src: "/images/gallery/screenshots/IMG_3294.jpg", alt: "Bardownski" },
-  { src: "/images/gallery/screenshots/IMG_3428.png", alt: "Bardownski" },
-  { src: "/images/gallery/screenshots/t.png", alt: "Bardownski" },
-  { src: "/images/gallery/screenshots/Screenshot 2026-03-16 183502.png", alt: "Screenshot" },
-  { src: "/images/gallery/screenshots/Screenshot 2026-03-16 183710.png", alt: "Screenshot" },
-  { src: "/images/gallery/screenshots/Screenshot 2026-03-16 183904.png", alt: "Screenshot" },
-  { src: "/images/gallery/screenshots/Screenshot 2026-03-16 183953.png", alt: "Screenshot" },
-  { src: "/images/gallery/screenshots/Screenshot 2026-03-16 184232.png", alt: "Screenshot" },
+  { src: "/images/gallery/screenshots/IMG_3428.webp", alt: "Bardownski" },
+  { src: "/images/gallery/screenshots/t.webp", alt: "Bardownski" },
+  { src: "/images/gallery/screenshots/Screenshot 2026-03-16 183502.webp", alt: "Screenshot" },
+  { src: "/images/gallery/screenshots/Screenshot 2026-03-16 183710.webp", alt: "Screenshot" },
+  { src: "/images/gallery/screenshots/Screenshot 2026-03-16 183904.webp", alt: "Screenshot" },
+  { src: "/images/gallery/screenshots/Screenshot 2026-03-16 183953.webp", alt: "Screenshot" },
+  { src: "/images/gallery/screenshots/Screenshot 2026-03-16 184232.webp", alt: "Screenshot" },
 ];
 
 const videos: GalleryVideo[] = [

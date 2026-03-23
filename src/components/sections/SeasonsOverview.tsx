@@ -63,7 +63,7 @@ export default function SeasonsOverview() {
       {/* Stadium background */}
       <div className="absolute inset-0">
         <Image
-          src="/images/logo/BD - stadium.png"
+          src="/images/logo/BD - stadium.webp"
           alt=""
           fill
           className="object-cover object-[center_30%] opacity-10"
