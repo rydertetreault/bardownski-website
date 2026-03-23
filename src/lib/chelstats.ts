@@ -701,9 +701,10 @@ export function computeMvpOddsFromMembers(
       const perGame =
         m.savePct * 0.5 +                     // save percentage (core stat)
         Math.max(10 - m.gaa, 0) * 3 +         // GAA inverted (lower = better)
-        (m.shutouts / ggp) * 200 +            // shutout rate
+        (m.shutouts / ggp) * 20 +             // shutout rate
+        (m.shutoutPeriods / ggp) * 30 +       // shutout periods rate (consistency)
         goalieWinPct * 0.3 +                  // win percentage
-        (m.goalieSaves / ggp) * 0.5;          // workload per game
+        (m.goalieSaves / ggp) * 0.3;          // workload per game
       const score = perGame * Math.sqrt(ggp);
       entries.push({ member: m, score, isGoalie: true });
     }

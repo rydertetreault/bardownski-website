@@ -59,9 +59,10 @@ function MvpInfoModal({ onClose }: { onClose: () => void }) {
             <div className="bg-navy-dark/50 rounded-lg p-3 space-y-1 text-xs font-mono">
               <p>Save % <span className="text-muted/60">* 0.5</span> <span className="text-muted/40">// core goalie stat</span></p>
               <p>10 - GAA <span className="text-muted/60">* 3</span> <span className="text-muted/40">// goals against efficiency</span></p>
-              <p>Shutouts/GP <span className="text-muted/60">* 200</span> <span className="text-muted/40">// elite performances</span></p>
+              <p>Shutouts/GP <span className="text-muted/60">* 20</span> <span className="text-muted/40">// elite performances</span></p>
+              <p>SO Periods/GP <span className="text-muted/60">* 30</span> <span className="text-muted/40">// consistency</span></p>
               <p>Win % <span className="text-muted/60">* 0.3</span> <span className="text-muted/40">// results</span></p>
-              <p>Saves/GP <span className="text-muted/60">* 0.5</span> <span className="text-muted/40">// workload</span></p>
+              <p>Saves/GP <span className="text-muted/60">* 0.3</span> <span className="text-muted/40">// workload</span></p>
             </div>
           </div>
 
