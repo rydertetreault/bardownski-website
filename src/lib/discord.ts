@@ -826,13 +826,15 @@ export function computeMvpOdds(messages: unknown[]): MvpOddsEntry[] {
   // Probabilities sum to 100% across the displayed top 5
   const totalScore = top5.reduce((s, e) => s + e.normalizedScore, 0);
 
-  return top5.map((entry) => {
+  return top5.map((entry, index) => {
     const p = playerMap[entry.name];
     const prob = totalScore > 0 ? entry.normalizedScore / totalScore : 0;
 
-    // Convert to American odds
+    // Convert to American odds (favorite always gets negative odds)
     let odds: string;
     if (prob >= 0.5) {
+      odds = `${Math.round(-(prob / (1 - prob)) * 100)}`;
+    } else if (prob > 0 && index === 0) {
       odds = `${Math.round(-(prob / (1 - prob)) * 100)}`;
     } else if (prob > 0) {
       odds = `+${Math.round(((1 - prob) / prob) * 100)}`;

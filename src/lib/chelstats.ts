@@ -698,19 +698,21 @@ export function computeMvpOddsFromMembers(
 
   if (skaters.length === 0 && goalies.length === 0) return [];
 
+  // Scale goalie scores into skater range so they compete on the same axis
   const maxSkater = Math.max(...skaters.map((s) => s.score), 1);
   const maxGoalie = Math.max(...goalies.map((g) => g.score), 1);
   const GOALIE_FACTOR = 0.35;
+  const goalieScale = (maxSkater * GOALIE_FACTOR) / maxGoalie;
 
   const all = [
     ...skaters.map((s) => ({
       member: s.member,
-      normalizedScore: s.score / maxSkater,
+      normalizedScore: s.score,
       isGoalie: false,
     })),
     ...goalies.map((g) => ({
       member: g.member,
-      normalizedScore: (g.score / maxGoalie) * GOALIE_FACTOR,
+      normalizedScore: g.score * goalieScale,
       isGoalie: true,
     })),
   ];
@@ -719,12 +721,15 @@ export function computeMvpOddsFromMembers(
 
   const totalScore = all.reduce((s, e) => s + e.normalizedScore, 0);
 
-  return all.map((entry) => {
+  return all.map((entry, index) => {
     const m = entry.member;
     const prob = totalScore > 0 ? entry.normalizedScore / totalScore : 0;
 
     let odds: string;
     if (prob >= 0.5) {
+      odds = `${Math.round(-(prob / (1 - prob)) * 100)}`;
+    } else if (prob > 0 && index === 0) {
+      // Favorite always gets negative odds even if under 50%
       odds = `${Math.round(-(prob / (1 - prob)) * 100)}`;
     } else if (prob > 0) {
       odds = `+${Math.round(((1 - prob) / prob) * 100)}`;

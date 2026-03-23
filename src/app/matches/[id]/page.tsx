@@ -59,27 +59,47 @@ function generateMatchDescription(match: Match): string {
       parts.push(`Bardownski dropped a ${scoreUs}-${scoreThem} decision to ${match.opponent}.`);
   }
 
-  // Star player narratives — no raw stats, just descriptions of how they played
+  // Star player narratives with specific stats
   const ourStars = match.threeStars?.filter((s) => s.isOurPlayer) ?? [];
   const ourPlayers = match.players?.filter((p) => p.isOurPlayer) ?? [];
+  const mentionedPlayers = new Set<string>();
+
+  function skaterLine(n: string, player: MatchPlayerStat): string {
+    const g = player.goals;
+    const a = player.assists;
+    const pts = g + a;
+    const goalDesc =
+      g >= 3 ? `a hat trick (${g} goals)` :
+      g === 2 ? "two goals" :
+      g === 1 ? "a goal" : "";
+    const assistDesc =
+      a >= 3 ? `${a} assists` :
+      a === 2 ? "two assists" :
+      a === 1 ? "an assist" : "";
+    if (goalDesc && assistDesc) return `${goalDesc} and ${assistDesc} (${pts} points)`;
+    if (goalDesc) return goalDesc;
+    if (assistDesc) return assistDesc;
+    return "";
+  }
+
+  function goalieShutout(player: MatchPlayerStat): boolean {
+    return player.isGoalie && player.goalsAgainst === 0;
+  }
 
   const firstStar = match.threeStars?.[0];
   if (firstStar?.isOurPlayer) {
     const n = name(firstStar.name);
     const player = ourPlayers.find((p) => p.name === firstStar.name);
+    mentionedPlayers.add(firstStar.name);
     if (player?.isGoalie) {
-      if (player.goalsAgainst === 0)
-        parts.push(`${n} was unbeatable in net, turning aside everything that came his way for a shutout performance and first star honors.`);
+      if (goalieShutout(player))
+        parts.push(`${n} earned first star with a ${player.saves}-save shutout, turning aside everything that came his way.`);
       else
-        parts.push(`${n} stood tall between the pipes all game, earning first star with a stellar showing in goal.`);
+        parts.push(`${n} stood tall between the pipes, stopping ${player.saves} of ${player.saves + player.goalsAgainst} shots to earn first star.`);
     } else if (player) {
-      const pts = player.goals + player.assists;
-      if (pts >= 3)
-        parts.push(`${n} was the best player on the ice, putting together an outstanding performance to take home first star.`);
-      else if (player.goals >= 2)
-        parts.push(`${n} couldn't stop finding the back of the net, earning first star with a multi-goal effort.`);
-      else if (pts > 0)
-        parts.push(`${n} made his presence felt all over the ice, earning first star honors.`);
+      const statLine = skaterLine(n, player);
+      if (statLine)
+        parts.push(`${n} earned first star with ${statLine}.`);
       else
         parts.push(`${n} was everywhere on the ice, earning first star with a dominant two-way game.`);
     }
@@ -90,36 +110,59 @@ function generateMatchDescription(match: Match): string {
     const n = name(star.name);
     const player = ourPlayers.find((p) => p.name === star.name);
     const label = star === match.threeStars?.[1] ? "second" : "third";
+    mentionedPlayers.add(star.name);
     if (player?.isGoalie) {
-      parts.push(`${n} was rock solid in net, picking up the ${label} star.`);
+      if (goalieShutout(player))
+        parts.push(`${n} picked up the ${label} star with a ${player.saves}-save shutout.`);
+      else
+        parts.push(`${n} was solid in net with ${player.saves} saves, picking up the ${label} star.`);
     } else if (player) {
-      const pts = player.goals + player.assists;
-      if (pts >= 2)
-        parts.push(`${n} had a big game as well, contributing all over the scoresheet to grab the ${label} star.`);
-      else if (pts > 0)
-        parts.push(`${n} made key plays when it mattered most, earning the ${label} star.`);
+      const statLine = skaterLine(n, player);
+      if (statLine)
+        parts.push(`${n} grabbed the ${label} star with ${statLine}.`);
       else
         parts.push(`${n} played a hard-nosed game and was rewarded with the ${label} star.`);
+    }
+  }
+
+  // Highlight any multi-goal or high-point performers not already mentioned as stars
+  for (const player of ourPlayers) {
+    if (mentionedPlayers.has(player.name) || player.isGoalie) continue;
+    const n = name(player.name);
+    if (player.goals >= 3) {
+      parts.push(`${n} also had a hat trick with ${player.goals} goals.`);
+      mentionedPlayers.add(player.name);
+    } else if (player.goals === 2) {
+      const a = player.assists;
+      if (a > 0)
+        parts.push(`${n} chipped in with two goals and ${a === 1 ? "an assist" : `${a} assists`}.`);
+      else
+        parts.push(`${n} chipped in with two goals of his own.`);
+      mentionedPlayers.add(player.name);
+    } else if (player.goals + player.assists >= 3) {
+      parts.push(`${n} contributed ${player.goals + player.assists} points (${player.goals}G, ${player.assists}A).`);
+      mentionedPlayers.add(player.name);
     }
   }
 
   // If none of our guys made the stars, highlight the top performer
   if (ourStars.length === 0 && ourPlayers.length > 0) {
     const top = ourPlayers
-      .filter((p) => !p.isGoalie)
+      .filter((p) => !p.isGoalie && !mentionedPlayers.has(p.name))
       .sort((a, b) => (b.goals + b.assists) - (a.goals + a.assists))[0];
     if (top && top.goals + top.assists > 0) {
-      parts.push(`${name(top.name)} was the standout for Bardownski, leading the way offensively.`);
+      const statLine = skaterLine(name(top.name), top);
+      parts.push(`${name(top.name)} led the way for Bardownski with ${statLine}.`);
     }
   }
 
   // Goalie nod if not already mentioned as a star
   const goalie = ourPlayers.find((p) => p.isGoalie);
-  if (goalie && !ourStars.some((s) => s.name === goalie.name)) {
-    if (isWin && scoreThem === 0)
-      parts.push(`${name(goalie.name)} slammed the door shut for the shutout.`);
+  if (goalie && !mentionedPlayers.has(goalie.name)) {
+    if (goalieShutout(goalie))
+      parts.push(`${name(goalie.name)} slammed the door shut with a ${goalie.saves}-save shutout.`);
     else if (goalie.saves >= 25)
-      parts.push(`${name(goalie.name)} was kept busy all night but held his ground in net.`);
+      parts.push(`${name(goalie.name)} was kept busy all night, making ${goalie.saves} saves.`);
   }
 
   if (match.matchType === "finals") parts.push("This one came in a club finals matchup.");
