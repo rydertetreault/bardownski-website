@@ -874,7 +874,7 @@ export function computeMvpOdds(messages: unknown[]): MvpOddsEntry[] {
 
 // --- Player of the Cycle ---
 
-export interface CyclePlayer {
+export interface WeeklyPlayer {
   name: string;
   position: string;
   isGoalie: boolean;
@@ -883,10 +883,10 @@ export interface CyclePlayer {
   deltaPoints: number;
   deltaHits: number;
   deltaSaves: number;
-  cycleScore: number;
+  weeklyScore: number;
 }
 
-export function computePlayerOfCycle(messages: unknown[]): CyclePlayer | null {
+export function computePlayerOfWeek(messages: unknown[]): WeeklyPlayer | null {
   // Filter to BARDOWNSKI STATS messages — Discord returns newest first
   const statMessages = (messages as any[]).filter((msg) => {
     const normalized = normalizeUnicode(msg.content || "");
@@ -915,7 +915,7 @@ export function computePlayerOfCycle(messages: unknown[]): CyclePlayer | null {
     ...current.saves.map((e) => e.name),
   ]);
 
-  let best: CyclePlayer | null = null;
+  let best: WeeklyPlayer | null = null;
 
   for (const name of allNames) {
     const isGoalie = current.saves.some((e) => e.name === name);
@@ -935,7 +935,7 @@ export function computePlayerOfCycle(messages: unknown[]): CyclePlayer | null {
       ? deltaSaves * 0.5
       : deltaPoints * 3 + deltaHits * 0.2;
 
-    if (!best || score > best.cycleScore) {
+    if (!best || score > best.weeklyScore) {
       const rosterEntry = current.roster.find((r) => r.name === name);
       best = {
         name,
@@ -946,13 +946,13 @@ export function computePlayerOfCycle(messages: unknown[]): CyclePlayer | null {
         deltaPoints,
         deltaHits,
         deltaSaves,
-        cycleScore: score,
+        weeklyScore: score,
       };
     }
   }
 
   // Only return if there was actual movement this cycle
-  if (!best || best.cycleScore <= 0) return null;
+  if (!best || best.weeklyScore <= 0) return null;
 
   return best;
 }

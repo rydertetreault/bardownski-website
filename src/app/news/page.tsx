@@ -1,8 +1,10 @@
 import NewsBackground from "./NewsBackground";
 import NewsClient from "./NewsClient";
-import { articles as newsItems } from "@/lib/news";
+import { getAllArticles } from "@/lib/articles";
 
-export default function NewsPage() {
+export default async function NewsPage() {
+  const newsItems = await getAllArticles();
+
   return (
     <div className="min-h-screen">
       <NewsBackground />

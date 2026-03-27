@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
-import type { CyclePlayer } from "@/lib/discord";
+import type { WeeklyPlayer } from "@/lib/discord";
 import { getNickname } from "@/lib/nicknames";
 
 interface Props {
-  player: CyclePlayer;
+  player: WeeklyPlayer;
 }
 
-export default function PlayerOfCycleBadge({ player }: Props) {
+export default function PlayerOfWeekBadge({ player }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [visible, setVisible] = useState(true);
 
@@ -72,7 +72,7 @@ export default function PlayerOfCycleBadge({ player }: Props) {
                 <Link href="/stats" className="block px-5 py-5 pr-7">
                   {/* Label */}
                   <p className="text-[#cc1533] text-[9px] font-bold uppercase tracking-[0.22em] mb-4">
-                    Player of the Cycle
+                    Player of the Week
                   </p>
 
                   {/* Player name */}
@@ -91,7 +91,7 @@ export default function PlayerOfCycleBadge({ player }: Props) {
                     {topStat}
                   </p>
                   <p className="text-white/30 text-[9px] uppercase tracking-widest mb-5">
-                    This cycle
+                    This week
                   </p>
 
                   {/* Stat breakdown pills */}
@@ -128,7 +128,7 @@ export default function PlayerOfCycleBadge({ player }: Props) {
                 exit={{ x: -100, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 220, damping: 26 }}
                 className="relative bg-[#0d1528]/95 backdrop-blur-sm border border-white/10 border-l-0 rounded-r-xl overflow-hidden px-3 py-4 flex flex-col items-center gap-3"
-                aria-label="Expand player of the cycle"
+                aria-label="Expand player of the week"
               >
                 {/* Red top accent */}
                 <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#cc1533]" />
@@ -138,7 +138,7 @@ export default function PlayerOfCycleBadge({ player }: Props) {
                   className="text-[#cc1533] text-[8px] font-bold uppercase tracking-[0.2em] whitespace-nowrap"
                   style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
                 >
-                  Player of the Cycle
+                  Player of the Week
                 </span>
 
                 {/* Red dot */}

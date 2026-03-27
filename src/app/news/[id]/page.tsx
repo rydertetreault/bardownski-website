@@ -1,11 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { articles } from "@/lib/news";
+import { getAllArticles, getArticleById } from "@/lib/articles";
+import { articles as manualArticles } from "@/lib/news";
 import NewsBackground from "../NewsBackground";
 
+export const dynamicParams = true;
+
 export function generateStaticParams() {
-  return articles.map((a) => ({ id: a.id }));
+  // Only pre-render manual articles at build time.
+  // Auto articles are rendered on-demand via dynamicParams = true.
+  return manualArticles.map((a) => ({ id: a.id }));
 }
 
 export default async function ArticlePage({
@@ -14,13 +19,14 @@ export default async function ArticlePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const article = articles.find((a) => a.id === id);
+  const article = await getArticleById(id);
   if (!article) notFound();
 
+  const allArticles = await getAllArticles();
   const paragraphs = article.summary.split(/\n\n+/);
-  const idx = articles.findIndex((a) => a.id === id);
-  const prev = articles[idx - 1] ?? null;
-  const next = articles[idx + 1] ?? null;
+  const idx = allArticles.findIndex((a) => a.id === id);
+  const prev = allArticles[idx - 1] ?? null;
+  const next = allArticles[idx + 1] ?? null;
 
   return (
     <div className="min-h-screen">

@@ -1,8 +1,9 @@
 import Image from "next/image";
-import { fetchChannelMessages, parseAllSeasons, computePlayerOfCycle } from "@/lib/discord";
+import { fetchChannelMessages, parseAllSeasons, computePlayerOfWeek } from "@/lib/discord";
 import { fetchChelstatsData, chelstatsToSeasonData, computeMvpOddsFromMembers } from "@/lib/chelstats";
+import { getPlayerOfWeek } from "@/lib/articles";
 import StatsClient from "./StatsClient";
-import PlayerOfCycleSection from "@/components/sections/PlayerOfCycleSection";
+import PlayerOfWeekSection from "@/components/sections/PlayerOfWeekSection";
 import MvpOddsSection from "@/components/sections/MvpOddsSection";
 
 export default async function StatsPage() {
@@ -16,7 +17,10 @@ export default async function StatsPage() {
   const discordSeasons = parseAllSeasons(messages).filter(
     (s) => s.season !== "2025"
   );
-  const cyclePlayer = computePlayerOfCycle(messages);
+
+  // Player of the Week: prefer KV (set by weekly cron), fall back to Discord computation
+  const kvPlayer = await getPlayerOfWeek();
+  const weeklyPlayer = kvPlayer ?? computePlayerOfWeek(messages);
 
   // Chelstats 2025 season (live from EA)
   const chelstatsSeason = chelstats
@@ -98,7 +102,7 @@ export default async function StatsPage() {
         </div>
       </div>
 
-      {cyclePlayer && <PlayerOfCycleSection player={cyclePlayer} />}
+      {weeklyPlayer && <PlayerOfWeekSection player={weeklyPlayer} />}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <MvpOddsSection odds={mvpOdds} />

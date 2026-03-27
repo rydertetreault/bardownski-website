@@ -3,19 +3,25 @@ import FloatingScoreboard from "@/components/sections/FloatingScoreboard";
 import StatsTicker from "@/components/sections/StatsTicker";
 import WhoWeAreSection from "@/components/sections/WhoWeAreSection";
 import StatsPreviewSection from "@/components/sections/StatsPreviewSection";
-import PlayerOfCycleBadge from "@/components/sections/PlayerOfCycleBadge";
+import PlayerOfWeekBadge from "@/components/sections/PlayerOfWeekBadge";
 import HighlightsSection from "@/components/sections/HighlightsSection";
 import NewsSection from "@/components/sections/NewsSection";
-import { fetchChannelMessages, computePlayerOfCycle } from "@/lib/discord";
+import { fetchChannelMessages, computePlayerOfWeek } from "@/lib/discord";
 import { fetchChelstatsData, computeMvpOddsFromMembers } from "@/lib/chelstats";
+import { getAllArticles, getPlayerOfWeek } from "@/lib/articles";
 import type { Match } from "@/types";
 
 export default async function Home() {
-  const [messages, chelstats] = await Promise.all([
+  const [messages, chelstats, allArticles] = await Promise.all([
     fetchChannelMessages(),
     fetchChelstatsData(),
+    getAllArticles(),
   ]);
-  const cyclePlayer = computePlayerOfCycle(messages);
+
+  // Player of the Week: prefer KV (set by weekly cron), fall back to Discord computation
+  const kvPlayer = await getPlayerOfWeek();
+  const weeklyPlayer = kvPlayer ?? computePlayerOfWeek(messages);
+
   const mvpOdds = chelstats ? computeMvpOddsFromMembers(chelstats.members) : [];
 
   const matches: Match[] = chelstats
@@ -42,13 +48,13 @@ export default async function Home() {
 
   return (
     <>
-      {cyclePlayer && <PlayerOfCycleBadge player={cyclePlayer} />}
+      {weeklyPlayer && <PlayerOfWeekBadge player={weeklyPlayer} />}
       <div className="relative z-10">
         <HeroSection />
         <FloatingScoreboard matches={matches} />
       </div>
       <StatsTicker messages={messages} members={chelstats?.members} />
-      <NewsSection />
+      <NewsSection newsItems={allArticles.slice(0, 3)} />
       <WhoWeAreSection />
       <StatsPreviewSection messages={messages} mvpOdds={mvpOdds} />
       <HighlightsSection />

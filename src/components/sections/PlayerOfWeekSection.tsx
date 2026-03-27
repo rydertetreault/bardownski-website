@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import type { CyclePlayer } from "@/lib/discord";
+import type { WeeklyPlayer } from "@/lib/discord";
 import { getNickname } from "@/lib/nicknames";
 
 interface Props {
-  player: CyclePlayer;
+  player: WeeklyPlayer;
 }
 
 interface StatPillProps {
@@ -38,7 +38,7 @@ function StatPill({ label, value, highlight }: StatPillProps) {
   );
 }
 
-export default function PlayerOfCycleSection({ player }: Props) {
+export default function PlayerOfWeekSection({ player }: Props) {
   const nickname = getNickname(player.name);
 
   const skaterStats = [
@@ -75,7 +75,7 @@ export default function PlayerOfCycleSection({ player }: Props) {
                 <div className="flex items-center gap-2 justify-center sm:justify-start mb-0.5">
                   <span className="w-1 h-3 bg-[#cc1533] rounded-sm" />
                   <span className="text-[#cc1533] text-[10px] font-bold uppercase tracking-[0.2em]">
-                    Player of the Cycle
+                    Player of the Week
                   </span>
                 </div>
                 <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight leading-none">

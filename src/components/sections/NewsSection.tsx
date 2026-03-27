@@ -3,9 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { FadeUp, StaggerContainer, StaggerItem, GlowCard } from "@/components/ui/Animate";
-import { articles as newsItems } from "@/lib/news";
+import type { Article } from "@/lib/news";
 
-export default function NewsSection() {
+export default function NewsSection({ newsItems }: { newsItems: Article[] }) {
   const featured = newsItems[0];
   const side = newsItems.slice(1, 3);
 
