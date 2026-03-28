@@ -10,8 +10,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
 import { fetchChelstatsData } from "@/lib/chelstats";
-import type { ClubMember } from "@/lib/chelstats";
-import { getDisplayNameFromGamertag } from "@/lib/nicknames";
 import type { WeeklyPlayer } from "@/lib/discord";
 import type { Article } from "@/lib/news";
 
@@ -29,19 +27,6 @@ interface ArticleMeta {
   totalArticles: number;
 }
 
-interface StatsSnapshot {
-  [name: string]: {
-    goals: number;
-    assists: number;
-    points: number;
-    hits: number;
-    saves: number;
-    shutouts: number;
-    gamesPlayed: number;
-    goalieGP: number;
-  };
-}
-
 /* ── Helpers ─────────────────────────────────────────────────────────── */
 
 function getRedis(): Redis | null {
@@ -51,89 +36,78 @@ function getRedis(): Redis | null {
   return new Redis({ url, token });
 }
 
-function buildSnapshot(members: ClubMember[]): StatsSnapshot {
-  const snap: StatsSnapshot = {};
-  for (const m of members) {
-    // Key by nickname so it matches Discord snapshot keys
-    const key = getDisplayNameFromGamertag(m.username);
-    snap[key] = {
-      goals: m.goals,
-      assists: m.assists,
-      points: m.points,
-      hits: m.hits,
-      saves: m.goalieSaves,
-      shutouts: m.shutouts,
-      gamesPlayed: m.gamesPlayed,
-      goalieGP: m.goalieGP,
-    };
-  }
-  return snap;
-}
-
 /**
- * March 17th stats drop baseline.
- * These are the exact stats as of the last known Discord stats drop.
- * Player of the Week deltas are computed against this baseline on first run.
+ * Compute Player of the Week from recent match performance.
+ * Aggregates each player's stats across recent games and picks the best.
  */
-function getMarch17Baseline(): StatsSnapshot {
-  return {
-    "XAVIER LAFLAMME": { goals: 479, assists: 367, points: 846, hits: 1618, saves: 0, shutouts: 0, gamesPlayed: 0, goalieGP: 0 },
-    "MATT HUT":        { goals: 456, assists: 300, points: 756, hits: 1000, saves: 0, shutouts: 0, gamesPlayed: 0, goalieGP: 0 },
-    "GOTTA BE":        { goals: 107, assists: 184, points: 291, hits: 0, saves: 0, shutouts: 0, gamesPlayed: 0, goalieGP: 0 },
-    "JENE RENE TETREAU IV": { goals: 0, assists: 0, points: 0, hits: 0, saves: 1000, shutouts: 7, gamesPlayed: 0, goalieGP: 0 },
-    "WOLFGANG MOZART":  { goals: 0, assists: 150, points: 0, hits: 0, saves: 0, shutouts: 0, gamesPlayed: 0, goalieGP: 0 },
-    "SLOBBY ROBBY":     { goals: 0, assists: 150, points: 0, hits: 0, saves: 0, shutouts: 0, gamesPlayed: 0, goalieGP: 0 },
-    "JIMMY LEMONS":     { goals: 0, assists: 100, points: 0, hits: 0, saves: 0, shutouts: 0, gamesPlayed: 0, goalieGP: 0 },
-  };
-}
-
-function computePlayerOfWeekFromDelta(
-  members: ClubMember[],
-  prevSnap: StatsSnapshot | null
+function computePlayerOfWeekFromMatches(
+  matches: import("@/lib/chelstats").ClubMatch[]
 ): WeeklyPlayer | null {
-  if (!prevSnap) {
-    // No previous snapshot — return null so the caller falls back to Discord
-    return null;
+  if (matches.length === 0) return null;
+
+  // Aggregate per-player stats across all recent matches
+  const skaterTotals: Record<string, { goals: number; assists: number; hits: number; games: number }> = {};
+  const goalieTotals: Record<string, { saves: number; shotsAgainst: number; ga: number; shutouts: number; games: number }> = {};
+
+  for (const m of matches) {
+    for (const p of m.players || []) {
+      if (!p.isOurPlayer) continue;
+
+      if (p.isGoalie) {
+        if (!goalieTotals[p.name]) {
+          goalieTotals[p.name] = { saves: 0, shotsAgainst: 0, ga: 0, shutouts: 0, games: 0 };
+        }
+        goalieTotals[p.name].saves += p.saves;
+        goalieTotals[p.name].shotsAgainst += p.shotsAgainst;
+        goalieTotals[p.name].ga += p.goalsAgainst;
+        goalieTotals[p.name].shutouts += p.goalsAgainst === 0 ? 1 : 0;
+        goalieTotals[p.name].games += 1;
+      } else {
+        if (!skaterTotals[p.name]) {
+          skaterTotals[p.name] = { goals: 0, assists: 0, hits: 0, games: 0 };
+        }
+        skaterTotals[p.name].goals += p.goals;
+        skaterTotals[p.name].assists += p.assists;
+        skaterTotals[p.name].hits += p.hits;
+        skaterTotals[p.name].games += 1;
+      }
+    }
   }
 
   let best: WeeklyPlayer | null = null;
 
-  for (const m of members) {
-    const key = getDisplayNameFromGamertag(m.username);
-    const prev = prevSnap[key];
-    const prevGoals = prev?.goals ?? 0;
-    const prevAssists = prev?.assists ?? 0;
-    const prevHits = prev?.hits ?? 0;
-    const prevSaves = prev?.saves ?? 0;
-    const prevShutouts = prev?.shutouts ?? 0;
-
-    // Skater deltas
-    const deltaGoals = Math.max(0, m.goals - prevGoals);
-    const deltaAssists = Math.max(0, m.assists - prevAssists);
-    const deltaPoints = deltaGoals + deltaAssists;
-    const deltaHits = Math.max(0, m.hits - prevHits);
-
-    // Goalie deltas
-    const deltaSaves = Math.max(0, m.goalieSaves - prevSaves);
-    const deltaShutouts = Math.max(0, m.shutouts - prevShutouts);
-
-    // Score both roles, pick whichever is higher
-    const skaterScore = deltaPoints * 3 + deltaHits * 0.2;
-    const goalieScore = deltaSaves * 0.5 + deltaShutouts * 10;
-
-    const isGoalie = goalieScore > skaterScore && m.goalieGP > 0;
-    const score = isGoalie ? goalieScore : skaterScore;
-
+  // Score skaters: points * 3 + hits * 0.2
+  for (const [name, stats] of Object.entries(skaterTotals)) {
+    const points = stats.goals + stats.assists;
+    const score = points * 3 + stats.hits * 0.2;
     if (score > 0 && (!best || score > best.weeklyScore)) {
       best = {
-        name: getDisplayNameFromGamertag(m.username),
-        position: isGoalie ? "G" : (m.position || "F"),
-        isGoalie,
-        deltaGoals,
-        deltaAssists,
-        deltaPoints,
-        deltaHits,
-        deltaSaves,
+        name,
+        position: "F",
+        isGoalie: false,
+        deltaGoals: stats.goals,
+        deltaAssists: stats.assists,
+        deltaPoints: points,
+        deltaHits: stats.hits,
+        deltaSaves: 0,
+        weeklyScore: score,
+      };
+    }
+  }
+
+  // Score goalies: saves * 0.5 + shutouts * 10
+  for (const [name, stats] of Object.entries(goalieTotals)) {
+    const score = stats.saves * 0.5 + stats.shutouts * 10;
+    if (score > 0 && (!best || score > best.weeklyScore)) {
+      best = {
+        name,
+        position: "G",
+        isGoalie: true,
+        deltaGoals: 0,
+        deltaAssists: 0,
+        deltaPoints: 0,
+        deltaHits: 0,
+        deltaSaves: stats.saves,
         weeklyScore: score,
       };
     }
@@ -173,22 +147,22 @@ export async function GET(request: NextRequest) {
   let weeklyPlayer: WeeklyPlayer | null = null;
 
   if (chelstats) {
-    let prevSnap = await redis.get<StatsSnapshot>("stats-snapshot-prev");
+    // Compute Player of the Week from recent match performance
+    const now = Date.now() / 1000;
+    const oneWeekAgo = now - 7 * 24 * 60 * 60;
+    let recentMatches = chelstats.matches.filter((m) => m.timestamp >= oneWeekAgo);
 
-    // No previous snapshot (first run) — seed from March 17th stats drop baseline
-    if (!prevSnap) {
-      prevSnap = getMarch17Baseline();
+    // If no matches this week, use the last 5 matches
+    if (recentMatches.length === 0) {
+      recentMatches = chelstats.matches.slice(0, 5);
     }
 
-    weeklyPlayer = computePlayerOfWeekFromDelta(chelstats.members, prevSnap);
+    weeklyPlayer = computePlayerOfWeekFromMatches(recentMatches);
 
     // Store as current Player of the Week
     if (weeklyPlayer) {
       await redis.set("player-of-week", weeklyPlayer);
     }
-
-    // Snapshot current stats for next week's comparison
-    await redis.set("stats-snapshot-prev", buildSnapshot(chelstats.members));
   }
 
   // --- Step 2: Determine article type and generate ---
@@ -215,11 +189,6 @@ export async function GET(request: NextRequest) {
     meta.lastRotationIndex = meta.lastRotationIndex - 1;
   }
 
-  // Allow ?reseed=true to rebuild the stats snapshot from Discord
-  if (request.nextUrl.searchParams.get("reseed") === "true") {
-    await redis.del("stats-snapshot-prev");
-  }
-
   // Allow ?type= to force a specific article type
   const forceType = request.nextUrl.searchParams.get("type") as typeof GENERATORS[number] | null;
   const nextIndex = forceType
@@ -229,27 +198,37 @@ export async function GET(request: NextRequest) {
 
   let article: Article | null = null;
 
-  switch (articleType) {
-    case "stats-recap":
-      article = await generateStatsRecap();
-      break;
-    case "mvp-race":
-      article = await generateMvpRace();
-      break;
-    case "player-spotlight":
-      article = await generatePlayerSpotlight(weeklyPlayer);
-      break;
-    case "match-recap":
-      article = await generateMatchRecap();
-      break;
+  try {
+    switch (articleType) {
+      case "stats-recap":
+        article = await generateStatsRecap();
+        break;
+      case "mvp-race":
+        article = await generateMvpRace();
+        break;
+      case "player-spotlight":
+        article = await generatePlayerSpotlight(weeklyPlayer);
+        break;
+      case "match-recap":
+        article = await generateMatchRecap();
+        break;
+    }
+  } catch (err) {
+    console.error(`[weekly-update] Error generating ${articleType}:`, err);
   }
 
   if (!article) {
     console.error(`[weekly-update] Failed to generate article type: ${articleType}`);
-    return NextResponse.json(
-      { error: `Failed to generate ${articleType}` },
-      { status: 500 }
-    );
+    // Fall back to stats-recap if the requested type fails
+    if (articleType !== "stats-recap") {
+      article = await generateStatsRecap();
+    }
+    if (!article) {
+      return NextResponse.json(
+        { error: `Failed to generate ${articleType}` },
+        { status: 500 }
+      );
+    }
   }
 
   // --- Step 3: Store article ---
