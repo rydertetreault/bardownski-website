@@ -15,32 +15,49 @@ export async function generateMvpRace(): Promise<Article | null> {
   const paras: string[] = [];
 
   paras.push(
-    `The MVP race continues to take shape. Here is the latest look at the odds and what each candidate is bringing to the table.`
+    `The MVP race continues to evolve week over week. As the season pushes forward, the numbers are painting a clearer picture of who is separating themselves from the pack. ` +
+    `Here is the latest look at the odds and what each candidate is bringing to the table.`
   );
 
-  // Top 5 breakdown
-  const lines = top5.map((p, i) => {
+  // Detailed top 5 breakdown - each gets their own paragraph
+  for (let i = 0; i < top5.length; i++) {
+    const p = top5[i];
     const rank = i + 1;
     const oddsStr = p.americanOdds;
     const pct = (p.probability * 100).toFixed(1);
     const highlights = p.highlights.join(", ");
     const pos = p.isGoalie ? "Goalie" : p.position;
-    return `${rank}. ${p.name} (${pos}) - ${oddsStr} (${pct}%): ${highlights}`;
-  });
-  paras.push(lines.join("\n"));
 
-  // Leader narrative
-  if (leader.isGoalie) {
-    paras.push(
-      `${leader.name} holds the top spot as a goalie, proving that elite netminding can carry MVP weight. ` +
-      `${leader.highlights.join(", ")} tell the story of a wall between the pipes.`
-    );
-  } else {
-    paras.push(
-      `${leader.name} holds the top spot with ${leader.highlights[0]} and continues to set the pace for the club. ` +
-      `The gap between first and second is ${leader.probability > 0.4 ? "significant" : "closing"}, ` +
-      `making every game down the stretch critical.`
-    );
+    if (i === 0) {
+      if (p.isGoalie) {
+        paras.push(
+          `${rank}. ${p.name.toUpperCase()} (${pos}) at ${oddsStr} (${pct}%): ${highlights}. ` +
+          `${p.name.toUpperCase()} holds the top spot as a goalie, proving that elite netminding can carry MVP weight in this league. ` +
+          `The numbers between the pipes speak for themselves and it is hard to argue against a wall that gives your team a chance to win every single night.`
+        );
+      } else {
+        paras.push(
+          `${rank}. ${p.name.toUpperCase()} (${pos}) at ${oddsStr} (${pct}%): ${highlights}. ` +
+          `${p.name.toUpperCase()} is the frontrunner right now. The combination of volume production and consistency has been impossible to ignore. ` +
+          `${leader.probability > 0.4 ? "The gap at the top is significant, and it would take a massive run from someone else to close it." : "But the gap is not comfortable, and one big week from a challenger could flip the script."}`
+        );
+      }
+    } else if (i === 1) {
+      paras.push(
+        `${rank}. ${p.name.toUpperCase()} (${pos}) at ${oddsStr} (${pct}%): ${highlights}. ` +
+        `${p.name.toUpperCase()} is the biggest threat to the frontrunner. ` +
+        (p.isGoalie
+          ? `Goalies rarely get MVP consideration but the numbers this season demand it. The saves, the consistency, the big-game performances all add up.`
+          : `The offensive production has been there all season and a hot streak down the stretch could change everything. This is far from a done deal.`)
+      );
+    } else {
+      paras.push(
+        `${rank}. ${p.name.toUpperCase()} (${pos}) at ${oddsStr} (${pct}%): ${highlights}. ` +
+        (p.isGoalie
+          ? `${p.name.toUpperCase()} continues to make a case from the crease. The goalie vs. skater MVP debate is alive and well.`
+          : `${p.name.toUpperCase()} has been quietly stacking numbers and could be the dark horse if the top candidates cool off.`)
+      );
+    }
   }
 
   // Goalie vs skater angle
@@ -48,14 +65,20 @@ export async function generateMvpRace(): Promise<Article | null> {
   const topSkater = top5.find((p) => !p.isGoalie);
   if (topGoalie && topSkater) {
     paras.push(
-      `The skater vs. goalie debate is alive this season. ${topGoalie.name} is making a strong case between the pipes ` +
-      `while ${topSkater.name} dominates on the offensive end. Both paths to MVP are legitimate.`
+      `The skater vs. goalie debate is alive and well this season. ${topGoalie.name.toUpperCase()} is making a legitimate case between the pipes ` +
+      `while ${topSkater.name.toUpperCase()} dominates on the offensive end. Both paths to MVP are valid, and the final stretch of games will determine ` +
+      `which style of dominance carries more weight when the votes are counted.`
     );
   }
 
+  // Closing
+  paras.push(
+    `The race is not over yet. Every game from here on out matters, and the odds will continue to shift as the numbers pile up. Stay locked in.`
+  );
+
   return {
     id: `auto-mvp-race-${today}`,
-    title: `MVP Race: ${leader.name} ${leader.probability > 0.3 ? "Holds the Lead" : "Among the Frontrunners"}`,
+    title: `MVP Race: ${leader.name.toUpperCase()} ${leader.probability > 0.3 ? "Holds the Lead" : "Among the Frontrunners"}`,
     summary: paras.join("\n\n"),
     date: today,
     image: "/images/gallery/screenshots/Screenshot%202026-03-16%20184232.webp",

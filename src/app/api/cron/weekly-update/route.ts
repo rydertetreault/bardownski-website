@@ -189,6 +189,7 @@ export async function GET(request: NextRequest) {
   }
 
   // If resetting, remove the old article and rewind rotation
+  // Also supports ?type=match-recap to force a specific article type
   if (forceReset && meta.lastDate === today) {
     const existing = (await redis.get<Article[]>("articles:auto")) ?? [];
     const cleaned = existing.filter((a) => !a.date.startsWith(today));
@@ -196,8 +197,12 @@ export async function GET(request: NextRequest) {
     meta.lastRotationIndex = meta.lastRotationIndex - 1;
   }
 
-  const nextIndex = (meta.lastRotationIndex + 1) % GENERATORS.length;
-  const articleType = GENERATORS[nextIndex];
+  // Allow ?type= to force a specific article type
+  const forceType = request.nextUrl.searchParams.get("type") as typeof GENERATORS[number] | null;
+  const nextIndex = forceType
+    ? GENERATORS.indexOf(forceType as typeof GENERATORS[number])
+    : (meta.lastRotationIndex + 1) % GENERATORS.length;
+  const articleType = GENERATORS[nextIndex >= 0 ? nextIndex : 0];
 
   let article: Article | null = null;
 
