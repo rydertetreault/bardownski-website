@@ -17,8 +17,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.bardownski.hockey"),
   title: "Bardownski | Hockey Club",
   description: "Official website of Bardownski Hockey Club. Based in Newfoundland. Roster, stats, matches, and news.",
+  openGraph: {
+    title: "Bardownski | Hockey Club",
+    description: "Official website of Bardownski Hockey Club. Based in Newfoundland. Roster, stats, matches, and news.",
+    url: "https://www.bardownski.hockey",
+    siteName: "Bardownski Hockey Club",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Bardownski | Hockey Club",
+    description: "Official website of Bardownski Hockey Club. Based in Newfoundland. Roster, stats, matches, and news.",
+  },
   icons: {
     icon: [
       { url: "/favicon.png", sizes: "512x512", type: "image/png" },
