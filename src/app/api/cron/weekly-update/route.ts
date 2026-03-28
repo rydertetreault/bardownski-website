@@ -11,8 +11,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
 import { fetchChelstatsData } from "@/lib/chelstats";
 import type { ClubMember } from "@/lib/chelstats";
-import { fetchChannelMessages, computePlayerOfWeek as computeFromDiscord, getLatestDiscordSnapshot } from "@/lib/discord";
-import { getDisplayNameFromGamertag, getNickname } from "@/lib/nicknames";
+import { getDisplayNameFromGamertag } from "@/lib/nicknames";
 import type { WeeklyPlayer } from "@/lib/discord";
 import type { Article } from "@/lib/news";
 
@@ -71,22 +70,21 @@ function buildSnapshot(members: ClubMember[]): StatsSnapshot {
   return snap;
 }
 
-/** Build a snapshot from the latest Discord stats drop, keyed by nickname. */
-function buildDiscordBaseline(messages: unknown[]): StatsSnapshot | null {
-  const discordSnap = getLatestDiscordSnapshot(messages);
-  if (!discordSnap) return null;
-
-  const snap: StatsSnapshot = {};
-  for (const [realName, stats] of Object.entries(discordSnap)) {
-    // Discord uses real names (DYLAN, MATT) — resolve to nicknames
-    const key = getNickname(realName);
-    snap[key] = {
-      ...stats,
-      gamesPlayed: 0,
-      goalieGP: 0,
-    };
-  }
-  return snap;
+/**
+ * March 17th stats drop baseline.
+ * These are the exact stats as of the last known Discord stats drop.
+ * Player of the Week deltas are computed against this baseline on first run.
+ */
+function getMarch17Baseline(): StatsSnapshot {
+  return {
+    "XAVIER LAFLAMME": { goals: 479, assists: 367, points: 846, hits: 1618, saves: 0, shutouts: 0, gamesPlayed: 0, goalieGP: 0 },
+    "MATT HUT":        { goals: 456, assists: 300, points: 756, hits: 1000, saves: 0, shutouts: 0, gamesPlayed: 0, goalieGP: 0 },
+    "GOTTA BE":        { goals: 107, assists: 184, points: 291, hits: 0, saves: 0, shutouts: 0, gamesPlayed: 0, goalieGP: 0 },
+    "JENE RENE TETREAU IV": { goals: 0, assists: 0, points: 0, hits: 0, saves: 1000, shutouts: 7, gamesPlayed: 0, goalieGP: 0 },
+    "WOLFGANG MOZART":  { goals: 0, assists: 150, points: 0, hits: 0, saves: 0, shutouts: 0, gamesPlayed: 0, goalieGP: 0 },
+    "SLOBBY ROBBY":     { goals: 0, assists: 150, points: 0, hits: 0, saves: 0, shutouts: 0, gamesPlayed: 0, goalieGP: 0 },
+    "JIMMY LEMONS":     { goals: 0, assists: 100, points: 0, hits: 0, saves: 0, shutouts: 0, gamesPlayed: 0, goalieGP: 0 },
+  };
 }
 
 function computePlayerOfWeekFromDelta(
@@ -177,10 +175,9 @@ export async function GET(request: NextRequest) {
   if (chelstats) {
     let prevSnap = await redis.get<StatsSnapshot>("stats-snapshot-prev");
 
-    // No previous snapshot (first run) — seed from latest Discord stats drop
+    // No previous snapshot (first run) — seed from March 17th stats drop baseline
     if (!prevSnap) {
-      const messages = await fetchChannelMessages();
-      prevSnap = buildDiscordBaseline(messages);
+      prevSnap = getMarch17Baseline();
     }
 
     weeklyPlayer = computePlayerOfWeekFromDelta(chelstats.members, prevSnap);
