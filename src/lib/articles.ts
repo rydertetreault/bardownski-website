@@ -65,4 +65,15 @@ export async function getPlayerOfWeek(): Promise<WeeklyPlayer | null> {
   }
 }
 
+/** Get all Player of the Week standings (all players ranked). */
+export async function getPotwStandings(): Promise<WeeklyPlayer[]> {
+  try {
+    const redis = getRedis();
+    if (!redis) return [];
+    return (await redis.get<WeeklyPlayer[]>("potw-standings")) ?? [];
+  } catch {
+    return [];
+  }
+}
+
 export type { Article };

@@ -1,18 +1,23 @@
 "use client";
 
-import Link from "next/link";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import type { WeeklyPlayer } from "@/lib/discord";
 import { getNickname } from "@/lib/nicknames";
 
 interface Props {
   player: WeeklyPlayer;
+  standings?: WeeklyPlayer[];
 }
 
 interface StatPillProps {
   label: string;
   value: number | string;
   highlight?: boolean;
+}
+
+function titleCase(s: string): string {
+  return s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 function StatPill({ label, value, highlight }: StatPillProps) {
@@ -38,7 +43,8 @@ function StatPill({ label, value, highlight }: StatPillProps) {
   );
 }
 
-export default function PlayerOfWeekSection({ player }: Props) {
+export default function PlayerOfWeekSection({ player, standings = [] }: Props) {
+  const [showStandings, setShowStandings] = useState(false);
   const nickname = getNickname(player.name);
 
   const skaterStats = [
@@ -95,14 +101,70 @@ export default function PlayerOfWeekSection({ player }: Props) {
               {stats.map((s) => (
                 <StatPill key={s.label} label={s.label} value={s.value} highlight={s.highlight} />
               ))}
-              <Link
-                href="/stats"
-                className="ml-2 text-xs text-[#cc1533] hover:text-red-400 uppercase tracking-widest font-bold transition-colors whitespace-nowrap"
-              >
-                Full Stats →
-              </Link>
+              {standings.length > 0 ? (
+                <button
+                  onClick={() => setShowStandings(!showStandings)}
+                  className="ml-2 text-xs text-[#cc1533] hover:text-red-400 uppercase tracking-widest font-bold transition-colors whitespace-nowrap"
+                >
+                  {showStandings ? "Hide Standings ↑" : "Full Standings →"}
+                </button>
+              ) : null}
             </div>
           </div>
+
+          {/* Expandable standings table */}
+          <AnimatePresence>
+            {showStandings && standings.length > 0 && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="overflow-hidden"
+              >
+                <div className="px-8 pb-5 pt-1">
+                  <div className="h-px bg-white/10 mb-4" />
+                  <div className="grid gap-2">
+                    {standings.map((p, i) => (
+                      <div
+                        key={p.name}
+                        className={`flex items-center justify-between gap-4 px-3 py-2 rounded-lg ${
+                          i === 0 ? "bg-[#cc1533]/10 border border-[#cc1533]/20" : "bg-white/[0.03]"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className={`text-sm font-bold w-5 ${i === 0 ? "text-[#cc1533]" : "text-white/30"}`}>
+                            {i + 1}
+                          </span>
+                          <span className={`text-sm font-bold truncate ${i === 0 ? "text-white" : "text-white/60"}`}>
+                            {titleCase(getNickname(p.name))}
+                          </span>
+                          <span className="text-[10px] text-white/30 uppercase">
+                            {p.isGoalie ? "G" : p.position}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs text-white/40">
+                          {p.isGoalie ? (
+                            <span>{p.deltaSaves} SVS</span>
+                          ) : (
+                            <>
+                              <span>{p.deltaGoals}G</span>
+                              <span>{p.deltaAssists}A</span>
+                              <span>{p.deltaPoints}P</span>
+                              <span>{p.deltaHits}HIT</span>
+                            </>
+                          )}
+                          <span className={`font-bold ${i === 0 ? "text-[#cc1533]" : "text-white/50"}`}>
+                            {p.weeklyScore.toFixed(0)}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       </div>
     </section>

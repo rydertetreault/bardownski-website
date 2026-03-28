@@ -8,11 +8,17 @@ import { getNickname } from "@/lib/nicknames";
 
 interface Props {
   player: WeeklyPlayer;
+  standings?: WeeklyPlayer[];
 }
 
-export default function PlayerOfWeekBadge({ player }: Props) {
+function titleCase(s: string): string {
+  return s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+export default function PlayerOfWeekBadge({ player, standings = [] }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [visible, setVisible] = useState(true);
+  const [showInfo, setShowInfo] = useState(false);
 
   useEffect(() => {
     const onScroll = () => {
@@ -69,50 +75,106 @@ export default function PlayerOfWeekBadge({ player }: Props) {
                   </svg>
                 </button>
 
-                <Link href="/stats" className="block px-5 py-5 pr-7">
-                  {/* Label */}
-                  <p className="text-[#cc1533] text-[9px] font-bold uppercase tracking-[0.22em] mb-4">
-                    Player of the Week
-                  </p>
+                {/* Info button */}
+                {standings.length > 0 && (
+                  <button
+                    onClick={(e) => { e.preventDefault(); setShowInfo(!showInfo); }}
+                    className="absolute top-3 right-3 text-white/20 hover:text-white/60 transition-colors z-10"
+                    aria-label="Show standings"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                )}
 
-                  {/* Player name */}
-                  <p className="text-white font-black text-2xl leading-none mb-1">
-                    {nickname}
-                  </p>
-                  <p className="text-white/30 text-[10px] uppercase tracking-widest mb-5">
-                    {player.position}
-                  </p>
+                <AnimatePresence mode="wait">
+                  {showInfo ? (
+                    <motion.div
+                      key="info"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="px-5 py-5 pr-7"
+                    >
+                      <p className="text-[#cc1533] text-[9px] font-bold uppercase tracking-[0.22em] mb-3">
+                        Weekly Standings
+                      </p>
+                      <div className="space-y-2">
+                        {standings.map((p, i) => (
+                          <div key={p.name} className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className={`text-[10px] font-bold ${i === 0 ? "text-[#cc1533]" : "text-white/30"}`}>
+                                {i + 1}.
+                              </span>
+                              <span className={`text-xs font-bold truncate ${i === 0 ? "text-white" : "text-white/50"}`}>
+                                {titleCase(getNickname(p.name))}
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-white/30 whitespace-nowrap">
+                              {p.isGoalie
+                                ? `${p.deltaSaves} SVS`
+                                : `${p.deltaPoints} PTS`}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                      <button
+                        onClick={(e) => { e.preventDefault(); setShowInfo(false); }}
+                        className="text-[#cc1533]/60 text-[9px] uppercase tracking-widest mt-4 font-bold"
+                      >
+                        ← Back
+                      </button>
+                    </motion.div>
+                  ) : (
+                    <motion.div key="main" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                      <Link href="/stats" className="block px-5 py-5 pr-7">
+                        {/* Label */}
+                        <p className="text-[#cc1533] text-[9px] font-bold uppercase tracking-[0.22em] mb-4">
+                          Player of the Week
+                        </p>
 
-                  {/* Divider */}
-                  <div className="h-px bg-white/10 mb-5" />
+                        {/* Player name */}
+                        <p className="text-white font-black text-2xl leading-none mb-1">
+                          {nickname}
+                        </p>
+                        <p className="text-white/30 text-[10px] uppercase tracking-widest mb-5">
+                          {player.position}
+                        </p>
 
-                  {/* Top stat big */}
-                  <p className="text-[#cc1533] font-black text-3xl leading-none mb-1">
-                    {topStat}
-                  </p>
-                  <p className="text-white/30 text-[9px] uppercase tracking-widest mb-5">
-                    This week
-                  </p>
+                        {/* Divider */}
+                        <div className="h-px bg-white/10 mb-5" />
 
-                  {/* Stat breakdown pills */}
-                  {statPills.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {statPills.map((s) => (
-                        <span
-                          key={s}
-                          className="text-[10px] bg-white/5 border border-white/10 text-white/40 px-2.5 py-1 rounded-md"
-                        >
-                          {s}
-                        </span>
-                      ))}
-                    </div>
+                        {/* Top stat big */}
+                        <p className="text-[#cc1533] font-black text-3xl leading-none mb-1">
+                          {topStat}
+                        </p>
+                        <p className="text-white/30 text-[9px] uppercase tracking-widest mb-5">
+                          This week
+                        </p>
+
+                        {/* Stat breakdown pills */}
+                        {statPills.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5">
+                            {statPills.map((s) => (
+                              <span
+                                key={s}
+                                className="text-[10px] bg-white/5 border border-white/10 text-white/40 px-2.5 py-1 rounded-md"
+                              >
+                                {s}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* CTA */}
+                        <p className="text-[#cc1533]/60 text-[9px] uppercase tracking-widest mt-5 font-bold">
+                          View stats →
+                        </p>
+                      </Link>
+                    </motion.div>
                   )}
-
-                  {/* CTA */}
-                  <p className="text-[#cc1533]/60 text-[9px] uppercase tracking-widest mt-5 font-bold">
-                    View stats →
-                  </p>
-                </Link>
+                </AnimatePresence>
               </motion.div>
             )}
           </AnimatePresence>
