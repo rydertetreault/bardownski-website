@@ -4,8 +4,12 @@ import { getDisplayNameFromGamertag } from "@/lib/nicknames";
 import type { WeeklyPlayer } from "@/lib/discord";
 import type { Article } from "@/lib/news";
 
+function titleCase(s: string): string {
+  return s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 function name(m: ClubMember): string {
-  return getDisplayNameFromGamertag(m.username).toUpperCase();
+  return titleCase(getDisplayNameFromGamertag(m.username));
 }
 
 function rank(members: ClubMember[], member: ClubMember, key: keyof ClubMember): number {

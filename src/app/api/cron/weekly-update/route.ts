@@ -11,8 +11,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
 import { fetchChelstatsData } from "@/lib/chelstats";
 import type { ClubMember } from "@/lib/chelstats";
-import { fetchChannelMessages, computePlayerOfWeek as computeFromDiscord } from "@/lib/discord";
-import { getDisplayNameFromGamertag } from "@/lib/nicknames";
+import { fetchChannelMessages, computePlayerOfWeek as computeFromDiscord, getLatestDiscordSnapshot } from "@/lib/discord";
+import { getDisplayNameFromGamertag, getNickname } from "@/lib/nicknames";
 import type { WeeklyPlayer } from "@/lib/discord";
 import type { Article } from "@/lib/news";
 
@@ -55,7 +55,9 @@ function getRedis(): Redis | null {
 function buildSnapshot(members: ClubMember[]): StatsSnapshot {
   const snap: StatsSnapshot = {};
   for (const m of members) {
-    snap[m.username] = {
+    // Key by nickname so it matches Discord snapshot keys
+    const key = getDisplayNameFromGamertag(m.username);
+    snap[key] = {
       goals: m.goals,
       assists: m.assists,
       points: m.points,
@@ -64,6 +66,24 @@ function buildSnapshot(members: ClubMember[]): StatsSnapshot {
       shutouts: m.shutouts,
       gamesPlayed: m.gamesPlayed,
       goalieGP: m.goalieGP,
+    };
+  }
+  return snap;
+}
+
+/** Build a snapshot from the latest Discord stats drop, keyed by nickname. */
+function buildDiscordBaseline(messages: unknown[]): StatsSnapshot | null {
+  const discordSnap = getLatestDiscordSnapshot(messages);
+  if (!discordSnap) return null;
+
+  const snap: StatsSnapshot = {};
+  for (const [realName, stats] of Object.entries(discordSnap)) {
+    // Discord uses real names (DYLAN, MATT) — resolve to nicknames
+    const key = getNickname(realName);
+    snap[key] = {
+      ...stats,
+      gamesPlayed: 0,
+      goalieGP: 0,
     };
   }
   return snap;
@@ -81,7 +101,8 @@ function computePlayerOfWeekFromDelta(
   let best: WeeklyPlayer | null = null;
 
   for (const m of members) {
-    const prev = prevSnap[m.username];
+    const key = getDisplayNameFromGamertag(m.username);
+    const prev = prevSnap[key];
     const prevGoals = prev?.goals ?? 0;
     const prevAssists = prev?.assists ?? 0;
     const prevHits = prev?.hits ?? 0;
@@ -154,14 +175,15 @@ export async function GET(request: NextRequest) {
   let weeklyPlayer: WeeklyPlayer | null = null;
 
   if (chelstats) {
-    const prevSnap = await redis.get<StatsSnapshot>("stats-snapshot-prev");
-    weeklyPlayer = computePlayerOfWeekFromDelta(chelstats.members, prevSnap);
+    let prevSnap = await redis.get<StatsSnapshot>("stats-snapshot-prev");
 
-    // No previous snapshot (first run) — fall back to Discord stats comparison
-    if (!weeklyPlayer) {
+    // No previous snapshot (first run) — seed from latest Discord stats drop
+    if (!prevSnap) {
       const messages = await fetchChannelMessages();
-      weeklyPlayer = computeFromDiscord(messages);
+      prevSnap = buildDiscordBaseline(messages);
     }
+
+    weeklyPlayer = computePlayerOfWeekFromDelta(chelstats.members, prevSnap);
 
     // Store as current Player of the Week
     if (weeklyPlayer) {
@@ -189,12 +211,16 @@ export async function GET(request: NextRequest) {
   }
 
   // If resetting, remove the old article and rewind rotation
-  // Also supports ?type=match-recap to force a specific article type
   if (forceReset && meta.lastDate === today) {
     const existing = (await redis.get<Article[]>("articles:auto")) ?? [];
     const cleaned = existing.filter((a) => !a.date.startsWith(today));
     await redis.set("articles:auto", cleaned);
     meta.lastRotationIndex = meta.lastRotationIndex - 1;
+  }
+
+  // Allow ?reseed=true to rebuild the stats snapshot from Discord
+  if (request.nextUrl.searchParams.get("reseed") === "true") {
+    await redis.del("stats-snapshot-prev");
   }
 
   // Allow ?type= to force a specific article type

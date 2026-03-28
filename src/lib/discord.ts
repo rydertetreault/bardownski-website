@@ -957,6 +957,53 @@ export function computePlayerOfWeek(messages: unknown[]): WeeklyPlayer | null {
   return best;
 }
 
+// --- Latest Discord stats snapshot (for seeding weekly comparison) ---
+
+export interface DiscordStatsSnapshot {
+  [name: string]: {
+    goals: number;
+    assists: number;
+    points: number;
+    hits: number;
+    saves: number;
+    shutouts: number;
+  };
+}
+
+/** Returns the stats from the latest Discord stats drop as a flat snapshot. */
+export function getLatestDiscordSnapshot(messages: unknown[]): DiscordStatsSnapshot | null {
+  const statMessages = (messages as any[]).filter((msg) => {
+    const normalized = normalizeUnicode(msg.content || "");
+    return normalized.includes("BARDOWNSKI STATS");
+  });
+
+  if (statMessages.length === 0) return null;
+
+  const latest = parseContent(normalizeUnicode(statMessages[0].content));
+  if (!latest) return null;
+
+  const snap: DiscordStatsSnapshot = {};
+  const allNames = new Set([
+    ...latest.goals.map((e) => e.name),
+    ...latest.assists.map((e) => e.name),
+    ...latest.saves.map((e) => e.name),
+  ]);
+
+  for (const name of allNames) {
+    snap[name] = {
+      goals: latest.goals.find((e) => e.name === name)?.value ?? 0,
+      assists: latest.assists.find((e) => e.name === name)?.value ?? 0,
+      points: (latest.goals.find((e) => e.name === name)?.value ?? 0) +
+              (latest.assists.find((e) => e.name === name)?.value ?? 0),
+      hits: latest.hits.find((e) => e.name === name)?.value ?? 0,
+      saves: latest.saves.find((e) => e.name === name)?.value ?? 0,
+      shutouts: latest.shutouts.find((e) => e.name === name)?.value ?? 0,
+    };
+  }
+
+  return snap;
+}
+
 // --- Enriched player data ---
 
 export function getEnrichedPlayers(stats: ParsedStats): EnrichedPlayer[] {

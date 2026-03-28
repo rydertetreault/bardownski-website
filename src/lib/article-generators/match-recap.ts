@@ -1,6 +1,14 @@
 import { fetchChelstatsData } from "@/lib/chelstats";
-import type { ClubMatch, MatchPlayerStat } from "@/lib/chelstats";
+import type { ClubMatch } from "@/lib/chelstats";
 import type { Article } from "@/lib/news";
+
+function titleCase(s: string): string {
+  return s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function tc(name: string): string {
+  return titleCase(name);
+}
 
 function formatMatchDate(timestamp: number): string {
   return new Date(timestamp * 1000).toLocaleDateString("en-US", {
@@ -32,7 +40,7 @@ function buildGameBreakdown(m: ClubMatch): string {
 
   if (topSkater && (topSkater.goals + topSkater.assists) > 0) {
     const pts = topSkater.goals + topSkater.assists;
-    breakdown += `${topSkater.name.toUpperCase()} led the way with ${topSkater.goals}G ${topSkater.assists}A (${pts} points)`;
+    breakdown += `${tc(topSkater.name)} led the way with ${topSkater.goals}G ${topSkater.assists}A (${pts} points)`;
     if (topSkater.hits > 0) {
       breakdown += ` and ${topSkater.hits} hits`;
     }
@@ -41,7 +49,7 @@ function buildGameBreakdown(m: ClubMatch): string {
 
   if (goalie && goalie.saves > 0) {
     const svPct = goalie.savePct > 1 ? goalie.savePct.toFixed(1) : (goalie.savePct * 100).toFixed(1);
-    breakdown += `${goalie.name.toUpperCase()} stopped ${goalie.saves} of ${goalie.shotsAgainst} shots (${svPct}%)`;
+    breakdown += `${tc(goalie.name)} stopped ${goalie.saves} of ${goalie.shotsAgainst} shots (${svPct}%)`;
     if (goalie.goalsAgainst === 0) {
       breakdown += ` for the shutout`;
     }
@@ -52,7 +60,7 @@ function buildGameBreakdown(m: ClubMatch): string {
   if (m.threeStars) {
     const ourStars = m.threeStars.filter((s) => s.isOurPlayer);
     if (ourStars.length > 0) {
-      const starNames = ourStars.map((s) => s.name.toUpperCase()).join(" and ");
+      const starNames = ourStars.map((s) => tc(s.name)).join(" and ");
       breakdown += `${starNames} earned three-star honors.`;
     }
   }
@@ -137,18 +145,18 @@ export async function generateMatchRecap(): Promise<Article | null> {
   if (topPerformers.length >= 3) {
     const top3 = topPerformers.slice(0, 3);
     paras.push(
-      `Across all ${recentMatches.length} games, the top performers were ${top3[0].name.toUpperCase()} ` +
+      `Across all ${recentMatches.length} games, the top performers were ${tc(top3[0].name)} ` +
       `(${top3[0].totalGoals}G ${top3[0].totalAssists}A, ${top3[0].totalPoints} points), ` +
-      `${top3[1].name.toUpperCase()} (${top3[1].totalGoals}G ${top3[1].totalAssists}A, ${top3[1].totalPoints} points), ` +
-      `and ${top3[2].name.toUpperCase()} (${top3[2].totalGoals}G ${top3[2].totalAssists}A, ${top3[2].totalPoints} points). ` +
-      `${top3[0].name.toUpperCase()} led the way with the most combined production over the stretch.`
+      `${tc(top3[1].name)} (${top3[1].totalGoals}G ${top3[1].totalAssists}A, ${top3[1].totalPoints} points), ` +
+      `and ${tc(top3[2].name)} (${top3[2].totalGoals}G ${top3[2].totalAssists}A, ${top3[2].totalPoints} points). ` +
+      `${tc(top3[0].name)} led the way with the most combined production over the stretch.`
     );
 
     // Hits leader
     const hitsLeader = [...topPerformers].sort((a, b) => b.totalHits - a.totalHits)[0];
     if (hitsLeader.totalHits > 0) {
       paras.push(
-        `On the physical side, ${hitsLeader.name.toUpperCase()} led the team in hits with ${hitsLeader.totalHits} across ${hitsLeader.games} games. ` +
+        `On the physical side, ${tc(hitsLeader.name)} led the team in hits with ${hitsLeader.totalHits} across ${hitsLeader.games} games. ` +
         `The physicality has been a staple of Bardownski's identity all season.`
       );
     }
@@ -185,10 +193,10 @@ export async function generateMatchRecap(): Promise<Article | null> {
       ? ((mainGoalie.saves / mainGoalie.shotsAgainst) * 100).toFixed(1)
       : "100.0";
     paras.push(
-      `Between the pipes, ${mainGoalie.name.toUpperCase()} made ${mainGoalie.saves} saves on ${mainGoalie.shotsAgainst} shots across ${mainGoalie.games} games ` +
+      `Between the pipes, ${tc(mainGoalie.name)} made ${mainGoalie.saves} saves on ${mainGoalie.shotsAgainst} shots across ${mainGoalie.games} games ` +
       `for a ${svPct}% save rate over the stretch. ` +
       (mainGoalie.shutouts > 0
-        ? `${mainGoalie.name.toUpperCase()} posted ${mainGoalie.shutouts} shutout${mainGoalie.shutouts > 1 ? "s" : ""} during the week. `
+        ? `${tc(mainGoalie.name)} posted ${mainGoalie.shutouts} shutout${mainGoalie.shutouts > 1 ? "s" : ""} during the week. `
         : "") +
       `Consistent goaltending continues to be a major factor in keeping Bardownski competitive every night.`
     );
