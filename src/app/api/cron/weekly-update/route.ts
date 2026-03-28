@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
 import { fetchChelstatsData } from "@/lib/chelstats";
 import type { ClubMember } from "@/lib/chelstats";
+import { fetchChannelMessages, computePlayerOfWeek as computeFromDiscord } from "@/lib/discord";
 import { getDisplayNameFromGamertag } from "@/lib/nicknames";
 import type { WeeklyPlayer } from "@/lib/discord";
 import type { Article } from "@/lib/news";
@@ -73,22 +74,8 @@ function computePlayerOfWeekFromDelta(
   prevSnap: StatsSnapshot | null
 ): WeeklyPlayer | null {
   if (!prevSnap) {
-    // No previous snapshot: pick the top scorer
-    const top = [...members]
-      .filter((m) => m.gamesPlayed > 0)
-      .sort((a, b) => b.points - a.points)[0];
-    if (!top) return null;
-    return {
-      name: getDisplayNameFromGamertag(top.username),
-      position: top.position || "F",
-      isGoalie: false,
-      deltaGoals: top.goals,
-      deltaAssists: top.assists,
-      deltaPoints: top.points,
-      deltaHits: top.hits,
-      deltaSaves: 0,
-      weeklyScore: top.points * 3 + top.hits * 0.2,
-    };
+    // No previous snapshot — return null so the caller falls back to Discord
+    return null;
   }
 
   let best: WeeklyPlayer | null = null;
@@ -170,6 +157,12 @@ export async function GET(request: NextRequest) {
     const prevSnap = await redis.get<StatsSnapshot>("stats-snapshot-prev");
     weeklyPlayer = computePlayerOfWeekFromDelta(chelstats.members, prevSnap);
 
+    // No previous snapshot (first run) — fall back to Discord stats comparison
+    if (!weeklyPlayer) {
+      const messages = await fetchChannelMessages();
+      weeklyPlayer = computeFromDiscord(messages);
+    }
+
     // Store as current Player of the Week
     if (weeklyPlayer) {
       await redis.set("player-of-week", weeklyPlayer);
@@ -187,9 +180,20 @@ export async function GET(request: NextRequest) {
     totalArticles: 0,
   };
 
-  // Duplicate prevention
-  if (meta.lastDate === today) {
+  // Allow ?reset=true to regenerate today's article
+  const forceReset = request.nextUrl.searchParams.get("reset") === "true";
+
+  // Duplicate prevention (skip if resetting)
+  if (meta.lastDate === today && !forceReset) {
     return NextResponse.json({ skipped: true, reason: "Already generated today" });
+  }
+
+  // If resetting, remove the old article and rewind rotation
+  if (forceReset && meta.lastDate === today) {
+    const existing = (await redis.get<Article[]>("articles:auto")) ?? [];
+    const cleaned = existing.filter((a) => !a.date.startsWith(today));
+    await redis.set("articles:auto", cleaned);
+    meta.lastRotationIndex = meta.lastRotationIndex - 1;
   }
 
   const nextIndex = (meta.lastRotationIndex + 1) % GENERATORS.length;

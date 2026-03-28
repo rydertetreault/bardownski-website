@@ -122,6 +122,7 @@ export async function generatePlayerSpotlight(
     title: `Player of the Week: ${displayName}`,
     summary: body,
     date: today,
+    image: "/images/gallery/screenshots/BD%20-%20home%20skt.webp",
     category: "Club News",
   };
 }
