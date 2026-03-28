@@ -101,19 +101,18 @@ function computePlayerOfWeekFromMatches(
     }
   }
 
-  // Score goalies: calibrated to match MVP odds formula so elite goalie week ≈ elite skater week
+  // Score goalies: calibrated so elite goalie week ≈ elite skater week
   for (const [name, stats] of Object.entries(goalieTotals)) {
     const gp = stats.games;
     if (gp === 0) continue;
 
     const savePct = stats.shotsAgainst > 0 ? (stats.saves / stats.shotsAgainst) * 100 : 0;
     const gaa = stats.ga / gp;
-    const perGame =
+    const score =
       savePct * 0.5 +                          // save percentage (core stat)
       Math.max(10 - gaa, 0) * 3 +              // GAA inverted (lower = better)
-      (stats.shutouts / gp) * 20 +             // shutout rate
-      (stats.saves / gp) * 0.3;                // workload per game
-    const score = perGame * Math.sqrt(gp);
+      stats.shutouts * 50 +                    // flat 50 points per shutout
+      stats.saves * 0.3;                       // total saves workload
 
     if (score > 0) {
       allPlayers.push({

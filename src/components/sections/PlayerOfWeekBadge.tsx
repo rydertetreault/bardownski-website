@@ -112,9 +112,7 @@ export default function PlayerOfWeekBadge({ player, standings = [] }: Props) {
                               </span>
                             </div>
                             <span className="text-[10px] text-white/30 whitespace-nowrap">
-                              {p.isGoalie
-                                ? `${p.deltaSaves} SVS`
-                                : `${p.deltaPoints} PTS`}
+                              {p.weeklyScore.toFixed(0)} pts
                             </span>
                           </div>
                         ))}

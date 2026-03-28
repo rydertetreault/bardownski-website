@@ -143,21 +143,9 @@ export default function PlayerOfWeekSection({ player, standings = [] }: Props) {
                             {p.isGoalie ? "G" : p.position}
                           </span>
                         </div>
-                        <div className="flex items-center gap-3 text-xs text-white/40">
-                          {p.isGoalie ? (
-                            <span>{p.deltaSaves} SVS</span>
-                          ) : (
-                            <>
-                              <span>{p.deltaGoals}G</span>
-                              <span>{p.deltaAssists}A</span>
-                              <span>{p.deltaPoints}P</span>
-                              <span>{p.deltaHits}HIT</span>
-                            </>
-                          )}
-                          <span className={`font-bold ${i === 0 ? "text-[#cc1533]" : "text-white/50"}`}>
-                            {p.weeklyScore.toFixed(0)}
-                          </span>
-                        </div>
+                        <span className={`text-sm font-bold ${i === 0 ? "text-[#cc1533]" : "text-white/50"}`}>
+                          {p.weeklyScore.toFixed(0)} pts
+                        </span>
                       </div>
                     ))}
                   </div>
