@@ -58,7 +58,7 @@ export async function generateMvpRace(): Promise<Article | null> {
     title: `MVP Race: ${leader.name} ${leader.probability > 0.3 ? "Holds the Lead" : "Among the Frontrunners"}`,
     summary: paras.join("\n\n"),
     date: today,
-    image: "/images/gallery/screenshots/mvp-race-cover.webp",
+    image: "/images/gallery/screenshots/Screenshot%202026-03-16%20184232.webp",
     category: "Stats",
   };
 }

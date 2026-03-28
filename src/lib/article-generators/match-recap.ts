@@ -97,7 +97,7 @@ export async function generateMatchRecap(): Promise<Article | null> {
     title: `Week in Review: ${wins}-${losses} in ${recentMatches.length} Games`,
     summary: paras.join("\n\n"),
     date: today,
-    image: "/images/gallery/screenshots/team2.webp",
+    image: "/images/gallery/screenshots/team%20shot.webp",
     category: "Results",
   };
 }

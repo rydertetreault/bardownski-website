@@ -75,7 +75,7 @@ export async function generateStatsRecap(): Promise<Article | null> {
     title: `Weekly Stats Recap: ${name(leader)} Leads With ${leader.points} Points`,
     summary: buildBody(members, record),
     date: today,
-    image: "/images/gallery/screenshots/Screenshot%202026-03-16%20183710.webp",
+    image: "/images/gallery/screenshots/Screenshot%202026-03-16%20183953.webp",
     category: "Stats",
   };
 }
