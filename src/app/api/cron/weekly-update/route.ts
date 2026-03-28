@@ -76,16 +76,16 @@ function computePlayerOfWeekFromMatches(
 
   const allPlayers: WeeklyPlayer[] = [];
 
-  // Score skaters: per-game rate * sqrt(GP), similar to MVP odds formula
+  // Score skaters: total raw stats, weighted
+  // Target: 29G 5A 30HIT ≈ 165
   for (const [name, stats] of Object.entries(skaterTotals)) {
     const gp = stats.games;
     if (gp === 0) continue;
     const points = stats.goals + stats.assists;
-    const perGame =
-      (points / gp) * 20 +                    // offensive production rate
-      (stats.goals / gp) * 15 +               // goal-scoring rate
-      (stats.hits / gp) * 0.5;                // physical presence
-    const score = perGame * Math.sqrt(gp);
+    const score =
+      stats.goals * 5 +                       // goals are king
+      stats.assists * 2.5 +                   // playmaking
+      stats.hits * 0.2;                       // physicality
     if (score > 0) {
       allPlayers.push({
         name,
@@ -108,11 +108,12 @@ function computePlayerOfWeekFromMatches(
 
     const savePct = stats.shotsAgainst > 0 ? (stats.saves / stats.shotsAgainst) * 100 : 0;
     const gaa = stats.ga / gp;
+    // Target: 45SV 1SO 67.2%SV 4.4GAA ≈ 85
     const score =
-      savePct * 0.5 +                          // save percentage (core stat)
-      Math.max(10 - gaa, 0) * 3 +              // GAA inverted (lower = better)
-      stats.shutouts * 50 +                    // flat 50 points per shutout
-      stats.saves * 0.3;                       // total saves workload
+      savePct * 0.4 +                          // save percentage (core stat)
+      Math.max(10 - gaa, 0) * 2 +              // GAA inverted (lower = better)
+      stats.shutouts * 40 +                    // flat 40 points per shutout
+      stats.saves * 0.2;                       // total saves workload
 
     if (score > 0) {
       allPlayers.push({
