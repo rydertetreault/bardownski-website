@@ -1,4 +1,5 @@
 import { fetchChelstatsData, computeMvpOddsFromMembers } from "@/lib/chelstats";
+import { getNickname } from "@/lib/nicknames";
 import type { Article } from "@/lib/news";
 
 function titleCase(s: string): string {
@@ -6,7 +7,7 @@ function titleCase(s: string): string {
 }
 
 function tc(name: string): string {
-  return titleCase(name);
+  return titleCase(getNickname(name));
 }
 
 export async function generateMvpRace(): Promise<Article | null> {

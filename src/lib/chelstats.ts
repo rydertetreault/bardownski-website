@@ -553,7 +553,8 @@ export function chelstatsToSeasonData(members: ClubMember[]): SeasonData {
 
   const assists = makeLeaderboard(
     members,
-    (m) => m.assists
+    (m) => m.assists,
+    (m) => Math.round(m.passCompPct * 10) / 10
   );
 
   const plusMinus = makeLeaderboard(

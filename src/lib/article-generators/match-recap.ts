@@ -1,5 +1,6 @@
 import { fetchChelstatsData } from "@/lib/chelstats";
 import type { ClubMatch } from "@/lib/chelstats";
+import { getNickname } from "@/lib/nicknames";
 import type { Article } from "@/lib/news";
 
 function titleCase(s: string): string {
@@ -7,7 +8,7 @@ function titleCase(s: string): string {
 }
 
 function tc(name: string): string {
-  return titleCase(name);
+  return titleCase(getNickname(name));
 }
 
 function formatMatchDate(timestamp: number): string {

@@ -613,17 +613,16 @@ function LeaderCard({
             </p>
             {/* Value */}
             <span
-              className={`font-bold text-sm font-mono shrink-0 ${
+              className={`w-10 text-right font-bold text-sm font-mono shrink-0 ${
                 i === 0 ? "text-red" : "text-foreground"
               }`}
             >
               {fmt(entry.value)}
             </span>
             {/* Secondary */}
-            {secondaryLabel && entry.secondary !== undefined && (
+            {secondaryLabel && (
               <span className="w-14 text-right text-muted text-xs font-mono shrink-0">
-                {entry.secondary}
-                {secondaryIsPercent ? "%" : ""}
+                {entry.secondary !== undefined ? `${entry.secondary}${secondaryIsPercent ? "%" : ""}` : ""}
               </span>
             )}
           </div>
@@ -681,7 +680,7 @@ function SavesLeaderCard({ entries }: { entries: SaveEntry[] }) {
               <TrendArrow trend={entry.trend} />
             </p>
             <span
-              className={`font-bold text-sm font-mono shrink-0 ${
+              className={`w-10 text-right font-bold text-sm font-mono shrink-0 ${
                 i === 0 ? "text-red" : "text-foreground"
               }`}
             >
