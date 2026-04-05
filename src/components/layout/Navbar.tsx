@@ -129,77 +129,145 @@ export default function Navbar() {
         {mobileOpen && (
           <motion.div
             key="mobile-menu"
-            className="fixed inset-0 z-[60] flex flex-col"
-            style={{ backgroundColor: "#1a2744" }}
+            className="fixed inset-0 z-[60] flex flex-col overflow-hidden"
+            style={{ backgroundColor: "#0f1a2e" }}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "tween", duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
           >
-            {/* Close button */}
-            <div className="flex justify-end px-6 pt-5">
+            {/* Background accent */}
+            <div
+              className="absolute top-0 right-0 w-64 h-64 opacity-[0.07] pointer-events-none"
+              style={{
+                background: "radial-gradient(circle at top right, #cc1533 0%, transparent 70%)",
+              }}
+            />
+            <div
+              className="absolute bottom-0 left-0 w-48 h-48 opacity-[0.05] pointer-events-none"
+              style={{
+                background: "radial-gradient(circle at bottom left, #cc1533 0%, transparent 70%)",
+              }}
+            />
+
+            {/* Header row: logo + close */}
+            <div className="flex items-center justify-between px-6 pt-5 pb-4 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 relative">
+                  <Image
+                    src="/images/logo/BD - logo.png"
+                    alt="Bardownski Logo"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                <span className="text-white font-bold tracking-tight text-lg">BARDOWNSKI</span>
+              </div>
               <button
-                className="text-white p-1"
+                className="text-white/60 hover:text-white p-2 rounded-lg transition-colors"
+                style={{ backgroundColor: "rgba(255,255,255,0.05)" }}
                 onClick={() => setMobileOpen(false)}
                 aria-label="Close menu"
               >
-                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
-            {/* Centered logo */}
-            <div className="flex justify-center mt-8 mb-12">
-              <div className="w-20 h-20 relative">
-                <Image
-                  src="/images/logo/BD - logo.png"
-                  alt="Bardownski Logo"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-            </div>
+            {/* Divider */}
+            <div className="mx-6 h-px shrink-0" style={{ backgroundColor: "rgba(255,255,255,0.08)" }} />
 
-            {/* Staggered nav links */}
-            <nav className="flex flex-col items-center gap-6 px-6 flex-1">
-              {navLinks.map((link, i) => {
-                const isActive =
-                  link.href === "/"
-                    ? pathname === "/"
-                    : pathname.startsWith(link.href.split("#")[0]) && link.href !== "/";
+            {/* Scrollable nav links */}
+            <nav className="flex-1 overflow-y-auto px-6 py-6">
+              <div className="flex flex-col gap-1">
+                {navLinks.map((link, i) => {
+                  const isActive =
+                    link.href === "/"
+                      ? pathname === "/"
+                      : pathname.startsWith(link.href.split("#")[0]) && link.href !== "/";
 
-                return (
-                  <motion.div
-                    key={link.href}
-                    initial={{ opacity: 0, x: 40 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 40 }}
-                    transition={{ delay: 0.05 + i * 0.06, duration: 0.3, ease: "easeOut" }}
-                  >
-                    <Link
-                      href={link.href}
-                      onClick={() => setMobileOpen(false)}
-                      className="text-4xl font-extrabold uppercase tracking-tight transition-colors"
-                      style={{ color: isActive ? "#cc1533" : "#ffffff" }}
+                  return (
+                    <motion.div
+                      key={link.href}
+                      initial={{ opacity: 0, x: 30 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 30 }}
+                      transition={{ delay: 0.06 + i * 0.05, duration: 0.3, ease: "easeOut" }}
                     >
-                      {link.label}
-                    </Link>
-                  </motion.div>
-                );
-              })}
+                      <Link
+                        href={link.href}
+                        onClick={() => setMobileOpen(false)}
+                        className="group flex items-center gap-4 py-3 px-4 rounded-xl transition-all"
+                        style={{
+                          backgroundColor: isActive ? "rgba(204, 21, 51, 0.12)" : "transparent",
+                        }}
+                      >
+                        {/* Number */}
+                        <span
+                          className="text-xs font-mono w-6 text-right shrink-0 transition-colors"
+                          style={{ color: isActive ? "#cc1533" : "rgba(255,255,255,0.2)" }}
+                        >
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+
+                        {/* Active indicator bar */}
+                        <span
+                          className="w-[3px] h-6 rounded-full shrink-0 transition-all"
+                          style={{
+                            backgroundColor: isActive ? "#cc1533" : "rgba(255,255,255,0.08)",
+                          }}
+                        />
+
+                        {/* Label */}
+                        <span
+                          className="text-2xl font-bold uppercase tracking-wide transition-colors group-hover:text-white"
+                          style={{ color: isActive ? "#ffffff" : "rgba(255,255,255,0.55)" }}
+                        >
+                          {link.label}
+                        </span>
+
+                        {/* Arrow on active */}
+                        {isActive && (
+                          <motion.span
+                            className="ml-auto"
+                            initial={{ opacity: 0, x: -8 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.3 }}
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="#cc1533" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </motion.span>
+                        )}
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </div>
             </nav>
 
-            {/* Bottom tagline */}
-            <motion.p
-              className="text-center text-xs tracking-[0.3em] uppercase pb-10"
-              style={{ color: "rgba(255,255,255,0.3)" }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-            >
-              2026 · Newfoundland
-            </motion.p>
+            {/* Bottom section */}
+            <div className="shrink-0 px-6 pb-8">
+              <div className="h-px mb-5" style={{ backgroundColor: "rgba(255,255,255,0.08)" }} />
+              <Link
+                href="/#season"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center justify-center w-full py-3.5 rounded-xl text-sm font-bold uppercase tracking-widest text-white transition-all hover:brightness-110 active:scale-[0.98]"
+                style={{ backgroundColor: "#cc1533" }}
+              >
+                2025 Season
+              </Link>
+              <motion.p
+                className="text-center text-[10px] tracking-[0.3em] uppercase mt-5"
+                style={{ color: "rgba(255,255,255,0.2)" }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                2026 · Newfoundland
+              </motion.p>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
