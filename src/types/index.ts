@@ -61,6 +61,7 @@ export interface Match {
   passCompThem?: number;
   players?: MatchPlayerStat[];
   threeStars?: [ThreeStar, ThreeStar, ThreeStar] | null;
+  forfeit?: boolean;
 }
 
 export interface ClubRecord {

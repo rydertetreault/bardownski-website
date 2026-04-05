@@ -2,32 +2,37 @@ import Image from "next/image";
 import MatchesBackground from "./MatchesBackground";
 import MatchesClient from "./MatchesClient";
 import { fetchChelstatsData } from "@/lib/chelstats";
+import { syncMatchHistory } from "@/lib/match-history";
 import type { Match, ClubRecord } from "@/types";
 
 export default async function MatchesPage() {
   const chelstats = await fetchChelstatsData();
 
-  const matches: Match[] = chelstats
-    ? chelstats.matches.map((m) => ({
-        id: m.id,
-        timestamp: m.timestamp,
-        date: m.date,
-        opponent: m.opponent,
-        homeAway: m.homeAway,
-        scoreUs: m.scoreUs,
-        scoreThem: m.scoreThem,
-        status: "final" as const,
-        matchType: m.matchType,
-        shotsUs: m.shotsUs,
-        shotsThem: m.shotsThem,
-        toaUs: m.toaUs,
-        toaThem: m.toaThem,
-        passCompUs: m.passCompUs,
-        passCompThem: m.passCompThem,
-        players: m.players,
-        threeStars: m.threeStars,
-      }))
+  // Sync match history with Redis to detect forfeited/untracked games
+  const allMatches = chelstats
+    ? await syncMatchHistory(chelstats)
     : [];
+
+  const matches: Match[] = allMatches.map((m) => ({
+    id: m.id,
+    timestamp: m.timestamp,
+    date: m.date,
+    opponent: m.opponent,
+    homeAway: m.homeAway,
+    scoreUs: m.scoreUs,
+    scoreThem: m.scoreThem,
+    status: "final" as const,
+    matchType: m.matchType,
+    shotsUs: m.shotsUs,
+    shotsThem: m.shotsThem,
+    toaUs: m.toaUs,
+    toaThem: m.toaThem,
+    passCompUs: m.passCompUs,
+    passCompThem: m.passCompThem,
+    players: m.players,
+    threeStars: m.threeStars,
+    forfeit: m.forfeit,
+  }));
 
   const clubRecord: ClubRecord | null = chelstats
     ? {

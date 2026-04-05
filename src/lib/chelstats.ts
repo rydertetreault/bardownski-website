@@ -260,6 +260,7 @@ export interface ClubMatch {
   result: string;
   players: MatchPlayerStat[];
   threeStars: [ThreeStar, ThreeStar, ThreeStar] | null;
+  forfeit?: boolean;
 }
 
 export interface ChelstatsData {
@@ -392,6 +393,10 @@ function transformGame(
         ]
       : null;
 
+  // Result code >= 16384 indicates opponent DNF/forfeit (16384 is the DNF bit flag)
+  const resultCode = parseInt(ourClub.result || "0") || 0;
+  const isForfeit = resultCode >= 16384;
+
   return {
     id: game.matchId,
     timestamp: game.timestamp,
@@ -410,6 +415,7 @@ function transformGame(
     result: ourClub.result || "",
     players,
     threeStars,
+    ...(isForfeit && { forfeit: true }),
   };
 }
 

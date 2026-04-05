@@ -138,6 +138,7 @@ function ScoreCard({ match, index }: { match: Match; index: number }) {
   const result = getResult(match);
   const isWin = result === "W";
   const isFinal = match.status === "final";
+  const isSyntheticForfeit = match.id.startsWith("forfeit-");
 
   // NHL convention: away team on top, home team on bottom
   const awayTeam =
@@ -170,6 +171,56 @@ function ScoreCard({ match, index }: { match: Match; index: number }) {
           isWinner: isFinal && !isWin,
         };
 
+  const cardContent = (
+    <>
+      {/* Status header */}
+      <div className="flex items-center justify-between px-4 py-2 border-b border-border/20">
+        <div className="flex items-center gap-2">
+          {isFinal ? (
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted">
+              Final
+            </span>
+          ) : match.status === "live" ? (
+            <span className="text-[10px] font-bold uppercase tracking-wider text-red animate-pulse">
+              Live
+            </span>
+          ) : (
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted/50">
+              Scheduled
+            </span>
+          )}
+          {match.forfeit && (
+            <span className="text-[9px] font-bold uppercase tracking-wider text-orange-400 bg-orange-500/10 border border-orange-500/20 px-1.5 py-0.5 rounded">
+              Forfeit
+            </span>
+          )}
+          {match.matchType === "finals" && (
+            <span className="text-[9px] font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded">
+              Finals
+            </span>
+          )}
+        </div>
+        <span className="text-[10px] text-muted/50 tracking-widest">
+          {match.date}
+        </span>
+      </div>
+
+      {/* Team rows */}
+      <div className="py-0.5">
+        <TeamRow {...awayTeam} />
+        <div className="mx-4 h-px bg-border/15" />
+        <TeamRow {...homeTeam} />
+      </div>
+
+      {/* Footer */}
+      <div className="flex items-center justify-center py-1.5 border-t border-border/10">
+        <span className="text-muted/30 text-[10px] uppercase tracking-widest">
+          {isSyntheticForfeit ? "Opponent DNF" : "Details \u2192"}
+        </span>
+      </div>
+    </>
+  );
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -177,51 +228,18 @@ function ScoreCard({ match, index }: { match: Match; index: number }) {
       viewport={{ once: true, amount: 0 }}
       transition={{ duration: 0.35, delay: index * 0.05, ease: "easeOut" }}
     >
-      <Link
-        href={`/matches/${match.id}`}
-        className="block bg-navy/70 backdrop-blur-sm border border-border hover:border-red/30 rounded-lg overflow-hidden transition-all hover:shadow-lg hover:shadow-red/5"
-      >
-        {/* Status header */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-border/20">
-          <div className="flex items-center gap-2">
-            {isFinal ? (
-              <span className="text-[10px] font-bold uppercase tracking-wider text-muted">
-                Final
-              </span>
-            ) : match.status === "live" ? (
-              <span className="text-[10px] font-bold uppercase tracking-wider text-red animate-pulse">
-                Live
-              </span>
-            ) : (
-              <span className="text-[10px] font-bold uppercase tracking-wider text-muted/50">
-                Scheduled
-              </span>
-            )}
-            {match.matchType === "finals" && (
-              <span className="text-[9px] font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded">
-                Finals
-              </span>
-            )}
-          </div>
-          <span className="text-[10px] text-muted/50 tracking-widest">
-            {match.date}
-          </span>
+      {isSyntheticForfeit ? (
+        <div className="bg-navy/70 backdrop-blur-sm border border-border rounded-lg overflow-hidden">
+          {cardContent}
         </div>
-
-        {/* Team rows */}
-        <div className="py-0.5">
-          <TeamRow {...awayTeam} />
-          <div className="mx-4 h-px bg-border/15" />
-          <TeamRow {...homeTeam} />
-        </div>
-
-        {/* View details indicator */}
-        <div className="flex items-center justify-center py-1.5 border-t border-border/10">
-          <span className="text-muted/30 text-[10px] uppercase tracking-widest">
-            Details →
-          </span>
-        </div>
-      </Link>
+      ) : (
+        <Link
+          href={`/matches/${match.id}`}
+          className="block bg-navy/70 backdrop-blur-sm border border-border hover:border-red/30 rounded-lg overflow-hidden transition-all hover:shadow-lg hover:shadow-red/5"
+        >
+          {cardContent}
+        </Link>
+      )}
     </motion.div>
   );
 }
