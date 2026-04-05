@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { fetchChelstatsData } from "@/lib/chelstats";
+import { getMatchHistory } from "@/lib/match-history";
 import { getNickname } from "@/lib/nicknames";
 import type { Match, MatchPlayerStat } from "@/types";
 import MatchesBackground from "../MatchesBackground";
@@ -293,7 +294,9 @@ export default async function MatchDetailPage({
   const chelstats = await fetchChelstatsData();
   if (!chelstats) notFound();
 
-  const raw = chelstats.matches.find((m) => m.id === id);
+  // Search accumulated Redis history so older matches are still accessible
+  const allMatches = await getMatchHistory(chelstats);
+  const raw = allMatches.find((m) => m.id === id);
   if (!raw) notFound();
 
   const match: Match = {

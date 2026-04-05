@@ -2,15 +2,15 @@ import Image from "next/image";
 import MatchesBackground from "./MatchesBackground";
 import MatchesClient from "./MatchesClient";
 import { fetchChelstatsData } from "@/lib/chelstats";
-import { syncMatchHistory } from "@/lib/match-history";
+import { getMatchHistory } from "@/lib/match-history";
 import type { Match, ClubRecord } from "@/types";
 
 export default async function MatchesPage() {
   const chelstats = await fetchChelstatsData();
 
-  // Sync match history with Redis to detect forfeited/untracked games
+  // Load accumulated match history from Redis (populated by sync cron)
   const allMatches = chelstats
-    ? await syncMatchHistory(chelstats)
+    ? await getMatchHistory(chelstats)
     : [];
 
   const matches: Match[] = allMatches.map((m) => ({
