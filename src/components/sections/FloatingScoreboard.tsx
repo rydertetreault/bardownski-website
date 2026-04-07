@@ -5,6 +5,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Match } from "@/types";
+import { getNickname } from "@/lib/nicknames";
+
+function titleCase(s: string): string {
+  return s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
 function getResult(match: Match): "W" | "L" | null {
   if (
@@ -133,7 +138,7 @@ function FeaturedCard({ match }: { match: Match }) {
                     star.isOurPlayer ? "text-white/65" : "text-white/30"
                   }`}
                 >
-                  {star.name}
+                  {star.isOurPlayer ? titleCase(getNickname(star.name)) : star.name}
                 </span>
               </div>
             ))}

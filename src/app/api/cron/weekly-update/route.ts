@@ -206,10 +206,8 @@ export async function GET(request: NextRequest) {
     meta.lastRandomSpotlightPlayer = "";
   }
 
-  // Allow ?reset=true to regenerate / replace an existing article
+  // Allow ?reset=true to regenerate today's article
   const forceReset = request.nextUrl.searchParams.get("reset") === "true";
-  // Optional ?date=YYYY-MM-DD targets a specific past article for removal
-  const resetDate = request.nextUrl.searchParams.get("date");
 
   // Duplicate prevention (skip if resetting)
   if (meta.lastDate === today && !forceReset) {
@@ -231,28 +229,12 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // If resetting, remove the targeted article(s) and rewind rotation.
-  // Default target is today's article; pass ?date=YYYY-MM-DD to target a past day.
-  if (forceReset) {
-    const targetDate = resetDate || today;
+  // If resetting, remove the old article and rewind rotation
+  if (forceReset && meta.lastDate === today) {
     const existing = (await redis.get<Article[]>("articles:auto")) ?? [];
-    const removed = existing.filter((a) => a.date === targetDate);
-    if (removed.length > 0) {
-      const cleaned = existing.filter((a) => a.date !== targetDate);
-      await redis.set("articles:auto", cleaned);
-      // Drop individual article keys for the removed entries
-      for (const a of removed) {
-        await redis.del(`article:${a.id}`);
-      }
-      // Rewind rotation index by however many we removed
-      const len = GENERATORS.length;
-      meta.lastRotationIndex = ((meta.lastRotationIndex - removed.length) % len + len) % len;
-      meta.totalArticles = Math.max(0, meta.totalArticles - removed.length);
-      // If meta.lastDate pointed at the removed day, fall back to the next-newest
-      if (meta.lastDate === targetDate) {
-        meta.lastDate = cleaned[0]?.date ?? "";
-      }
-    }
+    const cleaned = existing.filter((a) => !a.date.startsWith(today));
+    await redis.set("articles:auto", cleaned);
+    meta.lastRotationIndex = meta.lastRotationIndex - 1;
   }
 
   // Allow ?type= to force a specific article type
