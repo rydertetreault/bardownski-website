@@ -669,6 +669,82 @@ export function chelstatsToSeasonData(members: ClubMember[]): SeasonData {
   return { season: "2025", stats };
 }
 
+/* ── Top Players (driven by MVP odds ranking) ────────────────────────── */
+
+export interface TopPlayerEntry {
+  name: string;
+  position: string;
+  isGoalie: boolean;
+  // Skater stats (when isGoalie = false)
+  gamesPlayed?: number;
+  goals?: number;
+  assists?: number;
+  points?: number;
+  // Goalie stats (when isGoalie = true)
+  goalieGP?: number;
+  savePct?: number;
+  shutouts?: number;
+  gaa?: number;
+}
+
+/**
+ * Returns the top N players using the MVP odds ranking (already calibrated
+ * so skaters and goalies are comparable). Each player only appears once,
+ * keeping whichever role (skater/goalie) scored higher.
+ */
+export function computeTopPlayers(
+  members: ClubMember[],
+  limit: number = 3
+): TopPlayerEntry[] {
+  if (members.length === 0) return [];
+
+  const mvpEntries = computeMvpOddsFromMembers(members);
+  if (mvpEntries.length === 0) return [];
+
+  // Lookup table: resolved display name → ClubMember
+  const byName = new Map<string, ClubMember>();
+  for (const m of members) {
+    byName.set(resolveName(m.username), m);
+  }
+
+  // Dedupe by name — MVP entries can list the same player twice (skater +
+  // goalie). The first occurrence is the higher-scoring one since the list
+  // is already sorted.
+  const seen = new Set<string>();
+  const top: TopPlayerEntry[] = [];
+
+  for (const entry of mvpEntries) {
+    if (seen.has(entry.name)) continue;
+    seen.add(entry.name);
+
+    const m = byName.get(entry.name);
+    if (!m) continue;
+
+    top.push({
+      name: entry.name,
+      position: entry.isGoalie ? "Goalie" : m.position,
+      isGoalie: entry.isGoalie,
+      ...(entry.isGoalie
+        ? {
+            goalieGP: m.goalieGP,
+            savePct: m.savePct > 1 ? m.savePct : m.savePct * 100,
+            shutouts: m.shutouts,
+            gaa: m.gaa,
+          }
+        : {
+            gamesPlayed: m.gamesPlayed,
+            goals: m.goals,
+            assists: m.assists,
+            points: m.points,
+          }),
+    });
+
+    if (top.length >= limit) break;
+  }
+
+  return top;
+}
+
 /* ── MVP Odds from live chelstats data ─────────────────────────────── */
 
 export function computeMvpOddsFromMembers(

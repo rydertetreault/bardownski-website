@@ -10,7 +10,7 @@ export function StatsPreviewAnimated({ children }: { children: ReactNode }) {
 
 export function StatsGrid({ children }: { children: ReactNode }) {
   return (
-    <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6" stagger={0.12}>
+    <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6" stagger={0.12}>
       {children}
     </StaggerContainer>
   );

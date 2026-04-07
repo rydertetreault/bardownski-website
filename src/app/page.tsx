@@ -56,7 +56,7 @@ export default async function Home() {
       <StatsTicker messages={messages} members={chelstats?.members} />
       <NewsSection newsItems={allArticles.slice(0, 3)} />
       <WhoWeAreSection />
-      <StatsPreviewSection messages={messages} mvpOdds={mvpOdds} />
+      <StatsPreviewSection members={chelstats?.members ?? []} mvpOdds={mvpOdds} />
       <HighlightsSection />
     </>
   );

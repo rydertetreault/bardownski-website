@@ -1,8 +1,5 @@
 import Link from "next/link";
-import {
-  parseStats,
-  getEnrichedPlayers,
-} from "@/lib/discord";
+import { computeTopPlayers, type ClubMember } from "@/lib/chelstats";
 import { getNickname } from "@/lib/nicknames";
 import {
   StatsPreviewAnimated,
@@ -12,10 +9,18 @@ import {
 import type { MvpOddsEntry } from "@/lib/discord";
 import { MvpOddsBanner } from "./MvpOddsSection";
 
-export default function StatsPreviewSection({ messages, mvpOdds }: { messages: unknown[]; mvpOdds: MvpOddsEntry[] }) {
-  const stats = parseStats(messages);
+type StatStyle = "default" | "blue" | "red";
 
-  if (!stats) {
+export default function StatsPreviewSection({
+  members,
+  mvpOdds,
+}: {
+  members: ClubMember[];
+  mvpOdds: MvpOddsEntry[];
+}) {
+  const topPlayers = computeTopPlayers(members, 3);
+
+  if (topPlayers.length === 0) {
     return (
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -35,12 +40,6 @@ export default function StatsPreviewSection({ messages, mvpOdds }: { messages: u
     );
   }
 
-  const players = getEnrichedPlayers(stats);
-  const topPlayers = players
-    .filter((p) => p.points !== undefined)
-    .sort((a, b) => (b.points ?? 0) - (a.points ?? 0))
-    .slice(0, 2);
-
   return (
     <section className="py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -55,11 +54,41 @@ export default function StatsPreviewSection({ messages, mvpOdds }: { messages: u
 
         <StatsGrid>
           {topPlayers.map((player, i) => {
+            const stats: { label: string; value: string | number; style: StatStyle }[] =
+              player.isGoalie
+                ? [
+                    { label: "GP", value: player.goalieGP ?? "-", style: "default" },
+                    {
+                      label: "SV%",
+                      value:
+                        player.savePct !== undefined
+                          ? player.savePct.toFixed(1)
+                          : "-",
+                      style: "blue",
+                    },
+                    { label: "SO", value: player.shutouts ?? "-", style: "default" },
+                    {
+                      label: "GAA",
+                      value:
+                        player.gaa !== undefined ? player.gaa.toFixed(2) : "-",
+                      style: "red",
+                    },
+                  ]
+                : [
+                    { label: "GP", value: player.gamesPlayed ?? "-", style: "default" },
+                    { label: "G", value: player.goals ?? "-", style: "default" },
+                    { label: "A", value: player.assists ?? "-", style: "blue" },
+                    { label: "PTS", value: player.points ?? "-", style: "red" },
+                  ];
+
             return (
-              <StatsCard key={player.name}>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-6 gap-4">
+              <StatsCard key={`${player.name}-${player.isGoalie ? "g" : "s"}`}>
+                <div className="flex flex-col p-6 gap-4">
                   <div className="flex items-center gap-4">
-                    <span className="text-4xl sm:text-6xl font-black leading-none select-none" style={{ color: "rgba(91,155,213,0.18)" }}>
+                    <span
+                      className="text-5xl font-black leading-none select-none"
+                      style={{ color: "rgba(91,155,213,0.18)" }}
+                    >
                       #{i + 1}
                     </span>
                     <div>
@@ -72,37 +101,44 @@ export default function StatsPreviewSection({ messages, mvpOdds }: { messages: u
                     </div>
                   </div>
 
-                  <div className="flex gap-2 sm:gap-3">
-                    {[
-                      { label: "GP", value: player.gamesPlayed, style: "default" as const },
-                      { label: "G", value: player.goals, style: "default" as const },
-                      { label: "A", value: player.assists, style: "blue" as const },
-                      { label: "PTS", value: player.points, style: "red" as const },
-                    ].map(({ label, value, style }) => (
+                  <div className="flex gap-2">
+                    {stats.map(({ label, value, style }) => (
                       <div
                         key={label}
-                        className={`text-center rounded-lg py-3 px-3 min-w-[52px] ${
+                        className={`flex-1 text-center rounded-lg py-3 px-2 ${
                           style === "red"
                             ? "bg-red/10 border border-red/20"
                             : style === "blue"
                             ? "border border-[#5b9bd5]/20"
                             : "bg-surface-light"
                         }`}
-                        style={style === "blue" ? { backgroundColor: "rgba(91,155,213,0.07)" } : undefined}
+                        style={
+                          style === "blue"
+                            ? { backgroundColor: "rgba(91,155,213,0.07)" }
+                            : undefined
+                        }
                       >
                         <p
                           className={`text-[10px] uppercase tracking-wider ${
-                            style === "red" ? "text-red" : style === "blue" ? "text-[#5b9bd5]" : "text-muted"
+                            style === "red"
+                              ? "text-red"
+                              : style === "blue"
+                              ? "text-[#5b9bd5]"
+                              : "text-muted"
                           }`}
                         >
                           {label}
                         </p>
                         <p
                           className={`font-bold text-lg ${
-                            style === "red" ? "text-red" : style === "blue" ? "text-[#5b9bd5]" : "text-white"
+                            style === "red"
+                              ? "text-red"
+                              : style === "blue"
+                              ? "text-[#5b9bd5]"
+                              : "text-white"
                           }`}
                         >
-                          {value ?? "-"}
+                          {value}
                         </p>
                       </div>
                     ))}
