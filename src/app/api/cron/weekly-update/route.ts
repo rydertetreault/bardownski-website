@@ -1,7 +1,9 @@
 /**
- * Weekly cron endpoint.
+ * Biweekly cron endpoint.
  *
- * Runs every Monday at 10:00 UTC via Vercel Cron.
+ * Vercel Cron fires this every Monday at 10:00 UTC, but the handler
+ * skips runs less than 10 days after the previous article so articles
+ * land roughly every other week.
  * 1. Computes Player of the Week from Chelstats delta stats
  * 2. Generates the next article in the 4-week rotation
  * 3. Stores both in Upstash Redis
@@ -17,6 +19,8 @@ import { generateStatsRecap } from "@/lib/article-generators/stats-recap";
 import { generateMvpRace } from "@/lib/article-generators/mvp-race";
 import { generatePlayerSpotlight } from "@/lib/article-generators/player-spotlight";
 import { generateMatchRecap } from "@/lib/article-generators/match-recap";
+import { generateRandomSpotlight } from "@/lib/article-generators/random-spotlight";
+import { generateFunFact } from "@/lib/article-generators/fun-fact";
 
 /* ── Types ───────────────────────────────────────────────────────────── */
 
@@ -24,6 +28,7 @@ interface ArticleMeta {
   lastRotationIndex: number;
   lastDate: string;
   lastSpotlightPlayer: string;
+  lastRandomSpotlightPlayer: string;
   totalArticles: number;
 }
 
@@ -141,6 +146,8 @@ const GENERATORS = [
   "mvp-race",
   "player-spotlight",
   "match-recap",
+  "random-spotlight",
+  "fun-fact",
 ] as const;
 
 export async function GET(request: NextRequest) {
@@ -191,23 +198,61 @@ export async function GET(request: NextRequest) {
     lastRotationIndex: -1,
     lastDate: "",
     lastSpotlightPlayer: "",
+    lastRandomSpotlightPlayer: "",
     totalArticles: 0,
   };
+  // Backfill new field on existing meta records
+  if (meta.lastRandomSpotlightPlayer === undefined) {
+    meta.lastRandomSpotlightPlayer = "";
+  }
 
-  // Allow ?reset=true to regenerate today's article
+  // Allow ?reset=true to regenerate / replace an existing article
   const forceReset = request.nextUrl.searchParams.get("reset") === "true";
+  // Optional ?date=YYYY-MM-DD targets a specific past article for removal
+  const resetDate = request.nextUrl.searchParams.get("date");
 
   // Duplicate prevention (skip if resetting)
   if (meta.lastDate === today && !forceReset) {
     return NextResponse.json({ skipped: true, reason: "Already generated today" });
   }
 
-  // If resetting, remove the old article and rewind rotation
-  if (forceReset && meta.lastDate === today) {
+  // Biweekly gate: Vercel fires weekly, but we only want an article
+  // every other week. Skip if the previous article is too recent.
+  if (meta.lastDate && !forceReset) {
+    const daysSince = Math.floor(
+      (new Date(today).getTime() - new Date(meta.lastDate).getTime()) /
+        (1000 * 60 * 60 * 24)
+    );
+    if (daysSince < 10) {
+      return NextResponse.json({
+        skipped: true,
+        reason: `Biweekly: only ${daysSince} days since last article`,
+      });
+    }
+  }
+
+  // If resetting, remove the targeted article(s) and rewind rotation.
+  // Default target is today's article; pass ?date=YYYY-MM-DD to target a past day.
+  if (forceReset) {
+    const targetDate = resetDate || today;
     const existing = (await redis.get<Article[]>("articles:auto")) ?? [];
-    const cleaned = existing.filter((a) => !a.date.startsWith(today));
-    await redis.set("articles:auto", cleaned);
-    meta.lastRotationIndex = meta.lastRotationIndex - 1;
+    const removed = existing.filter((a) => a.date === targetDate);
+    if (removed.length > 0) {
+      const cleaned = existing.filter((a) => a.date !== targetDate);
+      await redis.set("articles:auto", cleaned);
+      // Drop individual article keys for the removed entries
+      for (const a of removed) {
+        await redis.del(`article:${a.id}`);
+      }
+      // Rewind rotation index by however many we removed
+      const len = GENERATORS.length;
+      meta.lastRotationIndex = ((meta.lastRotationIndex - removed.length) % len + len) % len;
+      meta.totalArticles = Math.max(0, meta.totalArticles - removed.length);
+      // If meta.lastDate pointed at the removed day, fall back to the next-newest
+      if (meta.lastDate === targetDate) {
+        meta.lastDate = cleaned[0]?.date ?? "";
+      }
+    }
   }
 
   // Allow ?type= to force a specific article type
@@ -218,6 +263,7 @@ export async function GET(request: NextRequest) {
   const articleType = GENERATORS[nextIndex >= 0 ? nextIndex : 0];
 
   let article: Article | null = null;
+  let randomSpotlightPlayer = "";
 
   try {
     switch (articleType) {
@@ -232,6 +278,17 @@ export async function GET(request: NextRequest) {
         break;
       case "match-recap":
         article = await generateMatchRecap();
+        break;
+      case "random-spotlight": {
+        const result = await generateRandomSpotlight(meta.lastRandomSpotlightPlayer);
+        if (result) {
+          article = result.article;
+          randomSpotlightPlayer = result.playerName;
+        }
+        break;
+      }
+      case "fun-fact":
+        article = await generateFunFact();
         break;
     }
   } catch (err) {
@@ -264,6 +321,7 @@ export async function GET(request: NextRequest) {
     lastRotationIndex: nextIndex,
     lastDate: today,
     lastSpotlightPlayer: articleType === "player-spotlight" ? (weeklyPlayer?.name ?? "") : meta.lastSpotlightPlayer,
+    lastRandomSpotlightPlayer: articleType === "random-spotlight" ? randomSpotlightPlayer : meta.lastRandomSpotlightPlayer,
     totalArticles: existing.length,
   });
 
