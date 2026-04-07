@@ -19,8 +19,6 @@ import { generateStatsRecap } from "@/lib/article-generators/stats-recap";
 import { generateMvpRace } from "@/lib/article-generators/mvp-race";
 import { generatePlayerSpotlight } from "@/lib/article-generators/player-spotlight";
 import { generateMatchRecap } from "@/lib/article-generators/match-recap";
-import { generateRandomSpotlight } from "@/lib/article-generators/random-spotlight";
-import { generateFunFact } from "@/lib/article-generators/fun-fact";
 
 /* ── Types ───────────────────────────────────────────────────────────── */
 
@@ -28,7 +26,6 @@ interface ArticleMeta {
   lastRotationIndex: number;
   lastDate: string;
   lastSpotlightPlayer: string;
-  lastRandomSpotlightPlayer: string;
   totalArticles: number;
 }
 
@@ -146,8 +143,6 @@ const GENERATORS = [
   "mvp-race",
   "player-spotlight",
   "match-recap",
-  "random-spotlight",
-  "fun-fact",
 ] as const;
 
 export async function GET(request: NextRequest) {
@@ -198,13 +193,8 @@ export async function GET(request: NextRequest) {
     lastRotationIndex: -1,
     lastDate: "",
     lastSpotlightPlayer: "",
-    lastRandomSpotlightPlayer: "",
     totalArticles: 0,
   };
-  // Backfill new field on existing meta records
-  if (meta.lastRandomSpotlightPlayer === undefined) {
-    meta.lastRandomSpotlightPlayer = "";
-  }
 
   // Allow ?reset=true to regenerate today's article
   const forceReset = request.nextUrl.searchParams.get("reset") === "true";
@@ -245,7 +235,6 @@ export async function GET(request: NextRequest) {
   const articleType = GENERATORS[nextIndex >= 0 ? nextIndex : 0];
 
   let article: Article | null = null;
-  let randomSpotlightPlayer = "";
 
   try {
     switch (articleType) {
@@ -260,17 +249,6 @@ export async function GET(request: NextRequest) {
         break;
       case "match-recap":
         article = await generateMatchRecap();
-        break;
-      case "random-spotlight": {
-        const result = await generateRandomSpotlight(meta.lastRandomSpotlightPlayer);
-        if (result) {
-          article = result.article;
-          randomSpotlightPlayer = result.playerName;
-        }
-        break;
-      }
-      case "fun-fact":
-        article = await generateFunFact();
         break;
     }
   } catch (err) {
@@ -303,7 +281,6 @@ export async function GET(request: NextRequest) {
     lastRotationIndex: nextIndex,
     lastDate: today,
     lastSpotlightPlayer: articleType === "player-spotlight" ? (weeklyPlayer?.name ?? "") : meta.lastSpotlightPlayer,
-    lastRandomSpotlightPlayer: articleType === "random-spotlight" ? randomSpotlightPlayer : meta.lastRandomSpotlightPlayer,
     totalArticles: existing.length,
   });
 
