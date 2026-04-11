@@ -5,7 +5,10 @@ import type { WeeklyPlayer } from "@/lib/discord";
 import type { Article } from "@/lib/news";
 
 function titleCase(s: string): string {
-  return s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+  return s
+    .toLowerCase()
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+    .replace(/\b(?:II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX)\b/gi, (m) => m.toUpperCase());
 }
 
 function name(m: ClubMember): string {

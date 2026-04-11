@@ -12,7 +12,10 @@ interface Props {
 }
 
 function titleCase(s: string): string {
-  return s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+  return s
+    .toLowerCase()
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+    .replace(/\b(?:II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX)\b/gi, (m) => m.toUpperCase());
 }
 
 export default function PlayerOfWeekBadge({ player, standings = [] }: Props) {

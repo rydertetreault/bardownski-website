@@ -3,8 +3,18 @@ import type { ClubMatch } from "@/lib/chelstats";
 import { getNickname } from "@/lib/nicknames";
 import type { Article } from "@/lib/news";
 
+const ROMAN_NUMERAL_RE = /^(?=[ivxlcdm])m*(c[md]|d?c{0,3})(x[cl]|l?x{0,3})(i[xv]|v?i{0,3})$/i;
+
 function titleCase(s: string): string {
-  return s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+  return s
+    .toLowerCase()
+    .split(/(\s+)/)
+    .map((w) => {
+      if (!w.trim()) return w;
+      if (ROMAN_NUMERAL_RE.test(w)) return w.toUpperCase();
+      return w.charAt(0).toUpperCase() + w.slice(1);
+    })
+    .join("");
 }
 
 function tc(name: string): string {
