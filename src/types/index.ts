@@ -28,6 +28,9 @@ export interface MatchPlayerStat {
   shots: number;
   plusMinus: number;
   pim: number;
+  powerPlayGoals: number;
+  shortHandedGoals: number;
+  gameWinningGoal: number;
   saves: number;
   shotsAgainst: number;
   goalsAgainst: number;

@@ -227,6 +227,9 @@ export interface MatchPlayerStat {
   shots: number;
   plusMinus: number;
   pim: number;
+  powerPlayGoals: number;
+  shortHandedGoals: number;
+  gameWinningGoal: number;
   saves: number;
   shotsAgainst: number;
   goalsAgainst: number;
@@ -325,6 +328,9 @@ function transformGame(
       shots: num(p.skshots),
       plusMinus: parseInt(p.skplusmin || "0") || 0,
       pim: num(p.skpim),
+      powerPlayGoals: num(p.skppg),
+      shortHandedGoals: num(p.skshg),
+      gameWinningGoal: num(p.skgwg),
       saves: num(p.glsaves),
       shotsAgainst: num(p.glshots),
       goalsAgainst: num(p.glga),
