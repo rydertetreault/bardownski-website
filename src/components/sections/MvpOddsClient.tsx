@@ -32,8 +32,10 @@ function MvpInfoModal({ onClose }: { onClose: () => void }) {
         <div className="space-y-4 text-sm text-muted leading-relaxed">
           <p className="text-white/80">
             Every player gets a <span className="text-white font-semibold">per-game rating</span> based
-            on their stats, multiplied by <span className="text-white font-semibold">sqrt(games played)</span> to
-            reward volume without letting it dominate.
+            on their stats, multiplied by a <span className="text-white font-semibold">games played scaling factor</span>.
+            Goalies use sqrt(GP) directly, while skaters use a dampened curve that tapers
+            at higher GP - because skater rates naturally sustain with more games, but
+            a goalie sustaining elite rates over many games is genuinely harder.
           </p>
 
           <div>
@@ -68,13 +70,18 @@ function MvpInfoModal({ onClose }: { onClose: () => void }) {
 
           <div>
             <h4 className="text-xs font-bold uppercase tracking-widest text-[#cc1533] mb-2">
-              Why sqrt(GP)?
+              GP Scaling
             </h4>
             <p>
-              A player with 200 games doesn&apos;t get 4x the score of someone with 50
-              games - they get ~2x. You can&apos;t just rack up games with average stats
-              to climb the board, but playing more games with good stats does reward you.
-              Part-time players with inflated rate stats from small samples get naturally pulled down.
+              <span className="text-white font-semibold">Goalies</span> use straight sqrt(GP) - a goalie
+              with 100 games gets ~2x the score of one with 25. Sustaining save%, GAA,
+              and shutout rates over a full season is the hardest grind in the game.
+            </p>
+            <p className="mt-2">
+              <span className="text-white font-semibold">Skaters</span> use a log-dampened sqrt(GP) that
+              tapers past ~100 games. Skater stats naturally accumulate with more ice time,
+              so the GP multiplier scales back to avoid double-dipping on volume. Below
+              100 GP there&apos;s almost no difference. Above 200 GP the dampening is ~25%.
             </p>
           </div>
 
