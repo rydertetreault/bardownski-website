@@ -146,7 +146,7 @@ export function generateMatchDescription(match: Match): string {
   }
   parts.push(pick(openingPool));
 
-  /* ── Game shape ────────────────────────────────────────────────── */
+  /* ── Game shape (shots) ────────────────────────────────────────── */
 
   const shotsUs = match.shotsUs ?? 0;
   const shotsThem = match.shotsThem ?? 0;
@@ -164,21 +164,29 @@ export function generateMatchDescription(match: Match): string {
           `A dominant ${shotsUs}-${shotsThem} edge in shots told the story of the night.`,
           `Bardownski controlled every zone, piling up ${shotsUs} shots to ${shotsThem}.`,
         ]));
+      } else if (shotDiff >= 6) {
+        parts.push(pick([
+          `Bardownski held the edge in shots ${shotsUs}-${shotsThem}, pressing the action most of the night.`,
+          `The boys generated more chances than they gave up, ${shotsUs}-${shotsThem} on the shot counter.`,
+          `Bardownski pushed the pace, finishing with a ${shotsUs}-${shotsThem} shot advantage.`,
+        ]));
       } else if (shotDiff <= -12) {
         parts.push(pick([
           `${opponent} outshot Bardownski ${shotsThem}-${shotsUs}, but the boys made every chance count.`,
           `A bit of a heist — outshot ${shotsThem}-${shotsUs} but still on top when the clock ran out.`,
           `Bardownski got outshot ${shotsThem}-${shotsUs} and found a way anyway.`,
         ]));
-      } else if (toaShareUs >= 0.58) {
+      } else if (shotDiff <= -6) {
         parts.push(pick([
-          `The boys dominated possession all night, owning the puck for most of the sixty.`,
-          `Bardownski held the puck for most of the game and it showed on the scoresheet.`,
+          `${opponent} tilted the ice ${shotsThem}-${shotsUs} in shots, but Bardownski's finishing carried the night.`,
+          `Outshot ${shotsThem}-${shotsUs}, the boys still got the job done where it counted.`,
+          `${opponent} had the shot edge at ${shotsThem}-${shotsUs}, but Bardownski was more clinical with their chances.`,
         ]));
-      } else if (toaShareUs > 0 && toaShareUs <= 0.42) {
+      } else {
         parts.push(pick([
-          `${opponent} controlled the puck most of the night, but Bardownski buried their chances.`,
-          `Bardownski gave up possession but not goals, cashing in when it mattered.`,
+          `A back-and-forth affair, shots finishing ${shotsUs}-${shotsThem}.`,
+          `Both teams traded chances all night, ${shotsUs}-${shotsThem} on the shot clock.`,
+          `Tight on the shot counter at ${shotsUs}-${shotsThem}, but Bardownski came out on top.`,
         ]));
       }
     } else {
@@ -188,12 +196,61 @@ export function generateMatchDescription(match: Match): string {
           `${shotsUs} shots on goal with little to show for it — the boys had chances but couldn't finish.`,
           `All the pressure in the world, ${shotsUs}-${shotsThem} in shots, didn't translate to the scoreboard.`,
         ]));
+      } else if (shotDiff >= 6) {
+        parts.push(pick([
+          `Bardownski had the shot edge at ${shotsUs}-${shotsThem} but couldn't find enough answers.`,
+          `The boys generated plenty of chances, ${shotsUs}-${shotsThem} in shots, but the scoresheet said otherwise.`,
+          `Bardownski pushed the play, ${shotsUs}-${shotsThem} on the shot clock, and still came up empty.`,
+        ]));
       } else if (shotDiff <= -12) {
         parts.push(pick([
           `${opponent} ran the show, outshooting Bardownski ${shotsThem}-${shotsUs}.`,
           `A one-sided affair in every phase, ${opponent} piling up ${shotsThem} shots to ${shotsUs}.`,
         ]));
+      } else if (shotDiff <= -6) {
+        parts.push(pick([
+          `${opponent} pushed the play most of the night, outshooting Bardownski ${shotsThem}-${shotsUs}.`,
+          `The shot count told the story, ${shotsThem}-${shotsUs} in favour of ${opponent}.`,
+        ]));
+      } else {
+        parts.push(pick([
+          `A back-and-forth night, shots finishing ${shotsUs}-${shotsThem}.`,
+          `Neither team ran away with the chances, ${shotsUs}-${shotsThem} on the shot clock.`,
+        ]));
       }
+    }
+
+    // Possession flourish (separate beat, fires when time on attack was lopsided)
+    if (toaShareUs >= 0.58) {
+      parts.push(pick([
+        `The boys owned the puck for most of the sixty.`,
+        `Time on attack was heavily in Bardownski's favour.`,
+        `Bardownski dictated possession from start to finish.`,
+      ]));
+    } else if (toaShareUs > 0 && toaShareUs <= 0.42) {
+      parts.push(pick([
+        `${opponent} held the puck most of the night, but the boys stayed patient in their own end.`,
+        `Possession numbers tilted toward ${opponent}, even if the scoreboard didn't always agree.`,
+      ]));
+    }
+  }
+
+  /* ── Puck movement (team pass %) ───────────────────────────────── */
+
+  const passUs = match.passCompUs ?? 0;
+  const passThem = match.passCompThem ?? 0;
+  if (passUs > 0) {
+    if (passUs >= 85 && passUs - passThem >= 5) {
+      parts.push(pick([
+        `Bardownski was crisp in transition, clicking at ${passUs}% on passes.`,
+        `The puck movement was sharp all night, ${passUs}% pass completion from the boys.`,
+        `Bardownski moved the puck with purpose, finishing at ${passUs}% through the neutral zone.`,
+      ]));
+    } else if (passUs < 68) {
+      parts.push(pick([
+        `Puck management was a problem — Bardownski completed just ${passUs}% of passes.`,
+        `The boys were sloppy in transition, clicking at only ${passUs}% on passes.`,
+      ]));
     }
   }
 
@@ -288,7 +345,7 @@ export function generateMatchDescription(match: Match): string {
     }
   }
 
-  /* ── Supporting cast (non-star scorers) ────────────────────────── */
+  /* ── Supporting cast (multi-goal individuals) ──────────────────── */
 
   for (const player of ourPlayers) {
     if (mentioned.has(player.name) || player.isGoalie) continue;
@@ -319,6 +376,52 @@ export function generateMatchDescription(match: Match): string {
     }
   }
 
+  /* ── Remaining contributors (compound sentence for 1-point guys) ── */
+
+  const otherContributors = ourPlayers
+    .filter(
+      (p) =>
+        !p.isGoalie &&
+        !mentioned.has(p.name) &&
+        p.goals + p.assists >= 1
+    )
+    .sort((a, b) => b.goals + b.assists - (a.goals + a.assists))
+    .slice(0, 4);
+
+  if (otherContributors.length >= 2) {
+    const names = otherContributors.map((p) => displayName(p.name));
+    const list =
+      names.length === 2
+        ? `${names[0]} and ${names[1]}`
+        : `${names.slice(0, -1).join(", ")}, and ${names[names.length - 1]}`;
+    parts.push(pick([
+      `${list} also found their way onto the scoresheet.`,
+      `Also getting on the board: ${list}.`,
+      `${list} chipped in with points of their own.`,
+    ]));
+    otherContributors.forEach((p) => mentioned.add(p.name));
+  } else if (otherContributors.length === 1) {
+    const p = otherContributors[0];
+    const n = displayName(p.name);
+    if (p.goals === 1 && p.assists === 0) {
+      parts.push(pick([
+        `${n} added a goal of his own.`,
+        `${n} also found the back of the net.`,
+      ]));
+    } else if (p.goals === 0 && p.assists >= 1) {
+      parts.push(pick([
+        `${n} chipped in with ${p.assists === 1 ? "an assist" : `${p.assists} assists`}.`,
+        `${n} set up ${p.assists === 1 ? "a goal" : `${p.assists} goals`} from the playmaker's role.`,
+      ]));
+    } else {
+      parts.push(pick([
+        `${n} also got on the scoresheet with ${p.goals}G and ${p.assists}A.`,
+        `${n} chipped in with a goal and an assist of his own.`,
+      ]));
+    }
+    mentioned.add(p.name);
+  }
+
   /* ── Fallback: top performer when no Bardownski players made stars ── */
 
   if (ourStars.length === 0 && ourPlayers.length > 0 && mentioned.size === 0) {
@@ -330,6 +433,48 @@ export function generateMatchDescription(match: Match): string {
       parts.push(`${displayName(top.name)} led the way for Bardownski with ${statLine}.`);
       mentioned.add(top.name);
     }
+  }
+
+  /* ── Physical play ─────────────────────────────────────────────── */
+
+  const teamHits = ourPlayers.reduce((s, p) => s + (p.hits || 0), 0);
+  const topHitter = ourPlayers
+    .filter((p) => !p.isGoalie && !mentioned.has(p.name))
+    .sort((a, b) => b.hits - a.hits)[0];
+
+  if (topHitter && topHitter.hits >= 8) {
+    parts.push(pick([
+      `${displayName(topHitter.name)} brought the hammer with ${topHitter.hits} hits.`,
+      `${displayName(topHitter.name)} was the enforcer on the night, throwing ${topHitter.hits} hits.`,
+      `${displayName(topHitter.name)} made his presence felt with ${topHitter.hits} bodychecks.`,
+    ]));
+    mentioned.add(topHitter.name);
+  } else if (teamHits >= 25) {
+    parts.push(pick([
+      `Bardownski brought the physical game, piling up ${teamHits} hits as a team.`,
+      `The boys leaned into the body checks, finishing with ${teamHits} hits on the night.`,
+    ]));
+  }
+
+  /* ── Volume shooter (high shots, low goals) ───────────────────── */
+
+  const volumeShooter = ourPlayers
+    .filter(
+      (p) =>
+        !p.isGoalie &&
+        !mentioned.has(p.name) &&
+        p.shots >= 5 &&
+        p.goals <= 1
+    )
+    .sort((a, b) => b.shots - a.shots)[0];
+
+  if (volumeShooter) {
+    parts.push(pick([
+      `${displayName(volumeShooter.name)} kept looking for answers, firing ${volumeShooter.shots} shots at the net.`,
+      `${displayName(volumeShooter.name)} was heavily involved, putting ${volumeShooter.shots} pucks on goal.`,
+      `${displayName(volumeShooter.name)} wouldn't stop shooting, finishing with ${volumeShooter.shots} shots.`,
+    ]));
+    mentioned.add(volumeShooter.name);
   }
 
   /* ── Special teams ─────────────────────────────────────────────── */
