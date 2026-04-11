@@ -760,7 +760,9 @@ export function computeMvpOddsFromMembers(
 
   for (const m of members) {
     // --- Skater score ---
-    // Per-game rate stats measure quality, sqrt(GP) rewards volume.
+    // Per-game rate stats measure quality. Log-dampened sqrt(GP) rewards
+    // volume with diminishing returns so high-GP skaters don't run away
+    // from goalies who naturally play fewer games.
     if (m.gamesPlayed >= MIN_GP && !SKATER_EXCLUDE.has(m.username)) {
       const gp = m.gamesPlayed;
       const perGame =
@@ -772,12 +774,15 @@ export function computeMvpOddsFromMembers(
         (m.hits / gp) * 0.5 +                 // physical presence
         (m.takeaways / gp) * 0.5 -            // defensive play
         (m.giveaways / gp) * 0.3;             // turnover penalty
-      const score = perGame * Math.sqrt(gp);
+      const gpScale = Math.sqrt(gp) * (1 / (1 + Math.log10(gp / 100)));
+      const score = perGame * gpScale;
       entries.push({ member: m, score, isGoalie: false });
     }
 
     // --- Goalie score ---
     // Rate stats calibrated so an elite goalie season ≈ elite skater season.
+    // Goalies keep full sqrt(GP) — sustaining good rates over many games is
+    // genuinely harder in net, unlike skaters whose rates naturally sustain.
     if (m.goalieGP >= MIN_GP) {
       const ggp = m.goalieGP;
       const goalieWinPct = ggp > 0 ? (m.goalieWins / ggp) * 100 : 0;
