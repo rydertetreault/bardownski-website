@@ -3,6 +3,7 @@ import type { ClubMember } from "@/lib/chelstats";
 import { getDisplayNameFromGamertag } from "@/lib/nicknames";
 import type { WeeklyPlayer } from "@/lib/discord";
 import type { Article } from "@/lib/news";
+import { formatMilestonesParagraph, type DetectedMilestone } from "@/lib/milestones";
 
 function titleCase(s: string): string {
   return s
@@ -144,7 +145,8 @@ function buildGoalieBody(m: ClubMember, members: ClubMember[], weeklyPlayer: Wee
 }
 
 export async function generatePlayerSpotlight(
-  weeklyPlayer: WeeklyPlayer | null
+  weeklyPlayer: WeeklyPlayer | null,
+  milestones: DetectedMilestone[] = [],
 ): Promise<Article | null> {
   const data = await fetchChelstatsData();
   if (!data) return null;
@@ -174,9 +176,14 @@ export async function generatePlayerSpotlight(
   const isGoalie = weeklyPlayer?.isGoalie ?? spotlightMember.goalieGP > spotlightMember.gamesPlayed;
   const displayName = name(spotlightMember);
 
-  const body = isGoalie
+  let body = isGoalie
     ? buildGoalieBody(spotlightMember, members, weeklyPlayer)
     : buildSkaterBody(spotlightMember, members, weeklyPlayer);
+
+  const milestonePara = formatMilestonesParagraph(milestones);
+  if (milestonePara) {
+    body += "\n\n" + milestonePara;
+  }
 
   return {
     id: `auto-player-spotlight-${today}`,

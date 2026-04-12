@@ -1,6 +1,7 @@
 import { fetchChelstatsData, computeMvpOddsFromMembers } from "@/lib/chelstats";
 import { getNickname } from "@/lib/nicknames";
 import type { Article } from "@/lib/news";
+import { formatMilestonesParagraph, type DetectedMilestone } from "@/lib/milestones";
 
 function titleCase(s: string): string {
   return s
@@ -13,7 +14,7 @@ function tc(name: string): string {
   return titleCase(getNickname(name));
 }
 
-export async function generateMvpRace(): Promise<Article | null> {
+export async function generateMvpRace(milestones: DetectedMilestone[] = []): Promise<Article | null> {
   const data = await fetchChelstatsData();
   if (!data) return null;
 
@@ -81,6 +82,12 @@ export async function generateMvpRace(): Promise<Article | null> {
       `while ${tc(topSkater.name)} dominates on the offensive end. Both paths to MVP are valid, and the final stretch of games will determine ` +
       `which style of dominance carries more weight when the votes are counted.`
     );
+  }
+
+  // Milestones
+  const milestonePara = formatMilestonesParagraph(milestones);
+  if (milestonePara) {
+    paras.push(milestonePara);
   }
 
   // Closing

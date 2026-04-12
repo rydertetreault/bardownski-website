@@ -19,6 +19,7 @@ import { generateStatsRecap } from "@/lib/article-generators/stats-recap";
 import { generateMvpRace } from "@/lib/article-generators/mvp-race";
 import { generatePlayerSpotlight } from "@/lib/article-generators/player-spotlight";
 import { generateMatchRecap } from "@/lib/article-generators/match-recap";
+import { detectMilestones, buildReportedKeys, type DetectedMilestone } from "@/lib/milestones";
 
 /* ── Types ───────────────────────────────────────────────────────────── */
 
@@ -188,6 +189,14 @@ export async function GET(request: NextRequest) {
     await redis.set("potw-standings", weeklyStandings);
   }
 
+  // --- Step 1b: Detect milestones ---
+  let newMilestones: DetectedMilestone[] = [];
+  if (chelstats) {
+    const reportedRaw = (await redis.get<string[]>("milestones:reported")) ?? [];
+    const reportedSet = new Set(reportedRaw);
+    newMilestones = detectMilestones(chelstats.members, reportedSet);
+  }
+
   // --- Step 2: Determine article type and generate ---
   const meta = (await redis.get<ArticleMeta>("articles:meta")) ?? {
     lastRotationIndex: -1,
@@ -239,16 +248,16 @@ export async function GET(request: NextRequest) {
   try {
     switch (articleType) {
       case "stats-recap":
-        article = await generateStatsRecap();
+        article = await generateStatsRecap(newMilestones);
         break;
       case "mvp-race":
-        article = await generateMvpRace();
+        article = await generateMvpRace(newMilestones);
         break;
       case "player-spotlight":
-        article = await generatePlayerSpotlight(weeklyPlayer);
+        article = await generatePlayerSpotlight(weeklyPlayer, newMilestones);
         break;
       case "match-recap":
-        article = await generateMatchRecap();
+        article = await generateMatchRecap(newMilestones);
         break;
     }
   } catch (err) {
@@ -259,7 +268,7 @@ export async function GET(request: NextRequest) {
     console.error(`[weekly-update] Failed to generate article type: ${articleType}`);
     // Fall back to stats-recap if the requested type fails
     if (articleType !== "stats-recap") {
-      article = await generateStatsRecap();
+      article = await generateStatsRecap(newMilestones);
     }
     if (!article) {
       return NextResponse.json(
@@ -275,6 +284,14 @@ export async function GET(request: NextRequest) {
   const existing = (await redis.get<Article[]>("articles:auto")) ?? [];
   existing.unshift(article);
   await redis.set("articles:auto", existing);
+
+  // Persist reported milestones so they don't repeat in future articles
+  if (newMilestones.length > 0) {
+    const reportedRaw = (await redis.get<string[]>("milestones:reported")) ?? [];
+    const newKeys = buildReportedKeys(newMilestones);
+    const merged = [...new Set([...reportedRaw, ...newKeys])];
+    await redis.set("milestones:reported", merged);
+  }
 
   // Update meta
   await redis.set("articles:meta", {

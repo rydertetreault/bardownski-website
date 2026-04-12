@@ -2,6 +2,7 @@ import { fetchChelstatsData } from "@/lib/chelstats";
 import type { ClubMatch } from "@/lib/chelstats";
 import { getNickname } from "@/lib/nicknames";
 import type { Article } from "@/lib/news";
+import { formatMilestonesParagraph, type DetectedMilestone } from "@/lib/milestones";
 
 const ROMAN_NUMERAL_RE = /^(?=[ivxlcdm])m*(c[md]|d?c{0,3})(x[cl]|l?x{0,3})(i[xv]|v?i{0,3})$/i;
 
@@ -107,7 +108,7 @@ function getTopPerformers(matches: ClubMatch[]): { name: string; totalGoals: num
     .sort((a, b) => b.totalPoints - a.totalPoints);
 }
 
-export async function generateMatchRecap(): Promise<Article | null> {
+export async function generateMatchRecap(milestones: DetectedMilestone[] = []): Promise<Article | null> {
   const data = await fetchChelstatsData();
   if (!data) return null;
 
@@ -211,6 +212,12 @@ export async function generateMatchRecap(): Promise<Article | null> {
         : "") +
       `Consistent goaltending continues to be a major factor in keeping Bardownski competitive every night.`
     );
+  }
+
+  // Milestones
+  const milestonePara = formatMilestonesParagraph(milestones);
+  if (milestonePara) {
+    paras.push(milestonePara);
   }
 
   // Closing

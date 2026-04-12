@@ -2,6 +2,7 @@ import { fetchChelstatsData } from "@/lib/chelstats";
 import type { ClubMember } from "@/lib/chelstats";
 import { getDisplayNameFromGamertag } from "@/lib/nicknames";
 import type { Article } from "@/lib/news";
+import { formatMilestonesParagraph, type DetectedMilestone } from "@/lib/milestones";
 
 function titleCase(s: string): string {
   return s
@@ -116,7 +117,7 @@ function buildBody(members: ClubMember[], record: string, totalGames: number): s
   return paras.join("\n\n");
 }
 
-export async function generateStatsRecap(): Promise<Article | null> {
+export async function generateStatsRecap(milestones: DetectedMilestone[] = []): Promise<Article | null> {
   const data = await fetchChelstatsData();
   if (!data) return null;
 
@@ -128,10 +129,16 @@ export async function generateStatsRecap(): Promise<Article | null> {
   const record = `${clubStats.wins}-${clubStats.losses}-${clubStats.otl}`;
   const leader = [...members].sort((a, b) => b.points - a.points)[0];
 
+  let body = buildBody(members, record, clubStats.totalGames);
+  const milestonePara = formatMilestonesParagraph(milestones);
+  if (milestonePara) {
+    body += "\n\n" + milestonePara;
+  }
+
   return {
     id: `auto-stats-recap-${today}`,
     title: `Weekly Stats Recap: ${name(leader)} Leads With ${leader.points} Points`,
-    summary: buildBody(members, record, clubStats.totalGames),
+    summary: body,
     date: today,
     image: "/images/gallery/screenshots/Screenshot%202026-03-16%20183953.webp",
     category: "Stats",
