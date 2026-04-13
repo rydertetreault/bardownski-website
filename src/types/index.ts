@@ -73,6 +73,14 @@ export interface ClubRecord {
   otl: number;
 }
 
+export interface WeeklyRecord {
+  w: number;
+  l: number;
+  gp: number;
+  gf: number;
+  ga: number;
+}
+
 export interface NewsItem {
   id: string;
   title: string;

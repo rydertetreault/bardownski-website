@@ -45,6 +45,31 @@ export default function MatchesBackground() {
         }}
       />
 
+      {/* White neon streaks - two lines converging toward top-right */}
+      <svg
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        viewBox="0 0 1440 3000"
+        preserveAspectRatio="none"
+        style={{ filter: "blur(6px)" }}
+      >
+        {/* Lower line - from bottom-left */}
+        <path d="M-200,2400 Q400,1800 800,1200 Q1200,500 1640,0" fill="none" stroke="#ffffff" strokeOpacity="0.06" strokeWidth="8" />
+        {/* Upper line - from left side, converges with lower near top-right */}
+        <path d="M-200,800 Q400,600 800,500 Q1200,300 1600,0" fill="none" stroke="#ffffff" strokeOpacity="0.08" strokeWidth="10" />
+        {/* Dark red line - bottom-left to top-right */}
+        <path d="M-200,2800 Q500,2000 900,1300 Q1300,600 1640,200" fill="none" stroke="#8b0a1e" strokeOpacity="0.12" strokeWidth="10" />
+      </svg>
+      <svg
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        viewBox="0 0 1440 3000"
+        preserveAspectRatio="none"
+        style={{ filter: "blur(1px)" }}
+      >
+        <path d="M-200,2400 Q400,1800 800,1200 Q1200,500 1640,0" fill="none" stroke="#ffffff" strokeOpacity="0.08" strokeWidth="1.5" />
+        <path d="M-200,800 Q400,600 800,500 Q1200,300 1600,0" fill="none" stroke="#ffffff" strokeOpacity="0.1" strokeWidth="1.5" />
+        <path d="M-200,2800 Q500,2000 900,1300 Q1300,600 1640,200" fill="none" stroke="#8b0a1e" strokeOpacity="0.18" strokeWidth="1.5" />
+      </svg>
+
       {/* Vignette */}
       <div
         className="absolute inset-0"

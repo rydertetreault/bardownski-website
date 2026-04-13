@@ -55,8 +55,9 @@ export async function pollAndAccumulate(
     otl: chelstats.clubStats.otl,
   };
 
-  // First run: seed with current API matches
-  if (!state) {
+  // First run, or stale shape from a previous schema (e.g. trackedMatchIds):
+  // re-seed with current API matches.
+  if (!state || !Array.isArray(state.matches)) {
     await redis.set("match-history", {
       lastRecord: currentRecord,
       matches: chelstats.matches,
@@ -124,6 +125,8 @@ export async function pollAndAccumulate(
 
 /**
  * Load the full accumulated match history from Redis.
+ * Also writes any new API matches back to Redis (write-through),
+ * so every page load acts as a mini-sync even if the cron is down.
  * Falls back to live API data if Redis is unavailable.
  */
 export async function getMatchHistory(
@@ -134,13 +137,38 @@ export async function getMatchHistory(
 
   try {
     const state = await redis.get<MatchHistoryState>("match-history");
-    if (!state) return chelstats.matches;
+
+    // First load: seed Redis from current API data
+    if (!state || !Array.isArray(state.matches)) {
+      const currentRecord = {
+        wins: chelstats.clubStats.wins,
+        losses: chelstats.clubStats.losses,
+        otl: chelstats.clubStats.otl,
+      };
+      await redis.set("match-history", {
+        lastRecord: currentRecord,
+        matches: chelstats.matches,
+        forfeitEntries: [],
+      } satisfies MatchHistoryState);
+      return chelstats.matches;
+    }
 
     // Merge stored matches with current API matches (API may have newer data)
     const storedIds = new Set(state.matches.map((m) => m.id));
     const freshFromApi = chelstats.matches.filter((m) => !storedIds.has(m.id));
     const allMatches = [...state.matches, ...freshFromApi];
     allMatches.sort((a, b) => b.timestamp - a.timestamp);
+
+    // Write-through: persist new matches to Redis so they aren't lost.
+    // Keep lastRecord unchanged so pollAndAccumulate can still detect
+    // untracked wins (forfeits) via record deltas.
+    if (freshFromApi.length > 0) {
+      await redis.set("match-history", {
+        lastRecord: state.lastRecord,
+        matches: allMatches,
+        forfeitEntries: state.forfeitEntries,
+      } satisfies MatchHistoryState);
+    }
 
     // Add forfeit entries
     if (state.forfeitEntries.length === 0) return allMatches;

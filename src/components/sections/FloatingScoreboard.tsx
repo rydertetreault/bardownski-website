@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import type { Match } from "@/types";
+import type { Match, WeeklyRecord } from "@/types";
 import { getNickname } from "@/lib/nicknames";
 
 function titleCase(s: string): string {
@@ -248,8 +248,10 @@ function CompactMatch({ match }: { match: Match }) {
 /* ── Floating scoreboard ─────────────────────────────────────────────── */
 export default function FloatingScoreboard({
   matches,
+  weeklyRecord,
 }: {
   matches: Match[];
+  weeklyRecord?: WeeklyRecord | null;
 }) {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -303,6 +305,31 @@ export default function FloatingScoreboard({
                   </div>
                 ))}
               </div>
+            )}
+
+            {/* Weekly record */}
+            {weeklyRecord && (
+              <>
+                <div className="h-px bg-[#cc1533]/15 mx-5" />
+                <div className="px-5 py-3">
+                  <p className="text-[#cc1533] text-[9px] font-bold uppercase tracking-[0.22em] mb-2">
+                    This Week
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-black tabular-nums text-emerald-400">
+                      {weeklyRecord.w}W
+                    </span>
+                    <span className="text-white/15 text-xs">-</span>
+                    <span className="text-sm font-black tabular-nums text-[#cc1533]">
+                      {weeklyRecord.l}L
+                    </span>
+                    <span className="text-white/10 mx-1">|</span>
+                    <span className="text-[10px] text-white/30 tabular-nums">
+                      {weeklyRecord.gf} GF &middot; {weeklyRecord.ga} GA
+                    </span>
+                  </div>
+                </div>
+              </>
             )}
 
             {/* All Matches link */}

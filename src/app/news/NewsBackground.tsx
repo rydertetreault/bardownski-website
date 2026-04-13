@@ -10,14 +10,14 @@ export default function NewsBackground() {
       <div
         style={{
           position: "absolute",
-          inset: "-50%",
+          inset: "-80%",
           transform: "rotate(-25deg)",
           display: "flex",
           flexDirection: "column",
           gap: "2.8rem",
         }}
       >
-        {Array.from({ length: 22 }).map((_, i) => (
+        {Array.from({ length: 40 }).map((_, i) => (
           <div
             key={i}
             style={{
@@ -29,7 +29,7 @@ export default function NewsBackground() {
               userSelect: "none",
             }}
           >
-            {"BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · "}
+            {"BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · BARDOWNSKI · "}
           </div>
         ))}
       </div>

@@ -15,24 +15,35 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const chelstats = await fetchChelstatsData();
-  if (!chelstats) {
+  try {
+    const chelstats = await fetchChelstatsData();
+    if (!chelstats) {
+      return NextResponse.json(
+        { error: "Failed to fetch chelstats data" },
+        { status: 502 }
+      );
+    }
+
+    const result = await pollAndAccumulate(chelstats);
+
+    return NextResponse.json({
+      success: true,
+      newMatches: result.newMatches,
+      newForfeits: result.newForfeits,
+      totalGamesInRecord:
+        chelstats.clubStats.wins +
+        chelstats.clubStats.losses +
+        chelstats.clubStats.otl,
+      apiMatchesReturned: chelstats.matches.length,
+    });
+  } catch (err) {
+    console.error("[sync-matches] Failed:", err);
     return NextResponse.json(
-      { error: "Failed to fetch chelstats data" },
-      { status: 502 }
+      {
+        error: "sync-matches failed",
+        message: err instanceof Error ? err.message : String(err),
+      },
+      { status: 500 }
     );
   }
-
-  const result = await pollAndAccumulate(chelstats);
-
-  return NextResponse.json({
-    success: true,
-    newMatches: result.newMatches,
-    newForfeits: result.newForfeits,
-    totalGamesInRecord:
-      chelstats.clubStats.wins +
-      chelstats.clubStats.losses +
-      chelstats.clubStats.otl,
-    apiMatchesReturned: chelstats.matches.length,
-  });
 }

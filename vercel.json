@@ -1,6 +1,10 @@
 {
   "crons": [
     {
+      "path": "/api/cron/sync-matches",
+      "schedule": "*/5 * * * *"
+    },
+    {
       "path": "/api/cron/weekly-update",
       "schedule": "0 10 * * 1"
     }

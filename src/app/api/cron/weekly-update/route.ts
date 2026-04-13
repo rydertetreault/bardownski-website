@@ -19,7 +19,8 @@ import { generateStatsRecap } from "@/lib/article-generators/stats-recap";
 import { generateMvpRace } from "@/lib/article-generators/mvp-race";
 import { generatePlayerSpotlight } from "@/lib/article-generators/player-spotlight";
 import { generateMatchRecap } from "@/lib/article-generators/match-recap";
-import { detectMilestones, buildReportedKeys, type DetectedMilestone } from "@/lib/milestones";
+import { generateMilestoneRecap } from "@/lib/article-generators/milestone-recap";
+import { detectMilestones, buildReportedKeys, buildSeedKeysFromMembers, type DetectedMilestone } from "@/lib/milestones";
 
 /* ── Types ───────────────────────────────────────────────────────────── */
 
@@ -146,6 +147,10 @@ const GENERATORS = [
   "match-recap",
 ] as const;
 
+/** Extra article types that can be triggered via ?type= but are not in the regular rotation. */
+type ExtraType = "milestone-recap";
+type ArticleType = typeof GENERATORS[number] | ExtraType;
+
 export async function GET(request: NextRequest) {
   // Auth check
   const authHeader = request.headers.get("authorization");
@@ -162,6 +167,25 @@ export async function GET(request: NextRequest) {
   }
 
   const today = new Date().toISOString().split("T")[0];
+
+  // --- Seed mode: mark all current milestones as reported ---
+  // Hit ?seed=true after publishing a manual milestone article so the cron
+  // doesn't re-report the same milestones in its next auto-generated article.
+  if (request.nextUrl.searchParams.get("seed") === "true") {
+    const data = await fetchChelstatsData();
+    if (!data) {
+      return NextResponse.json({ error: "Could not fetch chelstats data" }, { status: 500 });
+    }
+    const seedKeys = buildSeedKeysFromMembers(data.members);
+    const existingRaw = (await redis.get<string[]>("milestones:reported")) ?? [];
+    const merged = [...new Set([...existingRaw, ...seedKeys])];
+    await redis.set("milestones:reported", merged);
+    return NextResponse.json({
+      success: true,
+      seeded: seedKeys.length,
+      totalReported: merged.length,
+    });
+  }
 
   // --- Step 1: Compute Player of the Week ---
   const chelstats = await fetchChelstatsData();
@@ -236,12 +260,17 @@ export async function GET(request: NextRequest) {
     meta.lastRotationIndex = meta.lastRotationIndex - 1;
   }
 
-  // Allow ?type= to force a specific article type
-  const forceType = request.nextUrl.searchParams.get("type") as typeof GENERATORS[number] | null;
-  const nextIndex = forceType
-    ? GENERATORS.indexOf(forceType as typeof GENERATORS[number])
-    : (meta.lastRotationIndex + 1) % GENERATORS.length;
-  const articleType = GENERATORS[nextIndex >= 0 ? nextIndex : 0];
+  // Allow ?type= to force a specific article type (including extras like milestone-recap)
+  const forceType = request.nextUrl.searchParams.get("type") as ArticleType | null;
+  const isExtraType = forceType === "milestone-recap";
+  const nextIndex = isExtraType
+    ? meta.lastRotationIndex // don't advance rotation for extra types
+    : forceType
+      ? GENERATORS.indexOf(forceType as typeof GENERATORS[number])
+      : (meta.lastRotationIndex + 1) % GENERATORS.length;
+  const articleType: ArticleType = isExtraType
+    ? forceType
+    : GENERATORS[nextIndex >= 0 ? nextIndex : 0];
 
   let article: Article | null = null;
 
@@ -258,6 +287,9 @@ export async function GET(request: NextRequest) {
         break;
       case "match-recap":
         article = await generateMatchRecap(newMilestones);
+        break;
+      case "milestone-recap":
+        article = await generateMilestoneRecap(newMilestones);
         break;
     }
   } catch (err) {
@@ -293,9 +325,9 @@ export async function GET(request: NextRequest) {
     await redis.set("milestones:reported", merged);
   }
 
-  // Update meta
+  // Update meta (extra types don't advance the rotation index)
   await redis.set("articles:meta", {
-    lastRotationIndex: nextIndex,
+    lastRotationIndex: isExtraType ? meta.lastRotationIndex : nextIndex,
     lastDate: today,
     lastSpotlightPlayer: articleType === "player-spotlight" ? (weeklyPlayer?.name ?? "") : meta.lastSpotlightPlayer,
     totalArticles: existing.length,

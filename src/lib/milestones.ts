@@ -165,6 +165,36 @@ export function buildReportedKeys(milestones: DetectedMilestone[]): string[] {
   return [...new Set(keys)];
 }
 
+/* ── Seeding ────────────────────────────────────────────────────────── */
+
+/**
+ * Build milestone keys for ALL thresholds currently crossed by the roster.
+ * Used to seed Redis after a manual article so the cron doesn't re-report
+ * milestones that were already covered.
+ */
+export function buildSeedKeysFromMembers(members: ClubMember[]): string[] {
+  const keys: string[] = [];
+
+  for (const member of members) {
+    const displayName = getDisplayNameFromGamertag(member.username);
+
+    for (const def of MILESTONE_DEFS) {
+      if (def.filter && !def.filter(member)) continue;
+
+      const currentValue = member[def.key] as number;
+      if (typeof currentValue !== "number" || currentValue <= 0) continue;
+
+      for (const threshold of def.thresholds) {
+        if (currentValue >= threshold) {
+          keys.push(milestoneKey(displayName, def.key, threshold));
+        }
+      }
+    }
+  }
+
+  return [...new Set(keys)];
+}
+
 /* ── Formatting ──────────────────────────────────────────────────────── */
 
 /**

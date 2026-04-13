@@ -10,6 +10,15 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    id: "7",
+    title: "Milestone Watch: Bardownski Hits the 1000-Point Mark and Keeps Climbing",
+    summary:
+      "Xavier Laflamme has officially crossed 1000 career points, and it happened the only way it could: buried under a pile of goals, assists, and hits that nobody else on this roster can match. With 1047 points (642 G, 405 A) across 231 games, Xavier Laflamme is the first and only Bardownski player to reach the four-digit mark. The milestone was a matter of when, not if, but that doesn't make it any less significant. A 4.53 points-per-game pace, 1819 hits, and 29 game-winning goals tell the story of a player who does everything at an elite level and does it every single night.\n\nThe 1000-point milestone is the headliner, but it came alongside two more on the way up. Xavier Laflamme also crossed 600 goals and 400 assists this season. That combination of finishing and playmaking at this volume is something the club has never seen before.\n\nGotta Be quietly crossed 100 goals on the season, joining the triple-digit club with 106 goals and 182 assists in 106 games. For a player who exploded onto the leaderboard mid-season, reaching 100 goals this fast is a statement.\n\nBetween the pipes, Jene Rene Tetreau IV hit 10 career shutouts. In a league where clean sheets are hard to come by, double digits says everything about the kind of wall JRT IV has been all season. He now sits at 13 shutouts across 136 goalie games with 1440 saves and 83 wins backing it up.\n\nMilestones like these do not happen by accident. They are the product of showing up game after game, shift after shift, and putting in the kind of work that compounds over a full season. This Bardownski roster is rewriting the record book one number at a time.",
+    date: "2026-04-13",
+    image: "/images/gallery/screenshots/milestone-highlight.webp",
+    category: "Stats",
+  },
+  {
     id: "6",
     title: "The MVP Race Is Heating Up: Matt Hut vs. Xavier Laflamme",
     summary:

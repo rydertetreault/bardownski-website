@@ -33,7 +33,16 @@ export async function getAllArticles(): Promise<Article[]> {
     // Redis unavailable — fall back to manual articles only
   }
 
-  const all = [...autoArticles, ...manualArticles];
+  // Manual articles take priority — drop any auto article whose date and
+  // category already have a manual counterpart.
+  const manualKeys = new Set(
+    manualArticles.map((a) => `${a.date}|${a.category}`)
+  );
+  const deduped = autoArticles.filter(
+    (a) => !manualKeys.has(`${a.date}|${a.category}`)
+  );
+
+  const all = [...deduped, ...manualArticles];
   all.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   return all;
 }
