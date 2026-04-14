@@ -1,10 +1,13 @@
 /**
  * Redis-backed match history tracking.
  *
- * The Chelstats API only returns ~5 recent games. This module polls
- * frequently and accumulates every match in Redis so older games
- * aren't lost when they rotate out of the API window. It also detects
- * untracked wins (forfeits) by comparing record deltas.
+ * The Chelstats API only returns ~5 recent games. This module
+ * accumulates every match in Redis so older games aren't lost when
+ * they rotate out of the API window. It also detects untracked wins
+ * (forfeits) by comparing record deltas.
+ *
+ * Syncing happens on every page load (via getMatchHistory) and during
+ * the weekly-update cron, so no dedicated high-frequency cron is needed.
  */
 
 import { Redis } from "@upstash/redis";
@@ -39,8 +42,8 @@ function formatDate(ts: number): string {
 
 /**
  * Accumulate new API matches into Redis and detect forfeits.
- * Called by the sync-matches cron every 5 minutes.
- * Returns the number of new matches added.
+ * Called on every page load (via getMatchHistory) and during the
+ * weekly-update cron. Returns the number of new matches added.
  */
 export async function pollAndAccumulate(
   chelstats: ChelstatsData
@@ -125,8 +128,8 @@ export async function pollAndAccumulate(
 
 /**
  * Load the full accumulated match history from Redis.
- * Also writes any new API matches back to Redis (write-through),
- * so every page load acts as a mini-sync even if the cron is down.
+ * Runs a full pollAndAccumulate sync on every call so that each page
+ * visit keeps the match history up to date -- no frequent cron needed.
  * Falls back to live API data if Redis is unavailable.
  */
 export async function getMatchHistory(
@@ -136,42 +139,14 @@ export async function getMatchHistory(
   if (!redis) return chelstats.matches;
 
   try {
+    // Full sync: accumulate new matches and detect forfeits on every load
+    await pollAndAccumulate(chelstats);
+
     const state = await redis.get<MatchHistoryState>("match-history");
-
-    // First load: seed Redis from current API data
-    if (!state || !Array.isArray(state.matches)) {
-      const currentRecord = {
-        wins: chelstats.clubStats.wins,
-        losses: chelstats.clubStats.losses,
-        otl: chelstats.clubStats.otl,
-      };
-      await redis.set("match-history", {
-        lastRecord: currentRecord,
-        matches: chelstats.matches,
-        forfeitEntries: [],
-      } satisfies MatchHistoryState);
-      return chelstats.matches;
-    }
-
-    // Merge stored matches with current API matches (API may have newer data)
-    const storedIds = new Set(state.matches.map((m) => m.id));
-    const freshFromApi = chelstats.matches.filter((m) => !storedIds.has(m.id));
-    const allMatches = [...state.matches, ...freshFromApi];
-    allMatches.sort((a, b) => b.timestamp - a.timestamp);
-
-    // Write-through: persist new matches to Redis so they aren't lost.
-    // Keep lastRecord unchanged so pollAndAccumulate can still detect
-    // untracked wins (forfeits) via record deltas.
-    if (freshFromApi.length > 0) {
-      await redis.set("match-history", {
-        lastRecord: state.lastRecord,
-        matches: allMatches,
-        forfeitEntries: state.forfeitEntries,
-      } satisfies MatchHistoryState);
-    }
+    if (!state || !Array.isArray(state.matches)) return chelstats.matches;
 
     // Add forfeit entries
-    if (state.forfeitEntries.length === 0) return allMatches;
+    if (state.forfeitEntries.length === 0) return state.matches;
 
     const forfeitMatches: ClubMatch[] = state.forfeitEntries.map((f) => ({
       id: f.id,
@@ -194,7 +169,7 @@ export async function getMatchHistory(
       forfeit: true,
     }));
 
-    const combined = [...allMatches, ...forfeitMatches];
+    const combined = [...state.matches, ...forfeitMatches];
     combined.sort((a, b) => b.timestamp - a.timestamp);
     return combined;
   } catch (err) {

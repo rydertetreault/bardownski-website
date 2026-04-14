@@ -12,6 +12,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
 import { fetchChelstatsData } from "@/lib/chelstats";
+import { pollAndAccumulate, getMatchHistory } from "@/lib/match-history";
 import type { WeeklyPlayer } from "@/lib/discord";
 import type { Article } from "@/lib/news";
 
@@ -50,29 +51,40 @@ function computePlayerOfWeekFromMatches(
   if (matches.length === 0) return [];
 
   // Aggregate per-player stats across all recent matches
-  const skaterTotals: Record<string, { goals: number; assists: number; hits: number; games: number }> = {};
-  const goalieTotals: Record<string, { saves: number; shotsAgainst: number; ga: number; shutouts: number; games: number }> = {};
+  const skaterTotals: Record<string, {
+    goals: number; assists: number; hits: number; shots: number;
+    plusMinus: number; gwg: number; games: number;
+  }> = {};
+  const goalieTotals: Record<string, {
+    saves: number; shotsAgainst: number; ga: number; shutouts: number;
+    wins: number; games: number;
+  }> = {};
 
   for (const m of matches) {
+    const isWin = m.scoreUs > m.scoreThem;
     for (const p of m.players || []) {
       if (!p.isOurPlayer) continue;
 
       if (p.isGoalie) {
         if (!goalieTotals[p.name]) {
-          goalieTotals[p.name] = { saves: 0, shotsAgainst: 0, ga: 0, shutouts: 0, games: 0 };
+          goalieTotals[p.name] = { saves: 0, shotsAgainst: 0, ga: 0, shutouts: 0, wins: 0, games: 0 };
         }
         goalieTotals[p.name].saves += p.saves;
         goalieTotals[p.name].shotsAgainst += p.shotsAgainst;
         goalieTotals[p.name].ga += p.goalsAgainst;
         goalieTotals[p.name].shutouts += p.goalsAgainst === 0 ? 1 : 0;
+        goalieTotals[p.name].wins += isWin ? 1 : 0;
         goalieTotals[p.name].games += 1;
       } else {
         if (!skaterTotals[p.name]) {
-          skaterTotals[p.name] = { goals: 0, assists: 0, hits: 0, games: 0 };
+          skaterTotals[p.name] = { goals: 0, assists: 0, hits: 0, shots: 0, plusMinus: 0, gwg: 0, games: 0 };
         }
         skaterTotals[p.name].goals += p.goals;
         skaterTotals[p.name].assists += p.assists;
         skaterTotals[p.name].hits += p.hits;
+        skaterTotals[p.name].shots += p.shots;
+        skaterTotals[p.name].plusMinus += p.plusMinus;
+        skaterTotals[p.name].gwg += p.gameWinningGoal;
         skaterTotals[p.name].games += 1;
       }
     }
@@ -80,16 +92,21 @@ function computePlayerOfWeekFromMatches(
 
   const allPlayers: WeeklyPlayer[] = [];
 
-  // Score skaters: total raw stats, weighted
-  // Target: 29G 5A 30HIT ≈ 165
+  // Skater scoring: per-game rates * sqrt(GP), mirrors MVP odds.
+  // Uses points (not separate goals term) to avoid double-counting
+  // goals, which inflates skaters at the extreme EASHL per-game rates.
   for (const [name, stats] of Object.entries(skaterTotals)) {
     const gp = stats.games;
     if (gp === 0) continue;
     const points = stats.goals + stats.assists;
-    const score =
-      stats.goals * 5 +                       // goals are king
-      stats.assists * 2.5 +                   // playmaking
-      stats.hits * 0.2;                       // physicality
+    const shotPct = stats.shots > 0 ? (stats.goals / stats.shots) * 100 : 0;
+    const perGame =
+      (points / gp) * 8 +                     // offensive production rate
+      Math.max(stats.plusMinus, 0) / gp * 3 + // two-way impact
+      (stats.gwg / gp) * 15 +                 // clutch factor
+      shotPct * 0.15 +                         // shooting efficiency
+      (stats.hits / gp) * 0.3;                // physical presence
+    const score = perGame * Math.sqrt(gp);
     if (score > 0) {
       allPlayers.push({
         name,
@@ -100,24 +117,26 @@ function computePlayerOfWeekFromMatches(
         deltaPoints: points,
         deltaHits: stats.hits,
         deltaSaves: 0,
-        weeklyScore: score,
+        weeklyScore: Math.round(score * 10) / 10,
       });
     }
   }
 
-  // Score goalies: calibrated so elite goalie week ≈ elite skater week
+  // Goalie scoring: per-game rates * sqrt(GP), mirrors MVP odds.
   for (const [name, stats] of Object.entries(goalieTotals)) {
     const gp = stats.games;
     if (gp === 0) continue;
 
     const savePct = stats.shotsAgainst > 0 ? (stats.saves / stats.shotsAgainst) * 100 : 0;
     const gaa = stats.ga / gp;
-    // Target: 45SV 1SO 67.2%SV 4.4GAA ≈ 85
-    const score =
-      savePct * 0.4 +                          // save percentage (core stat)
-      Math.max(10 - gaa, 0) * 2 +              // GAA inverted (lower = better)
-      stats.shutouts * 40 +                    // flat 40 points per shutout
-      stats.saves * 0.2;                       // total saves workload
+    const winPct = (stats.wins / gp) * 100;
+    const perGame =
+      savePct * 0.6 +                          // save percentage (core stat)
+      Math.max(10 - gaa, 0) * 3 +             // GAA inverted (lower = better)
+      (stats.shutouts / gp) * 20 +            // shutout rate
+      winPct * 0.2 +                           // win percentage
+      (stats.saves / gp) * 0.3;               // workload per game
+    const score = perGame * Math.sqrt(gp);
 
     if (score > 0) {
       allPlayers.push({
@@ -129,7 +148,7 @@ function computePlayerOfWeekFromMatches(
         deltaPoints: 0,
         deltaHits: 0,
         deltaSaves: stats.saves,
-        weeklyScore: score,
+        weeklyScore: Math.round(score * 10) / 10,
       });
     }
   }
@@ -187,20 +206,26 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  // --- Step 1: Compute Player of the Week ---
+  // --- Step 0: Sync match history (replaces the old sync-matches cron) ---
   const chelstats = await fetchChelstatsData();
+  if (chelstats) {
+    await pollAndAccumulate(chelstats);
+  }
+
+  // --- Step 1: Compute Player of the Week ---
   let weeklyPlayer: WeeklyPlayer | null = null;
   let weeklyStandings: WeeklyPlayer[] = [];
 
   if (chelstats) {
-    // Compute Player of the Week from recent match performance
+    // Pull from the full Redis match history (not the API's 5-game limit)
+    const allMatches = await getMatchHistory(chelstats);
     const now = Date.now() / 1000;
     const oneWeekAgo = now - 7 * 24 * 60 * 60;
-    let recentMatches = chelstats.matches.filter((m) => m.timestamp >= oneWeekAgo);
+    let recentMatches = allMatches.filter((m) => m.timestamp >= oneWeekAgo);
 
     // If no matches this week, use the last 5 matches
     if (recentMatches.length === 0) {
-      recentMatches = chelstats.matches.slice(0, 5);
+      recentMatches = allMatches.slice(0, 5);
     }
 
     weeklyStandings = computePlayerOfWeekFromMatches(recentMatches);
