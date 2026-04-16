@@ -16,7 +16,7 @@
 import { Redis } from "@upstash/redis";
 import type { ClubMatch, ChelstatsData } from "./chelstats";
 
-interface MatchHistoryState {
+interface LegacyMatchHistoryState {
   lastRecord: { wins: number; losses: number; otl: number };
   matches: ClubMatch[];
   forfeitEntries: ForfeitEntry[];
@@ -84,82 +84,72 @@ export async function pollAndAccumulate(
   const redis = getRedis();
   if (!redis) return { newMatches: 0, newForfeits: 0 };
 
-  const state = await redis.get<MatchHistoryState>("match-history");
+  await migrateLegacyIfNeeded(redis);
+
   const currentRecord = {
     wins: chelstats.clubStats.wins,
     losses: chelstats.clubStats.losses,
     otl: chelstats.clubStats.otl,
   };
-
-  // First run, or stale shape from a previous schema (e.g. trackedMatchIds):
-  // re-seed with current API matches.
-  if (!state || !Array.isArray(state.matches)) {
-    await redis.set("match-history", {
-      lastRecord: currentRecord,
-      matches: chelstats.matches,
-      forfeitEntries: [],
-    } satisfies MatchHistoryState);
-    return { newMatches: chelstats.matches.length, newForfeits: 0 };
-  }
-
-  // Detect new season (total games decreased) - reset
   const currentTotal =
     currentRecord.wins + currentRecord.losses + currentRecord.otl;
-  const storedTotal =
-    state.lastRecord.wins + state.lastRecord.losses + state.lastRecord.otl;
+
+  const meta = await readMeta(redis);
+  const lastRecord = meta?.lastRecord ?? { wins: 0, losses: 0, otl: 0 };
+  const storedTotal = lastRecord.wins + lastRecord.losses + lastRecord.otl;
+
+  // API glitch protection: if totals decreased, DO NOT wipe. Just skip.
   if (currentTotal < storedTotal) {
-    await redis.set("match-history", {
-      lastRecord: currentRecord,
-      matches: chelstats.matches,
-      forfeitEntries: [],
-    } satisfies MatchHistoryState);
-    return { newMatches: chelstats.matches.length, newForfeits: 0 };
+    console.warn(
+      `[match-history] API total decreased (${storedTotal} -> ${currentTotal}); skipping sync to preserve history`
+    );
+    return { newMatches: 0, newForfeits: 0 };
   }
 
-  // Merge: add any API matches we haven't seen before
-  const storedIds = new Set(state.matches.map((m) => m.id));
-  const newApiMatches = chelstats.matches.filter((m) => !storedIds.has(m.id));
-  const mergedMatches = [...state.matches, ...newApiMatches];
-  mergedMatches.sort((a, b) => b.timestamp - a.timestamp);
+  // Merge API matches into the hash. HSET is idempotent, so no need
+  // to diff — but diffing lets us return a useful newMatches count.
+  const existingMatches = await readAllMatches(redis);
+  const existingIds = new Set(existingMatches.map((m) => m.id));
+  const newApiMatches = chelstats.matches.filter((m) => !existingIds.has(m.id));
 
-  // Forfeit detection: compare record delta to newly tracked wins
-  let newForfeits: ForfeitEntry[] = [];
+  if (newApiMatches.length > 0) {
+    await writeMatches(redis, newApiMatches);
+  }
+
+  // Deterministic forfeit detection. If wins increased by more than
+  // the new tracked wins we saw, the delta is untracked (forfeit).
+  // IDs are derived from the running win total so concurrent runs
+  // produce identical IDs and HSET dedupes naturally.
+  const newForfeits: ForfeitEntry[] = [];
   if (currentTotal > storedTotal) {
-    let newTrackedWins = 0;
-    for (const m of newApiMatches) {
-      if (m.scoreUs > m.scoreThem) newTrackedWins++;
-    }
-
-    const deltaWins = currentRecord.wins - state.lastRecord.wins;
+    const newTrackedWins = newApiMatches.filter(
+      (m) => m.scoreUs > m.scoreThem
+    ).length;
+    const deltaWins = currentRecord.wins - lastRecord.wins;
     const untrackedWins = Math.max(0, deltaWins - newTrackedWins);
 
-    const latestTimestamp =
-      mergedMatches.length > 0
-        ? mergedMatches[0].timestamp
-        : Math.floor(Date.now() / 1000);
-
+    const baseTs = Math.floor(Date.now() / 1000);
     for (let i = 0; i < untrackedWins; i++) {
-      const ts = latestTimestamp + (i + 1) * 60;
+      // ID keyed to the resulting cumulative win count — stable across
+      // concurrent runs and across restarts.
+      const winNumber = lastRecord.wins + newTrackedWins + i + 1;
       newForfeits.push({
-        id: `forfeit-${ts}-${i}`,
-        timestamp: ts,
-        date: formatDate(ts),
+        id: `forfeit-win-${winNumber}`,
+        timestamp: baseTs + i * 60,
+        date: formatDate(baseTs + i * 60),
       });
+    }
+
+    if (newForfeits.length > 0) {
+      await writeForfeits(redis, newForfeits);
     }
   }
 
-  const allForfeits = [...state.forfeitEntries, ...newForfeits];
-
-  // Prune matches and forfeits older than 3 weeks
-  const cutoff = Math.floor(Date.now() / 1000) - RETENTION_SECONDS;
-  const prunedMatches = mergedMatches.filter((m) => m.timestamp >= cutoff);
-  const prunedForfeits = allForfeits.filter((f) => f.timestamp >= cutoff);
-
-  await redis.set("match-history", {
+  // Update meta last. If an earlier step failed, next run will retry.
+  await writeMeta(redis, {
     lastRecord: currentRecord,
-    matches: prunedMatches,
-    forfeitEntries: prunedForfeits,
-  } satisfies MatchHistoryState);
+    schemaVersion: SCHEMA_VERSION,
+  });
 
   return { newMatches: newApiMatches.length, newForfeits: newForfeits.length };
 }
@@ -180,7 +170,7 @@ export async function getMatchHistory(
     // Full sync: accumulate new matches and detect forfeits on every load
     await pollAndAccumulate(chelstats);
 
-    const state = await redis.get<MatchHistoryState>("match-history");
+    const state = await redis.get<LegacyMatchHistoryState>("match-history");
     if (!state || !Array.isArray(state.matches)) return chelstats.matches;
 
     // Add forfeit entries (Redis-tracked + hardcoded manual ones within retention window)
@@ -281,7 +271,7 @@ async function migrateLegacyIfNeeded(redis: Redis): Promise<boolean> {
 
   try {
     try {
-      const legacy = await redis.get<MatchHistoryState>(LEGACY_KEY);
+      const legacy = await redis.get<LegacyMatchHistoryState>(LEGACY_KEY);
       if (legacy && Array.isArray(legacy.matches)) {
         await writeMatches(redis, legacy.matches);
         if (Array.isArray(legacy.forfeitEntries)) {
