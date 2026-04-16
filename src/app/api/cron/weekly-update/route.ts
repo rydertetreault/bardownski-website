@@ -92,9 +92,11 @@ function computePlayerOfWeekFromMatches(
 
   const allPlayers: WeeklyPlayer[] = [];
 
-  // Skater scoring: per-game rates * sqrt(GP), mirrors MVP odds.
-  // Uses points (not separate goals term) to avoid double-counting
-  // goals, which inflates skaters at the extreme EASHL per-game rates.
+  // Skater scoring: structurally similar to MVP odds but tuned for
+  // short-window recent form — lighter coefficients and vanilla sqrt(GP)
+  // instead of log-dampened, since POTW rewards hot streaks rather than
+  // sustained season-long volume. Uses points (not a separate goals term)
+  // to avoid double-counting at the extreme EASHL per-game rates.
   for (const [name, stats] of Object.entries(skaterTotals)) {
     const gp = stats.games;
     if (gp === 0) continue;
@@ -122,7 +124,8 @@ function computePlayerOfWeekFromMatches(
     }
   }
 
-  // Goalie scoring: per-game rates * sqrt(GP), mirrors MVP odds.
+  // Goalie scoring: structurally similar to MVP odds but tuned for
+  // short-window recent form (vanilla sqrt(GP), lighter weights).
   for (const [name, stats] of Object.entries(goalieTotals)) {
     const gp = stats.games;
     if (gp === 0) continue;
