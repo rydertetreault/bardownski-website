@@ -98,6 +98,17 @@ export async function pollAndAccumulate(
   const lastRecord = meta?.lastRecord ?? { wins: 0, losses: 0, otl: 0 };
   const storedTotal = lastRecord.wins + lastRecord.losses + lastRecord.otl;
 
+  // Cold-start / post-reset guard: if we have no prior record, this run
+  // establishes the baseline. Any wins already in the API record can't
+  // be attributed — better to skip forfeit detection than hallucinate
+  // ghost forfeits for every historical win.
+  const isColdStart = storedTotal === 0 && currentTotal > 0;
+  if (isColdStart) {
+    console.info(
+      "[match-history] cold start: establishing baseline, skipping forfeit detection"
+    );
+  }
+
   // API glitch protection: if totals decreased, DO NOT wipe. Just skip.
   if (currentTotal < storedTotal) {
     console.warn(
@@ -121,7 +132,7 @@ export async function pollAndAccumulate(
   // IDs are derived from the running win total so concurrent runs
   // produce identical IDs and HSET dedupes naturally.
   const newForfeits: ForfeitEntry[] = [];
-  if (currentTotal > storedTotal) {
+  if (currentTotal > storedTotal && !isColdStart) {
     const newTrackedWins = newApiMatches.filter(
       (m) => m.scoreUs > m.scoreThem
     ).length;
