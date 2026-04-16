@@ -6,6 +6,9 @@
  * they rotate out of the API window. It also detects untracked wins
  * (forfeits) by comparing record deltas.
  *
+ * Only the last 3 weeks of matches are kept; older games are pruned
+ * on every sync so Redis stays lean and the UI stays current.
+ *
  * Syncing happens on every page load (via getMatchHistory) and during
  * the weekly-update cron, so no dedicated high-frequency cron is needed.
  */
@@ -25,16 +28,21 @@ interface ForfeitEntry {
   date: string;
 }
 
+/** Matches older than this are pruned from Redis on every sync. */
+const RETENTION_SECONDS = 21 * 24 * 60 * 60; // 3 weeks
+
 /**
  * Hardcoded forfeit entries for games the API never returned.
  * These were lost during a Redis schema migration on 04/13 and are
  * preserved here so they survive future Redis resets.
  */
 const MANUAL_FORFEITS: ForfeitEntry[] = [
-  { id: "forfeit-1776027600-0", timestamp: 1776027600, date: "April 12, 2026" },
-  { id: "forfeit-1776031200-1", timestamp: 1776031200, date: "April 12, 2026" },
-  { id: "forfeit-1776034800-2", timestamp: 1776034800, date: "April 12, 2026" },
+  { id: "forfeit-1776024000-0", timestamp: 1776024000, date: "April 12, 2026" },
+  { id: "forfeit-1776027600-1", timestamp: 1776027600, date: "April 12, 2026" },
+  { id: "forfeit-1776031200-2", timestamp: 1776031200, date: "April 12, 2026" },
+  { id: "forfeit-1776034800-3", timestamp: 1776034800, date: "April 12, 2026" },
 ];
+
 
 function getRedis(): Redis | null {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -128,10 +136,15 @@ export async function pollAndAccumulate(
 
   const allForfeits = [...state.forfeitEntries, ...newForfeits];
 
+  // Prune matches and forfeits older than 3 weeks
+  const cutoff = Math.floor(Date.now() / 1000) - RETENTION_SECONDS;
+  const prunedMatches = mergedMatches.filter((m) => m.timestamp >= cutoff);
+  const prunedForfeits = allForfeits.filter((f) => f.timestamp >= cutoff);
+
   await redis.set("match-history", {
     lastRecord: currentRecord,
-    matches: mergedMatches,
-    forfeitEntries: allForfeits,
+    matches: prunedMatches,
+    forfeitEntries: prunedForfeits,
   } satisfies MatchHistoryState);
 
   return { newMatches: newApiMatches.length, newForfeits: newForfeits.length };
@@ -156,10 +169,11 @@ export async function getMatchHistory(
     const state = await redis.get<MatchHistoryState>("match-history");
     if (!state || !Array.isArray(state.matches)) return chelstats.matches;
 
-    // Add forfeit entries (Redis-tracked + hardcoded manual ones)
+    // Add forfeit entries (Redis-tracked + hardcoded manual ones within retention window)
+    const cutoff = Math.floor(Date.now() / 1000) - RETENTION_SECONDS;
     const allForfeitEntries = [...state.forfeitEntries];
     for (const mf of MANUAL_FORFEITS) {
-      if (!allForfeitEntries.some((f) => f.id === mf.id)) {
+      if (mf.timestamp >= cutoff && !allForfeitEntries.some((f) => f.id === mf.id)) {
         allForfeitEntries.push(mf);
       }
     }
