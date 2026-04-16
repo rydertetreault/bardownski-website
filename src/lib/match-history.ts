@@ -41,6 +41,8 @@ const MANUAL_FORFEITS: ForfeitEntry[] = [
   { id: "forfeit-1776027600-1", timestamp: 1776027600, date: "April 12, 2026" },
   { id: "forfeit-1776031200-2", timestamp: 1776031200, date: "April 12, 2026" },
   { id: "forfeit-1776034800-3", timestamp: 1776034800, date: "April 12, 2026" },
+  { id: "forfeit-1775937600-4", timestamp: 1775937600, date: "April 11, 2026" },
+  { id: "forfeit-1776020400-5", timestamp: 1776020400, date: "April 12, 2026" },
 ];
 
 
