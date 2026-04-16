@@ -1,0 +1,534 @@
+"use client";
+
+import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import type { ParsedStats, SaveEntry } from "@/lib/discord";
+import { getNickname } from "@/lib/nicknames";
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Head-to-Head — Radar Chart Popup
+   ══════════════════════════════════════════════════════════════════════════ */
+
+interface PlayerProfile {
+  name: string;
+  points: number;
+  goals: number;
+  assists: number;
+  plusMinus: number;
+  hits: number;
+}
+
+interface GoalieProfile {
+  name: string;
+  saves: number;
+  savePct: number;
+  shutouts: number;
+  ggp: number;
+}
+
+type CompareMode = "skater" | "goalie";
+
+const SKATER_STATS: { key: keyof PlayerProfile; label: string }[] = [
+  { key: "points", label: "PTS" },
+  { key: "goals", label: "G" },
+  { key: "assists", label: "A" },
+  { key: "plusMinus", label: "+/-" },
+  { key: "hits", label: "HIT" },
+];
+
+const GOALIE_STATS: { key: keyof GoalieProfile; label: string }[] = [
+  { key: "saves", label: "SVS" },
+  { key: "savePct", label: "SV%" },
+  { key: "shutouts", label: "SO" },
+  { key: "ggp", label: "GP" },
+];
+
+// Keep RADAR_STATS as alias for backward compat in the component
+const RADAR_STATS = SKATER_STATS;
+
+const CX = 150;
+const CY = 150;
+const R = 105;
+const RINGS = [0.25, 0.5, 0.75, 1];
+
+function polarX(angle: number, radius: number) {
+  return CX + radius * Math.cos(angle);
+}
+function polarY(angle: number, radius: number) {
+  return CY + radius * Math.sin(angle);
+}
+function axisAngle(i: number, total: number) {
+  return (2 * Math.PI * i) / total - Math.PI / 2;
+}
+
+function buildProfilesFromStats(stats: ParsedStats): PlayerProfile[] {
+  const nameSet = new Set<string>();
+  for (const e of stats.points) nameSet.add(e.name);
+  for (const e of stats.goals) nameSet.add(e.name);
+  for (const e of stats.assists) nameSet.add(e.name);
+  for (const e of stats.hits) nameSet.add(e.name);
+
+  const profiles: PlayerProfile[] = [];
+  for (const name of nameSet) {
+    profiles.push({
+      name,
+      points: stats.points.find((e) => e.name === name)?.value ?? 0,
+      goals: stats.goals.find((e) => e.name === name)?.value ?? 0,
+      assists: stats.assists.find((e) => e.name === name)?.value ?? 0,
+      plusMinus: stats.plusMinus.find((e) => e.name === name)?.value ?? 0,
+      hits: stats.hits.find((e) => e.name === name)?.value ?? 0,
+    });
+  }
+  profiles.sort((a, b) => b.points - a.points);
+  return profiles;
+}
+
+function buildGoalieProfilesFromStats(stats: ParsedStats): GoalieProfile[] {
+  const goalies: GoalieProfile[] = [];
+  for (const sv of stats.saves as SaveEntry[]) {
+    if ((sv.ggp ?? 0) < 1) continue;
+    goalies.push({
+      name: sv.name,
+      saves: sv.value,
+      savePct: sv.secondary ?? 0,
+      shutouts: stats.shutouts.find((e) => e.name === sv.name)?.value ?? 0,
+      ggp: sv.ggp ?? 0,
+    });
+  }
+  goalies.sort((a, b) => b.saves - a.saves);
+  return goalies;
+}
+
+function GenericRadarChart({
+  p1,
+  p2,
+  maxValues,
+  stats,
+}: {
+  p1: Record<string, number>;
+  p2: Record<string, number>;
+  maxValues: Record<string, number>;
+  stats: { key: string; label: string }[];
+}) {
+  const total = stats.length;
+
+  const normalize = (val: number, key: string) => {
+    if (key === "plusMinus") {
+      const absMax = maxValues["plusMinus"] || 1;
+      return Math.max(0, Math.min(1, (val + absMax) / (2 * absMax)));
+    }
+    const max = maxValues[key] || 1;
+    return Math.max(0, Math.min(1, val / max));
+  };
+
+  const getPoints = (p: Record<string, number>) =>
+    stats.map((s, i) => {
+      const v = normalize(p[s.key] ?? 0, s.key);
+      const a = axisAngle(i, total);
+      return `${polarX(a, R * v)},${polarY(a, R * v)}`;
+    }).join(" ");
+
+  return (
+    <svg viewBox="0 0 300 300" className="w-full max-w-[240px] mx-auto">
+      {RINGS.map((ring) => (
+        <polygon
+          key={ring}
+          points={Array.from({ length: total }, (_, i) => {
+            const a = axisAngle(i, total);
+            return `${polarX(a, R * ring)},${polarY(a, R * ring)}`;
+          }).join(" ")}
+          fill="none"
+          stroke="rgba(42,53,80,0.6)"
+          strokeWidth={ring === 1 ? 1.5 : 0.5}
+        />
+      ))}
+      {Array.from({ length: total }, (_, i) => {
+        const a = axisAngle(i, total);
+        return (
+          <line
+            key={i}
+            x1={CX}
+            y1={CY}
+            x2={polarX(a, R)}
+            y2={polarY(a, R)}
+            stroke="rgba(42,53,80,0.5)"
+            strokeWidth={0.5}
+          />
+        );
+      })}
+      <motion.polygon
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        points={getPoints(p1)}
+        fill="rgba(200,16,46,0.2)"
+        stroke="#c8102e"
+        strokeWidth={2}
+      />
+      <motion.polygon
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.15 }}
+        points={getPoints(p2)}
+        fill="rgba(91,155,213,0.2)"
+        stroke="#5b9bd5"
+        strokeWidth={2}
+      />
+      {stats.map((s, i) => {
+        const v = normalize(p1[s.key] ?? 0, s.key);
+        const a = axisAngle(i, total);
+        return (
+          <circle key={`p1-${s.key}`} cx={polarX(a, R * v)} cy={polarY(a, R * v)} r={3} fill="#c8102e" />
+        );
+      })}
+      {stats.map((s, i) => {
+        const v = normalize(p2[s.key] ?? 0, s.key);
+        const a = axisAngle(i, total);
+        return (
+          <circle key={`p2-${s.key}`} cx={polarX(a, R * v)} cy={polarY(a, R * v)} r={3} fill="#5b9bd5" />
+        );
+      })}
+      {stats.map((s, i) => {
+        const a = axisAngle(i, total);
+        return (
+          <text
+            key={s.key}
+            x={polarX(a, R + 18)}
+            y={polarY(a, R + 18)}
+            textAnchor="middle"
+            dominantBaseline="central"
+            className="fill-muted"
+            style={{ fontSize: "10px", fontWeight: 700 }}
+          >
+            {s.label}
+          </text>
+        );
+      })}
+    </svg>
+  );
+}
+
+export function HeadToHeadCard({ stats }: { stats: ParsedStats }) {
+  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<CompareMode>("skater");
+
+  const skaterProfiles = useMemo(() => buildProfilesFromStats(stats), [stats]);
+  const goalieProfiles = useMemo(() => buildGoalieProfilesFromStats(stats), [stats]);
+
+  const profiles = mode === "skater" ? skaterProfiles : goalieProfiles;
+  const activeStats = mode === "skater" ? SKATER_STATS : GOALIE_STATS;
+
+  const [p1Name, setP1Name] = useState(skaterProfiles[0]?.name ?? "");
+  const [p2Name, setP2Name] = useState(skaterProfiles[1]?.name ?? "");
+
+  // Reset selections when mode changes and current names aren't in the new list
+  const p1InList = profiles.some((p) => p.name === p1Name);
+  const p2InList = profiles.some((p) => p.name === p2Name);
+  const effectiveP1Name = p1InList ? p1Name : profiles[0]?.name ?? "";
+  const effectiveP2Name = p2InList ? p2Name : profiles[1]?.name ?? profiles[0]?.name ?? "";
+
+  const p1 = profiles.find((p) => p.name === effectiveP1Name) ?? profiles[0];
+  const p2 = profiles.find((p) => p.name === effectiveP2Name) ?? profiles[1] ?? profiles[0];
+
+  const maxValues = useMemo(() => {
+    const mv: Record<string, number> = {};
+    for (const s of activeStats) {
+      const vals = profiles.map((p) => Math.abs((p as unknown as Record<string, number>)[s.key] ?? 0));
+      mv[s.key] = Math.max(...vals, 1);
+    }
+    return mv;
+  }, [profiles, activeStats]);
+
+  const hasGoalies = goalieProfiles.length >= 2;
+  if (skaterProfiles.length < 2) return null;
+  if (!p1 || !p2) return null;
+
+  const selectClass =
+    "bg-navy-dark border border-border rounded-lg px-2.5 py-1.5 text-xs font-bold uppercase tracking-wider appearance-none cursor-pointer focus:outline-none focus:border-red/50 transition-colors w-full";
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0 }}
+      transition={{ duration: 0.5 }}
+      className="relative overflow-hidden"
+    >
+      {/* Outer container with angled clip */}
+      <div
+        className="relative bg-gradient-to-br from-[#0d1528] via-[#111d35] to-[#0d1528] border border-white/[0.08]"
+        style={{
+          clipPath:
+            "polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%)",
+        }}
+      >
+        {/* Top accent — red to blue gradient */}
+        <div className="h-[3px] bg-gradient-to-r from-[#cc1533] via-[#cc1533]/60 to-[#5b9bd5]" />
+
+        {/* Background pattern — subtle diagonal lines */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-[0.03]"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(135deg, transparent, transparent 20px, rgba(255,255,255,0.1) 20px, rgba(255,255,255,0.1) 21px)",
+          }}
+        />
+
+        {/* Large VS watermark */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none">
+          <span className="text-[8rem] font-black text-white/[0.015] leading-none tracking-tighter">
+            VS
+          </span>
+        </div>
+
+        {/* Toggle header */}
+        <button
+          onClick={() => setOpen((prev) => !prev)}
+          className="relative w-full px-6 py-5 flex items-center gap-5 hover:bg-white/[0.02] transition-colors cursor-pointer"
+        >
+          {/* VS badge */}
+          <div
+            className="shrink-0 w-14 h-14 flex items-center justify-center bg-gradient-to-br from-[#cc1533] to-[#a8102a] shadow-lg shadow-[#cc1533]/20"
+            style={{
+              clipPath:
+                "polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%)",
+            }}
+          >
+            <span className="text-xl font-black text-white tracking-tight">
+              VS
+            </span>
+          </div>
+
+          {/* Text */}
+          <div className="flex-1 text-left min-w-0">
+            <h3 className="text-lg font-black uppercase tracking-[0.1em] text-white mb-1">
+              Head to Head
+            </h3>
+            <p className="text-xs text-white/35 leading-relaxed">
+              Pick any two players and compare their stats with an
+              interactive radar chart and stat breakdown.
+            </p>
+          </div>
+
+          {/* Expand indicator */}
+          <div className="shrink-0 flex flex-col items-center gap-1">
+            <motion.div
+              animate={{ rotate: open ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+              className="w-8 h-8 flex items-center justify-center border border-white/10 rounded-lg bg-white/[0.03]"
+            >
+              <svg
+                className="w-4 h-4 text-white/40"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </motion.div>
+          </div>
+        </button>
+
+        {/* Expandable content */}
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className="overflow-hidden"
+            >
+              <div className="px-6 pb-6 pt-2">
+                {/* Mode toggle — Skater / Goalie */}
+                {hasGoalies && (
+                  <div className="flex items-center justify-center gap-1 mb-5">
+                    <button
+                      onClick={() => setMode("skater")}
+                      className={`px-4 py-1.5 rounded-md text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+                        mode === "skater"
+                          ? "bg-[#cc1533] text-white shadow-lg shadow-[#cc1533]/20"
+                          : "bg-white/[0.04] text-white/40 hover:text-white/60 border border-white/[0.06]"
+                      }`}
+                    >
+                      Skater
+                    </button>
+                    <button
+                      onClick={() => setMode("goalie")}
+                      className={`px-4 py-1.5 rounded-md text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+                        mode === "goalie"
+                          ? "bg-[#5b9bd5] text-white shadow-lg shadow-[#5b9bd5]/20"
+                          : "bg-white/[0.04] text-white/40 hover:text-white/60 border border-white/[0.06]"
+                      }`}
+                    >
+                      Goalie
+                    </button>
+                  </div>
+                )}
+
+                {/* Divider */}
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="flex-1 h-px bg-gradient-to-r from-[#cc1533]/30 to-transparent" />
+                  <span className="text-[9px] text-white/20 uppercase tracking-widest font-bold">
+                    Select {mode === "goalie" ? "Goalies" : "Players"}
+                  </span>
+                  <div className="flex-1 h-px bg-gradient-to-l from-[#5b9bd5]/30 to-transparent" />
+                </div>
+
+                {/* Player selectors */}
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <label className="block text-[9px] text-[#cc1533] font-bold uppercase tracking-widest mb-1.5">
+                      {mode === "goalie" ? "Goalie 1" : "Player 1"}
+                    </label>
+                    <select
+                      value={effectiveP1Name}
+                      onChange={(e) => setP1Name(e.target.value)}
+                      className={selectClass}
+                      style={{ color: "#c8102e" }}
+                    >
+                      {profiles.map((p) => (
+                        <option key={p.name} value={p.name}>
+                          {getNickname(p.name)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[9px] text-[#5b9bd5] font-bold uppercase tracking-widest mb-1.5">
+                      {mode === "goalie" ? "Goalie 2" : "Player 2"}
+                    </label>
+                    <select
+                      value={effectiveP2Name}
+                      onChange={(e) => setP2Name(e.target.value)}
+                      className={selectClass}
+                      style={{ color: "#5b9bd5" }}
+                    >
+                      {profiles.map((p) => (
+                        <option key={p.name} value={p.name}>
+                          {getNickname(p.name)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Player name labels */}
+                <div className="flex items-center justify-between mb-2 px-1">
+                  <span className="text-xs font-black text-[#cc1533] uppercase tracking-wider">
+                    {getNickname(p1.name)}
+                  </span>
+                  <span className="text-[10px] text-white/15 font-bold">
+                    vs
+                  </span>
+                  <span className="text-xs font-black text-[#5b9bd5] uppercase tracking-wider">
+                    {getNickname(p2.name)}
+                  </span>
+                </div>
+
+                {/* Radar chart */}
+                <div className="flex justify-center">
+                  <GenericRadarChart
+                    p1={p1 as unknown as Record<string, number>}
+                    p2={p2 as unknown as Record<string, number>}
+                    maxValues={maxValues}
+                    stats={activeStats}
+                  />
+                </div>
+
+                {/* Stat comparison bars */}
+                <div className="mt-4 space-y-2">
+                  {activeStats.map((s) => {
+                    const v1 = (p1 as unknown as Record<string, number>)[s.key] ?? 0;
+                    const v2 = (p2 as unknown as Record<string, number>)[s.key] ?? 0;
+                    const winner =
+                      v1 > v2 ? "p1" : v2 > v1 ? "p2" : "tie";
+
+                    const fmt = (v: number) => {
+                      if (s.key === "plusMinus" && v > 0) return `+${v}`;
+                      if (s.key === "savePct") return `${v.toFixed(1)}`;
+                      return String(v);
+                    };
+
+                    return (
+                      <div key={s.key} className="flex items-center gap-2.5">
+                        <span
+                          className={`w-10 text-right text-xs font-mono font-bold ${
+                            winner === "p1"
+                              ? "text-[#cc1533]"
+                              : "text-white/30"
+                          }`}
+                        >
+                          {fmt(v1)}
+                        </span>
+
+                        <div className="flex-1 flex h-2 rounded overflow-hidden bg-[#0a0f1a] border border-white/[0.04]">
+                          <div
+                            className="h-full transition-all duration-500"
+                            style={{
+                              width:
+                                v1 + v2 > 0
+                                  ? `${(Math.max(v1, 0) / (Math.max(v1, 0) + Math.max(v2, 0))) * 100}%`
+                                  : "50%",
+                              backgroundColor:
+                                winner === "p1"
+                                  ? "#c8102e"
+                                  : winner === "tie"
+                                    ? "#7a8ba8"
+                                    : "rgba(200,16,46,0.25)",
+                            }}
+                          />
+                          <div
+                            className="h-full transition-all duration-500"
+                            style={{
+                              width:
+                                v1 + v2 > 0
+                                  ? `${(Math.max(v2, 0) / (Math.max(v1, 0) + Math.max(v2, 0))) * 100}%`
+                                  : "50%",
+                              backgroundColor:
+                                winner === "p2"
+                                  ? "#5b9bd5"
+                                  : winner === "tie"
+                                    ? "#7a8ba8"
+                                    : "rgba(91,155,213,0.25)",
+                            }}
+                          />
+                        </div>
+
+                        <span
+                          className={`w-10 text-left text-xs font-mono font-bold ${
+                            winner === "p2"
+                              ? "text-[#5b9bd5]"
+                              : "text-white/30"
+                          }`}
+                        >
+                          {fmt(v2)}
+                        </span>
+                      </div>
+                    );
+                  })}
+
+                  {/* Stat labels */}
+                  <div className="flex items-center gap-2.5 text-[8px] text-white/20 uppercase tracking-widest pt-0.5">
+                    <span className="w-10" />
+                    <div className="flex-1 flex justify-around">
+                      {activeStats.map((s) => (
+                        <span key={s.key}>{s.label}</span>
+                      ))}
+                    </div>
+                    <span className="w-10" />
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+}
