@@ -269,7 +269,10 @@ async function migrateLegacyIfNeeded(redis: Redis): Promise<boolean> {
   const meta = await readMeta(redis);
   if (meta && meta.schemaVersion >= SCHEMA_VERSION) return false;
 
-  // SET NX EX 30 — only one migrator at a time; auto-expires
+  // SET NX EX 30 — only one migrator at a time; auto-expires.
+  // Trade-off: if a migration ever exceeds 30s the lock can be stolen,
+  // but HSETs are idempotent and the meta gate short-circuits the second
+  // migrator, so the worst case is a harmless duplicate write, not data loss.
   const gotLock = await redis.set(MIGRATION_LOCK_KEY, "1", {
     nx: true,
     ex: 30,
@@ -277,26 +280,31 @@ async function migrateLegacyIfNeeded(redis: Redis): Promise<boolean> {
   if (!gotLock) return false;
 
   try {
-    const legacy = await redis.get<MatchHistoryState>(LEGACY_KEY);
-    if (legacy && Array.isArray(legacy.matches)) {
-      await writeMatches(redis, legacy.matches);
-      if (Array.isArray(legacy.forfeitEntries)) {
-        await writeForfeits(redis, legacy.forfeitEntries);
+    try {
+      const legacy = await redis.get<MatchHistoryState>(LEGACY_KEY);
+      if (legacy && Array.isArray(legacy.matches)) {
+        await writeMatches(redis, legacy.matches);
+        if (Array.isArray(legacy.forfeitEntries)) {
+          await writeForfeits(redis, legacy.forfeitEntries);
+        }
+        await writeMeta(redis, {
+          lastRecord: legacy.lastRecord ?? { wins: 0, losses: 0, otl: 0 },
+          schemaVersion: SCHEMA_VERSION,
+        });
+        await redis.del(LEGACY_KEY);
+        console.log("[match-history] migrated legacy blob to hash layout");
+      } else {
+        // No legacy data — just write meta so future calls skip this branch
+        await writeMeta(redis, {
+          lastRecord: { wins: 0, losses: 0, otl: 0 },
+          schemaVersion: SCHEMA_VERSION,
+        });
       }
-      await writeMeta(redis, {
-        lastRecord: legacy.lastRecord ?? { wins: 0, losses: 0, otl: 0 },
-        schemaVersion: SCHEMA_VERSION,
-      });
-      await redis.del(LEGACY_KEY);
-      console.log("[match-history] migrated legacy blob to hash layout");
-    } else {
-      // No legacy data — just write meta so future calls skip this branch
-      await writeMeta(redis, {
-        lastRecord: { wins: 0, losses: 0, otl: 0 },
-        schemaVersion: SCHEMA_VERSION,
-      });
+      return true;
+    } catch (err) {
+      console.error("[match-history] migration failed:", err);
+      throw err;
     }
-    return true;
   } finally {
     await redis.del(MIGRATION_LOCK_KEY);
   }
