@@ -1327,9 +1327,17 @@ function WeekStatsPanel({
   );
 }
 
-/* ── Streak Banner ── */
+/* ── Streak Banner (USA themed) ── */
 
-function StreakBanner({ streakType, streakCount }: { streakType: "W" | "L"; streakCount: number }) {
+function StreakBanner({
+  streakType,
+  streakCount,
+  isClubRecord,
+}: {
+  streakType: "W" | "L";
+  streakCount: number;
+  isClubRecord: boolean;
+}) {
   const isWin = streakType === "W";
 
   return (
@@ -1341,85 +1349,105 @@ function StreakBanner({ streakType, streakCount }: { streakType: "W" | "L"; stre
       className="mb-6"
     >
       <div
-        className={`relative overflow-hidden rounded-xl border ${
-          isWin ? "border-emerald-500/30" : "border-red/30"
-        }`}
+        className="relative overflow-hidden rounded-xl border border-[#cc1533]/30"
         style={{
-          background: isWin
-            ? "linear-gradient(140deg, rgba(13,21,38,0.95) 0%, rgba(6,40,30,0.9) 50%, rgba(10,17,32,0.95) 100%)"
-            : "linear-gradient(140deg, rgba(13,21,38,0.95) 0%, rgba(40,10,15,0.9) 50%, rgba(10,17,32,0.95) 100%)",
+          background:
+            "linear-gradient(140deg, rgba(13,17,38,0.97) 0%, rgba(18,22,48,0.95) 40%, rgba(28,14,22,0.9) 100%)",
         }}
       >
-        <div
-          className={`h-[2px] bg-gradient-to-r ${
-            isWin
-              ? "from-emerald-500 via-emerald-500/60 to-transparent"
-              : "from-red via-red/60 to-transparent"
-          }`}
-        />
+        {/* Red + blue top edge */}
+        <div className="flex h-[3px]">
+          <div className="flex-1 bg-gradient-to-r from-[#cc1533] via-[#cc1533] to-[#cc1533]/40" />
+          <div className="flex-1 bg-gradient-to-r from-[#3c3b6e]/40 via-[#3c3b6e] to-transparent" />
+        </div>
 
-        {/* Corner glow */}
+        {/* Red corner glow */}
         <div
-          className="absolute top-0 left-0 w-40 h-40 pointer-events-none"
+          className="absolute top-0 left-0 w-48 h-48 pointer-events-none"
           style={{
-            background: isWin
-              ? "radial-gradient(circle at 0% 0%, rgba(16,185,129,0.12) 0%, transparent 70%)"
-              : "radial-gradient(circle at 0% 0%, rgba(204,21,51,0.12) 0%, transparent 70%)",
+            background:
+              "radial-gradient(circle at 0% 0%, rgba(204,21,51,0.14) 0%, transparent 65%)",
           }}
         />
 
-        {/* Angled accent stripe */}
+        {/* Blue corner glow (opposite side) */}
         <div
-          className="absolute top-0 right-0 w-[40%] h-full pointer-events-none"
+          className="absolute bottom-0 right-0 w-48 h-48 pointer-events-none"
           style={{
-            background: isWin
-              ? "linear-gradient(135deg, transparent 0%, rgba(16,185,129,0.06) 100%)"
-              : "linear-gradient(135deg, transparent 0%, rgba(204,21,51,0.06) 100%)",
+            background:
+              "radial-gradient(circle at 100% 100%, rgba(60,59,110,0.12) 0%, transparent 65%)",
+          }}
+        />
+
+        {/* Diagonal red stripe */}
+        <div
+          className="absolute top-0 right-0 w-[45%] h-full pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(135deg, transparent 0%, rgba(204,21,51,0.06) 100%)",
             clipPath: "polygon(40% 0, 100% 0, 100% 100%, 0 100%)",
           }}
         />
 
+        {/* Diagonal blue stripe (left) */}
+        <div
+          className="absolute top-0 left-0 w-[30%] h-full pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(145deg, rgba(60,59,110,0.08) 0%, transparent 100%)",
+            clipPath: "polygon(0 0, 100% 0, 60% 100%, 0 100%)",
+          }}
+        />
+
+        {/* Stars decoration (subtle) */}
+        <div className="absolute top-3 left-4 pointer-events-none select-none flex gap-1.5 opacity-[0.08]">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <span key={i} className="text-white text-sm">&#9733;</span>
+          ))}
+        </div>
+
         <div className="relative px-5 md:px-6 py-4 md:py-5 flex items-center gap-4 md:gap-5">
           {/* Big streak number watermark */}
           <div className="absolute right-5 md:right-6 top-1/2 -translate-y-1/2 pointer-events-none select-none">
-            <span
-              className={`text-7xl md:text-8xl font-black tabular-nums leading-none ${
-                isWin ? "text-emerald-500/10" : "text-red/10"
-              }`}
-            >
+            <span className="text-7xl md:text-8xl font-black tabular-nums leading-none text-white/[0.06]">
               {streakCount}
             </span>
           </div>
 
           {/* Streak count badge */}
-          <div
-            className={`flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-xl shrink-0 ${
-              isWin
-                ? "bg-emerald-500/15 border border-emerald-500/25"
-                : "bg-red/15 border border-red/25"
-            }`}
-          >
-            <span
-              className={`text-xl md:text-2xl font-black tabular-nums ${
-                isWin ? "text-emerald-400" : "text-red"
-              }`}
-            >
+          <div className="flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-xl shrink-0 bg-[#cc1533]/15 border border-[#cc1533]/30">
+            <span className="text-xl md:text-2xl font-black tabular-nums text-white">
               {streakCount}
             </span>
           </div>
 
-          <div>
-            <p
-              className={`text-base md:text-xl font-black uppercase tracking-wider ${
-                isWin ? "text-emerald-400" : "text-red"
-              }`}
-            >
-              {streakCount} Game {isWin ? "Win" : "Loss"} Streak
-            </p>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-3 flex-wrap">
+              <p className="text-base md:text-xl font-black uppercase tracking-wider text-white">
+                {streakCount} Game {isWin ? "Win" : "Loss"} Streak
+              </p>
+              {isClubRecord && (
+                <span
+                  className="bg-[#cc1533]/15 border border-[#cc1533]/30 text-[#cc1533] text-[9px] font-bold uppercase tracking-widest px-2.5 py-0.5 shrink-0"
+                  style={{
+                    clipPath:
+                      "polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%)",
+                  }}
+                >
+                  Club Record
+                </span>
+              )}
+            </div>
             <p className="text-[10px] md:text-xs text-muted/50 uppercase tracking-widest mt-0.5">
               Currently active
             </p>
           </div>
+        </div>
+
+        {/* Bottom red + blue edge */}
+        <div className="flex h-px">
+          <div className="flex-1 bg-gradient-to-r from-[#cc1533]/30 to-transparent" />
+          <div className="flex-1 bg-gradient-to-l from-[#3c3b6e]/30 to-transparent" />
         </div>
       </div>
     </motion.div>
@@ -1452,8 +1480,9 @@ export default function MatchesClient({
     otl: clubRecord?.otl ?? 0,
   }), [matches, clubRecord]);
 
-  // Compute current streak from matches (sorted newest first)
-  const { streakType, streakCount } = useMemo(() => {
+  // Compute current streak + longest win streak from matches (sorted newest first)
+  const { streakType, streakCount, isClubRecord } = useMemo(() => {
+    // Current streak
     let sType: "W" | "L" | null = null;
     let sCount = 0;
     for (let i = 0; i < matches.length; i++) {
@@ -1468,7 +1497,23 @@ export default function MatchesClient({
         break;
       }
     }
-    return { streakType: sType, streakCount: sCount };
+    // Longest win streak (iterate oldest to newest)
+    let longestWin = 0;
+    let runningWin = 0;
+    for (let i = matches.length - 1; i >= 0; i--) {
+      const r = getResult(matches[i]);
+      if (r === "W") {
+        runningWin++;
+        longestWin = Math.max(longestWin, runningWin);
+      } else {
+        runningWin = 0;
+      }
+    }
+    return {
+      streakType: sType,
+      streakCount: sCount,
+      isClubRecord: sType === "W" && sCount >= longestWin && sCount > 0,
+    };
   }, [matches]);
 
   // Current week record (Mon-Sun, local time)
@@ -1543,7 +1588,7 @@ export default function MatchesClient({
 
       {/* Streak banner (show when 3+ game streak) */}
       {streakType && streakCount >= 3 && (
-        <StreakBanner streakType={streakType} streakCount={streakCount} />
+        <StreakBanner streakType={streakType} streakCount={streakCount} isClubRecord={isClubRecord} />
       )}
 
       {/* Games section */}
