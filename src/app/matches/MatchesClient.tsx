@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Match, ClubRecord } from "@/types";
 import { getNickname } from "@/lib/nicknames";
+import { getResult } from "./utils";
 
 
 /* ── Tooltip alignment helper ── */
@@ -64,16 +65,6 @@ function getWeekPeriods(matches: Match[]): WeekPeriod[] {
 
   // Most recent week first
   return weeks.reverse();
-}
-
-function getResult(match: Match): "W" | "L" | null {
-  if (
-    match.status !== "final" ||
-    match.scoreUs === null ||
-    match.scoreThem === null
-  )
-    return null;
-  return match.scoreUs > match.scoreThem ? "W" : "L";
 }
 
 /* ── Latest Match Hero ── */
