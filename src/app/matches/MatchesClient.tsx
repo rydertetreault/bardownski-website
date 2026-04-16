@@ -1498,10 +1498,8 @@ export default function MatchesClient({
 
       {/* Red neon slope divider */}
       <div className="my-6 relative overflow-hidden" style={{ height: "48px" }}>
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1440 48" preserveAspectRatio="none" style={{ filter: "blur(10px)" }}>
-          <path d="M0,14 Q360,20 720,28 Q1080,36 1440,34" fill="none" stroke="#ff1a3d" strokeOpacity="0.7" strokeWidth="16" />
-        </svg>
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1440 48" preserveAspectRatio="none" style={{ filter: "blur(1px)" }}>
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1440 48" preserveAspectRatio="none">
+          <path d="M0,14 Q360,20 720,28 Q1080,36 1440,34" fill="none" stroke="#ff1a3d" strokeOpacity="0.15" strokeWidth="32" />
           <path d="M0,14 Q360,20 720,28 Q1080,36 1440,34" fill="none" stroke="#ff2244" strokeOpacity="0.8" strokeWidth="2" />
         </svg>
       </div>
@@ -1513,18 +1511,12 @@ export default function MatchesClient({
 
           {/* Crossing red + blue neon divider */}
           <div className="my-6 relative overflow-hidden" style={{ height: "48px" }}>
-            {/* Red - slopes down left to right */}
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1440 48" preserveAspectRatio="none" style={{ filter: "blur(10px)" }}>
-              <path d="M0,12 Q720,24 1440,38" fill="none" stroke="#ff1a3d" strokeOpacity="0.5" strokeWidth="12" />
-            </svg>
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1440 48" preserveAspectRatio="none" style={{ filter: "blur(1px)" }}>
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1440 48" preserveAspectRatio="none">
+              {/* Red glow + core - slopes down left to right */}
+              <path d="M0,12 Q720,24 1440,38" fill="none" stroke="#ff1a3d" strokeOpacity="0.1" strokeWidth="28" />
               <path d="M0,12 Q720,24 1440,38" fill="none" stroke="#ff2244" strokeOpacity="0.6" strokeWidth="1.5" />
-            </svg>
-            {/* Blue - slopes up left to right, crosses the red */}
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1440 48" preserveAspectRatio="none" style={{ filter: "blur(8px)" }}>
-              <path d="M0,38 Q720,24 1440,10" fill="none" stroke="#5b9bd5" strokeOpacity="0.4" strokeWidth="10" />
-            </svg>
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1440 48" preserveAspectRatio="none" style={{ filter: "blur(1px)" }}>
+              {/* Blue glow + core - slopes up left to right, crosses the red */}
+              <path d="M0,38 Q720,24 1440,10" fill="none" stroke="#5b9bd5" strokeOpacity="0.08" strokeWidth="24" />
               <path d="M0,38 Q720,24 1440,10" fill="none" stroke="#5b9bd5" strokeOpacity="0.5" strokeWidth="1.5" />
             </svg>
           </div>
