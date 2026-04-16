@@ -1,16 +1,20 @@
 /**
  * Redis-backed match history tracking.
  *
- * The Chelstats API only returns ~5 recent games. This module
- * accumulates every match in Redis so older games aren't lost when
- * they rotate out of the API window. It also detects untracked wins
- * (forfeits) by comparing record deltas.
+ * The Chelstats API only returns ~5 recent games. This module accumulates
+ * every match in Redis so older games aren't lost when they rotate out.
  *
- * Only the last 3 weeks of matches are kept; older games are pruned
- * on every sync so Redis stays lean and the UI stays current.
+ * Storage layout (schema v2, see migrateLegacyIfNeeded for the v1 blob):
+ *   match-history:matches   Hash<matchId, ClubMatch>
+ *   match-history:forfeits  Hash<forfeitId, ForfeitEntry>
+ *   match-history:meta      JSON { lastRecord, schemaVersion }
  *
- * Syncing happens on every page load (via getMatchHistory) and during
- * the weekly-update cron, so no dedicated high-frequency cron is needed.
+ * Per-match HSET writes are atomic and commutative, so concurrent
+ * pollAndAccumulate calls cannot clobber each other. The 3-week retention
+ * filter is applied at READ time only; Redis itself retains all history.
+ *
+ * Syncing happens on every page load (via getMatchHistory) and via the
+ * /api/cron/sync-matches cron registered in vercel.json.
  */
 
 import { Redis } from "@upstash/redis";
@@ -178,24 +182,28 @@ export async function getMatchHistory(
   if (!redis) return chelstats.matches;
 
   try {
-    // Full sync: accumulate new matches and detect forfeits on every load
     await pollAndAccumulate(chelstats);
 
-    const state = await redis.get<LegacyMatchHistoryState>("match-history");
-    if (!state || !Array.isArray(state.matches)) return chelstats.matches;
+    const [matches, storedForfeits] = await Promise.all([
+      readAllMatches(redis),
+      readAllForfeits(redis),
+    ]);
 
-    // Add forfeit entries (Redis-tracked + hardcoded manual ones within retention window)
-    const cutoff = Math.floor(Date.now() / 1000) - RETENTION_SECONDS;
-    const allForfeitEntries = [...state.forfeitEntries];
-    for (const mf of MANUAL_FORFEITS) {
-      if (mf.timestamp >= cutoff && !allForfeitEntries.some((f) => f.id === mf.id)) {
-        allForfeitEntries.push(mf);
-      }
+    // Union of stored forfeits + hardcoded manual forfeits (dedupe by id)
+    const forfeitsById = new Map<string, ForfeitEntry>();
+    for (const f of storedForfeits) forfeitsById.set(f.id, f);
+    for (const f of MANUAL_FORFEITS) {
+      if (!forfeitsById.has(f.id)) forfeitsById.set(f.id, f);
     }
 
-    if (allForfeitEntries.length === 0) return state.matches;
+    // 3-week filter is applied at read time; Redis retains everything
+    const cutoff = Math.floor(Date.now() / 1000) - RETENTION_SECONDS;
+    const visibleMatches = matches.filter((m) => m.timestamp >= cutoff);
+    const visibleForfeits = Array.from(forfeitsById.values()).filter(
+      (f) => f.timestamp >= cutoff
+    );
 
-    const forfeitMatches: ClubMatch[] = allForfeitEntries.map((f) => ({
+    const forfeitMatches: ClubMatch[] = visibleForfeits.map((f) => ({
       id: f.id,
       timestamp: f.timestamp,
       date: f.date,
@@ -216,7 +224,7 @@ export async function getMatchHistory(
       forfeit: true,
     }));
 
-    const combined = [...state.matches, ...forfeitMatches];
+    const combined = [...visibleMatches, ...forfeitMatches];
     combined.sort((a, b) => b.timestamp - a.timestamp);
     return combined;
   } catch (err) {
