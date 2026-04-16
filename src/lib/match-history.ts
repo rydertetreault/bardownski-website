@@ -190,12 +190,12 @@ export async function getMatchHistory(
       readAllForfeits(redis),
     ]);
 
-    // Union of stored forfeits + hardcoded manual forfeits (dedupe by id)
+    // Stored forfeits + hardcoded manual forfeits. MANUAL_FORFEITS always
+    // win on id collision: they're the authoritative safety-net list the
+    // user maintains in code, and must not be shadowed by stale stored data.
     const forfeitsById = new Map<string, ForfeitEntry>();
     for (const f of storedForfeits) forfeitsById.set(f.id, f);
-    for (const f of MANUAL_FORFEITS) {
-      if (!forfeitsById.has(f.id)) forfeitsById.set(f.id, f);
-    }
+    for (const f of MANUAL_FORFEITS) forfeitsById.set(f.id, f);
 
     // 3-week filter is applied at read time; Redis retains everything
     const cutoff = Math.floor(Date.now() / 1000) - RETENTION_SECONDS;
