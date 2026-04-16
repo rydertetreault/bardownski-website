@@ -27,32 +27,36 @@ interface WeekPeriod {
 function getWeekPeriods(matches: Match[]): WeekPeriod[] {
   if (matches.length === 0) return [];
 
-  // Anchor to the current week (local time) and show 3 most recent weeks
+  // Week boundaries use UTC so they align with match.date, which is formatted
+  // server-side in UTC. Mixing client-local boundaries with UTC-formatted
+  // dates drops late-Sunday-EDT games into the wrong week.
   const now = new Date();
-  const day = now.getDay();
+  const day = now.getUTCDay();
   const mondayOffset = day === 0 ? -6 : 1 - day;
   const currentMonday = new Date(now);
-  currentMonday.setDate(currentMonday.getDate() + mondayOffset);
-  currentMonday.setHours(0, 0, 0, 0);
+  currentMonday.setUTCDate(currentMonday.getUTCDate() + mondayOffset);
+  currentMonday.setUTCHours(0, 0, 0, 0);
 
   const weeks: WeekPeriod[] = [];
 
   // Generate current week + 2 prior weeks (3 total), oldest first
   for (let w = 2; w >= 0; w--) {
     const weekStart = new Date(currentMonday);
-    weekStart.setDate(weekStart.getDate() - w * 7);
+    weekStart.setUTCDate(weekStart.getUTCDate() - w * 7);
 
     const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekEnd.getDate() + 6);
-    weekEnd.setHours(23, 59, 59, 999);
+    weekEnd.setUTCDate(weekEnd.getUTCDate() + 6);
+    weekEnd.setUTCHours(23, 59, 59, 999);
 
     const fmtStart = weekStart.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
+      timeZone: "UTC",
     });
     const fmtEnd = weekEnd.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
+      timeZone: "UTC",
     });
 
     weeks.push({
@@ -1481,17 +1485,17 @@ export default function MatchesClient({
     };
   }, [matches]);
 
-  // Current week record (Mon-Sun, local time)
+  // Current week record (Mon-Sun, UTC to match match.date formatting)
   const weekRecord = useMemo(() => {
     const now = new Date();
-    const day = now.getDay();
+    const day = now.getUTCDay();
     const mondayOffset = day === 0 ? -6 : 1 - day;
     const monday = new Date(now);
-    monday.setDate(monday.getDate() + mondayOffset);
-    monday.setHours(0, 0, 0, 0);
+    monday.setUTCDate(monday.getUTCDate() + mondayOffset);
+    monday.setUTCHours(0, 0, 0, 0);
     const sunday = new Date(monday);
-    sunday.setDate(sunday.getDate() + 6);
-    sunday.setHours(23, 59, 59, 999);
+    sunday.setUTCDate(sunday.getUTCDate() + 6);
+    sunday.setUTCHours(23, 59, 59, 999);
 
     const weekStart = Math.floor(monday.getTime() / 1000);
     const weekEnd = Math.floor(sunday.getTime() / 1000);
@@ -1507,10 +1511,12 @@ export default function MatchesClient({
     const fmtStart = monday.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
+      timeZone: "UTC",
     });
     const fmtEnd = sunday.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
+      timeZone: "UTC",
     });
 
     return { w, l, gp: weekMatches.length, gf, ga, label: `${fmtStart} – ${fmtEnd}` };
