@@ -318,31 +318,3 @@ async function migrateLegacyIfNeeded(redis: Redis): Promise<boolean> {
     await redis.del(MIGRATION_LOCK_KEY);
   }
 }
-
-async function readAllMatchesNS(redis: Redis, prefix: string): Promise<ClubMatch[]> {
-  const raw = await redis.hgetall<Record<string, ClubMatch>>(`${prefix}:matches`);
-  return raw ? Object.values(raw) : [];
-}
-
-async function writeMatchesNS(redis: Redis, prefix: string, matches: ClubMatch[]): Promise<void> {
-  if (matches.length === 0) return;
-  const payload: Record<string, ClubMatch> = {};
-  for (const m of matches) payload[m.id] = m;
-  await redis.hset(`${prefix}:matches`, payload);
-}
-
-/** @internal — exported only for self-test route */
-export const __INTERNAL_TEST__ = {
-  SCHEMA_VERSION,
-  MATCHES_KEY,
-  FORFEITS_KEY,
-  META_KEY,
-  LEGACY_KEY,
-  readAllMatches,
-  writeMatches,
-  readMeta,
-  writeMeta,
-  migrateLegacyIfNeeded,
-  readAllMatchesNS,
-  writeMatchesNS,
-};
