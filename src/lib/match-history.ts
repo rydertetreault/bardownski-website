@@ -257,3 +257,61 @@ async function readMeta(redis: Redis): Promise<MatchHistoryMeta | null> {
 async function writeMeta(redis: Redis, meta: MatchHistoryMeta): Promise<void> {
   await redis.set(META_KEY, meta);
 }
+
+/**
+ * One-shot migration from the legacy single-blob layout to the
+ * per-match hash layout. Idempotent and guarded by a Redis lock so
+ * concurrent calls can't double-migrate.
+ *
+ * Returns true if migration ran, false if already migrated or locked.
+ */
+async function migrateLegacyIfNeeded(redis: Redis): Promise<boolean> {
+  const meta = await readMeta(redis);
+  if (meta && meta.schemaVersion >= SCHEMA_VERSION) return false;
+
+  // SET NX EX 30 — only one migrator at a time; auto-expires
+  const gotLock = await redis.set(MIGRATION_LOCK_KEY, "1", {
+    nx: true,
+    ex: 30,
+  });
+  if (!gotLock) return false;
+
+  try {
+    const legacy = await redis.get<MatchHistoryState>(LEGACY_KEY);
+    if (legacy && Array.isArray(legacy.matches)) {
+      await writeMatches(redis, legacy.matches);
+      if (Array.isArray(legacy.forfeitEntries)) {
+        await writeForfeits(redis, legacy.forfeitEntries);
+      }
+      await writeMeta(redis, {
+        lastRecord: legacy.lastRecord ?? { wins: 0, losses: 0, otl: 0 },
+        schemaVersion: SCHEMA_VERSION,
+      });
+      await redis.del(LEGACY_KEY);
+      console.log("[match-history] migrated legacy blob to hash layout");
+    } else {
+      // No legacy data — just write meta so future calls skip this branch
+      await writeMeta(redis, {
+        lastRecord: { wins: 0, losses: 0, otl: 0 },
+        schemaVersion: SCHEMA_VERSION,
+      });
+    }
+    return true;
+  } finally {
+    await redis.del(MIGRATION_LOCK_KEY);
+  }
+}
+
+/** @internal — exported only for self-test route */
+export const __INTERNAL_TEST__ = {
+  SCHEMA_VERSION,
+  MATCHES_KEY,
+  FORFEITS_KEY,
+  META_KEY,
+  LEGACY_KEY,
+  readAllMatches,
+  writeMatches,
+  readMeta,
+  writeMeta,
+  migrateLegacyIfNeeded,
+};
