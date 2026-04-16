@@ -25,6 +25,17 @@ interface ForfeitEntry {
   date: string;
 }
 
+/**
+ * Hardcoded forfeit entries for games the API never returned.
+ * These were lost during a Redis schema migration on 04/13 and are
+ * preserved here so they survive future Redis resets.
+ */
+const MANUAL_FORFEITS: ForfeitEntry[] = [
+  { id: "forfeit-1776027600-0", timestamp: 1776027600, date: "April 12, 2026" },
+  { id: "forfeit-1776031200-1", timestamp: 1776031200, date: "April 12, 2026" },
+  { id: "forfeit-1776034800-2", timestamp: 1776034800, date: "April 12, 2026" },
+];
+
 function getRedis(): Redis | null {
   const url = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -145,10 +156,17 @@ export async function getMatchHistory(
     const state = await redis.get<MatchHistoryState>("match-history");
     if (!state || !Array.isArray(state.matches)) return chelstats.matches;
 
-    // Add forfeit entries
-    if (state.forfeitEntries.length === 0) return state.matches;
+    // Add forfeit entries (Redis-tracked + hardcoded manual ones)
+    const allForfeitEntries = [...state.forfeitEntries];
+    for (const mf of MANUAL_FORFEITS) {
+      if (!allForfeitEntries.some((f) => f.id === mf.id)) {
+        allForfeitEntries.push(mf);
+      }
+    }
 
-    const forfeitMatches: ClubMatch[] = state.forfeitEntries.map((f) => ({
+    if (allForfeitEntries.length === 0) return state.matches;
+
+    const forfeitMatches: ClubMatch[] = allForfeitEntries.map((f) => ({
       id: f.id,
       timestamp: f.timestamp,
       date: f.date,
