@@ -7,6 +7,7 @@ import {
 } from "@/lib/discord";
 import type { SeasonData } from "@/lib/discord";
 import { fetchChelstatsData, chelstatsToSeasonData } from "@/lib/chelstats";
+import { getMatchHistory } from "@/lib/match-history";
 import RecordsClient from "./RecordsClient";
 import RecordsBackground from "./RecordsBackground";
 
@@ -35,6 +36,23 @@ export default async function RecordsPage() {
 
   const records = computeAllTimeRecords(seasons);
   const mvps = computeSeasonMVPs(seasons);
+
+  // Compute longest win streak from match history
+  const allMatches = chelstats ? await getMatchHistory(chelstats) : [];
+  let longestWinStreak = 0;
+  let currentWinStreak = 0;
+  // Iterate oldest to newest
+  for (let i = allMatches.length - 1; i >= 0; i--) {
+    const m = allMatches[i];
+    if (m.scoreUs > m.scoreThem) {
+      currentWinStreak++;
+      longestWinStreak = Math.max(longestWinStreak, currentWinStreak);
+    } else {
+      currentWinStreak = 0;
+    }
+  }
+  // currentWinStreak now holds the active streak (if latest matches are wins)
+  const isStreakActive = currentWinStreak === longestWinStreak && currentWinStreak > 0;
 
   return (
     <div className="min-h-screen relative">
@@ -79,6 +97,8 @@ export default async function RecordsPage() {
             records={records}
             mvps={mvps}
             seasons={seasons}
+            longestWinStreak={longestWinStreak}
+            isStreakActive={isStreakActive}
           />
         )}
       </div>

@@ -470,10 +470,14 @@ export default function RecordsClient({
   records,
   mvps,
   seasons,
+  longestWinStreak,
+  isStreakActive,
 }: {
   records: AllTimeRecord[];
   mvps: SeasonMVP[];
   seasons: SeasonData[];
+  longestWinStreak: number;
+  isStreakActive: boolean;
 }) {
   const skaterRecords = records.filter((r) => r.category === "skater");
   const goalieRecords = records.filter((r) => r.category === "goalie");
@@ -525,7 +529,57 @@ export default function RecordsClient({
         </div>
       )}
 
-      {/* 4. Season MVPs */}
+      {/* 4. Club Records — team streaks */}
+      {longestWinStreak > 0 && (
+        <div className="mb-14">
+          <SectionDivider title="Club Records" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="relative bg-navy/80 border border-border rounded-xl overflow-hidden transition-colors hover:border-border/80"
+            >
+              <div
+                className={`h-0.5 bg-gradient-to-r ${
+                  isStreakActive
+                    ? "from-emerald-500 via-emerald-500/50 to-transparent"
+                    : "from-red via-red/50 to-transparent"
+                }`}
+              />
+              <div className="p-5">
+                <p className="text-[10px] text-muted uppercase tracking-[0.2em] font-semibold mb-3">
+                  Longest Win Streak
+                </p>
+                <div className="flex items-end justify-between gap-3">
+                  <div>
+                    <p
+                      className={`text-3xl md:text-4xl font-black font-mono leading-none ${
+                        isStreakActive ? "text-emerald-400" : "text-red"
+                      }`}
+                    >
+                      <AnimatedNumber from={0} to={longestWinStreak} />
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-bold tracking-wide">
+                      {longestWinStreak === 1 ? "Game" : "Games"}
+                    </p>
+                    {isStreakActive && (
+                      <span className="inline-block mt-1 bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[9px] font-bold uppercase tracking-widest rounded-md px-2 py-0.5">
+                        Active
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      )}
+
+      {/* 5. Season MVPs */}
       {mvps.length > 0 && (
         <div className="mb-14">
           <SectionDivider title="Season MVPs" />
