@@ -6,15 +6,21 @@ import { Redis } from "@upstash/redis";
  * Remove once the forfeit-rendering issue is resolved.
  */
 export async function GET(request: NextRequest) {
-  const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  // TEMPORARY: no auth — diagnostic only, remove after debugging.
+  void request;
 
   const url = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  const cronSecretSet = !!process.env.CRON_SECRET;
   if (!url || !token) {
-    return NextResponse.json({ error: "Redis not configured" }, { status: 503 });
+    return NextResponse.json({
+      error: "Redis not configured",
+      envDebug: {
+        hasUpstashUrl: !!url,
+        hasUpstashToken: !!token,
+        hasCronSecret: cronSecretSet,
+      },
+    }, { status: 503 });
   }
 
   const redis = new Redis({ url, token });
