@@ -836,10 +836,12 @@ export function computeMvpOddsFromMembers(
 
     const highlights: string[] = [];
     if (entry.isGoalie) {
+      highlights.push(`${m.goalieGP} GP`);
       highlights.push(`${svDisplay}% SV`);
       highlights.push(`${m.shutouts} SO`);
       highlights.push(`${m.gaa.toFixed(2)} GAA`);
     } else {
+      highlights.push(`${m.gamesPlayed} GP`);
       highlights.push(`${m.points} PTS`);
       highlights.push(`${m.goals} G`);
       highlights.push(`${m.assists} A`);
@@ -852,7 +854,7 @@ export function computeMvpOddsFromMembers(
       probability: prob,
       americanOdds: odds,
       isGoalie: entry.isGoalie,
-      highlights: highlights.slice(0, 3),
+      highlights: highlights.slice(0, 4),
     };
   });
 }
