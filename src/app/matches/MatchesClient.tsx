@@ -1340,112 +1340,78 @@ function StreakBanner({
 }) {
   const isWin = streakType === "W";
 
-  // Star grid: 3 rows staggered like the real flag canton
-  const starRows = [
-    { count: 4, offset: false },
-    { count: 3, offset: true },
-    { count: 4, offset: false },
-  ];
-
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.97 }}
-      whileInView={{ opacity: 1, scale: 1 }}
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.4 }}
-      className="mb-6"
+      className="mb-6 flex justify-center"
     >
-      <div className="relative overflow-hidden rounded-xl border border-white/10">
-        {/* ── Stripes background ── */}
-        <div className="absolute inset-0 pointer-events-none">
-          {Array.from({ length: 13 }).map((_, i) => (
-            <div
-              key={i}
-              className="w-full"
-              style={{
-                height: `${100 / 13}%`,
-                backgroundColor:
-                  i % 2 === 0
-                    ? "rgba(191,10,48,0.35)"
-                    : "rgba(255,255,255,0.06)",
-              }}
-            />
-          ))}
+      <div className="relative overflow-hidden rounded-xl border border-border/50 flex w-full max-w-md"
+        style={{ background: "linear-gradient(140deg, rgba(13,21,38,0.95) 0%, rgba(18,26,42,0.9) 50%, rgba(10,17,32,0.95) 100%)" }}
+      >
+        {/* ── Left sidebar: stars & stripes ── */}
+        <div className="relative w-10 md:w-12 shrink-0 overflow-hidden">
+          {/* Stripes */}
+          <div className="absolute inset-0 flex flex-col">
+            {Array.from({ length: 13 }).map((_, i) => (
+              <div
+                key={i}
+                className="flex-1"
+                style={{
+                  backgroundColor: i % 2 === 0 ? "#bf0a30" : "#ffffff",
+                }}
+              />
+            ))}
+          </div>
         </div>
 
-        {/* Dark overlay so content is readable */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.65) 40%, rgba(0,0,0,0.5) 100%)",
-          }}
-        />
+        {/* ── Main content ── */}
+        <div className="relative flex-1 px-5 md:px-6 py-4 md:py-5">
+          {/* Top accent line */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#bf0a30] via-[#bf0a30]/50 to-transparent" />
 
-        {/* ── Blue canton with stars ── */}
-        <div
-          className="absolute top-0 left-0 pointer-events-none flex flex-col items-center justify-center gap-1 py-2 px-2"
-          style={{
-            width: "80px",
-            height: "100%",
-            backgroundColor: "rgba(60,59,110,0.85)",
-            boxShadow: "4px 0 12px rgba(0,0,0,0.3)",
-          }}
-        >
-          {starRows.map((row, ri) => (
-            <div
-              key={ri}
-              className="flex gap-1.5"
-              style={{ marginLeft: row.offset ? "6px" : "0" }}
-            >
-              {Array.from({ length: row.count }).map((_, si) => (
-                <span
-                  key={si}
-                  className="text-white/70 text-[8px] leading-none"
-                >
-                  &#9733;
-                </span>
-              ))}
+          {/* Watermark number */}
+          <div className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 pointer-events-none select-none">
+            <span className="text-6xl md:text-7xl font-black tabular-nums leading-none text-white/[0.04]">
+              {streakCount}
+            </span>
+          </div>
+
+          <div className="relative flex items-center gap-4">
+            {/* Streak count */}
+            <div className="flex flex-col items-center shrink-0">
+              <span className="text-3xl md:text-4xl font-black tabular-nums text-white leading-none">
+                {streakCount}
+              </span>
+              <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-widest text-muted/50 mt-0.5">
+                {isWin ? "Wins" : "Losses"}
+              </span>
             </div>
-          ))}
-        </div>
 
-        {/* ── Content ── */}
-        <div className="relative pl-24 md:pl-28 pr-5 md:pr-6 py-4 md:py-5 flex items-center gap-4 md:gap-5">
-          {/* Big streak number watermark */}
-          <div className="absolute right-5 md:right-6 top-1/2 -translate-y-1/2 pointer-events-none select-none">
-            <span className="text-7xl md:text-8xl font-black tabular-nums leading-none text-white/[0.08]">
-              {streakCount}
-            </span>
-          </div>
+            <div className="w-px h-9 bg-white/10 shrink-0" />
 
-          {/* Streak count badge */}
-          <div className="flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-xl shrink-0 bg-white/10 border border-white/20">
-            <span className="text-xl md:text-2xl font-black tabular-nums text-white">
-              {streakCount}
-            </span>
-          </div>
-
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 flex-wrap">
-              <p className="text-base md:text-xl font-black uppercase tracking-wider text-white drop-shadow-sm">
-                {streakCount} Game {isWin ? "Win" : "Loss"} Streak
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <p className="text-sm md:text-base font-black uppercase tracking-wider text-white">
+                  {isWin ? "Win" : "Loss"} Streak
+                </p>
+                {isClubRecord && (
+                  <span
+                    className="bg-[#bf0a30]/15 border border-[#bf0a30]/30 text-[#bf0a30] text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 shrink-0"
+                    style={{
+                      clipPath: "polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%)",
+                    }}
+                  >
+                    Club Record
+                  </span>
+                )}
+              </div>
+              <p className="text-[10px] text-muted/40 uppercase tracking-widest mt-0.5">
+                Currently active
               </p>
-              {isClubRecord && (
-                <span
-                  className="bg-[#bf0a30]/25 border border-[#bf0a30]/40 text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-0.5 shrink-0"
-                  style={{
-                    clipPath:
-                      "polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%)",
-                  }}
-                >
-                  Club Record
-                </span>
-              )}
             </div>
-            <p className="text-[10px] md:text-xs text-white/40 uppercase tracking-widest mt-0.5">
-              Currently active
-            </p>
           </div>
         </div>
       </div>
