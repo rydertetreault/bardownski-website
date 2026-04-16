@@ -28,6 +28,18 @@ interface ForfeitEntry {
   date: string;
 }
 
+const SCHEMA_VERSION = 2;
+const MATCHES_KEY = "match-history:matches";
+const FORFEITS_KEY = "match-history:forfeits";
+const META_KEY = "match-history:meta";
+const LEGACY_KEY = "match-history";
+const MIGRATION_LOCK_KEY = "match-history:migration-lock";
+
+interface MatchHistoryMeta {
+  lastRecord: { wins: number; losses: number; otl: number };
+  schemaVersion: number;
+}
+
 /** Matches older than this are pruned from Redis on every sync. */
 const RETENTION_SECONDS = 21 * 24 * 60 * 60; // 3 weeks
 
@@ -210,4 +222,38 @@ export async function getMatchHistory(
     console.error("[match-history] Failed to load:", err);
     return chelstats.matches;
   }
+}
+
+async function readAllMatches(redis: Redis): Promise<ClubMatch[]> {
+  const raw = await redis.hgetall<Record<string, ClubMatch>>(MATCHES_KEY);
+  if (!raw) return [];
+  return Object.values(raw);
+}
+
+async function readAllForfeits(redis: Redis): Promise<ForfeitEntry[]> {
+  const raw = await redis.hgetall<Record<string, ForfeitEntry>>(FORFEITS_KEY);
+  if (!raw) return [];
+  return Object.values(raw);
+}
+
+async function writeMatches(redis: Redis, matches: ClubMatch[]): Promise<void> {
+  if (matches.length === 0) return;
+  const payload: Record<string, ClubMatch> = {};
+  for (const m of matches) payload[m.id] = m;
+  await redis.hset(MATCHES_KEY, payload);
+}
+
+async function writeForfeits(redis: Redis, forfeits: ForfeitEntry[]): Promise<void> {
+  if (forfeits.length === 0) return;
+  const payload: Record<string, ForfeitEntry> = {};
+  for (const f of forfeits) payload[f.id] = f;
+  await redis.hset(FORFEITS_KEY, payload);
+}
+
+async function readMeta(redis: Redis): Promise<MatchHistoryMeta | null> {
+  return await redis.get<MatchHistoryMeta>(META_KEY);
+}
+
+async function writeMeta(redis: Redis, meta: MatchHistoryMeta): Promise<void> {
+  await redis.set(META_KEY, meta);
 }
