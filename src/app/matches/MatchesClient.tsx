@@ -27,34 +27,32 @@ interface WeekPeriod {
 function getWeekPeriods(matches: Match[]): WeekPeriod[] {
   if (matches.length === 0) return [];
 
-  const timestamps = matches.map((m) => m.timestamp);
-  const earliest = Math.min(...timestamps);
-  const latest = Math.max(...timestamps);
-
-  // Get the Monday of the week containing the earliest match
-  const startDate = new Date(earliest * 1000);
-  const day = startDate.getUTCDay();
+  // Anchor to the current week (local time) and show 3 most recent weeks
+  const now = new Date();
+  const day = now.getDay();
   const mondayOffset = day === 0 ? -6 : 1 - day;
-  startDate.setUTCDate(startDate.getUTCDate() + mondayOffset);
-  startDate.setUTCHours(0, 0, 0, 0);
+  const currentMonday = new Date(now);
+  currentMonday.setDate(currentMonday.getDate() + mondayOffset);
+  currentMonday.setHours(0, 0, 0, 0);
 
   const weeks: WeekPeriod[] = [];
-  let weekStart = new Date(startDate);
 
-  while (weekStart.getTime() / 1000 <= latest) {
+  // Generate current week + 2 prior weeks (3 total), oldest first
+  for (let w = 2; w >= 0; w--) {
+    const weekStart = new Date(currentMonday);
+    weekStart.setDate(weekStart.getDate() - w * 7);
+
     const weekEnd = new Date(weekStart);
-    weekEnd.setUTCDate(weekEnd.getUTCDate() + 6);
-    weekEnd.setUTCHours(23, 59, 59, 999);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+    weekEnd.setHours(23, 59, 59, 999);
 
     const fmtStart = weekStart.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
-      timeZone: "UTC",
     });
     const fmtEnd = weekEnd.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
-      timeZone: "UTC",
     });
 
     weeks.push({
@@ -62,11 +60,9 @@ function getWeekPeriods(matches: Match[]): WeekPeriod[] {
       startTs: Math.floor(weekStart.getTime() / 1000),
       endTs: Math.floor(weekEnd.getTime() / 1000),
     });
-
-    weekStart = new Date(weekStart);
-    weekStart.setUTCDate(weekStart.getUTCDate() + 7);
   }
 
+  // Most recent week first
   return weeks.reverse();
 }
 
