@@ -1327,7 +1327,7 @@ function WeekStatsPanel({
   );
 }
 
-/* ── Streak Banner (USA themed) ── */
+/* ── Streak Banner (Stars & Stripes) ── */
 
 function StreakBanner({
   streakType,
@@ -1340,6 +1340,13 @@ function StreakBanner({
 }) {
   const isWin = streakType === "W";
 
+  // Star grid: 3 rows staggered like the real flag canton
+  const starRows = [
+    { count: 4, offset: false },
+    { count: 3, offset: true },
+    { count: 4, offset: false },
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.97 }}
@@ -1348,74 +1355,72 @@ function StreakBanner({
       transition={{ duration: 0.4 }}
       className="mb-6"
     >
-      <div
-        className="relative overflow-hidden rounded-xl border border-[#cc1533]/30"
-        style={{
-          background:
-            "linear-gradient(140deg, rgba(13,17,38,0.97) 0%, rgba(18,22,48,0.95) 40%, rgba(28,14,22,0.9) 100%)",
-        }}
-      >
-        {/* Red + blue top edge */}
-        <div className="flex h-[3px]">
-          <div className="flex-1 bg-gradient-to-r from-[#cc1533] via-[#cc1533] to-[#cc1533]/40" />
-          <div className="flex-1 bg-gradient-to-r from-[#3c3b6e]/40 via-[#3c3b6e] to-transparent" />
-        </div>
-
-        {/* Red corner glow */}
-        <div
-          className="absolute top-0 left-0 w-48 h-48 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(circle at 0% 0%, rgba(204,21,51,0.14) 0%, transparent 65%)",
-          }}
-        />
-
-        {/* Blue corner glow (opposite side) */}
-        <div
-          className="absolute bottom-0 right-0 w-48 h-48 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(circle at 100% 100%, rgba(60,59,110,0.12) 0%, transparent 65%)",
-          }}
-        />
-
-        {/* Diagonal red stripe */}
-        <div
-          className="absolute top-0 right-0 w-[45%] h-full pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(135deg, transparent 0%, rgba(204,21,51,0.06) 100%)",
-            clipPath: "polygon(40% 0, 100% 0, 100% 100%, 0 100%)",
-          }}
-        />
-
-        {/* Diagonal blue stripe (left) */}
-        <div
-          className="absolute top-0 left-0 w-[30%] h-full pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(145deg, rgba(60,59,110,0.08) 0%, transparent 100%)",
-            clipPath: "polygon(0 0, 100% 0, 60% 100%, 0 100%)",
-          }}
-        />
-
-        {/* Stars decoration (subtle) */}
-        <div className="absolute top-3 left-4 pointer-events-none select-none flex gap-1.5 opacity-[0.08]">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <span key={i} className="text-white text-sm">&#9733;</span>
+      <div className="relative overflow-hidden rounded-xl border border-white/10">
+        {/* ── Stripes background ── */}
+        <div className="absolute inset-0 pointer-events-none">
+          {Array.from({ length: 13 }).map((_, i) => (
+            <div
+              key={i}
+              className="w-full"
+              style={{
+                height: `${100 / 13}%`,
+                backgroundColor:
+                  i % 2 === 0
+                    ? "rgba(191,10,48,0.35)"
+                    : "rgba(255,255,255,0.06)",
+              }}
+            />
           ))}
         </div>
 
-        <div className="relative px-5 md:px-6 py-4 md:py-5 flex items-center gap-4 md:gap-5">
+        {/* Dark overlay so content is readable */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.65) 40%, rgba(0,0,0,0.5) 100%)",
+          }}
+        />
+
+        {/* ── Blue canton with stars ── */}
+        <div
+          className="absolute top-0 left-0 pointer-events-none flex flex-col items-center justify-center gap-1 py-2 px-2"
+          style={{
+            width: "80px",
+            height: "100%",
+            backgroundColor: "rgba(60,59,110,0.85)",
+            boxShadow: "4px 0 12px rgba(0,0,0,0.3)",
+          }}
+        >
+          {starRows.map((row, ri) => (
+            <div
+              key={ri}
+              className="flex gap-1.5"
+              style={{ marginLeft: row.offset ? "6px" : "0" }}
+            >
+              {Array.from({ length: row.count }).map((_, si) => (
+                <span
+                  key={si}
+                  className="text-white/70 text-[8px] leading-none"
+                >
+                  &#9733;
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* ── Content ── */}
+        <div className="relative pl-24 md:pl-28 pr-5 md:pr-6 py-4 md:py-5 flex items-center gap-4 md:gap-5">
           {/* Big streak number watermark */}
           <div className="absolute right-5 md:right-6 top-1/2 -translate-y-1/2 pointer-events-none select-none">
-            <span className="text-7xl md:text-8xl font-black tabular-nums leading-none text-white/[0.06]">
+            <span className="text-7xl md:text-8xl font-black tabular-nums leading-none text-white/[0.08]">
               {streakCount}
             </span>
           </div>
 
           {/* Streak count badge */}
-          <div className="flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-xl shrink-0 bg-[#cc1533]/15 border border-[#cc1533]/30">
+          <div className="flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-xl shrink-0 bg-white/10 border border-white/20">
             <span className="text-xl md:text-2xl font-black tabular-nums text-white">
               {streakCount}
             </span>
@@ -1423,12 +1428,12 @@ function StreakBanner({
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 flex-wrap">
-              <p className="text-base md:text-xl font-black uppercase tracking-wider text-white">
+              <p className="text-base md:text-xl font-black uppercase tracking-wider text-white drop-shadow-sm">
                 {streakCount} Game {isWin ? "Win" : "Loss"} Streak
               </p>
               {isClubRecord && (
                 <span
-                  className="bg-[#cc1533]/15 border border-[#cc1533]/30 text-[#cc1533] text-[9px] font-bold uppercase tracking-widest px-2.5 py-0.5 shrink-0"
+                  className="bg-[#bf0a30]/25 border border-[#bf0a30]/40 text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-0.5 shrink-0"
                   style={{
                     clipPath:
                       "polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%)",
@@ -1438,16 +1443,10 @@ function StreakBanner({
                 </span>
               )}
             </div>
-            <p className="text-[10px] md:text-xs text-muted/50 uppercase tracking-widest mt-0.5">
+            <p className="text-[10px] md:text-xs text-white/40 uppercase tracking-widest mt-0.5">
               Currently active
             </p>
           </div>
-        </div>
-
-        {/* Bottom red + blue edge */}
-        <div className="flex h-px">
-          <div className="flex-1 bg-gradient-to-r from-[#cc1533]/30 to-transparent" />
-          <div className="flex-1 bg-gradient-to-l from-[#3c3b6e]/30 to-transparent" />
         </div>
       </div>
     </motion.div>
