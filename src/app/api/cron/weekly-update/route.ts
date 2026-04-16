@@ -209,7 +209,7 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  // --- Step 0: Sync match history (replaces the old sync-matches cron) ---
+  // --- Step 0: Best-effort match history sync before computing POTW ---
   const chelstats = await fetchChelstatsData();
   if (chelstats) {
     await pollAndAccumulate(chelstats);

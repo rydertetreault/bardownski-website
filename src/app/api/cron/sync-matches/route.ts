@@ -1,8 +1,10 @@
 /**
  * Match sync cron endpoint.
  *
- * Runs every 5 minutes via Vercel Cron to accumulate matches from the
- * Chelstats API into Redis before they rotate out of the 5-game window.
+ * Runs daily via Vercel Cron as a safety net. Matches are primarily
+ * accumulated on page loads via getMatchHistory / pollAndAccumulate;
+ * this cron catches anything missed during long quiet stretches before
+ * games rotate out of the Chelstats 5-game API window.
  */
 
 import { NextRequest, NextResponse } from "next/server";

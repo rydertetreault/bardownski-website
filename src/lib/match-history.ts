@@ -44,7 +44,7 @@ interface MatchHistoryMeta {
   schemaVersion: number;
 }
 
-/** Matches older than this are pruned from Redis on every sync. */
+/** Matches older than this are hidden at read time. Redis retains everything; see getMatchHistory. */
 const RETENTION_SECONDS = 21 * 24 * 60 * 60; // 3 weeks
 
 /**
@@ -79,8 +79,9 @@ function formatDate(ts: number): string {
 
 /**
  * Accumulate new API matches into Redis and detect forfeits.
- * Called on every page load (via getMatchHistory) and during the
- * weekly-update cron. Returns the number of new matches added.
+ * Called on every page load (via getMatchHistory) and via the
+ * sync-matches / weekly-update crons. Returns the number of new
+ * matches added.
  */
 export async function pollAndAccumulate(
   chelstats: ChelstatsData
