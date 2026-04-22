@@ -36,8 +36,12 @@ export default function PlayerOfWeekBadge({ player, standings = [] }: Props) {
     ? `+${player.deltaSaves} SVS`
     : `+${player.deltaPoints} PTS`;
 
+  const goalieShutouts = player.deltaShutouts ?? 0;
   const statPills = player.isGoalie
-    ? ([player.deltaSaves > 0 && `+${player.deltaSaves} SVS`].filter(Boolean) as string[])
+    ? ([
+        player.deltaSaves > 0 && `+${player.deltaSaves} SVS`,
+        goalieShutouts > 0 && `+${goalieShutouts} SO`,
+      ].filter(Boolean) as string[])
     : [
         player.deltaGoals > 0 && `+${player.deltaGoals} G`,
         player.deltaAssists > 0 && `+${player.deltaAssists} A`,

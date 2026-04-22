@@ -883,6 +883,7 @@ export interface WeeklyPlayer {
   deltaPoints: number;
   deltaHits: number;
   deltaSaves: number;
+  deltaShutouts: number;
   weeklyScore: number;
 }
 
@@ -907,6 +908,7 @@ export function computePlayerOfWeek(messages: unknown[]): WeeklyPlayer | null {
   const prevAssists = Object.fromEntries(previous.assists.map((e) => [e.name, e.value]));
   const prevHits = Object.fromEntries(previous.hits.map((e) => [e.name, e.value]));
   const prevSaves = Object.fromEntries(previous.saves.map((e) => [e.name, e.value]));
+  const prevShutouts = Object.fromEntries(previous.shutouts.map((e) => [e.name, e.value]));
 
   // All players appearing in the current stats
   const allNames = new Set([
@@ -924,11 +926,13 @@ export function computePlayerOfWeek(messages: unknown[]): WeeklyPlayer | null {
     const curAssists = current.assists.find((e) => e.name === name)?.value ?? 0;
     const curHits = current.hits.find((e) => e.name === name)?.value ?? 0;
     const curSaves = current.saves.find((e) => e.name === name)?.value ?? 0;
+    const curShutouts = current.shutouts.find((e) => e.name === name)?.value ?? 0;
 
     const deltaGoals = Math.max(0, curGoals - (prevGoals[name] ?? 0));
     const deltaAssists = Math.max(0, curAssists - (prevAssists[name] ?? 0));
     const deltaHits = Math.max(0, curHits - (prevHits[name] ?? 0));
     const deltaSaves = Math.max(0, curSaves - (prevSaves[name] ?? 0));
+    const deltaShutouts = Math.max(0, curShutouts - (prevShutouts[name] ?? 0));
     const deltaPoints = deltaGoals + deltaAssists;
 
     const score = isGoalie
@@ -946,6 +950,7 @@ export function computePlayerOfWeek(messages: unknown[]): WeeklyPlayer | null {
         deltaPoints,
         deltaHits,
         deltaSaves,
+        deltaShutouts,
         weeklyScore: score,
       };
     }
