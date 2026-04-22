@@ -10,6 +10,15 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    id: "8",
+    title: "Player of the Week: Jene Rene Tetreau IV",
+    summary:
+      "This week's Player of the Week spotlight goes to Jene Rene Tetreau IV, the backbone of the Bardownski defense. Goaltending is the most thankless position in hockey. You can make 30 saves and the one that beats you is the one everyone remembers. But JRT IV has been making sure those moments are rare all season, and this week was a reminder of exactly why.\n\nFive starts, five wins. 55 saves on 68 shots for an .809 save percentage, 2.60 GAA, and a shutout to cap the run. JRT IV opened the slate by stopping 7 of 8 in a 6-1 win over Deporting Aliens, then turned aside 15 of 20 in a 10-5 win over Fat Dabs, held PatechinoisQC to four on 15 of 19 in a 7-4 win, denied 13 of 16 against Pounding Snatches in a 9-3 win with a shutout period buried in it, and closed the week 5-for-5 in a 7-0 blanking of Bomoeschabo. That is the kind of week that earns this nod.\n\nOn the season, JRT IV has posted a 71.0% save percentage with a 4.85 goals-against average across 140 games in net. 14 shutouts and 68 shutout periods show this is not a fluke. When JRT IV is locked in, the opposition knows it is going to be a long night.\n\nJRT IV has stopped 1488 of 2067 shots faced this season. That is the kind of volume that would break most goalies, but JRT IV thrives under pressure. With an 87-47 record in net, the win column backs up everything the advanced numbers show.\n\nGoaltending at this level is what keeps a team in games they have no business winning. JRT IV has been that player all year, and this week was no exception. The wall stands.",
+    date: "2026-04-22",
+    image: "/images/gallery/screenshots/IMG_3288.webp",
+    category: "Club News",
+  },
+  {
     id: "7",
     title: "Milestone Watch: Bardownski Hits the 1000-Point Mark and Keeps Climbing",
     summary:
