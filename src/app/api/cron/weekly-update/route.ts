@@ -109,19 +109,17 @@ function computePlayerOfWeekFromMatches(
       shotPct * 0.15 +                         // shooting efficiency
       (stats.hits / gp) * 0.3;                // physical presence
     const score = perGame * Math.sqrt(gp);
-    if (score > 0) {
-      allPlayers.push({
-        name,
-        position: "F",
-        isGoalie: false,
-        deltaGoals: stats.goals,
-        deltaAssists: stats.assists,
-        deltaPoints: points,
-        deltaHits: stats.hits,
-        deltaSaves: 0,
-        weeklyScore: Math.round(score * 10) / 10,
-      });
-    }
+    allPlayers.push({
+      name,
+      position: "F",
+      isGoalie: false,
+      deltaGoals: stats.goals,
+      deltaAssists: stats.assists,
+      deltaPoints: points,
+      deltaHits: stats.hits,
+      deltaSaves: 0,
+      weeklyScore: Math.round(score * 10) / 10,
+    });
   }
 
   // Goalie scoring: structurally similar to MVP odds but tuned for
@@ -141,19 +139,17 @@ function computePlayerOfWeekFromMatches(
       (stats.saves / gp) * 0.3;               // workload per game
     const score = perGame * Math.sqrt(gp);
 
-    if (score > 0) {
-      allPlayers.push({
-        name,
-        position: "G",
-        isGoalie: true,
-        deltaGoals: 0,
-        deltaAssists: 0,
-        deltaPoints: 0,
-        deltaHits: 0,
-        deltaSaves: stats.saves,
-        weeklyScore: Math.round(score * 10) / 10,
-      });
-    }
+    allPlayers.push({
+      name,
+      position: "G",
+      isGoalie: true,
+      deltaGoals: 0,
+      deltaAssists: 0,
+      deltaPoints: 0,
+      deltaHits: 0,
+      deltaSaves: stats.saves,
+      weeklyScore: Math.round(score * 10) / 10,
+    });
   }
 
   allPlayers.sort((a, b) => b.weeklyScore - a.weeklyScore);
