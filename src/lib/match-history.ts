@@ -48,6 +48,16 @@ interface MatchHistoryMeta {
 const RETENTION_SECONDS = 21 * 24 * 60 * 60; // 3 weeks
 
 /**
+ * Upper bound on ghost forfeits generated in a single pollAndAccumulate run.
+ * In steady state at most 1-2 wins per run can slip out of the 5-game API
+ * window before we sync, so anything above this is a sync anomaly (stale
+ * lastRecord, API hiccup, etc.) rather than real untracked forfeits. When
+ * exceeded, we skip forfeit creation but still advance meta so the next
+ * run doesn't hit the same delta.
+ */
+const MAX_FORFEITS_PER_RUN = 10;
+
+/**
  * Hardcoded forfeit entries for games the API never returned.
  * These were lost during a Redis schema migration on 04/13 and are
  * preserved here so they survive future Redis resets.
@@ -144,20 +154,30 @@ export async function pollAndAccumulate(
     const deltaWins = currentRecord.wins - lastRecord.wins;
     const untrackedWins = Math.max(0, deltaWins - newTrackedWins);
 
-    const baseTs = Math.floor(Date.now() / 1000);
-    for (let i = 0; i < untrackedWins; i++) {
-      // ID keyed to the resulting cumulative win count — stable across
-      // concurrent runs and across restarts.
-      const winNumber = lastRecord.wins + newTrackedWins + i + 1;
-      newForfeits.push({
-        id: `forfeit-win-${winNumber}`,
-        timestamp: baseTs + i * 60,
-        date: formatDate(baseTs + i * 60),
-      });
-    }
+    if (untrackedWins > MAX_FORFEITS_PER_RUN) {
+      // Sync anomaly: stale lastRecord or API record jumped. Creating
+      // `untrackedWins` ghost forfeits all stamped Date.now() would dump
+      // them all into the current week. Skip and let meta advance so the
+      // next run sees delta=0.
+      console.warn(
+        `[match-history] untrackedWins=${untrackedWins} exceeds MAX_FORFEITS_PER_RUN=${MAX_FORFEITS_PER_RUN}; skipping forfeit creation`
+      );
+    } else {
+      const baseTs = Math.floor(Date.now() / 1000);
+      for (let i = 0; i < untrackedWins; i++) {
+        // ID keyed to the resulting cumulative win count — stable across
+        // concurrent runs and across restarts.
+        const winNumber = lastRecord.wins + newTrackedWins + i + 1;
+        newForfeits.push({
+          id: `forfeit-win-${winNumber}`,
+          timestamp: baseTs + i * 60,
+          date: formatDate(baseTs + i * 60),
+        });
+      }
 
-    if (newForfeits.length > 0) {
-      await writeForfeits(redis, newForfeits);
+      if (newForfeits.length > 0) {
+        await writeForfeits(redis, newForfeits);
+      }
     }
   }
 
