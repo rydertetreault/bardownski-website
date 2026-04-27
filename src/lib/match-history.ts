@@ -59,8 +59,12 @@ const MAX_FORFEITS_PER_RUN = 10;
 
 /**
  * Hardcoded forfeit entries for games the API never returned.
- * These were lost during a Redis schema migration on 04/13 and are
- * preserved here so they survive future Redis resets.
+ * Preserved here so they survive future Redis resets.
+ *
+ * The April 26 entries used to live in Redis as auto-detected ghost
+ * forfeits (`forfeit-win-N` format, generated when the API briefly
+ * reported wins=854). The detection was wrong but the underlying 5
+ * wins are real, so they're pinned here.
  */
 const MANUAL_FORFEITS: ForfeitEntry[] = [
   { id: "forfeit-1776024000-0", timestamp: 1776024000, date: "April 12, 2026" },
@@ -69,6 +73,11 @@ const MANUAL_FORFEITS: ForfeitEntry[] = [
   { id: "forfeit-1776034800-3", timestamp: 1776034800, date: "April 12, 2026" },
   { id: "forfeit-1775937600-4", timestamp: 1775937600, date: "April 11, 2026" },
   { id: "forfeit-1776020400-5", timestamp: 1776020400, date: "April 12, 2026" },
+  { id: "forfeit-win-850", timestamp: 1777246360, date: "April 26, 2026" },
+  { id: "forfeit-win-851", timestamp: 1777246420, date: "April 26, 2026" },
+  { id: "forfeit-win-852", timestamp: 1777246480, date: "April 26, 2026" },
+  { id: "forfeit-win-853", timestamp: 1777246540, date: "April 26, 2026" },
+  { id: "forfeit-win-854", timestamp: 1777246600, date: "April 26, 2026" },
 ];
 
 
@@ -124,8 +133,23 @@ export async function pollAndAccumulate(
     );
   }
 
-  // API glitch protection: if totals decreased, DO NOT wipe. Just skip.
-  if (currentTotal < storedTotal) {
+  // Poisoned-meta recovery: if the gap is large enough that no plausible
+  // sequence of glitches explains it, treat stored as poisoned (a prior
+  // bad API response wrote nonsense into meta) and reset the baseline.
+  // Without this the early-return below would lock us out forever.
+  const isPoisonedMeta =
+    currentTotal < storedTotal &&
+    storedTotal - currentTotal > MAX_FORFEITS_PER_RUN;
+  if (isPoisonedMeta) {
+    console.warn(
+      `[match-history] stored record (${storedTotal}) far exceeds API (${currentTotal}); treating as poisoned and resetting baseline`
+    );
+  }
+
+  // API glitch protection: if totals decreased modestly, skip — the API
+  // probably hiccuped and will recover. Poisoned-meta case above falls
+  // through so we can re-baseline.
+  if (currentTotal < storedTotal && !isPoisonedMeta) {
     console.warn(
       `[match-history] API total decreased (${storedTotal} -> ${currentTotal}); skipping sync to preserve history`
     );
@@ -147,6 +171,7 @@ export async function pollAndAccumulate(
   // IDs are derived from the running win total so concurrent runs
   // produce identical IDs and HSET dedupes naturally.
   const newForfeits: ForfeitEntry[] = [];
+  let metaPoisoned = false;
   if (currentTotal > storedTotal && !isColdStart) {
     const newTrackedWins = newApiMatches.filter(
       (m) => m.scoreUs > m.scoreThem
@@ -155,13 +180,14 @@ export async function pollAndAccumulate(
     const untrackedWins = Math.max(0, deltaWins - newTrackedWins);
 
     if (untrackedWins > MAX_FORFEITS_PER_RUN) {
-      // Sync anomaly: stale lastRecord or API record jumped. Creating
-      // `untrackedWins` ghost forfeits all stamped Date.now() would dump
-      // them all into the current week. Skip and let meta advance so the
-      // next run sees delta=0.
+      // Sync anomaly: API jumped impossibly. Skip BOTH forfeit creation
+      // AND the meta write below — accepting this as the new baseline
+      // would poison `lastRecord` and lock out future syncs once the
+      // API returns to its real value.
       console.warn(
-        `[match-history] untrackedWins=${untrackedWins} exceeds MAX_FORFEITS_PER_RUN=${MAX_FORFEITS_PER_RUN}; skipping forfeit creation`
+        `[match-history] untrackedWins=${untrackedWins} exceeds MAX_FORFEITS_PER_RUN=${MAX_FORFEITS_PER_RUN}; skipping forfeit creation and meta update`
       );
+      metaPoisoned = true;
     } else {
       const baseTs = Math.floor(Date.now() / 1000);
       for (let i = 0; i < untrackedWins; i++) {
@@ -182,10 +208,14 @@ export async function pollAndAccumulate(
   }
 
   // Update meta last. If an earlier step failed, next run will retry.
-  await writeMeta(redis, {
-    lastRecord: currentRecord,
-    schemaVersion: SCHEMA_VERSION,
-  });
+  // Skip when the API jump was implausible (metaPoisoned) so a single
+  // bad response can't latch the baseline at a nonsense value.
+  if (!metaPoisoned) {
+    await writeMeta(redis, {
+      lastRecord: currentRecord,
+      schemaVersion: SCHEMA_VERSION,
+    });
+  }
 
   return { newMatches: newApiMatches.length, newForfeits: newForfeits.length };
 }
