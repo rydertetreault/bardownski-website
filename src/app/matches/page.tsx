@@ -6,6 +6,7 @@ import { getMatchHistory } from "@/lib/match-history";
 import type { Match, ClubRecord } from "@/types";
 
 export const revalidate = 300; // cache page for 5 min (matches Redis/chelstats TTL)
+export const maxDuration = 60; // give the regen room to finish under Hobby's serverless budget
 
 export default async function MatchesPage() {
   const chelstats = await fetchChelstatsData();

@@ -11,6 +11,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { fetchChelstatsData } from "@/lib/chelstats";
 import { pollAndAccumulate } from "@/lib/match-history";
 
+export const maxDuration = 60;
+
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
