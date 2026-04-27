@@ -5,7 +5,7 @@ import { fetchChelstatsData } from "@/lib/chelstats";
 import { getMatchHistory } from "@/lib/match-history";
 import type { Match, ClubRecord } from "@/types";
 
-export const revalidate = 300; // cache page for 5 min (matches Redis/chelstats TTL)
+export const dynamic = "force-dynamic"; // always render fresh, no ISR cache
 
 export default async function MatchesPage() {
   const chelstats = await fetchChelstatsData();

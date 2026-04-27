@@ -468,7 +468,7 @@ export async function fetchChelstatsData(): Promise<ChelstatsData | null> {
   try {
     const url = `${CHELSTATS_URL}?teamname=${encodeURIComponent(TEAM_NAME)}&console=${CONSOLE}&strict=true`;
 
-    const res = await fetch(url, { next: { revalidate: 300 } });
+    const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) return null;
 
     const data: ChelstatsApiResponse = await res.json();
