@@ -37,21 +37,24 @@ export default async function RecordsPage() {
   const records = computeAllTimeRecords(seasons);
   const mvps = computeSeasonMVPs(seasons);
 
-  // Compute longest win streak from match history
+  // Compute longest win streak from match history.
+  // Match history only retains the last 3 weeks of games at read time, so a
+  // streak that spans longer can't be reconstructed here. Pin the historical
+  // record and let any future computed streak override it once it exceeds.
+  const ALL_TIME_LONGEST_WIN_STREAK = 22;
   const allMatches = chelstats ? await getMatchHistory(chelstats) : [];
-  let longestWinStreak = 0;
+  let computedLongestWinStreak = 0;
   let currentWinStreak = 0;
-  // Iterate oldest to newest
   for (let i = allMatches.length - 1; i >= 0; i--) {
     const m = allMatches[i];
     if (m.scoreUs > m.scoreThem) {
       currentWinStreak++;
-      longestWinStreak = Math.max(longestWinStreak, currentWinStreak);
+      computedLongestWinStreak = Math.max(computedLongestWinStreak, currentWinStreak);
     } else {
       currentWinStreak = 0;
     }
   }
-  // currentWinStreak now holds the active streak (if latest matches are wins)
+  const longestWinStreak = Math.max(computedLongestWinStreak, ALL_TIME_LONGEST_WIN_STREAK);
   const isStreakActive = currentWinStreak === longestWinStreak && currentWinStreak > 0;
 
   return (
