@@ -1,8 +1,9 @@
 "use client";
 
 
+import { useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp } from "@/components/ui/Animate";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import type { AllTimeRecord, SeasonMVP, SeasonData } from "@/lib/discord";
@@ -490,50 +491,23 @@ export default function RecordsClient({
   const trackers = computeRecordTrackers(records, seasons);
   const comparisons = computeSeasonComparisons(seasons);
 
+  const [activePlayerTab, setActivePlayerTab] = useState<"skater" | "goalie">(
+    "skater"
+  );
+
   return (
     <>
-      {/* 1. Featured record — crown jewel */}
-      {featuredRecord && <FeaturedRecord record={featuredRecord} />}
-
-      {/* 2. Skater Records — core content */}
+      {/* 1. Team Records — club-wide records, top of the page */}
       <div className="mb-14">
         <SectionBanner
-          title="Skater Records"
-          subtitle="Hanging in the rafters"
-          imageSrc="/images/gallery/screenshots/Screenshot 2026-03-16 183710.webp"
-          imageAlt="Bardownski skater"
-          objectPosition="0% 75%"
+          title="Team Records"
+          subtitle="Forged by the room"
+          imageSrc="/images/bench.png"
+          imageAlt="Bardownski bench"
+          objectPosition="center"
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {remainingSkater.map((record, i) => (
-            <RecordCard key={record.label} record={record} index={i} />
-          ))}
-        </div>
-      </div>
-
-      {/* 3. Goalie Records */}
-      {goalieRecords.length > 0 && (
-        <div className="mb-14">
-          <SectionBanner
-            title="Goalie Records"
-            subtitle="Between the pipes"
-            imageSrc="/images/gallery/screenshots/Screenshot 2026-03-16 183710.webp"
-            imageAlt="Bardownski goalie making a save"
-            objectPosition="70% 50%"
-          />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {goalieRecords.map((record, i) => (
-              <RecordCard key={record.label} record={record} index={i} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* 4. Club Records — team streaks */}
-      {longestWinStreak > 0 && (
-        <div className="mb-14">
-          <SectionDivider title="Club Records" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {longestWinStreak > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -575,9 +549,135 @@ export default function RecordsClient({
                 </div>
               </div>
             </motion.div>
-          </div>
+          )}
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0 }}
+            transition={{ duration: 0.4, delay: 0.05, ease: "easeOut" }}
+            className="relative bg-navy/80 border border-border rounded-xl overflow-hidden transition-colors hover:border-border/80"
+          >
+            <div className="h-0.5 bg-gradient-to-r from-red via-red/50 to-transparent" />
+            <div className="p-5">
+              <p className="text-[10px] text-muted uppercase tracking-[0.2em] font-semibold mb-3">
+                Most Goals in One Game
+              </p>
+              <div className="flex items-end justify-between gap-3">
+                <div>
+                  <p className="text-3xl md:text-4xl font-black font-mono leading-none text-red">
+                    <AnimatedNumber from={0} to={18} />
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-bold tracking-wide">Goals</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
-      )}
+      </div>
+
+      {/* 2. Featured record — crown jewel */}
+      {featuredRecord && <FeaturedRecord record={featuredRecord} />}
+
+      {/* 3. Player Records — parent section with Skater / Goalie tabs */}
+      <div className="mb-14">
+        <SectionBanner
+          title="Player Records"
+          subtitle="Hanging in the rafters"
+          imageSrc="/images/gallery/screenshots/Screenshot 2026-03-16 183710.webp"
+          imageAlt="Bardownski player"
+          objectPosition="0% 75%"
+        />
+
+        {/* Tab nav */}
+        <div className="flex gap-2 mb-6">
+          {(
+            [
+              { key: "skater", label: "Skater" },
+              { key: "goalie", label: "Goalie" },
+            ] as const
+          ).map((tab) => {
+            const isActive = activePlayerTab === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setActivePlayerTab(tab.key)}
+                className={`relative px-4 py-2 rounded-md text-xs font-bold uppercase tracking-widest transition-colors ${
+                  isActive
+                    ? "text-foreground"
+                    : "text-muted hover:text-foreground"
+                }`}
+              >
+                {isActive && (
+                  <motion.span
+                    layoutId="player-tab-active"
+                    className="absolute inset-0 bg-red rounded-md"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+                <span className="relative z-10">{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Tab content with pop in/out animation */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activePlayerTab}
+            initial={{ opacity: 0, scale: 0.96, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: -8 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
+            {activePlayerTab === "skater" && (
+              <>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                  className="relative bg-navy/80 border border-border rounded-xl overflow-hidden transition-colors hover:border-border/80"
+                >
+                  <div className="h-0.5 bg-gradient-to-r from-red via-red/50 to-transparent" />
+                  <div className="p-5">
+                    <p className="text-[10px] text-muted uppercase tracking-[0.2em] font-semibold mb-3">
+                      Most Goals in One Game
+                    </p>
+                    <div className="flex items-end justify-between gap-3">
+                      <div>
+                        <p className="text-3xl md:text-4xl font-black font-mono leading-none text-red">
+                          <AnimatedNumber from={0} to={15} />
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-bold tracking-wide">
+                          {getNickname("Xavier Laflamme")}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+                {remainingSkater.map((record, i) => (
+                  <RecordCard key={record.label} record={record} index={i + 1} />
+                ))}
+              </>
+            )}
+            {activePlayerTab === "goalie" &&
+              (goalieRecords.length > 0 ? (
+                goalieRecords.map((record, i) => (
+                  <RecordCard key={record.label} record={record} index={i} />
+                ))
+              ) : (
+                <p className="text-muted text-sm col-span-full text-center py-8">
+                  No goalie records yet.
+                </p>
+              ))}
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
       {/* 5. Season MVPs */}
       {mvps.length > 0 && (
