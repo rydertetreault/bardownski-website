@@ -583,13 +583,47 @@ export default function RecordsClient({
 
       {/* 3. Player Records — parent section with Skater / Goalie tabs */}
       <div className="mb-14">
-        <SectionBanner
-          title="Player Records"
-          subtitle="Hanging in the rafters"
-          imageSrc="/images/gallery/screenshots/Screenshot 2026-03-16 183710.webp"
-          imageAlt="Bardownski player"
-          objectPosition="0% 75%"
-        />
+        <FadeUp className="mb-8">
+          <div className="relative h-28 md:h-36 rounded-xl overflow-hidden border border-border">
+            <AnimatePresence mode="sync">
+              <motion.div
+                key={activePlayerTab}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="absolute inset-0"
+              >
+                <Image
+                  src="/images/gallery/screenshots/Screenshot 2026-03-16 183710.webp"
+                  alt={
+                    activePlayerTab === "goalie"
+                      ? "Bardownski goalie making a save"
+                      : "Bardownski skater"
+                  }
+                  fill
+                  className="object-cover"
+                  style={{
+                    objectPosition:
+                      activePlayerTab === "goalie" ? "70% 50%" : "0% 75%",
+                  }}
+                />
+              </motion.div>
+            </AnimatePresence>
+            <div className="absolute inset-0 bg-gradient-to-r from-navy-dark/90 via-navy-dark/70 to-navy-dark/90" />
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <h2 className="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-center">
+                Player Records
+              </h2>
+              <div className="w-10 h-0.5 bg-red mt-2 rounded-full" />
+              <p className="text-muted text-[10px] uppercase tracking-widest mt-2">
+                {activePlayerTab === "goalie"
+                  ? "Between the pipes"
+                  : "Hanging in the rafters"}
+              </p>
+            </div>
+          </div>
+        </FadeUp>
 
         {/* Tab nav */}
         <div className="flex gap-2 mb-6">
