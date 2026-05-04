@@ -1,4 +1,5 @@
 import HeroSection from "@/components/sections/HeroSection";
+import ChampionshipBanner from "@/components/sections/ChampionshipBanner";
 import FloatingScoreboard from "@/components/sections/FloatingScoreboard";
 import StatsTicker from "@/components/sections/StatsTicker";
 import WhoWeAreSection from "@/components/sections/WhoWeAreSection";
@@ -79,6 +80,7 @@ export default async function Home() {
   return (
     <>
       {weeklyPlayer && <PlayerOfWeekBadge player={weeklyPlayer} standings={potwStandings} />}
+      <ChampionshipBanner />
       <div className="relative z-10">
         <HeroSection />
         <FloatingScoreboard matches={matches} weeklyRecord={weeklyRecord} />

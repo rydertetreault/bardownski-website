@@ -5,12 +5,14 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Match } from "@/types";
 import { getNickname } from "@/lib/nicknames";
+import { isChampionshipClincher } from "@/lib/championship";
 import { getResult } from "../utils";
 
 export function LatestMatchHero({ match }: { match: Match }) {
   const result = getResult(match);
   const isWin = result === "W";
   const isForfeit = match.id.startsWith("forfeit-");
+  const isClincher = isChampionshipClincher(match);
   const hasStats = match.shotsUs !== undefined || match.toaUs !== undefined;
   const hasStars = match.threeStars && match.threeStars.length === 3;
 
@@ -43,8 +45,15 @@ export function LatestMatchHero({ match }: { match: Match }) {
         </svg>
       </div>
 
-      {/* Red top edge */}
-      <div className="h-[3px] bg-gradient-to-r from-[#cc1533] via-[#cc1533] to-transparent" />
+      {/* Top edge — gold for clincher, red otherwise */}
+      <div
+        className="h-[3px]"
+        style={{
+          background: isClincher
+            ? "linear-gradient(90deg, transparent 0%, #f4d35e 50%, transparent 100%)"
+            : "linear-gradient(90deg, #cc1533 0%, #cc1533 50%, transparent 100%)",
+        }}
+      />
 
       <div className="relative px-5 md:px-10 py-6 md:py-8">
         {/* Header row */}
@@ -59,7 +68,21 @@ export function LatestMatchHero({ match }: { match: Match }) {
             <span className="text-[10px] md:text-xs text-white/30 uppercase tracking-widest font-medium">
               {match.date}
             </span>
-            {match.matchType === "finals" && (
+            {isClincher ? (
+              <span
+                className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-wider text-amber-200 bg-gradient-to-r from-amber-500/20 via-amber-400/25 to-amber-500/20 border border-amber-300/40 px-2 py-0.5 ml-1"
+                style={{
+                  clipPath:
+                    "polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%)",
+                  textShadow: "0 0 12px rgba(244,211,94,0.45)",
+                }}
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5">
+                  <path d="M7 2h10v2h3v3a4 4 0 0 1-4 4h-.35A5.001 5.001 0 0 1 13 14.9V17h2v2H9v-2h2v-2.1A5.001 5.001 0 0 1 7.35 11H7a4 4 0 0 1-4-4V4h3V2zm0 4H5v1a2 2 0 0 0 2 2V6zm10 3a2 2 0 0 0 2-2V6h-2v3zM6 21h12v2H6v-2z" />
+                </svg>
+                Club Finals Championship
+              </span>
+            ) : match.matchType === "finals" && (
               <span
                 className="text-[9px] font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 ml-1"
                 style={{
@@ -106,7 +129,9 @@ export function LatestMatchHero({ match }: { match: Match }) {
               className="flex items-center justify-center min-w-[48px] md:min-w-[72px] py-2 md:py-2.5"
               style={{
                 backgroundColor: isWin
-                  ? "rgba(16,185,129,0.12)"
+                  ? isClincher
+                    ? "rgba(244,211,94,0.18)"
+                    : "rgba(16,185,129,0.12)"
                   : "rgba(255,255,255,0.05)",
                 clipPath:
                   "polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%)",
@@ -173,7 +198,9 @@ export function LatestMatchHero({ match }: { match: Match }) {
             <span
               className={`text-[10px] font-black uppercase tracking-[0.3em] px-5 py-1 ${
                 isWin
-                  ? "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20"
+                  ? isClincher
+                    ? "text-amber-300 bg-amber-500/10 border border-amber-300/30"
+                    : "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20"
                   : "text-red bg-red/10 border border-red/20"
               }`}
               style={{
@@ -237,12 +264,17 @@ export function LatestMatchHero({ match }: { match: Match }) {
         {/* View details CTA */}
         {!isForfeit && (
           <div className="flex justify-center mt-4">
-            <span className="text-[10px] text-red uppercase tracking-widest font-bold">
+            <span
+              className={`text-[10px] uppercase tracking-widest font-bold ${
+                isClincher ? "text-amber-300" : "text-red"
+              }`}
+            >
               View Full Details &rarr;
             </span>
           </div>
         )}
       </div>
+
     </div>
   );
 

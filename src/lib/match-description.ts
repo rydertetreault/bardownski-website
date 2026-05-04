@@ -11,6 +11,7 @@
 
 import type { Match, MatchPlayerStat } from "@/types";
 import { getNickname } from "@/lib/nicknames";
+import { isChampionshipClincher, CHAMPIONSHIP } from "@/lib/championship";
 
 const ROMAN_NUMERAL_RE = /^(?=[ivxlcdm])m*(c[md]|d?c{0,3})(x[cl]|l?x{0,3})(i[xv]|v?i{0,3})$/i;
 
@@ -520,10 +521,14 @@ export function generateMatchDescription(match: Match): string {
     }
   }
 
-  if (match.matchType === "finals") {
+  if (isChampionshipClincher(match)) {
+    parts.push(
+      `This was the one. Bardownski's ${CHAMPIONSHIP.season} ${CHAMPIONSHIP.division} championship-clinching win, and the first title in club history.`
+    );
+  } else if (match.matchType === "finals") {
     parts.push(pick([
       "This one came in a club finals matchup.",
-      "A club finals contest — the stakes were high.",
+      "A club finals contest, with the stakes turned up.",
       "The stage: club finals.",
     ]));
   }

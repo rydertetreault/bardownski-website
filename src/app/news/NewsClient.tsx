@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { FadeIn, StaggerContainer, StaggerItem, GlowCard } from "@/components/ui/Animate";
+import { FadeIn, StaggerContainer, StaggerItem, GlowCard, GoldGlowCard } from "@/components/ui/Animate";
 
 type NewsItemWithCategory = {
   id: string;
@@ -42,61 +42,96 @@ export default function NewsClient({ items }: { items: NewsItemWithCategory[] })
       </div>
 
       {/* Featured hero card */}
-      {featured && (
-        <FadeIn direction="up" className="mb-8">
-          <Link href={`/news/${featured.id}`} className="block group">
-            <GlowCard className="bg-[#0d1528] border border-border border-t-2 border-t-[#cc1533] rounded-xl overflow-hidden">
-              <div className="grid grid-cols-1 md:grid-cols-5">
-                {/* Image — 3/5 on desktop */}
-                <div className="relative md:col-span-3 h-64 md:h-80 overflow-hidden">
-                  {featured.video ? (
-                    <video
-                      src={featured.video}
-                      muted
-                      autoPlay
-                      loop
-                      playsInline
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  ) : featured.image ? (
-                    <Image
-                      src={featured.image}
-                      alt={featured.title}
-                      fill
-                      className="object-cover object-[center_20%] transition-transform duration-500 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-surface-light" />
-                  )}
-                  {/* Right fade into content panel on desktop */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#0d1528] opacity-0 md:opacity-75 hidden md:block" />
-                  {/* Bottom fade on mobile */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0d1528] to-transparent md:hidden" />
-                  <div className="absolute top-4 left-4">
-                    <span className="bg-[#cc1533] text-white text-xs font-black uppercase tracking-widest px-3 py-1 rounded">
-                      Latest
+      {featured && (() => {
+        const isChamp = featured.id === "10";
+        const Card = isChamp ? GoldGlowCard : GlowCard;
+        return (
+          <FadeIn direction="up" className="mb-8">
+            <Link href={`/news/${featured.id}`} className="block group">
+              <Card
+                className={`bg-[#0d1528] border border-border rounded-xl overflow-hidden ${
+                  isChamp ? "border-amber-400/40" : ""
+                }`}
+              >
+                <div
+                  className="h-[2px] w-full"
+                  style={{
+                    background: isChamp
+                      ? "linear-gradient(90deg, transparent 0%, #f4d35e 50%, transparent 100%)"
+                      : "#cc1533",
+                  }}
+                />
+                <div className="grid grid-cols-1 md:grid-cols-5">
+                  <div className="relative md:col-span-3 h-64 md:h-80 overflow-hidden">
+                    {featured.video ? (
+                      <video
+                        src={featured.video}
+                        muted
+                        autoPlay
+                        loop
+                        playsInline
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : featured.image ? (
+                      <Image
+                        src={featured.image}
+                        alt={featured.title}
+                        fill
+                        className="object-cover object-[center_20%] transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-surface-light" />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#0d1528] opacity-0 md:opacity-75 hidden md:block" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0d1528] to-transparent md:hidden" />
+                    <div className="absolute top-4 left-4">
+                      {isChamp ? (
+                        <span
+                          className="inline-flex items-center gap-1 text-xs font-black uppercase tracking-widest px-3 py-1 rounded"
+                          style={{
+                            background:
+                              "linear-gradient(90deg, #d4a017 0%, #f4d35e 50%, #d4a017 100%)",
+                            color: "#1a1303",
+                          }}
+                        >
+                          <svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3">
+                            <path d="M7 2h10v2h3v3a4 4 0 0 1-4 4h-.35A5.001 5.001 0 0 1 13 14.9V17h2v2H9v-2h2v-2.1A5.001 5.001 0 0 1 7.35 11H7a4 4 0 0 1-4-4V4h3V2zm0 4H5v1a2 2 0 0 0 2 2V6zm10 3a2 2 0 0 0 2-2V6h-2v3zM6 21h12v2H6v-2z" />
+                          </svg>
+                          Champions
+                        </span>
+                      ) : (
+                        <span className="bg-[#cc1533] text-white text-xs font-black uppercase tracking-widest px-3 py-1 rounded">
+                          Latest
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="md:col-span-2 p-6 md:p-8 flex flex-col justify-center">
+                    <span
+                      className="text-xs font-bold uppercase tracking-widest mb-3"
+                      style={{ color: isChamp ? "#f4d35e" : "#cc1533" }}
+                    >
+                      {featured.category}
                     </span>
+                    <h2
+                      className={`text-2xl md:text-3xl font-black uppercase tracking-wide text-white mb-4 leading-tight transition-colors ${
+                        isChamp ? "group-hover:text-amber-300" : "group-hover:text-[#cc1533]"
+                      }`}
+                    >
+                      {featured.title}
+                    </h2>
+                    <p className="text-sm text-gray-400 mb-6 line-clamp-4">{featured.summary}</p>
+                    <p className="text-xs text-[#5b9bd5] font-medium uppercase tracking-wider">
+                      {featured.date}
+                    </p>
                   </div>
                 </div>
-
-                {/* Content — 2/5 on desktop */}
-                <div className="md:col-span-2 p-6 md:p-8 flex flex-col justify-center">
-                  <span className="text-xs font-bold uppercase tracking-widest text-[#cc1533] mb-3">
-                    {featured.category}
-                  </span>
-                  <h2 className="text-2xl md:text-3xl font-black uppercase tracking-wide text-white mb-4 leading-tight group-hover:text-[#cc1533] transition-colors">
-                    {featured.title}
-                  </h2>
-                  <p className="text-sm text-gray-400 mb-6 line-clamp-4">{featured.summary}</p>
-                  <p className="text-xs text-[#5b9bd5] font-medium uppercase tracking-wider">
-                    {featured.date}
-                  </p>
-                </div>
-              </div>
-            </GlowCard>
-          </Link>
-        </FadeIn>
-      )}
+              </Card>
+            </Link>
+          </FadeIn>
+        );
+      })()}
 
       {/* Grid */}
       {rest.length > 0 && (

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Match, WeeklyRecord } from "@/types";
 import { getNickname } from "@/lib/nicknames";
+import { isChampionshipClincher } from "@/lib/championship";
 
 function titleCase(s: string): string {
   return s
@@ -149,7 +150,24 @@ function FeaturedCard({ match }: { match: Match }) {
         </>
       )}
 
-      {match.matchType === "finals" && (
+      {isChampionshipClincher(match) ? (
+        <>
+          <div className="h-px bg-amber-400/20 my-5" />
+          <span
+            className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md"
+            style={{
+              background:
+                "linear-gradient(90deg, #d4a017 0%, #f4d35e 50%, #d4a017 100%)",
+              color: "#1a1303",
+            }}
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3">
+              <path d="M7 2h10v2h3v3a4 4 0 0 1-4 4h-.35A5.001 5.001 0 0 1 13 14.9V17h2v2H9v-2h2v-2.1A5.001 5.001 0 0 1 7.35 11H7a4 4 0 0 1-4-4V4h3V2zm0 4H5v1a2 2 0 0 0 2 2V6zm10 3a2 2 0 0 0 2-2V6h-2v3zM6 21h12v2H6v-2z" />
+            </svg>
+            Club Finals Championship
+          </span>
+        </>
+      ) : match.matchType === "finals" && (
         <>
           <div className="h-px bg-white/10 my-5" />
           <span className="text-[10px] bg-white/5 border border-white/10 text-amber-400 px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">

@@ -141,6 +141,39 @@ export function GlowCard({
   );
 }
 
+// --- Card with left-to-right gold shimmer sweep (championship treatment) ---
+export function GoldGlowCard({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.03 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      className={`relative ${className ?? ""}`}
+    >
+      {children}
+      <motion.div
+        className="absolute inset-0 pointer-events-none z-10"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent 0%, rgba(244,211,94,0.22) 50%, transparent 100%)",
+        }}
+        animate={{ x: ["-100%", "100%"] }}
+        transition={{
+          duration: 3.2,
+          repeat: Infinity,
+          ease: "easeInOut",
+          repeatDelay: 0.8,
+        }}
+      />
+    </motion.div>
+  );
+}
+
 // --- Parallax ---
 export function Parallax({
   children,

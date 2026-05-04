@@ -8,6 +8,7 @@ import { FadeUp } from "@/components/ui/Animate";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import type { AllTimeRecord, SeasonMVP, SeasonData } from "@/lib/discord";
 import { getNickname } from "@/lib/nicknames";
+import { CHAMPIONSHIP } from "@/lib/championship";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Types
@@ -425,6 +426,35 @@ function SectionDivider({ title }: { title: string }) {
   );
 }
 
+function Stat({
+  label,
+  value,
+  small,
+}: {
+  label: string;
+  value: string;
+  small?: boolean;
+}) {
+  return (
+    <div className="text-center">
+      <p
+        className={`font-black font-mono text-amber-100 leading-none ${
+          small ? "text-base md:text-lg" : "text-2xl md:text-3xl"
+        }`}
+      >
+        {value}
+      </p>
+      <p className="text-[9px] md:text-[10px] text-amber-300/60 uppercase tracking-widest mt-1.5">
+        {label}
+      </p>
+    </div>
+  );
+}
+
+function Divider() {
+  return <span className="hidden sm:block w-px h-8 bg-amber-400/20" />;
+}
+
 function SectionBanner({
   title,
   subtitle,
@@ -497,6 +527,71 @@ export default function RecordsClient({
 
   return (
     <>
+      {/* 0. Championships — top of the page, gold treatment */}
+      <FadeUp className="mb-14">
+        <div
+          className="relative rounded-2xl overflow-hidden border border-amber-400/40"
+          style={{
+            background:
+              "linear-gradient(135deg, rgba(11,15,26,0.95) 0%, rgba(34,26,8,0.85) 35%, rgba(56,42,12,0.8) 50%, rgba(34,26,8,0.85) 65%, rgba(11,15,26,0.95) 100%)",
+          }}
+        >
+          {/* Outer hairlines */}
+          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-amber-300/70 to-transparent" />
+          <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-amber-300/40 to-transparent" />
+
+          {/* Soft glow */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(ellipse at center, rgba(244,211,94,0.12) 0%, transparent 60%)",
+            }}
+          />
+
+          {/* Background trophy */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none opacity-[0.04]">
+            <svg
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="w-72 md:w-[28rem] text-amber-200"
+            >
+              <path d="M7 2h10v2h3v3a4 4 0 0 1-4 4h-.35A5.001 5.001 0 0 1 13 14.9V17h2v2H9v-2h2v-2.1A5.001 5.001 0 0 1 7.35 11H7a4 4 0 0 1-4-4V4h3V2zm0 4H5v1a2 2 0 0 0 2 2V6zm10 3a2 2 0 0 0 2-2V6h-2v3zM6 21h12v2H6v-2z" />
+            </svg>
+          </div>
+
+          <div className="relative px-6 md:px-10 py-10 md:py-14 text-center">
+            <p className="text-[10px] md:text-xs font-bold uppercase tracking-[0.4em] text-amber-300/80 mb-3">
+              Club Championships
+            </p>
+            <p
+              className="text-4xl md:text-6xl font-black uppercase tracking-tight bg-gradient-to-r from-amber-200 via-amber-300 to-amber-200 bg-clip-text text-transparent leading-none mb-3"
+              style={{ textShadow: "0 0 30px rgba(244,211,94,0.25)" }}
+            >
+              {CHAMPIONSHIP.season}
+            </p>
+            <p className="text-base md:text-xl font-bold uppercase tracking-widest text-white mb-6">
+              {CHAMPIONSHIP.division} Club Finals Champions
+            </p>
+
+            <div className="flex items-center justify-center gap-6 md:gap-10 flex-wrap">
+              <Stat label="Run" value={CHAMPIONSHIP.recordInRun} />
+              <Divider />
+              <Stat
+                label="Final"
+                value={`${CHAMPIONSHIP.scoreUs}-${CHAMPIONSHIP.scoreThem}`}
+              />
+              <Divider />
+              <Stat label="Date" value={CHAMPIONSHIP.date} small />
+            </div>
+
+            <p className="text-[10px] md:text-xs text-amber-100/50 uppercase tracking-widest mt-8">
+              First championship in club history
+            </p>
+          </div>
+        </div>
+      </FadeUp>
+
       {/* 1. Team Records — club-wide records, top of the page */}
       <div className="mb-14">
         <SectionBanner

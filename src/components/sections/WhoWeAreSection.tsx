@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, useMotionValue, animate, useInView } from "framer-motion";
 import { useRef, useState, useEffect, useCallback } from "react";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
+import { CHAMPIONSHIP } from "@/lib/championship";
 
 interface SeasonSummary {
   year: string;
@@ -12,6 +13,28 @@ interface SeasonSummary {
   captain: string;
   summary: string;
 }
+
+interface ChampionshipEntry {
+  id: string;
+  shortLabel: string;
+  title: string;
+  detail: string;
+  date: string;
+  articleId: string;
+}
+
+const seasonChampionships: Record<string, ChampionshipEntry[]> = {
+  "2025": [
+    {
+      id: "s4-club-finals",
+      shortLabel: "S4 Club Finals",
+      title: `${CHAMPIONSHIP.season} ${CHAMPIONSHIP.division} Champions`,
+      detail: `Club Finals · ${CHAMPIONSHIP.recordInRun}`,
+      date: CHAMPIONSHIP.date,
+      articleId: "10",
+    },
+  ],
+};
 
 const seasons: SeasonSummary[] = [
   {
@@ -54,7 +77,7 @@ const seasons: SeasonSummary[] = [
     rosterSize: 10,
     captain: "Rob",
     summary:
-      "The current season. Bardownski entered Div 1 Club Finals for the first time and made a deep run against top-tier competition.",
+      "The breakthrough year. After seven years of building, Bardownski captured its first championship.",
   },
 ];
 
@@ -85,6 +108,7 @@ export default function WhoWeAreSection() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
   const [activeIndex, setActiveIndex] = useState(seasons.length - 1);
+  const [openChampionship, setOpenChampionship] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   // left/right are the min/max x values (left is the most-negative end)
@@ -133,6 +157,16 @@ export default function WhoWeAreSection() {
       setActiveIndex((prev) => (idx !== prev ? idx : prev));
     });
   }, [x]);
+
+  // Close championship slideout when user navigates to a season that doesn't
+  // own the currently open championship
+  useEffect(() => {
+    if (!openChampionship) return;
+    const champs = seasonChampionships[seasons[activeIndex]?.year] ?? [];
+    if (!champs.some((c) => c.id === openChampionship)) {
+      setOpenChampionship(null);
+    }
+  }, [activeIndex, openChampionship]);
 
   const handleDragEnd = () => {
     const cw = containerRef.current?.offsetWidth ?? 0;
@@ -470,6 +504,51 @@ export default function WhoWeAreSection() {
                         </p>
                       </div>
 
+                      {seasonChampionships[season.year] && (
+                        <div className="mb-4">
+                          <p className="text-[10px] text-white/30 uppercase tracking-widest mb-1.5">
+                            Championships
+                          </p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {seasonChampionships[season.year].map((champ) => {
+                              const isOpen = openChampionship === champ.id;
+                              return (
+                                <button
+                                  key={champ.id}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (!isActive) {
+                                      snapToIndex(i);
+                                      return;
+                                    }
+                                    setOpenChampionship(isOpen ? null : champ.id);
+                                  }}
+                                  className="inline-flex items-center gap-1 px-2 py-1 text-[9px] font-bold uppercase tracking-widest transition-colors"
+                                  style={{
+                                    color: isOpen ? "#1a1303" : "#f4d35e",
+                                    background: isOpen
+                                      ? "linear-gradient(90deg, #d4a017 0%, #f4d35e 50%, #d4a017 100%)"
+                                      : "transparent",
+                                    border: "1px solid rgba(244,211,94,0.4)",
+                                    clipPath:
+                                      "polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%)",
+                                  }}
+                                >
+                                  <svg
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    className="w-2.5 h-2.5"
+                                  >
+                                    <path d="M7 2h10v2h3v3a4 4 0 0 1-4 4h-.35A5.001 5.001 0 0 1 13 14.9V17h2v2H9v-2h2v-2.1A5.001 5.001 0 0 1 7.35 11H7a4 4 0 0 1-4-4V4h3V2zm0 4H5v1a2 2 0 0 0 2 2V6zm10 3a2 2 0 0 0 2-2V6h-2v3zM6 21h12v2H6v-2z" />
+                                  </svg>
+                                  {champ.shortLabel}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
                       <p
                         className="text-[11px] leading-relaxed mt-auto"
                         style={{
@@ -488,6 +567,68 @@ export default function WhoWeAreSection() {
                 </motion.div>
               );
             })}
+          </motion.div>
+        </div>
+
+        {/* Championship slideout — anchored under the active card */}
+        <div
+          className="relative flex justify-center pointer-events-none"
+          style={{ marginTop: openChampionship ? 0 : 0 }}
+        >
+          <motion.div
+            initial={false}
+            animate={{
+              height: openChampionship ? "auto" : 0,
+              opacity: openChampionship ? 1 : 0,
+            }}
+            transition={{ duration: 0.32, ease: "easeOut" }}
+            className="overflow-hidden pointer-events-auto"
+            style={{ width: CARD_WIDTH }}
+          >
+            {(() => {
+              const activeChamps = seasonChampionships[seasons[activeIndex]?.year] ?? [];
+              const champ = activeChamps.find((c) => c.id === openChampionship);
+              if (!champ) return null;
+              return (
+                <div
+                  className="relative mt-2"
+                  style={{
+                    backgroundColor: "#1e3060",
+                    border: "1px solid rgba(204,21,51,0.35)",
+                    clipPath:
+                      "polygon(0 8px, 100% 0, 100% calc(100% - 8px), 0 100%)",
+                  }}
+                >
+                  <button
+                    onClick={() => setOpenChampionship(null)}
+                    aria-label="Close championship details"
+                    className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/5 transition-colors text-base leading-none rounded"
+                  >
+                    ×
+                  </button>
+                  <div className="px-5 py-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="block w-1 h-3 rounded-sm bg-[#cc1533]/70" />
+                      <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#cc1533]/80">
+                        Club Finals
+                      </span>
+                    </div>
+                    <p className="text-sm font-bold uppercase tracking-wider text-white mb-1">
+                      {champ.title}
+                    </p>
+                    <p className="text-[10px] text-white/40 uppercase tracking-widest mb-3">
+                      {champ.detail} · {champ.date}
+                    </p>
+                    <Link
+                      href={`/news/${champ.articleId}`}
+                      className="text-[10px] font-bold uppercase tracking-widest text-[#cc1533] hover:text-red-300 transition-colors"
+                    >
+                      Read Story →
+                    </Link>
+                  </div>
+                </div>
+              );
+            })()}
           </motion.div>
         </div>
 

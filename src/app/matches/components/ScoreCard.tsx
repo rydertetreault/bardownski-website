@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import type { Match } from "@/types";
+import { isChampionshipClincher } from "@/lib/championship";
 import { getResult } from "../utils";
 
 function TeamRow({
@@ -72,6 +73,7 @@ export function ScoreCard({ match, index }: { match: Match; index: number }) {
   const isWin = result === "W";
   const isFinal = match.status === "final";
   const isSyntheticForfeit = match.id.startsWith("forfeit-");
+  const isClincher = isChampionshipClincher(match);
 
   // NHL convention: away team on top, home team on bottom
   const awayTeam =
@@ -104,7 +106,7 @@ export function ScoreCard({ match, index }: { match: Match; index: number }) {
           isWinner: isFinal && !isWin,
         };
 
-  const accentColor = isWin ? "#10b981" : "#cc1533";
+  const accentColor = isClincher ? "#f4d35e" : isWin ? "#10b981" : "#cc1533";
 
   const cardContent = (
     <div className="relative overflow-hidden">
@@ -156,7 +158,20 @@ export function ScoreCard({ match, index }: { match: Match; index: number }) {
               Forfeit
             </span>
           )}
-          {match.matchType === "finals" && (
+          {isClincher ? (
+            <span
+              className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-wider text-amber-200 bg-gradient-to-r from-amber-500/20 via-amber-400/25 to-amber-500/20 border border-amber-300/40 px-2 py-0.5"
+              style={{
+                clipPath: "polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%)",
+                textShadow: "0 0 12px rgba(244,211,94,0.45)",
+              }}
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5">
+                <path d="M7 2h10v2h3v3a4 4 0 0 1-4 4h-.35A5.001 5.001 0 0 1 13 14.9V17h2v2H9v-2h2v-2.1A5.001 5.001 0 0 1 7.35 11H7a4 4 0 0 1-4-4V4h3V2zm0 4H5v1a2 2 0 0 0 2 2V6zm10 3a2 2 0 0 0 2-2V6h-2v3zM6 21h12v2H6v-2z" />
+              </svg>
+              Club Finals Championship
+            </span>
+          ) : match.matchType === "finals" && (
             <span
               className="text-[9px] font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5"
               style={{
@@ -183,12 +198,17 @@ export function ScoreCard({ match, index }: { match: Match; index: number }) {
       <div className="relative flex items-center justify-center py-2 border-t border-white/[0.06]">
         <span
           className={`text-[10px] uppercase tracking-widest font-bold ${
-            isSyntheticForfeit ? "text-muted/30" : "text-red/70"
+            isSyntheticForfeit
+              ? "text-muted/30"
+              : isClincher
+              ? "text-amber-300"
+              : "text-red/70"
           }`}
         >
           {isSyntheticForfeit ? "Opponent DNF" : "View Details \u2192"}
         </span>
       </div>
+
     </div>
   );
 
@@ -211,9 +231,15 @@ export function ScoreCard({ match, index }: { match: Match; index: number }) {
       ) : (
         <Link
           href={`/matches/${match.id}`}
-          className="block rounded-xl border border-border/50 overflow-hidden transition-all duration-200 hover:border-red/40 hover:shadow-xl hover:shadow-red/10 hover:scale-[1.02]"
+          className={`block rounded-xl border overflow-hidden transition-all duration-200 hover:scale-[1.02] ${
+            isClincher
+              ? "border-amber-400/50 hover:border-amber-300/80 hover:shadow-xl hover:shadow-amber-500/25"
+              : "border-border/50 hover:border-red/40 hover:shadow-xl hover:shadow-red/10"
+          }`}
           style={{
-            background: "linear-gradient(140deg, rgba(13,21,38,0.95) 0%, rgba(18,26,42,0.9) 50%, rgba(10,17,32,0.95) 100%)",
+            background: isClincher
+              ? "linear-gradient(140deg, rgba(46,34,8,0.95) 0%, rgba(58,42,10,0.9) 50%, rgba(38,28,6,0.95) 100%)"
+              : "linear-gradient(140deg, rgba(13,21,38,0.95) 0%, rgba(18,26,42,0.9) 50%, rgba(10,17,32,0.95) 100%)",
           }}
         >
           {cardContent}

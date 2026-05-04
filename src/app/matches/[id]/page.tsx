@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { fetchChelstatsData } from "@/lib/chelstats";
 import { getMatchHistory } from "@/lib/match-history";
 import { generateMatchDescription } from "@/lib/match-description";
+import { isChampionshipClincher, CHAMPIONSHIP_DESCRIPTION } from "@/lib/championship";
+import ChampionshipDescription from "../components/ChampionshipDescription";
 import { getNickname } from "@/lib/nicknames";
 import type { Match, MatchPlayerStat } from "@/types";
 import MatchesBackground from "../MatchesBackground";
@@ -27,11 +29,13 @@ function StatBar({
   valueUs,
   valueThem,
   format,
+  gold,
 }: {
   label: string;
   valueUs: number | string;
   valueThem: number | string;
   format?: "number" | "time";
+  gold?: boolean;
 }) {
   const numUs = typeof valueUs === "number" ? valueUs : parseFloat(valueUs) || 0;
   const numThem = typeof valueThem === "number" ? valueThem : parseFloat(valueThem) || 0;
@@ -52,7 +56,13 @@ function StatBar({
         </span>
       </div>
       <div className="flex h-1.5 rounded-full overflow-hidden bg-navy-dark">
-        <div className="bg-red rounded-l-full transition-all duration-500" style={{ width: `${pctUs}%` }} />
+        <div
+          className={`rounded-l-full transition-all duration-500 ${gold ? "" : "bg-red"}`}
+          style={{
+            width: `${pctUs}%`,
+            ...(gold && { backgroundColor: "#f4d35e" }),
+          }}
+        />
         <div className="bg-muted/40 rounded-r-full transition-all duration-500" style={{ width: `${100 - pctUs}%` }} />
       </div>
     </div>
@@ -171,6 +181,7 @@ export default async function MatchDetailPage({
   const result = getResult(match);
   const isWin = result === "W";
   const hasStats = match.shotsUs !== undefined && match.shotsThem !== undefined;
+  const isClincher = isChampionshipClincher(match);
 
   return (
     <div className="min-h-screen relative">
@@ -185,7 +196,9 @@ export default async function MatchDetailPage({
               className="absolute inset-0"
               style={{
                 background: isWin
-                  ? "linear-gradient(135deg, rgba(204,21,51,0.18) 0%, rgba(204,21,51,0.06) 40%, transparent 50%, rgba(255,255,255,0.02) 60%, rgba(255,255,255,0.04) 100%)"
+                  ? isClincher
+                    ? "linear-gradient(135deg, rgba(244,211,94,0.20) 0%, rgba(244,211,94,0.07) 40%, transparent 50%, rgba(255,255,255,0.02) 60%, rgba(255,255,255,0.04) 100%)"
+                    : "linear-gradient(135deg, rgba(204,21,51,0.18) 0%, rgba(204,21,51,0.06) 40%, transparent 50%, rgba(255,255,255,0.02) 60%, rgba(255,255,255,0.04) 100%)"
                   : "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 40%, transparent 50%, rgba(204,21,51,0.06) 60%, rgba(204,21,51,0.12) 100%)",
               }}
             />
@@ -238,7 +251,11 @@ export default async function MatchDetailPage({
             <div className="flex items-center gap-3">
               <span
                 className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded ${
-                  isWin ? "text-emerald-400 bg-emerald-500/10" : "text-red bg-red/10"
+                  isWin
+                    ? isClincher
+                      ? "text-amber-300 bg-amber-500/10"
+                      : "text-emerald-400 bg-emerald-500/10"
+                    : "text-red bg-red/10"
                 }`}
               >
                 {isWin ? "Victory" : "Defeat"}
@@ -258,10 +275,14 @@ export default async function MatchDetailPage({
           <span>←</span> Back to Scores
         </Link>
 
-        {/* Description */}
-        <p className="text-sm text-muted leading-relaxed mb-6">
-          {generateMatchDescription(match)}
-        </p>
+        {/* Description — gold callout with custom recap for the championship clincher */}
+        {isChampionshipClincher(match) ? (
+          <ChampionshipDescription description={CHAMPIONSHIP_DESCRIPTION} />
+        ) : (
+          <p className="text-sm text-muted leading-relaxed mb-6">
+            {generateMatchDescription(match)}
+          </p>
+        )}
 
         {/* Content grid */}
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4">
@@ -271,9 +292,17 @@ export default async function MatchDetailPage({
             {hasStats && (
               <div className="bg-navy/70 border border-border rounded-xl p-5">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-bold uppercase tracking-wider text-red">BD</span>
+                  <span
+                    className={`text-xs font-bold uppercase tracking-wider ${isClincher ? "" : "text-red"}`}
+                    style={isClincher ? { color: "#f4d35e" } : undefined}
+                  >
+                    BD
+                  </span>
                   <div className="flex items-center gap-2">
-                    <div className="w-0.5 h-3 bg-red rounded-full" />
+                    <div
+                      className={`w-0.5 h-3 rounded-full ${isClincher ? "" : "bg-red"}`}
+                      style={isClincher ? { backgroundColor: "#f4d35e" } : undefined}
+                    />
                     <span className="text-[10px] font-bold uppercase tracking-widest text-muted">
                       Team Stats
                     </span>
@@ -283,13 +312,13 @@ export default async function MatchDetailPage({
                   </span>
                 </div>
                 <div className="space-y-4">
-                  <StatBar label="Goals" valueUs={match.scoreUs ?? 0} valueThem={match.scoreThem ?? 0} />
-                  <StatBar label="Shots" valueUs={match.shotsUs ?? 0} valueThem={match.shotsThem ?? 0} />
+                  <StatBar label="Goals" valueUs={match.scoreUs ?? 0} valueThem={match.scoreThem ?? 0} gold={isClincher} />
+                  <StatBar label="Shots" valueUs={match.shotsUs ?? 0} valueThem={match.shotsThem ?? 0} gold={isClincher} />
                   {match.toaUs && match.toaThem && (
-                    <StatBar label="Time on Attack" valueUs={match.toaUs} valueThem={match.toaThem} format="time" />
+                    <StatBar label="Time on Attack" valueUs={match.toaUs} valueThem={match.toaThem} format="time" gold={isClincher} />
                   )}
                   {match.passCompUs !== undefined && match.passCompThem !== undefined && (
-                    <StatBar label="Pass %" valueUs={`${match.passCompUs}%`} valueThem={`${match.passCompThem}%`} />
+                    <StatBar label="Pass %" valueUs={`${match.passCompUs}%`} valueThem={`${match.passCompThem}%`} gold={isClincher} />
                   )}
                 </div>
               </div>
@@ -299,7 +328,10 @@ export default async function MatchDetailPage({
             {match.players && match.players.length > 0 && (
               <div className="bg-navy/70 border border-border rounded-xl p-5">
                 <div className="flex items-center gap-2 mb-4">
-                  <div className="w-0.5 h-4 bg-red rounded-full" />
+                  <div
+                    className={`w-0.5 h-4 rounded-full ${isClincher ? "" : "bg-red"}`}
+                    style={isClincher ? { backgroundColor: "#f4d35e" } : undefined}
+                  />
                   <span className="text-[10px] font-bold uppercase tracking-widest text-muted">
                     Player Performance
                   </span>
