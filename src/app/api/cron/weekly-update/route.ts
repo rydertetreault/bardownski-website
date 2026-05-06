@@ -247,13 +247,35 @@ export async function GET(request: NextRequest) {
   if (chelstats) {
     // Pull from the full Redis match history (not the API's 5-game limit)
     const allMatches = await getMatchHistory(chelstats);
-    const now = Date.now() / 1000;
-    const oneWeekAgo = now - 7 * 24 * 60 * 60;
-    let recentMatches = allMatches.filter((m) => m.timestamp >= oneWeekAgo);
 
-    // If no matches this week, use the last 5 matches
+    // Window = the most recently completed Mon-Sun UTC week, so POTW lines
+    // up with the weekly groupings on the matches page rather than a
+    // rolling 7-day band that drifts with wall-clock time.
+    const nowDate = new Date();
+    const utcDay = nowDate.getUTCDay();
+    const daysSinceLastSunday = utcDay === 0 ? 7 : utcDay;
+    const weekEndDate = new Date(nowDate);
+    weekEndDate.setUTCDate(weekEndDate.getUTCDate() - daysSinceLastSunday);
+    weekEndDate.setUTCHours(23, 59, 59, 999);
+    const weekStartDate = new Date(weekEndDate);
+    weekStartDate.setUTCDate(weekStartDate.getUTCDate() - 6);
+    weekStartDate.setUTCHours(0, 0, 0, 0);
+    const weekStartTs = Math.floor(weekStartDate.getTime() / 1000);
+    const weekEndTs = Math.floor(weekEndDate.getTime() / 1000);
+
+    let recentMatches = allMatches.filter(
+      (m) => m.timestamp >= weekStartTs && m.timestamp <= weekEndTs
+    );
+    let weekRange = { start: weekStartTs, end: weekEndTs };
+
+    // If the team didn't play last week, fall back to the last 5 matches
+    // and label the card with their actual span.
     if (recentMatches.length === 0) {
       recentMatches = allMatches.slice(0, 5);
+      if (recentMatches.length > 0) {
+        const ts = recentMatches.map((m) => m.timestamp);
+        weekRange = { start: Math.min(...ts), end: Math.max(...ts) };
+      }
     }
 
     weeklyStandings = computePlayerOfWeekFromMatches(recentMatches);
@@ -265,14 +287,8 @@ export async function GET(request: NextRequest) {
     }
     await redis.set("potw-standings", weeklyStandings);
 
-    // Store the actual window the standings were computed over so cards
-    // can show a "Week of …" label that matches the data, not wall-clock time.
     if (recentMatches.length > 0) {
-      const timestamps = recentMatches.map((m) => m.timestamp);
-      await redis.set("potw-week", {
-        start: Math.min(...timestamps),
-        end: Math.max(...timestamps),
-      });
+      await redis.set("potw-week", weekRange);
     }
   }
 

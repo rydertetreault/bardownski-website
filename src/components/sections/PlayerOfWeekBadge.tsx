@@ -23,8 +23,12 @@ function titleCase(s: string): string {
 function formatWeek(week?: PotwWeek | null): string | null {
   if (!week) return null;
   const fmt = (ts: number) =>
-    new Date(ts * 1000).toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  return `${fmt(week.start)} to ${fmt(week.end)}`;
+    new Date(ts * 1000).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      timeZone: "UTC",
+    });
+  return `${fmt(week.start)} – ${fmt(week.end)}`;
 }
 
 export default function PlayerOfWeekBadge({ player, standings = [], week }: Props) {
