@@ -884,6 +884,7 @@ export interface WeeklyPlayer {
   deltaHits: number;
   deltaSaves: number;
   deltaShutouts: number;
+  deltaSavePct?: number;
   weeklyScore: number;
 }
 

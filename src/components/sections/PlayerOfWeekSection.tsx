@@ -72,7 +72,16 @@ export default function PlayerOfWeekSection({ player, standings = [], week }: Pr
   ];
 
   const goalieStats = [
-    { label: "Saves", value: `+${player.deltaSaves}`, highlight: true },
+    {
+      label: "SV%",
+      value: `${(player.deltaSavePct ?? 0).toFixed(1)}%`,
+      highlight: true,
+    },
+    {
+      label: "Shutouts",
+      value: `${player.deltaShutouts ?? 0}`,
+      highlight: (player.deltaShutouts ?? 0) > 0,
+    },
   ];
 
   const stats = player.isGoalie ? goalieStats : skaterStats;

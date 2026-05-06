@@ -46,15 +46,17 @@ export default function PlayerOfWeekBadge({ player, standings = [], week }: Prop
   }, []);
 
   const nickname = getNickname(player.name);
-  const topStat = player.isGoalie
-    ? `+${player.deltaSaves} SVS`
-    : `+${player.deltaPoints} PTS`;
-
   const goalieShutouts = player.deltaShutouts ?? 0;
+  const goalieSavePct = player.deltaSavePct ?? 0;
+  const topStat = player.isGoalie
+    ? `${goalieSavePct.toFixed(1)}%`
+    : `+${player.deltaPoints} PTS`;
+  const topStatLabel = player.isGoalie ? "Save %" : "This week";
+
   const statPills = player.isGoalie
     ? ([
-        player.deltaSaves > 0 && `+${player.deltaSaves} SVS`,
         goalieShutouts > 0 && `+${goalieShutouts} SO`,
+        player.deltaSaves > 0 && `+${player.deltaSaves} SVS`,
       ].filter(Boolean) as string[])
     : [
         player.deltaGoals > 0 && `+${player.deltaGoals} G`,
@@ -179,7 +181,7 @@ export default function PlayerOfWeekBadge({ player, standings = [], week }: Prop
                           {topStat}
                         </p>
                         <p className="text-white/30 text-[9px] uppercase tracking-widest mb-5">
-                          This week
+                          {topStatLabel}
                         </p>
 
                         {/* Stat breakdown pills */}

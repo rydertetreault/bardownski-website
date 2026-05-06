@@ -177,6 +177,7 @@ function computePlayerOfWeekFromMatches(
       deltaHits: 0,
       deltaSaves: stats.saves,
       deltaShutouts: stats.shutouts,
+      deltaSavePct: Math.round(savePct * 10) / 10,
       weeklyScore: Math.round(score * 10) / 10,
     });
   }
