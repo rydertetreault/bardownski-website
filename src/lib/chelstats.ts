@@ -234,6 +234,9 @@ export interface MatchPlayerStat {
   shotsAgainst: number;
   goalsAgainst: number;
   savePct: number;
+  // Number of full periods completed where the goalie didn't allow a goal.
+  // 3 = full-game shutout. 2 = opponent forfeited during P3. <=1 = forfeited earlier.
+  shutoutPeriods: number;
   isGoalie: boolean;
   isOurPlayer: boolean;
 }
@@ -335,6 +338,7 @@ function transformGame(
       shotsAgainst: num(p.glshots),
       goalsAgainst: num(p.glga),
       savePct: flt(p.glsavepct),
+      shutoutPeriods: num(p.glsoperiods),
       isGoalie,
       isOurPlayer: true,
     };

@@ -45,10 +45,20 @@ function getRedis(): Redis | null {
  * Compute Player of the Week from recent match performance.
  * Aggregates each player's stats across recent games and picks the best.
  */
+const POTW_MIN_GP = 7;
+
 function computePlayerOfWeekFromMatches(
   matches: import("@/lib/chelstats").ClubMatch[]
 ): WeeklyPlayer[] {
   if (matches.length === 0) return [];
+
+  // The volume amplifier (sqrt(gp)) only kicks in once a player has played
+  // enough games for their per-game rate to be trustworthy. Below the
+  // threshold, score is per-game rate alone — they still appear on the
+  // leaderboard with a real number, but a 2-game burst can't out-rank a
+  // sustained week. Falls back when the window itself lacks enough games.
+  const earnsAmplifier = (gp: number) =>
+    matches.length < POTW_MIN_GP || gp >= POTW_MIN_GP;
 
   // Aggregate per-player stats across all recent matches
   const skaterTotals: Record<string, {
@@ -57,7 +67,7 @@ function computePlayerOfWeekFromMatches(
   }> = {};
   const goalieTotals: Record<string, {
     saves: number; shotsAgainst: number; ga: number; shutouts: number;
-    wins: number; games: number;
+    weightedShutouts: number; wins: number; games: number;
   }> = {};
 
   for (const m of matches) {
@@ -67,12 +77,29 @@ function computePlayerOfWeekFromMatches(
 
       if (p.isGoalie) {
         if (!goalieTotals[p.name]) {
-          goalieTotals[p.name] = { saves: 0, shotsAgainst: 0, ga: 0, shutouts: 0, wins: 0, games: 0 };
+          goalieTotals[p.name] = { saves: 0, shotsAgainst: 0, ga: 0, shutouts: 0, weightedShutouts: 0, wins: 0, games: 0 };
         }
         goalieTotals[p.name].saves += p.saves;
         goalieTotals[p.name].shotsAgainst += p.shotsAgainst;
         goalieTotals[p.name].ga += p.goalsAgainst;
-        goalieTotals[p.name].shutouts += p.goalsAgainst === 0 ? 1 : 0;
+        // Weight shutouts by completed shutout periods so opponent DNFs don't
+        // count the same as full-game shutouts:
+        //   3 periods (full game)            → 1.0
+        //   2 periods (forfeit during P3)    → 0.75
+        //   ≤1 period (forfeit during P1/P2) → 0.5
+        // Cached matches from before shutoutPeriods was plumbed will be
+        // undefined; non-forfeit shutouts get full credit, forfeit shutouts
+        // get the worst-case 0.5 until re-synced.
+        if (p.goalsAgainst === 0) {
+          goalieTotals[p.name].shutouts += 1;
+          let weight: number;
+          if (p.shutoutPeriods === undefined) {
+            weight = m.forfeit ? 0.5 : 1;
+          } else {
+            weight = p.shutoutPeriods >= 3 ? 1 : p.shutoutPeriods === 2 ? 0.75 : 0.5;
+          }
+          goalieTotals[p.name].weightedShutouts += weight;
+        }
         goalieTotals[p.name].wins += isWin ? 1 : 0;
         goalieTotals[p.name].games += 1;
       } else {
@@ -93,10 +120,10 @@ function computePlayerOfWeekFromMatches(
   const allPlayers: WeeklyPlayer[] = [];
 
   // Skater scoring: structurally similar to MVP odds but tuned for
-  // short-window recent form — lighter coefficients and vanilla sqrt(GP)
-  // instead of log-dampened, since POTW rewards hot streaks rather than
-  // sustained season-long volume. Uses points (not a separate goals term)
-  // to avoid double-counting at the extreme EASHL per-game rates.
+  // short-window recent form — lighter coefficients and the sqrt(GP) volume
+  // amplifier only kicks in past POTW_MIN_GP, so hot streaks need real games
+  // behind them. Uses points (not a separate goals term) to avoid
+  // double-counting at the extreme EASHL per-game rates.
   for (const [name, stats] of Object.entries(skaterTotals)) {
     const gp = stats.games;
     if (gp === 0) continue;
@@ -108,7 +135,7 @@ function computePlayerOfWeekFromMatches(
       (stats.gwg / gp) * 15 +                 // clutch factor
       shotPct * 0.15 +                         // shooting efficiency
       (stats.hits / gp) * 0.3;                // physical presence
-    const score = perGame * Math.sqrt(gp);
+    const score = perGame * (earnsAmplifier(gp) ? Math.sqrt(gp) : 1);
     allPlayers.push({
       name,
       position: "F",
@@ -124,7 +151,7 @@ function computePlayerOfWeekFromMatches(
   }
 
   // Goalie scoring: structurally similar to MVP odds but tuned for
-  // short-window recent form (vanilla sqrt(GP), lighter weights).
+  // short-window recent form (sqrt(GP) gated on POTW_MIN_GP, lighter weights).
   for (const [name, stats] of Object.entries(goalieTotals)) {
     const gp = stats.games;
     if (gp === 0) continue;
@@ -133,12 +160,12 @@ function computePlayerOfWeekFromMatches(
     const gaa = stats.ga / gp;
     const winPct = (stats.wins / gp) * 100;
     const perGame =
-      savePct * 0.6 +                          // save percentage (core stat)
-      Math.max(10 - gaa, 0) * 3 +             // GAA inverted (lower = better)
-      (stats.shutouts / gp) * 20 +            // shutout rate
-      winPct * 0.2 +                           // win percentage
-      (stats.saves / gp) * 0.3;               // workload per game
-    const score = perGame * Math.sqrt(gp);
+      savePct * 0.6 +                              // save percentage (core stat)
+      Math.max(10 - gaa, 0) * 3 +                 // GAA inverted (lower = better)
+      (stats.weightedShutouts / gp) * 20 +        // period-weighted shutout rate
+      winPct * 0.2 +                               // win percentage
+      (stats.saves / gp) * 0.3;                   // workload per game
+    const score = perGame * (earnsAmplifier(gp) ? Math.sqrt(gp) : 1);
 
     allPlayers.push({
       name,
@@ -237,6 +264,16 @@ export async function GET(request: NextRequest) {
       await redis.set("player-of-week", weeklyPlayer);
     }
     await redis.set("potw-standings", weeklyStandings);
+
+    // Store the actual window the standings were computed over so cards
+    // can show a "Week of …" label that matches the data, not wall-clock time.
+    if (recentMatches.length > 0) {
+      const timestamps = recentMatches.map((m) => m.timestamp);
+      await redis.set("potw-week", {
+        start: Math.min(...timestamps),
+        end: Math.max(...timestamps),
+      });
+    }
   }
 
   // --- Step 1b: Detect milestones ---

@@ -10,7 +10,7 @@ import NewsSection from "@/components/sections/NewsSection";
 import { fetchChannelMessages, computePlayerOfWeek } from "@/lib/discord";
 import { fetchChelstatsData, computeMvpOddsFromMembers } from "@/lib/chelstats";
 import { getMatchHistory } from "@/lib/match-history";
-import { getAllArticles, getPlayerOfWeek, getPotwStandings } from "@/lib/articles";
+import { getAllArticles, getPlayerOfWeek, getPotwStandings, getPotwWeek } from "@/lib/articles";
 import type { Match, WeeklyRecord } from "@/types";
 
 export default async function Home() {
@@ -21,7 +21,11 @@ export default async function Home() {
   ]);
 
   // Player of the Week: prefer KV (set by weekly cron), fall back to Discord computation
-  const [kvPlayer, potwStandings] = await Promise.all([getPlayerOfWeek(), getPotwStandings()]);
+  const [kvPlayer, potwStandings, potwWeek] = await Promise.all([
+    getPlayerOfWeek(),
+    getPotwStandings(),
+    getPotwWeek(),
+  ]);
   const weeklyPlayer = kvPlayer ?? computePlayerOfWeek(messages);
 
   const mvpOdds = chelstats ? computeMvpOddsFromMembers(chelstats.members) : [];
@@ -79,7 +83,7 @@ export default async function Home() {
 
   return (
     <>
-      {weeklyPlayer && <PlayerOfWeekBadge player={weeklyPlayer} standings={potwStandings} />}
+      {weeklyPlayer && <PlayerOfWeekBadge player={weeklyPlayer} standings={potwStandings} week={potwWeek} />}
       <ChampionshipBanner />
       <div className="relative z-10">
         <HeroSection />

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { fetchChannelMessages, parseAllSeasons, computePlayerOfWeek } from "@/lib/discord";
 import { fetchChelstatsData, chelstatsToSeasonData, computeMvpOddsFromMembers } from "@/lib/chelstats";
-import { getPlayerOfWeek, getPotwStandings } from "@/lib/articles";
+import { getPlayerOfWeek, getPotwStandings, getPotwWeek } from "@/lib/articles";
 import StatsClient from "./StatsClient";
 import PlayerOfWeekSection from "@/components/sections/PlayerOfWeekSection";
 import MvpOddsSection from "@/components/sections/MvpOddsSection";
@@ -19,7 +19,11 @@ export default async function StatsPage() {
   );
 
   // Player of the Week: prefer KV (set by weekly cron), fall back to Discord computation
-  const [kvPlayer, potwStandings] = await Promise.all([getPlayerOfWeek(), getPotwStandings()]);
+  const [kvPlayer, potwStandings, potwWeek] = await Promise.all([
+    getPlayerOfWeek(),
+    getPotwStandings(),
+    getPotwWeek(),
+  ]);
   const weeklyPlayer = kvPlayer ?? computePlayerOfWeek(messages);
 
   // Chelstats 2025 season (live from EA)
@@ -102,7 +106,7 @@ export default async function StatsPage() {
         </div>
       </div>
 
-      {weeklyPlayer && <PlayerOfWeekSection player={weeklyPlayer} standings={potwStandings} />}
+      {weeklyPlayer && <PlayerOfWeekSection player={weeklyPlayer} standings={potwStandings} week={potwWeek} />}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <MvpOddsSection odds={mvpOdds} />

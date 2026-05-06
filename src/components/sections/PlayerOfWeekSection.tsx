@@ -3,11 +3,20 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { WeeklyPlayer } from "@/lib/discord";
+import type { PotwWeek } from "@/lib/articles";
 import { getNickname } from "@/lib/nicknames";
 
 interface Props {
   player: WeeklyPlayer;
   standings?: WeeklyPlayer[];
+  week?: PotwWeek | null;
+}
+
+function formatWeek(week?: PotwWeek | null): string | null {
+  if (!week) return null;
+  const fmt = (ts: number) =>
+    new Date(ts * 1000).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return `${fmt(week.start)} to ${fmt(week.end)}`;
 }
 
 interface StatPillProps {
@@ -46,9 +55,10 @@ function StatPill({ label, value, highlight }: StatPillProps) {
   );
 }
 
-export default function PlayerOfWeekSection({ player, standings = [] }: Props) {
+export default function PlayerOfWeekSection({ player, standings = [], week }: Props) {
   const [showStandings, setShowStandings] = useState(false);
   const nickname = getNickname(player.name);
+  const weekLabel = formatWeek(week);
 
   const skaterStats = [
     { label: "Goals", value: `+${player.deltaGoals}`, highlight: player.deltaGoals > 0 },
@@ -86,6 +96,11 @@ export default function PlayerOfWeekSection({ player, standings = [] }: Props) {
                   <span className="text-[#cc1533] text-[10px] font-bold uppercase tracking-[0.2em]">
                     Player of the Week
                   </span>
+                  {weekLabel && (
+                    <span className="text-white/40 text-[10px] uppercase tracking-[0.2em]">
+                      · {weekLabel}
+                    </span>
+                  )}
                 </div>
                 <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight leading-none">
                   {nickname}
@@ -127,6 +142,11 @@ export default function PlayerOfWeekSection({ player, standings = [] }: Props) {
               >
                 <div className="px-8 pb-5 pt-1">
                   <div className="h-px bg-white/10 mb-4" />
+                  {weekLabel && (
+                    <p className="text-white/40 text-[10px] uppercase tracking-widest mb-3">
+                      Standings for {weekLabel}
+                    </p>
+                  )}
                   <div className="grid gap-2">
                     {standings.map((p, i) => (
                       <div

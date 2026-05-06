@@ -85,4 +85,20 @@ export async function getPotwStandings(): Promise<WeeklyPlayer[]> {
   }
 }
 
+export interface PotwWeek {
+  start: number;
+  end: number;
+}
+
+/** Get the timestamp range of matches that produced the current POTW standings. */
+export async function getPotwWeek(): Promise<PotwWeek | null> {
+  try {
+    const redis = getRedis();
+    if (!redis) return null;
+    return (await redis.get<PotwWeek>("potw-week")) ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export type { Article };

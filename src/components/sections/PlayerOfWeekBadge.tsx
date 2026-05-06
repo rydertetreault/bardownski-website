@@ -4,11 +4,13 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import type { WeeklyPlayer } from "@/lib/discord";
+import type { PotwWeek } from "@/lib/articles";
 import { getNickname } from "@/lib/nicknames";
 
 interface Props {
   player: WeeklyPlayer;
   standings?: WeeklyPlayer[];
+  week?: PotwWeek | null;
 }
 
 function titleCase(s: string): string {
@@ -18,10 +20,18 @@ function titleCase(s: string): string {
     .replace(/\b(?:II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX)\b/gi, (m) => m.toUpperCase());
 }
 
-export default function PlayerOfWeekBadge({ player, standings = [] }: Props) {
+function formatWeek(week?: PotwWeek | null): string | null {
+  if (!week) return null;
+  const fmt = (ts: number) =>
+    new Date(ts * 1000).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return `${fmt(week.start)} to ${fmt(week.end)}`;
+}
+
+export default function PlayerOfWeekBadge({ player, standings = [], week }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [visible, setVisible] = useState(true);
   const [showInfo, setShowInfo] = useState(false);
+  const weekLabel = formatWeek(week);
 
   useEffect(() => {
     const onScroll = () => {
@@ -104,9 +114,14 @@ export default function PlayerOfWeekBadge({ player, standings = [] }: Props) {
                       exit={{ opacity: 0 }}
                       className="px-5 py-5 pr-7"
                     >
-                      <p className="text-[#cc1533] text-[9px] font-bold uppercase tracking-[0.22em] mb-3">
+                      <p className="text-[#cc1533] text-[9px] font-bold uppercase tracking-[0.22em] mb-1">
                         Weekly Standings
                       </p>
+                      {weekLabel && (
+                        <p className="text-white/40 text-[9px] uppercase tracking-widest mb-3">
+                          {weekLabel}
+                        </p>
+                      )}
                       <div className="space-y-2">
                         {standings.map((p, i) => (
                           <div key={p.name} className="flex items-center justify-between gap-2">
@@ -135,9 +150,14 @@ export default function PlayerOfWeekBadge({ player, standings = [] }: Props) {
                     <motion.div key="main" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                       <Link href="/stats" className="block px-5 py-5 pr-7">
                         {/* Label */}
-                        <p className="text-[#cc1533] text-[9px] font-bold uppercase tracking-[0.22em] mb-4">
+                        <p className={`text-[#cc1533] text-[9px] font-bold uppercase tracking-[0.22em] ${weekLabel ? "mb-1" : "mb-4"}`}>
                           Player of the Week
                         </p>
+                        {weekLabel && (
+                          <p className="text-white/40 text-[9px] uppercase tracking-widest mb-3">
+                            {weekLabel}
+                          </p>
+                        )}
 
                         {/* Player name */}
                         <p className="text-white font-black text-2xl leading-none mb-1">
