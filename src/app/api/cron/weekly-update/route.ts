@@ -150,8 +150,13 @@ function computePlayerOfWeekFromMatches(
     });
   }
 
-  // Goalie scoring: structurally similar to MVP odds but tuned for
-  // short-window recent form (sqrt(GP) gated on POTW_MIN_GP, lighter weights).
+  // Goalie scoring: rebased around replacement-level baselines so absolute
+  // SV%/GAA can't carry a poor week. A goalie under 82% SV% or worse than
+  // 3.5 GAA loses points; only excellence above the baseline contributes,
+  // putting goalies on the same vs-baseline footing as skaters and stopping
+  // mediocre netminding from out-scoring strong skater weeks.
+  const SVPCT_BASELINE = 82;
+  const GAA_BASELINE = 3.5;
   for (const [name, stats] of Object.entries(goalieTotals)) {
     const gp = stats.games;
     if (gp === 0) continue;
@@ -160,11 +165,11 @@ function computePlayerOfWeekFromMatches(
     const gaa = stats.ga / gp;
     const winPct = (stats.wins / gp) * 100;
     const perGame =
-      savePct * 0.6 +                              // save percentage (core stat)
-      Math.max(10 - gaa, 0) * 3 +                 // GAA inverted (lower = better)
-      (stats.weightedShutouts / gp) * 20 +        // period-weighted shutout rate
-      winPct * 0.2 +                               // win percentage
-      (stats.saves / gp) * 0.3;                   // workload per game
+      (savePct - SVPCT_BASELINE) * 2.0 +          // SV% above baseline (negative below)
+      (GAA_BASELINE - gaa) * 4 +                  // GAA below baseline (negative above)
+      (stats.weightedShutouts / gp) * 22 +        // period-weighted shutout rate
+      Math.max(winPct - 50, 0) * 0.2 +            // winning above .500
+      Math.max(stats.saves / gp - 15, 0) * 0.4;   // workload above floor
     const score = perGame * (earnsAmplifier(gp) ? Math.sqrt(gp) : 1);
 
     allPlayers.push({
