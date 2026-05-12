@@ -150,13 +150,17 @@ function computePlayerOfWeekFromMatches(
     });
   }
 
-  // Goalie scoring: rebased around replacement-level baselines so absolute
-  // SV%/GAA can't carry a poor week. A goalie under 82% SV% or worse than
-  // 3.5 GAA loses points; only excellence above the baseline contributes,
-  // putting goalies on the same vs-baseline footing as skaters and stopping
-  // mediocre netminding from out-scoring strong skater weeks.
-  const SVPCT_BASELINE = 82;
-  const GAA_BASELINE = 3.5;
+  // Goalie scoring: tuned to this team's replacement-level baselines. The
+  // backup goalies sit at ~67-68% SV%, so the 65 SV% / 5.0 GAA baselines
+  // fall just below replacement — any starter-caliber play scores
+  // positive. The 82/3.5 baselines used previously were NHL-elite and
+  // dragged even strong workhorse weeks deeply negative on this team.
+  // perGame is floored at 0 so the sqrt(gp) volume amplifier can never
+  // compound negative rates into a punitive score on a bad starter week.
+  // Saves/gp has no floor — the prior 15-save floor was unreachable when
+  // team defense holds shots faced to ~12/gp.
+  const SVPCT_BASELINE = 65;
+  const GAA_BASELINE = 5.0;
   for (const [name, stats] of Object.entries(goalieTotals)) {
     const gp = stats.games;
     if (gp === 0) continue;
@@ -169,8 +173,8 @@ function computePlayerOfWeekFromMatches(
       (GAA_BASELINE - gaa) * 4 +                  // GAA below baseline (negative above)
       (stats.weightedShutouts / gp) * 22 +        // period-weighted shutout rate
       Math.max(winPct - 50, 0) * 0.2 +            // winning above .500
-      Math.max(stats.saves / gp - 15, 0) * 0.4;   // workload above floor
-    const score = perGame * (earnsAmplifier(gp) ? Math.sqrt(gp) : 1);
+      (stats.saves / gp) * 1.5;                   // workload (every save rewarded)
+    const score = Math.max(perGame, 0) * (earnsAmplifier(gp) ? Math.sqrt(gp) : 1);
 
     allPlayers.push({
       name,
