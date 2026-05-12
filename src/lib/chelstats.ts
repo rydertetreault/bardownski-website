@@ -843,7 +843,12 @@ export function computeMvpOddsFromMembers(
           (m.giveaways / gp) * 0.3;
       }
 
-      const gpScale = Math.sqrt(gp) * (1 / (1 + Math.log10(gp / 100)));
+      // Floor the log term at gp=100 so the dampening only engages above
+      // that threshold. Below 100, gpScale = sqrt(gp). Without the floor,
+      // log10(gp/100) goes negative for gp<100 and the denominator collapses
+      // through zero around gp=10, producing wildly amplified scores for
+      // players in the 11–30 GP range and negative scores below that.
+      const gpScale = Math.sqrt(gp) * (1 / (1 + Math.log10(Math.max(gp, 100) / 100)));
       const score = perGame * gpScale;
       entries.push({ member: m, score, isGoalie: false });
     }
