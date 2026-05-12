@@ -308,6 +308,24 @@ function passCompPct(attempts: string | undefined, completions: string | undefin
   return Math.round((c / a) * 100);
 }
 
+/**
+ * Normalize position strings from both data shapes into a coarse bucket.
+ * - Season-level (ClubMember) uses single-letter codes like "D", "C", "LW".
+ * - Per-match (RawMatchPlayer) uses long-form like "leftWing", "defenseMen",
+ *   "leftDefense", "rightDefense", "center", "goalie".
+ *
+ * Default-safe: unknown/empty strings fall through to "forward", so a new
+ * EA position value can never accidentally inherit the D bonus.
+ */
+export function getPositionBucket(
+  position: string | undefined
+): "forward" | "defense" | "goalie" {
+  const p = (position ?? "").toLowerCase();
+  if (p === "g" || p === "gk" || p.includes("goalie")) return "goalie";
+  if (p === "d" || p.includes("defense")) return "defense";
+  return "forward";
+}
+
 function transformGame(
   game: RawGame,
   matchType: ClubMatch["matchType"]
