@@ -794,20 +794,41 @@ export function computeMvpOddsFromMembers(
 
   for (const m of members) {
     // --- Skater score ---
-    // Per-game rate stats measure quality. Log-dampened sqrt(GP) rewards
-    // volume with diminishing returns so high-GP skaters don't run away
-    // from goalies who naturally play fewer games.
+    // Forwards: per-game rate stats. Defensemen: same shape but rebased
+    // against per-position baselines so a D at 0.5 PPG is judged against
+    // ~0.35 (well above replacement) rather than against a forward's ~0.70.
+    // Log-dampened sqrt(GP) rewards volume with diminishing returns so
+    // high-GP skaters don't run away from goalies who play fewer games.
     if (m.gamesPlayed >= MIN_GP && !SKATER_EXCLUDE.has(m.username)) {
       const gp = m.gamesPlayed;
-      const perGame =
-        m.ppg * 20 +                          // offensive production rate
-        (m.goals / gp) * 15 +                 // goal-scoring rate
-        Math.max(m.plusMinus, 0) / gp * 8 +   // two-way impact
-        (m.gwg / gp) * 30 +                   // clutch factor
-        m.shotPct * 0.3 +                     // shooting efficiency
-        (m.hits / gp) * 0.5 +                 // physical presence
-        (m.takeaways / gp) * 0.5 -            // defensive play
-        (m.giveaways / gp) * 0.3;             // turnover penalty
+      const bucket = getPositionBucket(m.position);
+
+      let perGame: number;
+      if (bucket === "defense") {
+        // D baselines: PPG ~0.35, G/GP ~0.10. Drops gwg and shotPct
+        // (low/noisy for D) and adds blocked shots. +/- weighted ~2x
+        // forward weight to reflect that defensive impact matters more.
+        perGame =
+          (m.ppg - 0.35) * 25 +
+          ((m.goals / gp) - 0.10) * 18 +
+          Math.max(m.plusMinus, 0) / gp * 18 +
+          (m.hits / gp) * 1.2 +
+          (m.blockedShots / gp) * 2.0 +
+          (m.takeaways / gp) * 1.5 -
+          (m.giveaways / gp) * 0.8;
+      } else {
+        // Forwards: existing formula, byte-for-byte.
+        perGame =
+          m.ppg * 20 +
+          (m.goals / gp) * 15 +
+          Math.max(m.plusMinus, 0) / gp * 8 +
+          (m.gwg / gp) * 30 +
+          m.shotPct * 0.3 +
+          (m.hits / gp) * 0.5 +
+          (m.takeaways / gp) * 0.5 -
+          (m.giveaways / gp) * 0.3;
+      }
+
       const gpScale = Math.sqrt(gp) * (1 / (1 + Math.log10(gp / 100)));
       const score = perGame * gpScale;
       entries.push({ member: m, score, isGoalie: false });
@@ -838,9 +859,14 @@ export function computeMvpOddsFromMembers(
 
   // Raise normalized scores to a power to concentrate probability toward top
   // players, producing realistic sportsbook-style odds.
-  const maxScore = entries[0].score;
+  // Clamp negative scores before the pow step. A D-man below baseline with
+  // negative +/- can produce a negative perGame; pow(neg, 3) would corrupt
+  // the odds distribution. Ordering above (entries.sort) is unaffected.
+  const maxScore = Math.max(entries[0].score, 1e-9);
   const SHARPNESS = 3;
-  const weights = entries.map((e) => Math.pow(e.score / maxScore, SHARPNESS));
+  const weights = entries.map((e) =>
+    Math.pow(Math.max(e.score, 0) / maxScore, SHARPNESS)
+  );
   const totalWeight = weights.reduce((s, w) => s + w, 0);
 
   return entries.map((entry, index) => {
