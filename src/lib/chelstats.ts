@@ -312,6 +312,15 @@ function passCompPct(attempts: string | undefined, completions: string | undefin
 }
 
 /**
+ * EA's Position field reflects a player's set preference, which goes stale
+ * when someone changes role without updating their profile. Key by resolved
+ * display name (what resolveName returns) so MVP and POTW paths converge.
+ */
+const POSITION_OVERRIDES: Record<string, "forward" | "defense" | "goalie"> = {
+  JIMMY: "forward",
+};
+
+/**
  * Normalize position strings from both data shapes into a coarse bucket.
  * - Season-level (ClubMember) uses single-letter codes like "D", "C", "LW".
  * - Per-match (RawMatchPlayer) uses long-form like "leftWing", "defenseMen",
@@ -321,8 +330,10 @@ function passCompPct(attempts: string | undefined, completions: string | undefin
  * EA position value can never accidentally inherit the D bonus.
  */
 export function getPositionBucket(
-  position: string | undefined
+  position: string | undefined,
+  name?: string,
 ): "forward" | "defense" | "goalie" {
+  if (name && POSITION_OVERRIDES[name]) return POSITION_OVERRIDES[name];
   const p = (position ?? "").toLowerCase();
   if (p === "g" || p === "gk" || p.includes("goalie")) return "goalie";
   if (p === "d" || p.includes("defense")) return "defense";
@@ -801,7 +812,7 @@ export function computeMvpOddsFromMembers(
     // high-GP skaters don't run away from goalies who play fewer games.
     if (m.gamesPlayed >= MIN_GP && !SKATER_EXCLUDE.has(m.username)) {
       const gp = m.gamesPlayed;
-      const bucket = getPositionBucket(m.position);
+      const bucket = getPositionBucket(m.position, resolveName(m.username));
 
       let perGame: number;
       if (bucket === "defense") {

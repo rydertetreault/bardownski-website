@@ -113,7 +113,7 @@ function computePlayerOfWeekFromMatches(
             // Bucket is sticky to first occurrence; a player's position
             // shouldn't realistically change mid-week and EA per-match
             // strings are consistent across games.
-            bucket: getPositionBucket(p.position) === "defense" ? "defense" : "forward",
+            bucket: getPositionBucket(p.position, p.name) === "defense" ? "defense" : "forward",
           };
         }
         skaterTotals[p.name].goals += p.goals;
