@@ -147,8 +147,11 @@ function computePlayerOfWeekFromMatches(
 
     let perGame: number;
     if (stats.bucket === "defense") {
+      // PPG weight tuned so a D at the 0.35 PPG baseline scores comparably
+      // to a forward at the 0.70 PPG baseline (PPG*16 vs PPG*8). Above
+      // baseline, D outscores F at equivalent raw production.
       perGame =
-        ((points / gp) - 0.35) * 10 +
+        (points / gp) * 16 +
         Math.max(stats.plusMinus, 0) / gp * 6 +
         (stats.hits / gp) * 0.8 +
         (stats.blockedShots / gp) * 1.5 +

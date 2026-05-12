@@ -816,12 +816,15 @@ export function computeMvpOddsFromMembers(
 
       let perGame: number;
       if (bucket === "defense") {
-        // D baselines: PPG ~0.35, G/GP ~0.10. Drops gwg and shotPct
-        // (low/noisy for D) and adds blocked shots. +/- weighted ~2x
-        // forward weight to reflect that defensive impact matters more.
+        // D weights are tuned so a D at the 0.35 PPG baseline scores
+        // comparably to a forward at the 0.70 PPG baseline (PPG*28 vs
+        // PPG*20). Above baseline, D-men outscore forwards at the same
+        // raw production — being good at a position with fewer scoring
+        // opportunities is worth more. Drops gwg and shotPct (low/noisy
+        // for D) and adds blocked shots; +/- weighted ~2x heavier.
         perGame =
-          (m.ppg - 0.35) * 25 +
-          ((m.goals / gp) - 0.10) * 18 +
+          m.ppg * 28 +
+          (m.goals / gp) * 22 +
           Math.max(m.plusMinus, 0) / gp * 18 +
           (m.hits / gp) * 1.2 +
           (m.blockedShots / gp) * 2.0 +
