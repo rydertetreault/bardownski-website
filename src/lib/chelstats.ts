@@ -313,11 +313,12 @@ function passCompPct(attempts: string | undefined, completions: string | undefin
 
 /**
  * EA's Position field reflects a player's set preference, which goes stale
- * when someone changes role without updating their profile. Key by resolved
- * display name (what resolveName returns) so MVP and POTW paths converge.
+ * when someone changes role. Applied at data ingestion (transformMember and
+ * transformGame) so display labels and scoring buckets both see the
+ * corrected value. Keyed by EA gamertag.
  */
-const POSITION_OVERRIDES: Record<string, "forward" | "defense" | "goalie"> = {
-  JIMMY: "forward",
+const POSITION_OVERRIDES: Record<string, string> = {
+  "Julio 3026": "RW", // Jimmy Lemons
 };
 
 /**
@@ -330,10 +331,8 @@ const POSITION_OVERRIDES: Record<string, "forward" | "defense" | "goalie"> = {
  * EA position value can never accidentally inherit the D bonus.
  */
 export function getPositionBucket(
-  position: string | undefined,
-  name?: string,
+  position: string | undefined
 ): "forward" | "defense" | "goalie" {
-  if (name && POSITION_OVERRIDES[name]) return POSITION_OVERRIDES[name];
   const p = (position ?? "").toLowerCase();
   if (p === "g" || p === "gk" || p.includes("goalie")) return "goalie";
   if (p === "d" || p.includes("defense")) return "defense";
@@ -354,9 +353,10 @@ function transformGame(
   const rawPlayers = game.players?.[CLUB_ID] ?? {};
   const players: MatchPlayerStat[] = Object.values(rawPlayers).map((p) => {
     const isGoalie = num(p.glshots) > 0 || p.position === "goalie";
+    const gamertag = p.playername || "";
     return {
       name: resolveName(p.playername || "Unknown"),
-      position: p.position || "skater",
+      position: POSITION_OVERRIDES[gamertag] ?? (p.position || "skater"),
       goals: num(p.skgoals),
       assists: num(p.skassists),
       hits: num(p.skhits),
@@ -468,7 +468,7 @@ function transformMember(raw: RawMember): ClubMember {
   const rating = raw.overallRating as Record<string, unknown> | undefined;
   return {
     username: raw.Username,
-    position: raw.Position,
+    position: POSITION_OVERRIDES[raw.Username] ?? raw.Position,
     gamesPlayed: num(raw["Games Played"]),
     goals: num(raw.Goals),
     assists: num(raw.Assists),
@@ -812,7 +812,7 @@ export function computeMvpOddsFromMembers(
     // high-GP skaters don't run away from goalies who play fewer games.
     if (m.gamesPlayed >= MIN_GP && !SKATER_EXCLUDE.has(m.username)) {
       const gp = m.gamesPlayed;
-      const bucket = getPositionBucket(m.position, resolveName(m.username));
+      const bucket = getPositionBucket(m.position);
 
       let perGame: number;
       if (bucket === "defense") {
