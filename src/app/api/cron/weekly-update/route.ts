@@ -11,7 +11,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
-import { fetchChelstatsData } from "@/lib/chelstats";
+import { fetchChelstatsData, getPositionBucket } from "@/lib/chelstats";
 import { pollAndAccumulate, getMatchHistory } from "@/lib/match-history";
 import type { WeeklyPlayer } from "@/lib/discord";
 import type { Article } from "@/lib/news";
@@ -64,6 +64,8 @@ function computePlayerOfWeekFromMatches(
   const skaterTotals: Record<string, {
     goals: number; assists: number; hits: number; shots: number;
     plusMinus: number; gwg: number; games: number;
+    blockedShots: number; takeaways: number; giveaways: number;
+    bucket: "forward" | "defense";
   }> = {};
   const goalieTotals: Record<string, {
     saves: number; shotsAgainst: number; ga: number; shutouts: number;
@@ -104,7 +106,15 @@ function computePlayerOfWeekFromMatches(
         goalieTotals[p.name].games += 1;
       } else {
         if (!skaterTotals[p.name]) {
-          skaterTotals[p.name] = { goals: 0, assists: 0, hits: 0, shots: 0, plusMinus: 0, gwg: 0, games: 0 };
+          skaterTotals[p.name] = {
+            goals: 0, assists: 0, hits: 0, shots: 0,
+            plusMinus: 0, gwg: 0, games: 0,
+            blockedShots: 0, takeaways: 0, giveaways: 0,
+            // Bucket is sticky to first occurrence; a player's position
+            // shouldn't realistically change mid-week and EA per-match
+            // strings are consistent across games.
+            bucket: getPositionBucket(p.position) === "defense" ? "defense" : "forward",
+          };
         }
         skaterTotals[p.name].goals += p.goals;
         skaterTotals[p.name].assists += p.assists;
@@ -112,6 +122,11 @@ function computePlayerOfWeekFromMatches(
         skaterTotals[p.name].shots += p.shots;
         skaterTotals[p.name].plusMinus += p.plusMinus;
         skaterTotals[p.name].gwg += p.gameWinningGoal;
+        // Old cached match data without these fields → undefined → NaN via +=
+        // Guard with `|| 0` since num() doesn't run on the typed values.
+        skaterTotals[p.name].blockedShots += p.blockedShots ?? 0;
+        skaterTotals[p.name].takeaways += p.takeaways ?? 0;
+        skaterTotals[p.name].giveaways += p.giveaways ?? 0;
         skaterTotals[p.name].games += 1;
       }
     }
@@ -119,26 +134,46 @@ function computePlayerOfWeekFromMatches(
 
   const allPlayers: WeeklyPlayer[] = [];
 
-  // Skater scoring: structurally similar to MVP odds but tuned for
-  // short-window recent form — lighter coefficients and the sqrt(GP) volume
-  // amplifier only kicks in past POTW_MIN_GP, so hot streaks need real games
-  // behind them. Uses points (not a separate goals term) to avoid
-  // double-counting at the extreme EASHL per-game rates.
+  // Skater scoring: forwards keep their existing weights and gain three
+  // new additive defensive inputs (so POTW reads the same signals MVP odds
+  // already does). Defensemen use a separate formula rebased to D-baselines
+  // — the gap between Rob and the wings shouldn't read as Rob being worse;
+  // it should read as Rob being good at a position with fewer scoring
+  // opportunities.
   for (const [name, stats] of Object.entries(skaterTotals)) {
     const gp = stats.games;
     if (gp === 0) continue;
     const points = stats.goals + stats.assists;
-    const shotPct = stats.shots > 0 ? (stats.goals / stats.shots) * 100 : 0;
-    const perGame =
-      (points / gp) * 8 +                     // offensive production rate
-      Math.max(stats.plusMinus, 0) / gp * 3 + // two-way impact
-      (stats.gwg / gp) * 15 +                 // clutch factor
-      shotPct * 0.15 +                         // shooting efficiency
-      (stats.hits / gp) * 0.3;                // physical presence
+
+    let perGame: number;
+    if (stats.bucket === "defense") {
+      // PPG weight tuned so a D at the 0.35 PPG baseline scores comparably
+      // to a forward at the 0.70 PPG baseline (PPG*16 vs PPG*8). Above
+      // baseline, D outscores F at equivalent raw production.
+      perGame =
+        (points / gp) * 16 +
+        Math.max(stats.plusMinus, 0) / gp * 6 +
+        (stats.hits / gp) * 0.8 +
+        (stats.blockedShots / gp) * 1.5 +
+        (stats.takeaways / gp) * 1.0 -
+        (stats.giveaways / gp) * 0.5;
+    } else {
+      const shotPct = stats.shots > 0 ? (stats.goals / stats.shots) * 100 : 0;
+      perGame =
+        (points / gp) * 8 +
+        Math.max(stats.plusMinus, 0) / gp * 3 +
+        (stats.gwg / gp) * 15 +
+        shotPct * 0.15 +
+        (stats.hits / gp) * 0.3 +
+        (stats.takeaways / gp) * 0.3 -
+        (stats.giveaways / gp) * 0.2 +
+        (stats.blockedShots / gp) * 0.4;
+    }
+
     const score = perGame * (earnsAmplifier(gp) ? Math.sqrt(gp) : 1);
     allPlayers.push({
       name,
-      position: "F",
+      position: stats.bucket === "defense" ? "D" : "F",
       isGoalie: false,
       deltaGoals: stats.goals,
       deltaAssists: stats.assists,

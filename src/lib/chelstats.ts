@@ -227,6 +227,9 @@ export interface MatchPlayerStat {
   shots: number;
   plusMinus: number;
   pim: number;
+  blockedShots: number;
+  takeaways: number;
+  giveaways: number;
   powerPlayGoals: number;
   shortHandedGoals: number;
   gameWinningGoal: number;
@@ -308,6 +311,34 @@ function passCompPct(attempts: string | undefined, completions: string | undefin
   return Math.round((c / a) * 100);
 }
 
+/**
+ * EA's Position field reflects a player's set preference, which goes stale
+ * when someone changes role. Applied at data ingestion (transformMember and
+ * transformGame) so display labels and scoring buckets both see the
+ * corrected value. Keyed by EA gamertag.
+ */
+const POSITION_OVERRIDES: Record<string, string> = {
+  "Julio 3026": "RW", // Jimmy Lemons
+};
+
+/**
+ * Normalize position strings from both data shapes into a coarse bucket.
+ * - Season-level (ClubMember) uses single-letter codes like "D", "C", "LW".
+ * - Per-match (RawMatchPlayer) uses long-form like "leftWing", "defenseMen",
+ *   "leftDefense", "rightDefense", "center", "goalie".
+ *
+ * Default-safe: unknown/empty strings fall through to "forward", so a new
+ * EA position value can never accidentally inherit the D bonus.
+ */
+export function getPositionBucket(
+  position: string | undefined
+): "forward" | "defense" | "goalie" {
+  const p = (position ?? "").toLowerCase();
+  if (p === "g" || p === "gk" || p.includes("goalie")) return "goalie";
+  if (p === "d" || p.includes("defense")) return "defense";
+  return "forward";
+}
+
 function transformGame(
   game: RawGame,
   matchType: ClubMatch["matchType"]
@@ -322,15 +353,19 @@ function transformGame(
   const rawPlayers = game.players?.[CLUB_ID] ?? {};
   const players: MatchPlayerStat[] = Object.values(rawPlayers).map((p) => {
     const isGoalie = num(p.glshots) > 0 || p.position === "goalie";
+    const gamertag = p.playername || "";
     return {
       name: resolveName(p.playername || "Unknown"),
-      position: p.position || "skater",
+      position: POSITION_OVERRIDES[gamertag] ?? (p.position || "skater"),
       goals: num(p.skgoals),
       assists: num(p.skassists),
       hits: num(p.skhits),
       shots: num(p.skshots),
       plusMinus: parseInt(p.skplusmin || "0") || 0,
       pim: num(p.skpim),
+      blockedShots: num(p.skbs),
+      takeaways: num(p.sktakeaways),
+      giveaways: num(p.skgiveaways),
       powerPlayGoals: num(p.skppg),
       shortHandedGoals: num(p.skshg),
       gameWinningGoal: num(p.skgwg),
@@ -433,7 +468,7 @@ function transformMember(raw: RawMember): ClubMember {
   const rating = raw.overallRating as Record<string, unknown> | undefined;
   return {
     username: raw.Username,
-    position: raw.Position,
+    position: POSITION_OVERRIDES[raw.Username] ?? raw.Position,
     gamesPlayed: num(raw["Games Played"]),
     goals: num(raw.Goals),
     assists: num(raw.Assists),
@@ -770,21 +805,50 @@ export function computeMvpOddsFromMembers(
 
   for (const m of members) {
     // --- Skater score ---
-    // Per-game rate stats measure quality. Log-dampened sqrt(GP) rewards
-    // volume with diminishing returns so high-GP skaters don't run away
-    // from goalies who naturally play fewer games.
+    // Forwards: per-game rate stats. Defensemen: same shape but rebased
+    // against per-position baselines so a D at 0.5 PPG is judged against
+    // ~0.35 (well above replacement) rather than against a forward's ~0.70.
+    // Log-dampened sqrt(GP) rewards volume with diminishing returns so
+    // high-GP skaters don't run away from goalies who play fewer games.
     if (m.gamesPlayed >= MIN_GP && !SKATER_EXCLUDE.has(m.username)) {
       const gp = m.gamesPlayed;
-      const perGame =
-        m.ppg * 20 +                          // offensive production rate
-        (m.goals / gp) * 15 +                 // goal-scoring rate
-        Math.max(m.plusMinus, 0) / gp * 8 +   // two-way impact
-        (m.gwg / gp) * 30 +                   // clutch factor
-        m.shotPct * 0.3 +                     // shooting efficiency
-        (m.hits / gp) * 0.5 +                 // physical presence
-        (m.takeaways / gp) * 0.5 -            // defensive play
-        (m.giveaways / gp) * 0.3;             // turnover penalty
-      const gpScale = Math.sqrt(gp) * (1 / (1 + Math.log10(gp / 100)));
+      const bucket = getPositionBucket(m.position);
+
+      let perGame: number;
+      if (bucket === "defense") {
+        // D weights are tuned so a D at the 0.35 PPG baseline scores
+        // comparably to a forward at the 0.70 PPG baseline (PPG*28 vs
+        // PPG*20). Above baseline, D-men outscore forwards at the same
+        // raw production — being good at a position with fewer scoring
+        // opportunities is worth more. Drops gwg and shotPct (low/noisy
+        // for D) and adds blocked shots; +/- weighted ~2x heavier.
+        perGame =
+          m.ppg * 28 +
+          (m.goals / gp) * 22 +
+          Math.max(m.plusMinus, 0) / gp * 18 +
+          (m.hits / gp) * 1.2 +
+          (m.blockedShots / gp) * 2.0 +
+          (m.takeaways / gp) * 1.5 -
+          (m.giveaways / gp) * 0.8;
+      } else {
+        // Forwards: existing formula, byte-for-byte.
+        perGame =
+          m.ppg * 20 +
+          (m.goals / gp) * 15 +
+          Math.max(m.plusMinus, 0) / gp * 8 +
+          (m.gwg / gp) * 30 +
+          m.shotPct * 0.3 +
+          (m.hits / gp) * 0.5 +
+          (m.takeaways / gp) * 0.5 -
+          (m.giveaways / gp) * 0.3;
+      }
+
+      // Floor the log term at gp=100 so the dampening only engages above
+      // that threshold. Below 100, gpScale = sqrt(gp). Without the floor,
+      // log10(gp/100) goes negative for gp<100 and the denominator collapses
+      // through zero around gp=10, producing wildly amplified scores for
+      // players in the 11–30 GP range and negative scores below that.
+      const gpScale = Math.sqrt(gp) * (1 / (1 + Math.log10(Math.max(gp, 100) / 100)));
       const score = perGame * gpScale;
       entries.push({ member: m, score, isGoalie: false });
     }
@@ -814,9 +878,14 @@ export function computeMvpOddsFromMembers(
 
   // Raise normalized scores to a power to concentrate probability toward top
   // players, producing realistic sportsbook-style odds.
-  const maxScore = entries[0].score;
+  // Clamp negative scores before the pow step. A D-man below baseline with
+  // negative +/- can produce a negative perGame; pow(neg, 3) would corrupt
+  // the odds distribution. Ordering above (entries.sort) is unaffected.
+  const maxScore = Math.max(entries[0].score, 1e-9);
   const SHARPNESS = 3;
-  const weights = entries.map((e) => Math.pow(e.score / maxScore, SHARPNESS));
+  const weights = entries.map((e) =>
+    Math.pow(Math.max(e.score, 0) / maxScore, SHARPNESS)
+  );
   const totalWeight = weights.reduce((s, w) => s + w, 0);
 
   return entries.map((entry, index) => {
