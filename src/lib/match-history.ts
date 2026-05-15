@@ -221,6 +221,29 @@ export async function pollAndAccumulate(
 }
 
 /**
+ * Load the full accumulated match history from Redis with no retention or
+ * forfeit padding. Used by all-time record computation, which must look
+ * at the full history (the 3-week visibility filter would hide pre-cutoff
+ * record-setting games). Syncs first so the latest game is included.
+ */
+export async function getAllMatchesForRecords(
+  chelstats: ChelstatsData
+): Promise<ClubMatch[]> {
+  const redis = getRedis();
+  if (!redis) return chelstats.matches;
+
+  try {
+    await pollAndAccumulate(chelstats);
+    const matches = await readAllMatches(redis);
+    matches.sort((a, b) => b.timestamp - a.timestamp);
+    return matches;
+  } catch (err) {
+    console.error("[match-history] Failed to load all matches:", err);
+    return chelstats.matches;
+  }
+}
+
+/**
  * Load the full accumulated match history from Redis.
  * Runs a full pollAndAccumulate sync on every call so that each page
  * visit keeps the match history up to date -- no frequent cron needed.
