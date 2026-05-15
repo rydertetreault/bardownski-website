@@ -7,7 +7,7 @@ import {
 } from "@/lib/discord";
 import type { SeasonData } from "@/lib/discord";
 import { fetchChelstatsData, chelstatsToSeasonData } from "@/lib/chelstats";
-import { getMatchHistory } from "@/lib/match-history";
+import { getAllMatchesForRecords } from "@/lib/match-history";
 import RecordsClient from "./RecordsClient";
 import RecordsBackground from "./RecordsBackground";
 
@@ -37,25 +37,54 @@ export default async function RecordsPage() {
   const records = computeAllTimeRecords(seasons);
   const mvps = computeSeasonMVPs(seasons);
 
-  // Compute longest win streak from match history.
-  // Match history only retains the last 3 weeks of games at read time, so a
-  // streak that spans longer can't be reconstructed here. Pin the historical
-  // record and let any future computed streak override it once it exceeds.
-  const ALL_TIME_LONGEST_WIN_STREAK = 22;
-  const allMatches = chelstats ? await getMatchHistory(chelstats) : [];
-  let computedLongestWinStreak = 0;
+  // Pull the full unfiltered match history for all-time records.
+  const allMatches = chelstats ? await getAllMatchesForRecords(chelstats) : [];
+
+  // allMatches is sorted newest-first; walk oldest→newest to find the
+  // longest run of consecutive wins. `currentWinStreak` ends up as the
+  // most recent streak so we can flag it as active when it ties the all-time.
+  let longestWinStreak = 0;
   let currentWinStreak = 0;
   for (let i = allMatches.length - 1; i >= 0; i--) {
     const m = allMatches[i];
     if (m.scoreUs > m.scoreThem) {
       currentWinStreak++;
-      computedLongestWinStreak = Math.max(computedLongestWinStreak, currentWinStreak);
+      longestWinStreak = Math.max(longestWinStreak, currentWinStreak);
     } else {
       currentWinStreak = 0;
     }
   }
-  const longestWinStreak = Math.max(computedLongestWinStreak, ALL_TIME_LONGEST_WIN_STREAK);
   const isStreakActive = currentWinStreak === longestWinStreak && currentWinStreak > 0;
+
+  // Most goals in a single game — team and individual. Track the matchId so
+  // the records cards can link to the match where the record was set.
+  // Newest-first iteration + strict `>` means the most recent occurrence wins
+  // ties (newest match seen first, older ties don't displace it).
+  let mostTeamGoalsInGame: { value: number; matchId: string } = {
+    value: 0,
+    matchId: "",
+  };
+  let mostPlayerGoalsInGame: {
+    player: string;
+    value: number;
+    matchId: string;
+  } = {
+    player: "",
+    value: 0,
+    matchId: "",
+  };
+  for (const m of allMatches) {
+    if (m.forfeit) continue;
+    if (m.scoreUs > mostTeamGoalsInGame.value) {
+      mostTeamGoalsInGame = { value: m.scoreUs, matchId: m.id };
+    }
+    for (const p of m.players) {
+      if (!p.isOurPlayer) continue;
+      if (p.goals > mostPlayerGoalsInGame.value) {
+        mostPlayerGoalsInGame = { player: p.name, value: p.goals, matchId: m.id };
+      }
+    }
+  }
 
   return (
     <div className="min-h-screen relative">
@@ -102,6 +131,8 @@ export default async function RecordsPage() {
             seasons={seasons}
             longestWinStreak={longestWinStreak}
             isStreakActive={isStreakActive}
+            mostTeamGoalsInGame={mostTeamGoalsInGame}
+            mostPlayerGoalsInGame={mostPlayerGoalsInGame}
           />
         )}
       </div>

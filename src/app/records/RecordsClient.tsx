@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp } from "@/components/ui/Animate";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
@@ -503,12 +504,16 @@ export default function RecordsClient({
   seasons,
   longestWinStreak,
   isStreakActive,
+  mostTeamGoalsInGame,
+  mostPlayerGoalsInGame,
 }: {
   records: AllTimeRecord[];
   mvps: SeasonMVP[];
   seasons: SeasonData[];
   longestWinStreak: number;
   isStreakActive: boolean;
+  mostTeamGoalsInGame: { value: number; matchId: string };
+  mostPlayerGoalsInGame: { player: string; value: number; matchId: string };
 }) {
   const skaterRecords = records.filter((r) => r.category === "skater");
   const goalieRecords = records.filter((r) => r.category === "goalie");
@@ -646,30 +651,37 @@ export default function RecordsClient({
             </motion.div>
           )}
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0 }}
-            transition={{ duration: 0.4, delay: 0.05, ease: "easeOut" }}
-            className="relative bg-navy/80 border border-border rounded-xl overflow-hidden transition-colors hover:border-border/80"
-          >
-            <div className="h-0.5 bg-gradient-to-r from-red via-red/50 to-transparent" />
-            <div className="p-5">
-              <p className="text-[10px] text-muted uppercase tracking-[0.2em] font-semibold mb-3">
-                Most Goals in One Game
-              </p>
-              <div className="flex items-end justify-between gap-3">
-                <div>
-                  <p className="text-3xl md:text-4xl font-black font-mono leading-none text-red">
-                    <AnimatedNumber from={0} to={18} />
+          {mostTeamGoalsInGame.value > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0 }}
+              transition={{ duration: 0.4, delay: 0.05, ease: "easeOut" }}
+              className="relative bg-navy/80 border border-border rounded-xl overflow-hidden transition-colors hover:border-border/80 hover:bg-navy/90"
+            >
+              <Link
+                href={`/matches/${mostTeamGoalsInGame.matchId}`}
+                className="block"
+              >
+                <div className="h-0.5 bg-gradient-to-r from-red via-red/50 to-transparent" />
+                <div className="p-5">
+                  <p className="text-[10px] text-muted uppercase tracking-[0.2em] font-semibold mb-3">
+                    Most Goals in One Game
                   </p>
+                  <div className="flex items-end justify-between gap-3">
+                    <div>
+                      <p className="text-3xl md:text-4xl font-black font-mono leading-none text-red">
+                        <AnimatedNumber from={0} to={mostTeamGoalsInGame.value} />
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-bold tracking-wide">Goals</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-bold tracking-wide">Goals</p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+              </Link>
+            </motion.div>
+          )}
         </div>
       </div>
 
@@ -764,31 +776,38 @@ export default function RecordsClient({
           >
             {activePlayerTab === "skater" && (
               <>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                  className="relative bg-navy/80 border border-border rounded-xl overflow-hidden transition-colors hover:border-border/80"
-                >
-                  <div className="h-0.5 bg-gradient-to-r from-red via-red/50 to-transparent" />
-                  <div className="p-5">
-                    <p className="text-[10px] text-muted uppercase tracking-[0.2em] font-semibold mb-3">
-                      Most Goals in One Game
-                    </p>
-                    <div className="flex items-end justify-between gap-3">
-                      <div>
-                        <p className="text-3xl md:text-4xl font-black font-mono leading-none text-red">
-                          <AnimatedNumber from={0} to={15} />
+                {mostPlayerGoalsInGame.value > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    className="relative bg-navy/80 border border-border rounded-xl overflow-hidden transition-colors hover:border-border/80 hover:bg-navy/90"
+                  >
+                    <Link
+                      href={`/matches/${mostPlayerGoalsInGame.matchId}`}
+                      className="block"
+                    >
+                      <div className="h-0.5 bg-gradient-to-r from-red via-red/50 to-transparent" />
+                      <div className="p-5">
+                        <p className="text-[10px] text-muted uppercase tracking-[0.2em] font-semibold mb-3">
+                          Most Goals in One Game
                         </p>
+                        <div className="flex items-end justify-between gap-3">
+                          <div>
+                            <p className="text-3xl md:text-4xl font-black font-mono leading-none text-red">
+                              <AnimatedNumber from={0} to={mostPlayerGoalsInGame.value} />
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm font-bold tracking-wide">
+                              {getNickname(mostPlayerGoalsInGame.player)}
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-sm font-bold tracking-wide">
-                          {getNickname("Xavier Laflamme")}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
+                    </Link>
+                  </motion.div>
+                )}
                 {remainingSkater.map((record, i) => (
                   <RecordCard key={record.label} record={record} index={i + 1} />
                 ))}
