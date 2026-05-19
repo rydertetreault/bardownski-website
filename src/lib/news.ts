@@ -10,6 +10,15 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    id: "11",
+    title: "Milestone: Top G Surpasses 100 Goals on the Season",
+    summary:
+      "Top G has officially crossed the 100-goal mark on the season, joining the short list of Bardownski players to hit triple digits in the goal column. The #6 now sits at 129 goals across 107 games, and the way he is getting there tells you everything about how his role has evolved this year. The hands are real. The release is real. And when he gets a step on a defender, he is finishing.\n\nIt is not just goals either. Top G has stacked 276 points on the season with 147 assists to go with the 129 goals, good for a 2.60 points-per-game pace. He is shooting at 23.9% on 540 shots, which is the kind of efficiency you want from a winger asked to drive a line. The playmaking and the finishing both keep showing up in the same shifts, and that is what separates a one-trick scorer from a real top-six weapon.\n\n478 hits on the year says the rest of it. Top G plays the kind of heavy game that makes a winger hard to defend. He is not waiting around the perimeter for pucks, he is going to get them, and once they hit his stick the opposition has a real problem. This is the version of the game Bardownski has been asking of its wingers all season, and Top G has been delivering it shift after shift.\n\nThe 100-goal club in Bardownski is a short list. Xavier Laflamme lives there. Matt Hut lives there. Gotta Be punched his ticket earlier this year. Top G is the latest name on the list, and the way he is playing right now, the next milestone is not far off.",
+    date: "2026-05-18",
+    image: "/images/gallery/screenshots/milestone-highlight.webp",
+    category: "Stats",
+  },
+  {
     id: "10",
     title: "Champions: Bardownski Captures First Title in Club History",
     summary:
