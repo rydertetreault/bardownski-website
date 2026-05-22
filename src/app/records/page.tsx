@@ -43,18 +43,23 @@ export default async function RecordsPage() {
   // allMatches is sorted newest-first; walk oldest→newest to find the
   // longest run of consecutive wins. `currentWinStreak` ends up as the
   // most recent streak so we can flag it as active when it ties the all-time.
-  let longestWinStreak = 0;
+  let computedLongestWinStreak = 0;
   let currentWinStreak = 0;
   for (let i = allMatches.length - 1; i >= 0; i--) {
     const m = allMatches[i];
     if (m.scoreUs > m.scoreThem) {
       currentWinStreak++;
-      longestWinStreak = Math.max(longestWinStreak, currentWinStreak);
+      computedLongestWinStreak = Math.max(computedLongestWinStreak, currentWinStreak);
     } else {
       currentWinStreak = 0;
     }
   }
-  const isStreakActive = currentWinStreak === longestWinStreak && currentWinStreak > 0;
+  // Historical floor: pre-tracking record of 24 stands until the live computed
+  // streak surpasses it, at which point the dynamic value takes over.
+  const HISTORICAL_WIN_STREAK = 24;
+  const longestWinStreak = Math.max(computedLongestWinStreak, HISTORICAL_WIN_STREAK);
+  const isStreakActive =
+    currentWinStreak === longestWinStreak && currentWinStreak > 0;
 
   // Most goals in a single game — team and individual. Track the matchId so
   // the records cards can link to the match where the record was set.
