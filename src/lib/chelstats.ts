@@ -319,6 +319,7 @@ function passCompPct(attempts: string | undefined, completions: string | undefin
  */
 const POSITION_OVERRIDES: Record<string, string> = {
   "Julio 3026": "RW", // Jimmy Lemons
+  "Rydayro": "SKTR", // JRT IV — displays as SKTR; scored in defense bucket (see getPositionBucket)
 };
 
 /**
@@ -335,7 +336,7 @@ export function getPositionBucket(
 ): "forward" | "defense" | "goalie" {
   const p = (position ?? "").toLowerCase();
   if (p === "g" || p === "gk" || p.includes("goalie")) return "goalie";
-  if (p === "d" || p.includes("defense")) return "defense";
+  if (p === "d" || p.includes("defense") || p === "sktr") return "defense";
   return "forward";
 }
 
@@ -798,7 +799,7 @@ export function computeMvpOddsFromMembers(
   if (members.length === 0) return [];
 
   // Exclude specific players from skater odds (goalie-only in MVP race)
-  const SKATER_EXCLUDE = new Set(["Rydayro"]);
+  const SKATER_EXCLUDE = new Set<string>();
   const MIN_GP = 5;
 
   const entries: { member: ClubMember; score: number; isGoalie: boolean }[] = [];
