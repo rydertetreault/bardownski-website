@@ -10,6 +10,15 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    id: "12",
+    title: "The Wall: JRT IV Breaks the Club Shutouts Record",
+    summary:
+      "It took three years to catch himself. Jene Rene Tetreau IV has broken the Bardownski single-season shutouts record with his 21st clean sheet, one better than the mark of 20 he set back in 2023. The only goalie in club history who could touch that number was the one wearing the mask, and now the record book has to be rewritten in his own handwriting.\n\nGoaltending records do not get talked about the way goal-scoring records do. A 100-goal season lights up the room. A shutout is a quiet win. You walk off the ice, the scoreboard says 0 on the wrong side, and everyone moves on. Stack 21 of them and it stops being quiet. It becomes the standard. Every time JRT IV pulls the mask on, the opposition knows there is a real chance they do not score at all. That is what a shutout record means.\n\nThe 2023 mark stood for three years because nobody, JRT IV included, could match the run of goaltending that put it there. Twenty shutouts in a single season is the kind of number that ages well. It is the kind of number a goalie looks back on and figures nobody is ever getting near it again, himself included. That was the read on it for three straight years. Then this season happened, and the wall came back stronger than the version that set the record in the first place.\n\nThe supporting numbers on this year back up the headline. 2096 saves on 2916 shots faced. A 71% save percentage across 205 goalie games. A 4.78 GAA in a league where volume is the name of the game and the puck finds the back of the net on possessions that would never survive against a real defensive structure. Through all of that, JRT IV has posted a 128-69-8 record between the pipes. Wins on wins on wins, and 21 nights where the other team did not get one past him. Not a single one.\n\nA lot of this run has been visible in real time. The Player of the Week nod in April. The championship-clinching goaltending performance in Season 4 Club Finals. The 24-game winning streak the boys strung together in the spring, where JRT IV stood on his head night after night to keep the streak alive. Every one of those moments piled another brick on the wall, and the wall is now the tallest thing in club history. Taller than the version that stood in 2023, which is saying something.\n\nThe record has changed hands, from JRT IV in 2023 to JRT IV in 2026. It will change hands again some day, and if the last three years are any indication, the guy taking the next crack at it might be the same man in the same crease. 21 shutouts. The wall stands, and it just got a little taller.",
+    date: "2026-07-16",
+    image: "/images/gallery/screenshots/t.webp",
+    category: "Club News",
+  },
+  {
     id: "11",
     title: "Milestone: Top G Surpasses 100 Goals on the Season",
     summary:
