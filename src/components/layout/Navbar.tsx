@@ -102,11 +102,11 @@ export default function Navbar() {
             {/* Right side: CTA + Hamburger */}
             <div className="flex items-center gap-4">
               <Link
-                href="/#season"
-                className="hidden md:inline-flex items-center px-4 py-2 rounded text-xs font-bold uppercase tracking-widest text-white transition-all hover:brightness-110 active:scale-95"
-                style={{ backgroundColor: "#cc1533" }}
+                href="/fc"
+                className="hidden md:inline-flex items-center px-4 py-2 rounded text-xs font-bold uppercase tracking-widest transition-all hover:brightness-110 active:scale-95"
+                style={{ backgroundColor: "#c9a227", color: "#141414" }}
               >
-                2025 Season
+                Bardownski FC
               </Link>
 
               <button
@@ -251,12 +251,12 @@ export default function Navbar() {
             <div className="shrink-0 px-6 pb-8">
               <div className="h-px mb-5" style={{ backgroundColor: "rgba(255,255,255,0.08)" }} />
               <Link
-                href="/#season"
+                href="/fc"
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center justify-center w-full py-3.5 rounded-xl text-sm font-bold uppercase tracking-widest text-white transition-all hover:brightness-110 active:scale-[0.98]"
-                style={{ backgroundColor: "#cc1533" }}
+                className="flex items-center justify-center w-full py-3.5 rounded-xl text-sm font-bold uppercase tracking-widest transition-all hover:brightness-110 active:scale-[0.98]"
+                style={{ backgroundColor: "#c9a227", color: "#141414" }}
               >
-                2025 Season
+                Bardownski FC
               </Link>
               <motion.p
                 className="text-center text-[10px] tracking-[0.3em] uppercase mt-5"
