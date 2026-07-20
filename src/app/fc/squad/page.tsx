@@ -18,13 +18,17 @@ export const metadata: Metadata = {
     "Meet the Bardownski FC squad — player profiles, positions and season stats. EA FC 26 Pro Clubs.",
 };
 
-/** Deterministic still index per player so card art is stable. */
-function stillIndexFor(gamertag: string): number {
-  let h = 0;
-  for (let i = 0; i < gamertag.length; i++)
-    h = (h * 31 + gamertag.charCodeAt(i)) >>> 0;
-  return (h % 29) + 1;
-}
+// Kit numbers (by real name) — same numbers as the hockey club
+const KIT_NUMBERS: Record<string, number> = {
+  RYDER: 14,
+  DYLAN: 4,
+  MATT: 8,
+  ROB: 1,
+  COLIN: 2,
+  KADEN: 9,
+  JIMMY: 69,
+  LOGAN: 6,
+};
 
 export default async function FcSquadPage() {
   const data = await fetchFcStatsData();
@@ -52,7 +56,7 @@ export default async function FcSquadPage() {
         passSuccessRate: m.passSuccessRate,
         cleanSheets: m.cleanSheets,
         saves: agg?.saves ?? 0,
-        stillIndex: stillIndexFor(m.gamertag),
+        number: KIT_NUMBERS[m.name] ?? null,
       };
     });
     // Order: FW, MID, DEF, GK, then by points

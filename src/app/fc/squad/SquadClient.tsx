@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -26,7 +25,7 @@ export interface SquadPlayer {
   passSuccessRate: number;
   cleanSheets: number;
   saves: number;
-  stillIndex: number;
+  number: number | null;
 }
 
 const GROUPS = ["FW", "MID", "DEF", "GK", "—"] as const;
@@ -37,10 +36,6 @@ const GROUP_LABELS: Record<string, string> = {
   GK: "Goalkeepers",
   "—": "Utility",
 };
-
-function still(i: number): string {
-  return `/fc/images/gallery/fc-still-${String(i).padStart(2, "0")}.webp`;
-}
 
 function PlayerCard({ p, index }: { p: SquadPlayer; index: number }) {
   const [flipped, setFlipped] = useState(false);
@@ -70,20 +65,44 @@ function PlayerCard({ p, index }: { p: SquadPlayer; index: number }) {
             border: "1px solid var(--fc-border)",
           }}
         >
-          <Image
-            src={still(p.stillIndex)}
-            alt={p.name}
-            fill
-            sizes="(max-width: 640px) 50vw, 25vw"
-            className="object-cover object-top opacity-60"
-          />
+          {/* Subtle gold radial + diagonal slash backdrop */}
           <div
-            className="absolute inset-0"
+            className="absolute inset-0 pointer-events-none"
             style={{
               background:
-                "linear-gradient(180deg, rgba(20,21,24,0.3) 0%, rgba(20,21,24,0.55) 55%, rgba(20,21,24,0.97) 100%)",
+                "radial-gradient(circle at 70% 20%, rgba(201,162,39,0.10) 0%, transparent 55%)",
             }}
           />
+          <svg
+            className="absolute -right-8 top-0 h-full w-2/3 opacity-[0.05] pointer-events-none"
+            viewBox="0 0 200 400"
+            preserveAspectRatio="none"
+          >
+            <polygon points="120,0 200,0 120,400 40,400" fill="#c9a227" />
+          </svg>
+
+          {/* Giant kit number */}
+          <div className="absolute inset-0 flex items-center justify-center pb-16">
+            {p.number !== null ? (
+              <span
+                className="font-black leading-none tabular-nums select-none"
+                style={{
+                  fontSize: "7.5rem",
+                  color: "rgba(201,162,39,0.85)",
+                  textShadow: "0 8px 40px rgba(201,162,39,0.25)",
+                }}
+              >
+                {p.number}
+              </span>
+            ) : (
+              <span
+                className="font-black leading-none select-none"
+                style={{ fontSize: "6rem", color: "rgba(255,255,255,0.08)" }}
+              >
+                {p.posGroup}
+              </span>
+            )}
+          </div>
 
           {/* OVR + position chip */}
           <div className="absolute top-4 left-4 flex flex-col items-center">
@@ -108,7 +127,13 @@ function PlayerCard({ p, index }: { p: SquadPlayer; index: number }) {
           )}
 
           {/* Name block */}
-          <div className="absolute bottom-0 left-0 right-0 p-5">
+          <div
+            className="absolute bottom-0 left-0 right-0 p-5"
+            style={{
+              background:
+                "linear-gradient(180deg, transparent 0%, rgba(20,21,24,0.85) 40%, rgba(20,21,24,0.97) 100%)",
+            }}
+          >
             <div className="text-[10px] uppercase tracking-[0.25em] text-white/40 mb-1">
               {p.proName ? `"${p.proName}"` : p.gamertag}
             </div>
@@ -152,7 +177,14 @@ function PlayerCard({ p, index }: { p: SquadPlayer; index: number }) {
           }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-black tracking-tight text-white">{p.name}</h3>
+            <h3 className="text-lg font-black tracking-tight text-white">
+              {p.number !== null && (
+                <span style={{ color: GOLD }} className="mr-2 tabular-nums">
+                  {p.number}
+                </span>
+              )}
+              {p.name}
+            </h3>
             <span
               className="text-[10px] font-bold uppercase tracking-widest"
               style={{ color: GOLD }}

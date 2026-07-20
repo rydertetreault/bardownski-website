@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+
 
 export default function FcFooter() {
   return (
@@ -12,19 +12,9 @@ export default function FcFooter() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 relative overflow-hidden rounded">
-                <Image
-                  src="/images/logo/BD - logo.png"
-                  alt="Bardownski FC"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <h3 className="text-xl font-bold text-white">
-                BARDOWNSKI <span style={{ color: "var(--fc-gold)" }}>FC</span>
-              </h3>
-            </div>
+            <h3 className="text-xl font-black tracking-tighter mb-4 text-white">
+              BARDOWNSKI <span style={{ color: "var(--fc-gold)" }}>FC</span>
+            </h3>
             <p className="text-sm text-white/40">
               Official website of Bardownski FC. EA FC 26 Pro Clubs.
             </p>

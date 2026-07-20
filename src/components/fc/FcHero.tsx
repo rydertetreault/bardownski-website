@@ -18,17 +18,8 @@ export default function FcHero({
 }) {
   return (
     <section className="relative h-[92vh] min-h-[560px] flex items-center overflow-hidden -mt-16 pt-16">
-      {/* Video background */}
+      {/* Static dark background */}
       <div className="absolute inset-0 z-0" style={{ backgroundColor: "#141518" }}>
-        <video
-          className="absolute inset-0 w-full h-full object-cover opacity-40"
-          src="/fc/videos/fc-highlight-1.mp4"
-          poster="/fc/images/fc-highlight-1-poster.webp"
-          autoPlay
-          muted
-          loop
-          playsInline
-        />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-[#1b1d21]" />
       </div>
 
