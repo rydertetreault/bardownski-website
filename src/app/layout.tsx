@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+import SiteFooter from "@/components/layout/SiteFooter";
 import SplashScreen from "@/components/layout/SplashScreen";
 import "./globals.css";
 
@@ -41,7 +41,7 @@ export default function RootLayout({
         <SplashScreen />
         <Navbar />
         <main className="pt-16">{children}</main>
-        <Footer />
+        <SiteFooter />
         <Analytics />
       </body>
     </html>

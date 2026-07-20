@@ -1,278 +1,292 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { fetchFcStatsData } from "@/lib/fcstats";
-import type { FcClubMatch, FcClubMember } from "@/lib/fcstats";
+import {
+  fetchFcStatsData,
+  computeFcForm,
+  buildFcNews,
+  positionLabel,
+} from "@/lib/fcstats";
+import {
+  FC,
+  FcSectionHeading,
+  FcResultBadge,
+  FcFormGuide,
+  FcStatCard,
+  FcViewAllLink,
+  FcDataUnavailable,
+} from "@/components/fc/FcUI";
+import FcHero from "@/components/fc/FcHero";
+import FcNewsCard from "@/components/fc/FcNewsCard";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Bardownski FC | EA FC 26 Pro Clubs",
   description:
-    "Live club stats, player leaderboards and match history for Bardownski FC — EA FC 26 Pro Clubs.",
+    "Official website of Bardownski FC — EA FC 26 Pro Clubs. Live club stats, fixtures, squad, news and highlights.",
 };
 
-/* ── Theme: grey / white / gold ─────────────────────────────────────── */
-const GOLD = "#c9a227";
-const GOLD_LIGHT = "#e6c964";
-const GREY_BG = "#1b1d21";
-const GREY_CARD = "#24272c";
-const GREY_BORDER = "rgba(255,255,255,0.08)";
-
-function ResultBadge({ result, forfeit }: { result: string; forfeit: boolean }) {
-  const color =
-    result === "W" ? GOLD : result === "L" ? "rgba(255,255,255,0.35)" : "#9aa0a8";
-  return (
-    <span
-      className="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold shrink-0"
-      style={{
-        color: result === "W" ? "#141414" : "#ffffff",
-        backgroundColor: result === "W" ? color : "rgba(255,255,255,0.08)",
-        border: `1px solid ${result === "W" ? color : GREY_BORDER}`,
-      }}
-      title={forfeit ? "Forfeit" : undefined}
-    >
-      {result}
-    </span>
-  );
-}
-
-function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
-  return (
-    <div
-      className="rounded-xl p-5 flex flex-col gap-1"
-      style={{ backgroundColor: GREY_CARD, border: `1px solid ${GREY_BORDER}` }}
-    >
-      <span className="text-[10px] uppercase tracking-[0.2em] text-white/40">
-        {label}
-      </span>
-      <span className="text-3xl font-bold" style={{ color: GOLD_LIGHT }}>
-        {value}
-      </span>
-      {sub && <span className="text-xs text-white/40">{sub}</span>}
-    </div>
-  );
-}
-
-function MatchRow({ match }: { match: FcClubMatch }) {
-  return (
-    <div
-      className="flex items-center gap-4 rounded-lg px-4 py-3"
-      style={{ backgroundColor: GREY_CARD, border: `1px solid ${GREY_BORDER}` }}
-    >
-      <ResultBadge result={match.result} forfeit={match.forfeit} />
-      <div className="flex-1 min-w-0">
-        <div className="text-sm font-semibold text-white truncate">
-          vs {match.opponent}
-        </div>
-        <div className="text-[11px] text-white/40 uppercase tracking-wider">
-          {match.date} · {match.matchType}
-          {match.forfeit ? " · forfeit" : ""}
-        </div>
-      </div>
-      <div className="text-lg font-bold tabular-nums shrink-0">
-        <span style={{ color: match.result === "W" ? GOLD_LIGHT : "#ffffff" }}>
-          {match.scoreUs}
-        </span>
-        <span className="text-white/30 mx-1">–</span>
-        <span className="text-white/70">{match.scoreThem}</span>
-      </div>
-    </div>
-  );
-}
-
-function LeaderboardTable({ members }: { members: FcClubMember[] }) {
-  return (
-    <div
-      className="rounded-xl overflow-hidden"
-      style={{ backgroundColor: GREY_CARD, border: `1px solid ${GREY_BORDER}` }}
-    >
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr
-              className="text-left text-[10px] uppercase tracking-[0.15em] text-white/40"
-              style={{ borderBottom: `1px solid ${GREY_BORDER}` }}
-            >
-              <th className="px-4 py-3 font-medium">Player</th>
-              <th className="px-3 py-3 font-medium text-right">GP</th>
-              <th className="px-3 py-3 font-medium text-right">G</th>
-              <th className="px-3 py-3 font-medium text-right">A</th>
-              <th className="px-3 py-3 font-medium text-right">Pts</th>
-              <th className="px-3 py-3 font-medium text-right">Rating</th>
-              <th className="px-3 py-3 font-medium text-right">MOTM</th>
-              <th className="px-3 py-3 font-medium text-right hidden sm:table-cell">
-                Pass%
-              </th>
-              <th className="px-4 py-3 font-medium text-right hidden sm:table-cell">
-                OVR
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {members.map((m, i) => (
-              <tr
-                key={m.gamertag}
-                style={{
-                  borderBottom:
-                    i < members.length - 1 ? `1px solid ${GREY_BORDER}` : "none",
-                }}
-              >
-                <td className="px-4 py-3">
-                  <div className="font-semibold text-white">{m.name}</div>
-                  <div className="text-[10px] text-white/35 uppercase tracking-wider">
-                    {m.position}
-                    {m.proName ? ` · "${m.proName}"` : ""}
-                  </div>
-                </td>
-                <td className="px-3 py-3 text-right tabular-nums text-white/70">
-                  {m.gamesPlayed}
-                </td>
-                <td className="px-3 py-3 text-right tabular-nums text-white/70">
-                  {m.goals}
-                </td>
-                <td className="px-3 py-3 text-right tabular-nums text-white/70">
-                  {m.assists}
-                </td>
-                <td
-                  className="px-3 py-3 text-right tabular-nums font-bold"
-                  style={{ color: GOLD_LIGHT }}
-                >
-                  {m.points}
-                </td>
-                <td className="px-3 py-3 text-right tabular-nums text-white/70">
-                  {m.ratingAve.toFixed(1)}
-                </td>
-                <td className="px-3 py-3 text-right tabular-nums text-white/70">
-                  {m.manOfTheMatch}
-                </td>
-                <td className="px-3 py-3 text-right tabular-nums text-white/70 hidden sm:table-cell">
-                  {m.passSuccessRate}%
-                </td>
-                <td className="px-4 py-3 text-right tabular-nums text-white/70 hidden sm:table-cell">
-                  {m.proOverall}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
-
-export default async function FcPage() {
+export default async function FcHomePage() {
   const data = await fetchFcStatsData();
+  const news = data ? buildFcNews(data) : [];
+  const form = data ? computeFcForm(data.matches, 5) : [];
+  const latest = data?.matches[0] ?? null;
+  const leaders = data
+    ? [...data.members].sort((a, b) => b.points - a.points || b.ratingAve - a.ratingAve).slice(0, 3)
+    : [];
 
   return (
-    <div className="min-h-screen pt-24 pb-20" style={{ backgroundColor: GREY_BG }}>
-      {/* Subtle gold radial accents */}
-      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-        <div
-          className="absolute top-0 right-0 w-[600px] h-[600px] opacity-[0.06]"
-          style={{
-            background: `radial-gradient(circle at top right, ${GOLD} 0%, transparent 70%)`,
-          }}
-        />
-        <div
-          className="absolute bottom-0 left-0 w-[400px] h-[400px] opacity-[0.04]"
-          style={{
-            background: `radial-gradient(circle at bottom left, ${GOLD} 0%, transparent 70%)`,
-          }}
-        />
+    <div style={{ backgroundColor: FC.bg }}>
+      {/* ── Full-height hero with video background ── */}
+      <FcHero
+        record={data?.clubStats.record ?? null}
+        skillRating={data?.clubStats.skillRating ?? null}
+      />
+
+      {/* ── Latest result + form strip (PL matchday bar) ── */}
+      <div
+        className="relative border-y"
+        style={{ backgroundColor: FC.bgDark, borderColor: "var(--fc-border)" }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          {latest ? (
+            <Link href="/fc/fixtures" className="flex items-center gap-4 group">
+              <span className="text-[10px] uppercase tracking-[0.25em] text-white/40 hidden md:block">
+                Latest Result
+              </span>
+              <FcResultBadge result={latest.result} forfeit={latest.forfeit} />
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-bold text-white group-hover:underline">
+                  Bardownski FC
+                </span>
+                <span className="text-xl font-black tabular-nums" style={{ color: FC.goldLight }}>
+                  {latest.scoreUs}
+                </span>
+                <span className="text-white/30">–</span>
+                <span className="text-xl font-black tabular-nums text-white/70">
+                  {latest.scoreThem}
+                </span>
+                <span className="text-sm font-bold text-white/70">{latest.opponent}</span>
+              </div>
+              <span className="text-[10px] uppercase tracking-wider text-white/30 hidden lg:block">
+                {latest.date} · {latest.matchType}
+              </span>
+            </Link>
+          ) : (
+            <span className="text-sm text-white/40">No recent matches</span>
+          )}
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] uppercase tracking-[0.25em] text-white/40">Form</span>
+            <FcFormGuide form={form} />
+          </div>
+        </div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style={{ zIndex: 1 }}>
-        {/* ── Hero header ── */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
-          <div>
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 relative overflow-hidden rounded">
-                <Image
-                  src="/images/logo/BD - logo.png"
-                  alt="Bardownski FC"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <div>
-                <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-white">
-                  BARDOWNSKI{" "}
-                  <span style={{ color: GOLD }}>FC</span>
-                </h1>
-                <p className="text-xs uppercase tracking-[0.3em] text-white/40 mt-1">
-                  EA FC 26 · Pro Clubs · Live Stats
-                </p>
-              </div>
-            </div>
-          </div>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/50 hover:text-white transition-colors self-start sm:self-auto"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back to Hockey
-          </Link>
-        </div>
-
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {!data ? (
-          <div
-            className="rounded-xl p-10 text-center"
-            style={{ backgroundColor: GREY_CARD, border: `1px solid ${GREY_BORDER}` }}
-          >
-            <p className="text-white/60">
-              Live stats are temporarily unavailable. Check back shortly.
-            </p>
-          </div>
+          <FcDataUnavailable />
         ) : (
           <>
             {/* ── Club stat cards ── */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-12">
-              <StatCard label="Record" value={data.clubStats.record} sub="W-L-D" />
-              <StatCard label="Goals For" value={data.clubStats.goals} sub={`${data.clubStats.goalsPerGame}/game`} />
-              <StatCard label="Goals Against" value={data.clubStats.goalsAgainst} sub={`${data.clubStats.goalsAgainstPerGame}/game`} />
-              <StatCard label="Games Played" value={data.clubStats.totalGames} />
-              <StatCard label="Promotions" value={data.clubStats.promotions} sub={`${data.clubStats.relegations} relegations`} />
-              <StatCard label="Skill Rating" value={data.clubStats.skillRating} />
-            </div>
+            <section className="mb-16">
+              <FcSectionHeading right={<FcViewAllLink href="/fc/stats">Stats Centre</FcViewAllLink>}>
+                Season at a Glance
+              </FcSectionHeading>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                <FcStatCard label="Record" value={data.clubStats.record} sub="W-L-D" />
+                <FcStatCard
+                  label="Goals For"
+                  value={data.clubStats.goals}
+                  sub={`${data.clubStats.goalsPerGame}/game`}
+                />
+                <FcStatCard
+                  label="Goals Against"
+                  value={data.clubStats.goalsAgainst}
+                  sub={`${data.clubStats.goalsAgainstPerGame}/game`}
+                />
+                <FcStatCard label="Games Played" value={data.clubStats.totalGames} />
+                <FcStatCard
+                  label="Promotions"
+                  value={data.clubStats.promotions}
+                  sub={`${data.clubStats.relegations} relegations`}
+                />
+                <FcStatCard label="Skill Rating" value={data.clubStats.skillRating} />
+              </div>
+            </section>
 
-            {/* ── Two-column: leaderboard + matches ── */}
-            <div className="grid lg:grid-cols-5 gap-10">
-              <section className="lg:col-span-3">
-                <h2 className="text-sm font-bold uppercase tracking-[0.25em] text-white/60 mb-4 flex items-center gap-3">
-                  <span
-                    className="w-8 h-[2px] rounded-full"
-                    style={{ backgroundColor: GOLD }}
-                  />
-                  Player Leaderboard
-                </h2>
-                <LeaderboardTable members={data.members} />
+            {/* ── Latest news ── */}
+            <section className="mb-16">
+              <FcSectionHeading right={<FcViewAllLink href="/fc/news">All News</FcViewAllLink>}>
+                Latest News
+              </FcSectionHeading>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {news.slice(0, 3).map((item) => (
+                  <FcNewsCard key={item.id} item={item} />
+                ))}
+              </div>
+            </section>
+
+            {/* ── Two-column: leaders + recent results ── */}
+            <div className="grid lg:grid-cols-2 gap-10 mb-16">
+              <section>
+                <FcSectionHeading right={<FcViewAllLink href="/fc/squad">Full Squad</FcViewAllLink>}>
+                  Top Performers
+                </FcSectionHeading>
+                <div className="flex flex-col gap-3">
+                  {leaders.map((m, i) => (
+                    <Link
+                      key={m.gamertag}
+                      href={`/fc/stats?player=${encodeURIComponent(m.gamertag)}`}
+                      className="flex items-center gap-4 rounded-xl px-5 py-4 transition-transform hover:scale-[1.01]"
+                      style={{
+                        backgroundColor: FC.card,
+                        border: `1px solid var(--fc-border)`,
+                      }}
+                    >
+                      <span
+                        className="text-2xl font-black w-8 shrink-0 tabular-nums"
+                        style={{ color: i === 0 ? FC.gold : "rgba(255,255,255,0.2)" }}
+                      >
+                        {i + 1}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-bold text-white">{m.name}</div>
+                        <div className="text-[10px] uppercase tracking-wider text-white/35">
+                          {positionLabel(m.position)}
+                          {m.proName ? ` · "${m.proName}"` : ""} · {m.gamesPlayed} apps
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-5 shrink-0 tabular-nums">
+                        <div className="text-center">
+                          <div className="text-lg font-bold text-white">{m.goals}</div>
+                          <div className="text-[9px] uppercase tracking-wider text-white/35">Goals</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-bold text-white">{m.assists}</div>
+                          <div className="text-[9px] uppercase tracking-wider text-white/35">Assists</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-bold" style={{ color: FC.goldLight }}>
+                            {m.points}
+                          </div>
+                          <div className="text-[9px] uppercase tracking-wider text-white/35">Pts</div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
               </section>
 
-              <section className="lg:col-span-2">
-                <h2 className="text-sm font-bold uppercase tracking-[0.25em] text-white/60 mb-4 flex items-center gap-3">
-                  <span
-                    className="w-8 h-[2px] rounded-full"
-                    style={{ backgroundColor: GOLD }}
-                  />
-                  Recent Matches
-                </h2>
+              <section>
+                <FcSectionHeading
+                  right={<FcViewAllLink href="/fc/fixtures">All Fixtures</FcViewAllLink>}
+                >
+                  Recent Results
+                </FcSectionHeading>
                 <div className="flex flex-col gap-2">
-                  {data.matches.length === 0 ? (
+                  {data.matches.slice(0, 6).map((m) => (
                     <div
-                      className="rounded-lg p-6 text-center text-sm text-white/40"
-                      style={{ backgroundColor: GREY_CARD, border: `1px solid ${GREY_BORDER}` }}
+                      key={m.id}
+                      className="flex items-center gap-4 rounded-lg px-4 py-3"
+                      style={{ backgroundColor: FC.card, border: `1px solid var(--fc-border)` }}
                     >
-                      No recent matches.
+                      <FcResultBadge result={m.result} forfeit={m.forfeit} />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold text-white truncate">
+                          vs {m.opponent}
+                        </div>
+                        <div className="text-[11px] text-white/40 uppercase tracking-wider">
+                          {m.date} · {m.matchType}
+                          {m.forfeit ? " · forfeit" : ""}
+                        </div>
+                      </div>
+                      <div className="text-lg font-bold tabular-nums shrink-0">
+                        <span style={{ color: m.result === "W" ? FC.goldLight : "#ffffff" }}>
+                          {m.scoreUs}
+                        </span>
+                        <span className="text-white/30 mx-1">–</span>
+                        <span className="text-white/70">{m.scoreThem}</span>
+                      </div>
                     </div>
-                  ) : (
-                    data.matches
-                      .slice(0, 12)
-                      .map((m) => <MatchRow key={m.id} match={m} />)
-                  )}
+                  ))}
                 </div>
               </section>
             </div>
+
+            {/* ── Highlights promo ── */}
+            <section className="mb-16">
+              <Link
+                href="/fc/highlights"
+                className="group relative block rounded-2xl overflow-hidden"
+                style={{ border: `1px solid var(--fc-border)` }}
+              >
+                <div className="relative h-64 sm:h-80">
+                  <Image
+                    src="/fc/images/fc-highlight-1-poster.webp"
+                    alt="Bardownski FC highlights"
+                    fill
+                    className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background:
+                        "linear-gradient(90deg, rgba(20,21,24,0.95) 0%, rgba(20,21,24,0.6) 50%, rgba(20,21,24,0.3) 100%)",
+                    }}
+                  />
+                  <div className="absolute inset-0 flex items-center px-8 sm:px-14">
+                    <div>
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="w-8 h-[2px] rounded-full" style={{ backgroundColor: FC.gold }} />
+                        <span
+                          className="text-[11px] font-bold uppercase tracking-[0.3em]"
+                          style={{ color: FC.gold }}
+                        >
+                          Club Media
+                        </span>
+                      </div>
+                      <h3 className="text-3xl sm:text-5xl font-black tracking-tighter text-white mb-4">
+                        WATCH THE <span style={{ color: FC.gold }}>HIGHLIGHTS</span>
+                      </h3>
+                      <span
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded text-xs font-bold uppercase tracking-widest transition-all group-hover:brightness-110"
+                        style={{ backgroundColor: FC.gold, color: "#141414" }}
+                      >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                        Play Reel
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </section>
+
+            {/* ── Gallery strip ── */}
+            <section>
+              <FcSectionHeading right={<FcViewAllLink href="/fc/gallery">Full Gallery</FcViewAllLink>}>
+                From the Pitch
+              </FcSectionHeading>
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                {[3, 7, 11, 17, 22, 26].map((n) => (
+                  <Link
+                    key={n}
+                    href="/fc/gallery"
+                    className="group relative aspect-[9/16] rounded-lg overflow-hidden"
+                    style={{ border: `1px solid var(--fc-border)` }}
+                  >
+                    <Image
+                      src={`/fc/images/gallery/fc-still-${String(n).padStart(2, "0")}.webp`}
+                      alt="Bardownski FC gameplay"
+                      fill
+                      sizes="(max-width: 640px) 33vw, 16vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
+                  </Link>
+                ))}
+              </div>
+            </section>
           </>
         )}
       </div>

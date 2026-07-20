@@ -49,3 +49,6 @@ next-env.d.ts
 
 # git worktrees
 /.worktrees
+
+# Raw uploaded FC media (processed copies live in public/fc/)
+/public/bardownski-fc-media/

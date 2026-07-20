@@ -24,6 +24,16 @@
   --border: #2a3550;
   --muted: #7a8ba8;
   --light-blue: #5b9bd5;
+
+  /* ── Bardownski FC (grey / white / gold) ── */
+  --fc-gold: #c9a227;
+  --fc-gold-light: #e6c964;
+  --fc-gold-dark: #a3841c;
+  --fc-bg: #1b1d21;
+  --fc-bg-dark: #141518;
+  --fc-card: #24272c;
+  --fc-card-light: #2d3138;
+  --fc-border: rgba(255, 255, 255, 0.08);
 }
 
 @theme inline {
