@@ -5,7 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import type { FcHighlightVideo } from "./page";
 
-const GOLD = "#c9a227";
+const GOLD = "#cc1533";
 
 function VideoPlayer({ video }: { video: FcHighlightVideo }) {
   const ref = useRef<HTMLVideoElement>(null);
@@ -58,7 +58,7 @@ function VideoPlayer({ video }: { video: FcHighlightVideo }) {
                 className="w-20 h-20 rounded-full flex items-center justify-center transition-transform group-hover:scale-110"
                 style={{ backgroundColor: GOLD }}
               >
-                <svg className="w-9 h-9 ml-1" fill="#141414" viewBox="0 0 24 24">
+                <svg className="w-9 h-9 ml-1" fill="#ffffff" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z" />
                 </svg>
               </span>
@@ -81,7 +81,7 @@ function VideoPlayer({ video }: { video: FcHighlightVideo }) {
           <div className="flex items-center gap-3 mb-4">
             <span
               className="px-2.5 py-1 rounded text-[9px] font-bold uppercase tracking-[0.15em]"
-              style={{ backgroundColor: GOLD, color: "#141414" }}
+              style={{ backgroundColor: GOLD, color: "#ffffff" }}
             >
               Official Reel
             </span>
@@ -94,7 +94,7 @@ function VideoPlayer({ video }: { video: FcHighlightVideo }) {
           <button
             onClick={toggle}
             className="inline-flex items-center gap-2 px-6 py-3 rounded text-xs font-bold uppercase tracking-widest transition-all hover:brightness-110 cursor-pointer"
-            style={{ backgroundColor: GOLD, color: "#141414" }}
+            style={{ backgroundColor: GOLD, color: "#ffffff" }}
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               {playing ? (

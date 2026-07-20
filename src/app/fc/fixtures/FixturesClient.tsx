@@ -5,8 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { FcClubMatch, FcMatchPlayer } from "@/lib/fcstats";
 import { FcResultBadge } from "@/components/fc/FcUI";
 
-const GOLD = "#c9a227";
-const GOLD_LIGHT = "#e6c964";
+const GOLD = "#cc1533";
+const GOLD_LIGHT = "#5b9bd5";
 
 type Filter = "all" | "league" | "playoff" | "friendly";
 
@@ -37,7 +37,7 @@ function PlayerRow({ p }: { p: FcMatchPlayer }) {
         {p.mom && (
           <span
             className="ml-2 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider align-middle"
-            style={{ backgroundColor: GOLD, color: "#141414" }}
+            style={{ backgroundColor: GOLD, color: "#ffffff" }}
           >
             MOTM
           </span>
@@ -178,7 +178,7 @@ export default function FixturesClient({ matches }: { matches: FcClubMatch[] }) 
               style={{
                 backgroundColor:
                   filter === f.key ? GOLD : "var(--fc-card)",
-                color: filter === f.key ? "#141414" : "rgba(255,255,255,0.55)",
+                color: filter === f.key ? "#ffffff" : "rgba(255,255,255,0.55)",
                 border: "1px solid var(--fc-border)",
               }}
             >

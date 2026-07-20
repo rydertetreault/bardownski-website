@@ -59,7 +59,7 @@ export default function GalleryClient({ photos }: { photos: FcGalleryPhoto[] }) 
             <div
               className="absolute bottom-0 left-0 right-0 h-1/4 opacity-0 group-hover:opacity-100 transition-opacity"
               style={{
-                background: "linear-gradient(180deg, transparent, rgba(201,162,39,0.25))",
+                background: "linear-gradient(180deg, transparent, rgba(204,21,51,0.25))",
               }}
             />
           </motion.button>

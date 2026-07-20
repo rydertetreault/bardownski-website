@@ -4,8 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
-const GOLD = "#c9a227";
-const GOLD_LIGHT = "#e6c964";
+const GOLD = "#cc1533";
+const GOLD_LIGHT = "#5b9bd5";
 
 export interface SquadPlayer {
   gamertag: string;
@@ -70,7 +70,7 @@ function PlayerCard({ p, index }: { p: SquadPlayer; index: number }) {
             className="absolute inset-0 pointer-events-none"
             style={{
               background:
-                "radial-gradient(circle at 70% 20%, rgba(201,162,39,0.10) 0%, transparent 55%)",
+                "radial-gradient(circle at 70% 20%, rgba(204,21,51,0.10) 0%, transparent 55%)",
             }}
           />
           <svg
@@ -78,7 +78,7 @@ function PlayerCard({ p, index }: { p: SquadPlayer; index: number }) {
             viewBox="0 0 200 400"
             preserveAspectRatio="none"
           >
-            <polygon points="120,0 200,0 120,400 40,400" fill="#c9a227" />
+            <polygon points="120,0 200,0 120,400 40,400" fill="#cc1533" />
           </svg>
 
           {/* Giant kit number */}
@@ -88,8 +88,8 @@ function PlayerCard({ p, index }: { p: SquadPlayer; index: number }) {
                 className="font-black leading-none tabular-nums select-none"
                 style={{
                   fontSize: "7.5rem",
-                  color: "rgba(201,162,39,0.85)",
-                  textShadow: "0 8px 40px rgba(201,162,39,0.25)",
+                  color: "rgba(204,21,51,0.85)",
+                  textShadow: "0 8px 40px rgba(204,21,51,0.25)",
                 }}
               >
                 {p.number}
@@ -120,7 +120,7 @@ function PlayerCard({ p, index }: { p: SquadPlayer; index: number }) {
           {p.motm > 0 && (
             <span
               className="absolute top-4 right-4 px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider"
-              style={{ backgroundColor: GOLD, color: "#141414" }}
+              style={{ backgroundColor: GOLD, color: "#ffffff" }}
             >
               {p.motm}× MOTM
             </span>
@@ -131,7 +131,7 @@ function PlayerCard({ p, index }: { p: SquadPlayer; index: number }) {
             className="absolute bottom-0 left-0 right-0 p-5"
             style={{
               background:
-                "linear-gradient(180deg, transparent 0%, rgba(20,21,24,0.85) 40%, rgba(20,21,24,0.97) 100%)",
+                "linear-gradient(180deg, transparent 0%, rgba(11,15,26,0.85) 40%, rgba(11,15,26,0.97) 100%)",
             }}
           >
             <div className="text-[10px] uppercase tracking-[0.25em] text-white/40 mb-1">
@@ -221,7 +221,7 @@ function PlayerCard({ p, index }: { p: SquadPlayer; index: number }) {
             href={`/fc/stats?player=${encodeURIComponent(p.gamertag)}`}
             onClick={(e) => e.stopPropagation()}
             className="mt-4 inline-flex items-center justify-center w-full py-2.5 rounded text-[10px] font-bold uppercase tracking-widest transition-all hover:brightness-110"
-            style={{ backgroundColor: GOLD, color: "#141414" }}
+            style={{ backgroundColor: GOLD, color: "#ffffff" }}
           >
             Full Stats →
           </Link>
@@ -247,7 +247,7 @@ export default function SquadClient({ players }: { players: SquadPlayer[] }) {
           className="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
           style={{
             backgroundColor: filter === "all" ? GOLD : "var(--fc-card)",
-            color: filter === "all" ? "#141414" : "rgba(255,255,255,0.55)",
+            color: filter === "all" ? "#ffffff" : "rgba(255,255,255,0.55)",
             border: "1px solid var(--fc-border)",
           }}
         >
@@ -260,7 +260,7 @@ export default function SquadClient({ players }: { players: SquadPlayer[] }) {
             className="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
             style={{
               backgroundColor: filter === g ? GOLD : "var(--fc-card)",
-              color: filter === g ? "#141414" : "rgba(255,255,255,0.55)",
+              color: filter === g ? "#ffffff" : "rgba(255,255,255,0.55)",
               border: "1px solid var(--fc-border)",
             }}
           >

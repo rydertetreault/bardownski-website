@@ -23,12 +23,12 @@ export default function FcNewsCard({ item }: { item: FcNewsItem }) {
         <div
           className="absolute inset-0"
           style={{
-            background: "linear-gradient(180deg, transparent 40%, rgba(27,29,33,0.9) 100%)",
+            background: "linear-gradient(180deg, transparent 40%, rgba(11,15,26,0.9) 100%)",
           }}
         />
         <span
           className="absolute top-3 left-3 px-2.5 py-1 rounded text-[9px] font-bold uppercase tracking-[0.15em]"
-          style={{ backgroundColor: "var(--fc-gold)", color: "#141414" }}
+          style={{ backgroundColor: "var(--fc-gold)", color: "#ffffff" }}
         >
           {item.category}
         </span>

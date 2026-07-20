@@ -19,35 +19,56 @@ export default function FcHero({
   return (
     <section className="relative h-[92vh] min-h-[560px] flex items-center overflow-hidden -mt-16 pt-16">
       {/* Static dark background */}
-      <div className="absolute inset-0 z-0" style={{ backgroundColor: "#141518" }}>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-[#1b1d21]" />
+      <div className="absolute inset-0 z-0" style={{ backgroundColor: "#0f1a2e" }}>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-[#0b0f1a]" />
       </div>
 
-      {/* Diagonal gold slash accents (PL-club style) */}
+      {/* Pitch-line motif — center circle + halfway line (PL-club style) */}
       <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
         <svg
-          className="absolute -left-16 top-0 h-full w-[60%] opacity-[0.08]"
-          viewBox="0 0 400 900"
-          preserveAspectRatio="none"
+          className="absolute -right-40 top-1/2 -translate-y-1/2 h-[130%] opacity-[0.07]"
+          viewBox="0 0 600 900"
+          fill="none"
+          preserveAspectRatio="xMidYMid meet"
         >
-          <polygon points="120,0 220,0 100,900 0,900" fill="#c9a227" />
+          {/* Halfway line */}
+          <line x1="300" y1="0" x2="300" y2="900" stroke="#cc1533" strokeWidth="2" />
+          {/* Center circle */}
+          <circle cx="300" cy="450" r="220" stroke="#cc1533" strokeWidth="2" />
+          <circle cx="300" cy="450" r="8" fill="#cc1533" />
+          {/* Penalty box arc */}
+          <path
+            d="M 600 250 A 260 260 0 0 0 600 650"
+            stroke="#ffffff"
+            strokeWidth="2"
+          />
         </svg>
+
+        {/* Gold chevron strip along the bottom */}
         <svg
-          className="absolute -right-16 top-0 h-full w-[60%] opacity-[0.06]"
-          viewBox="0 0 400 900"
+          className="absolute bottom-0 left-0 w-full h-24 opacity-[0.05]"
+          viewBox="0 0 1200 100"
           preserveAspectRatio="none"
         >
-          <polygon points="280,0 400,0 300,900 180,900" fill="#ffffff" />
+          {Array.from({ length: 12 }, (_, i) => (
+            <polyline
+              key={i}
+              points={`${i * 100},100 ${i * 100 + 50},20 ${i * 100 + 100},100`}
+              stroke="#cc1533"
+              strokeWidth="3"
+              fill="none"
+            />
+          ))}
         </svg>
       </div>
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 flex flex-col items-center md:items-start text-center md:text-left">
         <motion.div {...fadeUp(0.1)} className="flex items-center gap-3 mb-6">
-          <div className="w-0.5 h-5" style={{ backgroundColor: "#c9a227" }} />
+          <div className="w-0.5 h-5" style={{ backgroundColor: "#cc1533" }} />
           <span
             className="text-xs font-bold tracking-[0.25em] uppercase"
-            style={{ color: "#c9a227" }}
+            style={{ color: "#cc1533" }}
           >
             EA FC 26 · Pro Clubs
           </span>
@@ -58,7 +79,7 @@ export default function FcHero({
           className="text-5xl sm:text-7xl md:text-8xl xl:text-9xl font-black tracking-tighter text-white leading-none mb-4"
         >
           BARDOWNSKI{" "}
-          <span style={{ color: "#c9a227" }}>FC</span>
+          <span style={{ color: "#cc1533" }}>FC</span>
         </motion.h1>
 
         <motion.p
@@ -75,14 +96,14 @@ export default function FcHero({
               <div
                 className="px-4 py-2 rounded-lg backdrop-blur-sm"
                 style={{
-                  backgroundColor: "rgba(36,39,44,0.7)",
+                  backgroundColor: "rgba(17,24,39,0.7)",
                   border: "1px solid rgba(255,255,255,0.08)",
                 }}
               >
                 <span className="text-[9px] uppercase tracking-[0.2em] text-white/40 block">
                   Record
                 </span>
-                <span className="text-lg font-bold tabular-nums" style={{ color: "#e6c964" }}>
+                <span className="text-lg font-bold tabular-nums" style={{ color: "#5b9bd5" }}>
                   {record}
                 </span>
               </div>
@@ -91,14 +112,14 @@ export default function FcHero({
               <div
                 className="px-4 py-2 rounded-lg backdrop-blur-sm"
                 style={{
-                  backgroundColor: "rgba(36,39,44,0.7)",
+                  backgroundColor: "rgba(17,24,39,0.7)",
                   border: "1px solid rgba(255,255,255,0.08)",
                 }}
               >
                 <span className="text-[9px] uppercase tracking-[0.2em] text-white/40 block">
                   Skill Rating
                 </span>
-                <span className="text-lg font-bold tabular-nums" style={{ color: "#e6c964" }}>
+                <span className="text-lg font-bold tabular-nums" style={{ color: "#5b9bd5" }}>
                   {skillRating}
                 </span>
               </div>
@@ -110,13 +131,13 @@ export default function FcHero({
           <Link
             href="/fc/fixtures"
             className="px-8 py-3.5 font-bold uppercase tracking-wider text-sm transition-all rounded hover:brightness-110"
-            style={{ backgroundColor: "#c9a227", color: "#141414" }}
+            style={{ backgroundColor: "#cc1533", color: "#ffffff" }}
           >
             Fixtures &amp; Results
           </Link>
           <Link
             href="/fc/highlights"
-            className="px-8 py-3.5 border border-white/60 text-white font-bold uppercase tracking-wider text-sm transition-colors rounded hover:border-[#c9a227]"
+            className="px-8 py-3.5 border border-white/60 text-white font-bold uppercase tracking-wider text-sm transition-colors rounded hover:border-[#cc1533]"
           >
             Watch Highlights
           </Link>
@@ -134,9 +155,9 @@ export default function FcHero({
           animate={{ y: [0, 8, 0] }}
           transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
           className="w-5 h-8 border-2 rounded-full flex justify-center pt-1.5"
-          style={{ borderColor: "rgba(201,162,39,0.5)" }}
+          style={{ borderColor: "rgba(204,21,51,0.5)" }}
         >
-          <div className="w-1 h-2 rounded-full" style={{ backgroundColor: "rgba(201,162,39,0.7)" }} />
+          <div className="w-1 h-2 rounded-full" style={{ backgroundColor: "rgba(204,21,51,0.7)" }} />
         </motion.div>
       </motion.div>
     </section>

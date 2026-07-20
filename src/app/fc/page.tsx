@@ -219,18 +219,33 @@ export default async function FcHomePage() {
                 className="group relative block rounded-2xl overflow-hidden"
                 style={{ border: `1px solid var(--fc-border)` }}
               >
-                <div className="relative h-64 sm:h-80">
-                  <Image
-                    src="/fc/images/fc-highlight-1-poster.webp"
-                    alt="Bardownski FC highlights"
-                    fill
-                    className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                <div className="relative h-64 sm:h-80 overflow-hidden">
+                  {/* Blurred gold/grey backdrop — no media */}
+                  <div
+                    className="absolute inset-0"
+                    style={{ backgroundColor: "var(--fc-bg-dark)" }}
+                  />
+                  <div
+                    className="absolute -top-20 -right-20 w-[500px] h-[500px] rounded-full transition-transform duration-700 group-hover:scale-110"
+                    style={{
+                      background:
+                        "radial-gradient(circle, rgba(204,21,51,0.35) 0%, transparent 60%)",
+                      filter: "blur(60px)",
+                    }}
+                  />
+                  <div
+                    className="absolute -bottom-24 left-1/4 w-[400px] h-[400px] rounded-full"
+                    style={{
+                      background:
+                        "radial-gradient(circle, rgba(91,155,213,0.18) 0%, transparent 60%)",
+                      filter: "blur(50px)",
+                    }}
                   />
                   <div
                     className="absolute inset-0"
                     style={{
                       background:
-                        "linear-gradient(90deg, rgba(20,21,24,0.95) 0%, rgba(20,21,24,0.6) 50%, rgba(20,21,24,0.3) 100%)",
+                        "linear-gradient(90deg, rgba(11,15,26,0.95) 0%, rgba(11,15,26,0.6) 50%, rgba(11,15,26,0.3) 100%)",
                     }}
                   />
                   <div className="absolute inset-0 flex items-center px-8 sm:px-14">
@@ -249,7 +264,7 @@ export default async function FcHomePage() {
                       </h3>
                       <span
                         className="inline-flex items-center gap-2 px-6 py-3 rounded text-xs font-bold uppercase tracking-widest transition-all group-hover:brightness-110"
-                        style={{ backgroundColor: FC.gold, color: "#141414" }}
+                        style={{ backgroundColor: FC.gold, color: "#ffffff" }}
                       >
                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M8 5v14l11-7z" />

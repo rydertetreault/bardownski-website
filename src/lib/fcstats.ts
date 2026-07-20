@@ -253,8 +253,13 @@ function transformMatch(
 
   const scoreUs = num(us.goals);
   const scoreThem = num(us.goalsAgainst);
+  // EA doesn't set the wins/losses/ties flags for some match types
+  // (friendlies leave all three at 0) — fall back to comparing the score.
+  const flagged =
+    num(us.wins) > 0 ? "W" : num(us.losses) > 0 ? "L" : num(us.ties) > 0 ? "D" : null;
   const result: FcClubMatch["result"] =
-    num(us.wins) > 0 ? "W" : num(us.losses) > 0 ? "L" : "D";
+    flagged ??
+    (scoreUs > scoreThem ? "W" : scoreUs < scoreThem ? "L" : "D");
 
   const ourPlayers = game.players[CLUB_ID] || {};
   const players: FcMatchPlayer[] = Object.values(ourPlayers).map((p) => ({
@@ -298,22 +303,42 @@ function transformMatch(
 
 /* ── Main fetch ───────────────────────────────────────────────────────── */
 
+// Last-good snapshot so a slow/flaky upstream doesn't blank the site.
+let lastGood: { data: FcStatsData; at: number } | null = null;
+
+async function fetchRaw(timeoutMs: number): Promise<PctApiResponse | null> {
+  const url = `${PCT_URL}/${CLUB_ID}?platform=${PLATFORM}`;
+  const res = await fetch(url, {
+    next: { revalidate: 300 },
+    signal: AbortSignal.timeout(timeoutMs),
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+      Accept: "application/json",
+    },
+  });
+  if (!res.ok) return null;
+  return (await res.json()) as PctApiResponse;
+}
+
 export async function fetchFcStatsData(): Promise<FcStatsData | null> {
   try {
-    const url = `${PCT_URL}/${CLUB_ID}?platform=${PLATFORM}`;
-
-    const res = await fetch(url, {
-      next: { revalidate: 300 },
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
-        Accept: "application/json",
-      },
-    });
-    if (!res.ok) return null;
-
-    const data: PctApiResponse = await res.json();
-    if (!data.overallStats) return null;
+    // First attempt with a tight timeout; one retry with a generous one
+    // (the upstream can be slow on cold starts).
+    let data: PctApiResponse | null = null;
+    try {
+      data = await fetchRaw(10_000);
+    } catch {
+      data = null;
+    }
+    if (!data?.overallStats) {
+      try {
+        data = await fetchRaw(30_000);
+      } catch {
+        data = null;
+      }
+    }
+    if (!data?.overallStats) return lastGood?.data ?? null;
 
     const os = data.overallStats;
     const wins = num(os.wins);
@@ -364,10 +389,12 @@ export async function fetchFcStatsData(): Promise<FcStatsData | null> {
 
     matches.sort((a, b) => b.timestamp - a.timestamp);
 
-    return { clubStats, members, matches };
+    const result = { clubStats, members, matches };
+    lastGood = { data: result, at: Date.now() };
+    return result;
   } catch (err) {
     console.error("[fcstats] Failed to fetch:", err);
-    return null;
+    return lastGood?.data ?? null;
   }
 }
 

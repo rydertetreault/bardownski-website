@@ -6,8 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { FcPlayerMatchLog } from "@/lib/fcstats";
 import { FcResultBadge, FcSectionHeading } from "@/components/fc/FcUI";
 
-const GOLD = "#c9a227";
-const GOLD_LIGHT = "#e6c964";
+const GOLD = "#cc1533";
+const GOLD_LIGHT = "#5b9bd5";
 
 export interface StatsPlayer {
   gamertag: string;
@@ -122,7 +122,7 @@ export default function StatsClient({ players }: { players: StatsPlayer[] }) {
             className="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
             style={{
               backgroundColor: selected === p.gamertag ? GOLD : "var(--fc-card)",
-              color: selected === p.gamertag ? "#141414" : "rgba(255,255,255,0.55)",
+              color: selected === p.gamertag ? "#ffffff" : "rgba(255,255,255,0.55)",
               border: "1px solid var(--fc-border)",
             }}
           >
@@ -235,7 +235,7 @@ export default function StatsClient({ players }: { players: StatsPlayer[] }) {
                               {g.mom && (
                                 <span
                                   className="ml-2 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider"
-                                  style={{ backgroundColor: GOLD, color: "#141414" }}
+                                  style={{ backgroundColor: GOLD, color: "#ffffff" }}
                                 >
                                   MOTM
                                 </span>

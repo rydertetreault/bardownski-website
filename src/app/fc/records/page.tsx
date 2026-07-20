@@ -20,14 +20,14 @@ function RecordCard({ record, featured }: { record: FcRecordEntry; featured?: bo
       className="rounded-xl p-6 flex flex-col gap-1 relative overflow-hidden"
       style={{
         backgroundColor: "var(--fc-card)",
-        border: featured ? "1px solid rgba(201,162,39,0.4)" : "1px solid var(--fc-border)",
+        border: featured ? "1px solid rgba(204,21,51,0.4)" : "1px solid var(--fc-border)",
       }}
     >
       {featured && (
         <div
           className="absolute top-0 right-0 w-40 h-40 opacity-10 pointer-events-none"
           style={{
-            background: "radial-gradient(circle at top right, #c9a227 0%, transparent 70%)",
+            background: "radial-gradient(circle at top right, #cc1533 0%, transparent 70%)",
           }}
         />
       )}

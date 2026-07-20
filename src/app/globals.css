@@ -25,14 +25,14 @@
   --muted: #7a8ba8;
   --light-blue: #5b9bd5;
 
-  /* ── Bardownski FC (grey / white / gold) ── */
-  --fc-gold: #c9a227;
-  --fc-gold-light: #e6c964;
-  --fc-gold-dark: #a3841c;
-  --fc-bg: #1b1d21;
-  --fc-bg-dark: #141518;
-  --fc-card: #24272c;
-  --fc-card-light: #2d3138;
+  /* ── Bardownski FC (hockey palette: navy / red / light blue) ── */
+  --fc-gold: #cc1533;
+  --fc-gold-light: #5b9bd5;
+  --fc-gold-dark: #9b0c23;
+  --fc-bg: #0b0f1a;
+  --fc-bg-dark: #0f1a2e;
+  --fc-card: #111827;
+  --fc-card-light: #1c2538;
   --fc-border: rgba(255, 255, 255, 0.08);
 }
 

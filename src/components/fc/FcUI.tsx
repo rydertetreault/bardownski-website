@@ -22,13 +22,13 @@ export function FcPageShell({ children }: { children: ReactNode }) {
         <div
           className="absolute top-0 right-0 w-[600px] h-[600px] opacity-[0.06]"
           style={{
-            background: `radial-gradient(circle at top right, #c9a227 0%, transparent 70%)`,
+            background: `radial-gradient(circle at top right, #cc1533 0%, transparent 70%)`,
           }}
         />
         <div
           className="absolute bottom-0 left-0 w-[400px] h-[400px] opacity-[0.04]"
           style={{
-            background: `radial-gradient(circle at bottom left, #c9a227 0%, transparent 70%)`,
+            background: `radial-gradient(circle at bottom left, #cc1533 0%, transparent 70%)`,
           }}
         />
       </div>
@@ -130,9 +130,9 @@ export function FcResultBadge({
     <span
       className={`inline-flex items-center justify-center rounded-full font-bold shrink-0 ${cls}`}
       style={{
-        color: result === "W" ? "#141414" : "#ffffff",
-        backgroundColor: result === "W" ? "#c9a227" : "rgba(255,255,255,0.08)",
-        border: `1px solid ${result === "W" ? "#c9a227" : "rgba(255,255,255,0.08)"}`,
+        color: result === "W" ? "#ffffff" : "#ffffff",
+        backgroundColor: result === "W" ? "#cc1533" : "rgba(255,255,255,0.08)",
+        border: `1px solid ${result === "W" ? "#cc1533" : "rgba(255,255,255,0.08)"}`,
       }}
       title={forfeit ? "Forfeit" : undefined}
     >
@@ -150,10 +150,10 @@ export function FcFormGuide({ form }: { form: ("W" | "L" | "D")[] }) {
           key={i}
           className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-bold"
           style={{
-            color: r === "W" ? "#141414" : "#ffffff",
+            color: r === "W" ? "#ffffff" : "#ffffff",
             backgroundColor:
               r === "W"
-                ? "#c9a227"
+                ? "#cc1533"
                 : r === "D"
                   ? "rgba(255,255,255,0.25)"
                   : "rgba(255,255,255,0.08)",

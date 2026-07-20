@@ -57,14 +57,14 @@ export default async function FcNewsPage() {
                 className="absolute inset-0"
                 style={{
                   background:
-                    "linear-gradient(180deg, rgba(20,21,24,0.1) 0%, rgba(20,21,24,0.55) 55%, rgba(20,21,24,0.97) 100%)",
+                    "linear-gradient(180deg, rgba(11,15,26,0.1) 0%, rgba(11,15,26,0.55) 55%, rgba(11,15,26,0.97) 100%)",
                 }}
               />
               <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-10">
                 <div className="flex items-center gap-3 mb-3">
                   <span
                     className="px-2.5 py-1 rounded text-[9px] font-bold uppercase tracking-[0.15em]"
-                    style={{ backgroundColor: "var(--fc-gold)", color: "#141414" }}
+                    style={{ backgroundColor: "var(--fc-gold)", color: "#ffffff" }}
                   >
                     {featured.category}
                   </span>

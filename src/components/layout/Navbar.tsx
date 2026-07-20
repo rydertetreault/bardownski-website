@@ -28,7 +28,7 @@ const fcLinks = [
   { href: "/fc/news", label: "News" },
 ];
 
-const GOLD = "#c9a227";
+const GOLD = "#cc1533";
 
 function useIsLinkActive() {
   const pathname = usePathname();
@@ -119,7 +119,7 @@ function HockeyHeader({
             <Link
               href="/fc"
               className="hidden md:inline-flex items-center px-4 py-2 rounded text-xs font-bold uppercase tracking-widest transition-all hover:brightness-110 active:scale-95"
-              style={{ backgroundColor: GOLD, color: "#141414" }}
+              style={{ backgroundColor: GOLD, color: "#ffffff" }}
             >
               Bardownski FC
             </Link>
@@ -171,12 +171,12 @@ function FcHeader({
         style={{ backgroundColor: GOLD }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-8 flex items-center justify-between">
-          <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#141414]">
+          <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#ffffff]">
             EA FC 26 · Pro Clubs
           </span>
           <Link
             href="/"
-            className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#141414]/70 hover:text-[#141414] transition-colors"
+            className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#ffffff]/70 hover:text-[#ffffff] transition-colors"
           >
             Bardownski Hockey ↗
           </Link>
@@ -187,7 +187,7 @@ function FcHeader({
       <div
         className="h-16"
         style={{
-          backgroundColor: "#141518",
+          backgroundColor: "#0f1a2e",
           borderBottom: "1px solid rgba(255,255,255,0.08)",
         }}
       >
@@ -261,13 +261,13 @@ function MobileOverlay({
   const isLinkActive = useIsLinkActive();
   const navLinks = isFc ? fcLinks : hockeyLinks;
   const accent = isFc ? GOLD : "#cc1533";
-  const accentSoft = isFc ? "rgba(201,162,39,0.12)" : "rgba(204,21,51,0.12)";
+  const accentSoft = isFc ? "rgba(204,21,51,0.12)" : "rgba(204,21,51,0.12)";
 
   return (
     <motion.div
       key="mobile-menu"
       className="fixed inset-0 z-[60] flex flex-col overflow-hidden"
-      style={{ backgroundColor: isFc ? "#141518" : "#0f1a2e" }}
+      style={{ backgroundColor: isFc ? "#0f1a2e" : "#0f1a2e" }}
       initial={{ x: "100%" }}
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
@@ -387,7 +387,7 @@ function MobileOverlay({
           className="flex items-center justify-center w-full py-3.5 rounded-xl text-sm font-bold uppercase tracking-widest transition-all hover:brightness-110 active:scale-[0.98]"
           style={{
             backgroundColor: isFc ? "#cc1533" : GOLD,
-            color: isFc ? "#ffffff" : "#141414",
+            color: isFc ? "#ffffff" : "#ffffff",
           }}
         >
           {isFc ? "Bardownski Hockey" : "Bardownski FC"}
