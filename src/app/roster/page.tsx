@@ -54,9 +54,9 @@ const PLAYER_SCOUTING: Record<string, { role: string; description: string }> = {
       "End-to-end playmaking defenseman with a pass-first mentality. Quarterbacks the breakout and isn't afraid to jump into the rush. Sees the ice like a forward.",
   },
   JIMMY: {
-    role: "Two-Way Threat",
+    role: "Two-Way Winger",
     description:
-      "Defensive-minded sniper with a dual threat — shuts down the opposition's best from the blue line, then makes them pay on the scoresheet. Also doubles as the team's backup goaltender when called upon.",
+      "Two-way winger who plays both ends of the ice. Backchecks hard, breaks up plays through the neutral zone, then turns defense into offense with a sniper's release. Also doubles as the team's backup goaltender when called upon.",
   },
   ROB: {
     role: "Shutdown Defenseman",
