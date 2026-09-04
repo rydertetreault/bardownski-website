@@ -250,6 +250,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Season frozen: stats are a static snapshot, so weekly articles/POTW
+  // would just re-report the same numbers. Cron removed from vercel.json.
+  if (process.env.SEASON_LIVE !== "true") {
+    return NextResponse.json({ skipped: true, reason: "season frozen" });
+  }
+
   const redis = getRedis();
   if (!redis) {
     return NextResponse.json(

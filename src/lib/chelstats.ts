@@ -5,6 +5,7 @@
  * https://chelstats.app/api/clubs/stats?teamname=Bardownskii&console=common-gen5&strict=true
  */
 
+import { FROZEN_CHELSTATS, FROZEN_SEASON_LABEL } from "./chelstats-frozen";
 import type {
   SeasonData,
   ParsedStats,
@@ -504,7 +505,21 @@ function transformMember(raw: RawMember): ClubMember {
 
 /* ── Main fetch ───────────────────────────────────────────────────────── */
 
+/**
+ * SEASON OVER — the site is frozen on the final numbers.
+ *
+ * EA reset the Pro Clubs database for the next NHL title, so club 149602 no
+ * longer exists upstream and chelstats.app returns "Error" for it. Rather
+ * than render "coming soon" everywhere, serve the last-known snapshot (see
+ * chelstats-frozen.ts). To resume live tracking next season, point
+ * fetchLiveChelstatsData at the new club and call it here instead.
+ */
 export async function fetchChelstatsData(): Promise<ChelstatsData | null> {
+  return FROZEN_CHELSTATS;
+}
+
+/** Live chelstats.app fetch. Retired while the season is frozen — see above. */
+export async function fetchLiveChelstatsData(): Promise<ChelstatsData | null> {
   try {
     const url = `${CHELSTATS_URL}?teamname=${encodeURIComponent(TEAM_NAME)}&console=${CONSOLE}&strict=true`;
 
@@ -692,7 +707,7 @@ export function chelstatsToSeasonData(members: ClubMember[]): SeasonData {
   );
 
   const stats: ParsedStats = {
-    date: "Live from EA",
+    date: FROZEN_SEASON_LABEL,
     roster,
     points,
     goals,

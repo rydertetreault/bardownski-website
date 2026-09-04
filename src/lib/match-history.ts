@@ -233,7 +233,8 @@ export async function getAllMatchesForRecords(
   if (!redis) return chelstats.matches;
 
   try {
-    await pollAndAccumulate(chelstats);
+    // Season frozen: read-only. No pollAndAccumulate — chelstats data is a
+    // static snapshot with no per-game list, so there is nothing to sync.
     const matches = await readAllMatches(redis);
     matches.sort((a, b) => b.timestamp - a.timestamp);
     return matches;
@@ -256,8 +257,7 @@ export async function getMatchHistory(
   if (!redis) return chelstats.matches;
 
   try {
-    await pollAndAccumulate(chelstats);
-
+    // Season frozen: read-only (see getAllMatchesForRecords).
     const [matches, storedForfeits] = await Promise.all([
       readAllMatches(redis),
       readAllForfeits(redis),
@@ -270,8 +270,12 @@ export async function getMatchHistory(
     for (const f of storedForfeits) forfeitsById.set(f.id, f);
     for (const f of MANUAL_FORFEITS) forfeitsById.set(f.id, f);
 
-    // 3-week filter is applied at read time; Redis retains everything
-    const cutoff = Math.floor(Date.now() / 1000) - RETENTION_SECONDS;
+    // 3-week filter is applied at read time; Redis retains everything.
+    // Season frozen: anchor the window to the last game played rather than
+    // the wall clock, so the final stretch doesn't age out into an empty page.
+    const latest = matches.reduce((max, m) => Math.max(max, m.timestamp), 0);
+    const anchor = latest || Math.floor(Date.now() / 1000);
+    const cutoff = anchor - RETENTION_SECONDS;
     const visibleMatches = matches.filter((m) => m.timestamp >= cutoff);
     const visibleForfeits = Array.from(forfeitsById.values()).filter(
       (f) => f.timestamp >= cutoff

@@ -17,6 +17,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Season frozen: chelstats is a static snapshot, nothing to sync.
+  // Cron schedule removed from vercel.json; this stays as a manual no-op.
+  if (process.env.SEASON_LIVE !== "true") {
+    return NextResponse.json({ skipped: true, reason: "season frozen" });
+  }
+
   try {
     const chelstats = await fetchChelstatsData();
     if (!chelstats) {
