@@ -1,0 +1,25 @@
+import assert from "node:assert/strict";
+import { calculateSeasonAwards, SEASON_AWARDS } from "../src/lib/season-awards";
+import { FROZEN_CHELSTATS } from "../src/lib/chelstats-frozen";
+
+const byId = Object.fromEntries(SEASON_AWARDS.map(a => [a.id, a]));
+assert.deepEqual(byId.mvp.winners, ["XAVIER LAFLAMME"]);
+assert.equal(byId.mvp.result, "2075.54 performance score");
+assert.deepEqual(byId.defense.winners, ["GOTTA BE"]);
+assert.deepEqual(byId.goalie.winners, ["JENE RENE TETREAU IV"]);
+assert.equal(byId.points.result, "1,410 points");
+assert.equal(byId.goals.result, "920 goals");
+assert.equal(byId.assists.result, "490 assists");
+assert.equal(byId.hits.result, "2,189 hits");
+assert.equal(byId.blocks.result, "152 blocked shots");
+assert.equal(byId.clutch.result, "43 game-winning goals");
+assert.ok(calculateSeasonAwards([]).every(a => a.winners.length === 0));
+const player = FROZEN_CHELSTATS.members[0];
+const tied = calculateSeasonAwards([player, { ...player, username: "tie-player" }]);
+assert.equal(tied.find(a => a.id === "points")!.winners.length, 2);
+assert.equal(tied[0].winners.length, 2);
+const shortSeason = calculateSeasonAwards([{...player, gamesPlayed: 4}]);
+assert.equal(shortSeason[0].winners.length, 0);
+assert.equal(shortSeason.find(a=>a.id==='points')!.winners.length, 1);
+assert.equal(calculateSeasonAwards([{...player, position:'SKTR'}]).find(a=>a.id==='defense')!.winners.length,0);
+console.log("Season awards: frozen winners, totals, ties, empty data, eligibility passed.");

@@ -1,3 +1,5 @@
+import { SEASON_AWARDS, SEASON_MVP, UNSUNG_HERO } from "./season-awards";
+
 export interface Article {
   id: string;
   title: string;
@@ -9,6 +11,22 @@ export interface Article {
 }
 
 export const articles: Article[] = [
+  {
+    id: "season-finale-nhl26",
+    title: "Season Over. History Made. Bardownski Closes the NHL 26 Chapter",
+    date: "September 10, 2026",
+    category: "Club News",
+    image: "/images/club finals.png",
+    summary: [
+      "The NHL 26 season is officially in the books. Bardownski closes the year at 207–144–15 across 366 games, with something we had been chasing for seven years: our first club championship.",
+      "A 5–3 win over B A N G N A T I O N sealed the Season 4 Elite Division Club Finals title. A 16–2–1 championship run became a piece of club history. On championship night, it was the defensive game that carried us: sticks in lanes, bodies in front of pucks, and a team willing to do the work without the puck.",
+      "JRT IV delivered between the pipes, and Xavier Laflamme finished the bracket as the championship-run MVP. That honor recognizes the title run. Full-season statistical awards have now been calculated separately from the frozen final-season snapshot.",
+      `Season MVP: ${SEASON_MVP.winners.join(" & ")} (${SEASON_MVP.result}). The award uses the site’s existing position-adjusted MVP model, not a team vote. ${SEASON_AWARDS.slice(1).map(a => `${a.title}: ${a.winners.join(" & ")} — ${a.result}.`).join(" ")} ${UNSUNG_HERO.winner} is the team-selected ${UNSUNG_HERO.title}, recognizing the supporting work outside the scoring spotlight: ${UNSUNG_HERO.detail}. This is a judgment-based honor, not a model result. Teammate of the Year has not yet been announced.`,
+      "The final-season snapshot tells its own story. Xavier Laflamme finished with 1,410 points, including 920 goals. Matt Hut put up 801 points. Jene Rene Tetreau IV recorded 2,135 saves and 21 shutouts. These statistical awards celebrate the season’s measurable achievements; community honors still require team input.",
+      "Now comes the annual reset. New colors and a new leadership chapter are ahead, with reveal details still to come. This season’s identity and achievements will stay in the archive as we prepare for what follows.",
+      "To everyone who took the ice with Bardownski: thank you. Every shift, every late night, and every teammate helped make this season ours. Season over. History made.",
+    ].join("\n\n"),
+  },
   {
     id: "12",
     title: "The Wall: JRT IV Breaks the Club Shutouts Record",
