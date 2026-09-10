@@ -1,5 +1,5 @@
 /**
- * Biweekly cron endpoint.
+ * Biweekly cron endpoint — paused for the offseason.
  *
  * Vercel Cron fires this every Monday at 10:00 UTC, but the handler
  * skips runs less than 10 days after the previous article so articles
@@ -22,6 +22,10 @@ import { generatePlayerSpotlight } from "@/lib/article-generators/player-spotlig
 import { generateMatchRecap } from "@/lib/article-generators/match-recap";
 import { generateMilestoneRecap } from "@/lib/article-generators/milestone-recap";
 import { detectMilestones, buildReportedKeys, buildSeedKeysFromMembers, type DetectedMilestone } from "@/lib/milestones";
+
+// Explicit offseason pause, independent of SEASON_LIVE.
+// To resume: set this to false and restore the intended Vercel schedule.
+const WEEKLY_UPDATE_PAUSED = true;
 
 /* ── Types ───────────────────────────────────────────────────────────── */
 
@@ -246,8 +250,13 @@ type ArticleType = typeof GENERATORS[number] | ExtraType;
 export async function GET(request: NextRequest) {
   // Auth check
   const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!process.env.CRON_SECRET || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // This also blocks manual reset/type/seed requests before any data access.
+  if (WEEKLY_UPDATE_PAUSED) {
+    return NextResponse.json({ skipped: true, reason: "weekly updates paused for offseason" });
   }
 
   // Season frozen: stats are a static snapshot, so weekly articles/POTW
