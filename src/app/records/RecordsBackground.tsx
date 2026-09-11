@@ -25,7 +25,7 @@ export default function RecordsBackground() {
         viewBox="0 0 400 900"
         preserveAspectRatio="none"
       >
-        <polygon points="300,0 400,0 320,900 220,900" fill="#cc1533" />
+        <polygon points="300,0 400,0 320,900 220,900" fill="#d4b77b" />
       </svg>
 
       {/* Subtle red glow — top */}
@@ -38,7 +38,7 @@ export default function RecordsBackground() {
           width: "800px",
           height: "500px",
           background:
-            "radial-gradient(ellipse at center, rgba(200,16,46,0.04) 0%, transparent 70%)",
+            "radial-gradient(ellipse at center, rgba(212, 183, 123,0.04) 0%, transparent 70%)",
         }}
       />
 

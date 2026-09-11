@@ -1,0 +1,1567 @@
+[
+  {
+    "id": "13598925580429",
+    "timestamp": 1772864972,
+    "date": "March 7, 2026",
+    "opponent": "Taxes or Palm Trees",
+    "scoreUs": 11,
+    "scoreThem": 5,
+    "matchType": "finals",
+    "players": [
+      {
+        "name": "MATT",
+        "goals": 3,
+        "assists": 7
+      },
+      {
+        "name": "KADEN",
+        "goals": 4,
+        "assists": 4
+      },
+      {
+        "name": "DYLAN",
+        "goals": 4,
+        "assists": 4
+      }
+    ]
+  },
+  {
+    "id": "13784700500070",
+    "timestamp": 1773023489,
+    "date": "March 9, 2026",
+    "opponent": "Stl Sleepy Hollow",
+    "scoreUs": 2,
+    "scoreThem": 3,
+    "matchType": "finals",
+    "players": [
+      {
+        "name": "MATT",
+        "goals": 1,
+        "assists": 1
+      },
+      {
+        "name": "JIMMY",
+        "goals": 1,
+        "assists": 1
+      },
+      {
+        "name": "LOGAN",
+        "goals": 0,
+        "assists": 2
+      }
+    ]
+  },
+  {
+    "id": "13808030590080",
+    "timestamp": 1773040362,
+    "date": "March 9, 2026",
+    "opponent": "Full Tilt",
+    "scoreUs": 3,
+    "scoreThem": 2,
+    "matchType": "finals",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 3,
+        "assists": 0
+      },
+      {
+        "name": "KADEN",
+        "goals": 0,
+        "assists": 2
+      },
+      {
+        "name": "MATT",
+        "goals": 0,
+        "assists": 2
+      }
+    ]
+  },
+  {
+    "id": "13808103730251",
+    "timestamp": 1773041757,
+    "date": "March 9, 2026",
+    "opponent": "Full Tilt",
+    "scoreUs": 4,
+    "scoreThem": 8,
+    "matchType": "finals",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 4,
+        "assists": 0
+      },
+      {
+        "name": "KADEN",
+        "goals": 0,
+        "assists": 3
+      },
+      {
+        "name": "MATT",
+        "goals": 0,
+        "assists": 1
+      }
+    ]
+  },
+  {
+    "id": "16860284170362",
+    "timestamp": 1776311564,
+    "date": "April 16, 2026",
+    "opponent": "Pounding Snatches",
+    "scoreUs": 9,
+    "scoreThem": 3,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 5,
+        "assists": 4
+      },
+      {
+        "name": "JIMMY",
+        "goals": 4,
+        "assists": 3
+      }
+    ]
+  },
+  {
+    "id": "16864085060465",
+    "timestamp": 1776315725,
+    "date": "April 16, 2026",
+    "opponent": "Fat Dabs",
+    "scoreUs": 10,
+    "scoreThem": 5,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 8,
+        "assists": 2
+      }
+    ]
+  },
+  {
+    "id": "17774612810411",
+    "timestamp": 1777267959,
+    "date": "April 27, 2026",
+    "opponent": "QCHL3s Canadien MTL",
+    "scoreUs": 7,
+    "scoreThem": 5,
+    "matchType": "finals",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 5,
+        "assists": 1
+      }
+    ]
+  },
+  {
+    "id": "17776505640306",
+    "timestamp": 1777269630,
+    "date": "April 27, 2026",
+    "opponent": "QCHL3s Canadien MTL",
+    "scoreUs": 11,
+    "scoreThem": 7,
+    "matchType": "finals",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 8,
+        "assists": 2
+      }
+    ]
+  },
+  {
+    "id": "17790189210487",
+    "timestamp": 1777277877,
+    "date": "April 27, 2026",
+    "opponent": "The Machine",
+    "scoreUs": 5,
+    "scoreThem": 3,
+    "matchType": "finals",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 5,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "17792017950398",
+    "timestamp": 1777279610,
+    "date": "April 27, 2026",
+    "opponent": "Dragonizer LSHQ",
+    "scoreUs": 9,
+    "scoreThem": 3,
+    "matchType": "finals",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 7,
+        "assists": 2
+      }
+    ]
+  },
+  {
+    "id": "18072266710279",
+    "timestamp": 1777604989,
+    "date": "May 1, 2026",
+    "opponent": "The Wrecking Crew",
+    "scoreUs": 4,
+    "scoreThem": 3,
+    "matchType": "finals",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 4,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "18072519780299",
+    "timestamp": 1777606814,
+    "date": "May 1, 2026",
+    "opponent": "The Wrecking Crew",
+    "scoreUs": 8,
+    "scoreThem": 9,
+    "matchType": "finals",
+    "players": [
+      {
+        "name": "MATT",
+        "goals": 3,
+        "assists": 4
+      },
+      {
+        "name": "DYLAN",
+        "goals": 5,
+        "assists": 2
+      }
+    ]
+  },
+  {
+    "id": "18138602090182",
+    "timestamp": 1777694415,
+    "date": "May 2, 2026",
+    "opponent": "Elder Skatesmen",
+    "scoreUs": 3,
+    "scoreThem": 4,
+    "matchType": "finals",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 3,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "18288406630115",
+    "timestamp": 1777853525,
+    "date": "May 4, 2026",
+    "opponent": "HammerChickens",
+    "scoreUs": 18,
+    "scoreThem": 1,
+    "matchType": "finals",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 15,
+        "assists": 3
+      }
+    ]
+  },
+  {
+    "id": "18288707810373",
+    "timestamp": 1777855642,
+    "date": "May 4, 2026",
+    "opponent": "Stink fingers",
+    "scoreUs": 9,
+    "scoreThem": 8,
+    "matchType": "finals",
+    "players": [
+      {
+        "name": "JIMMY",
+        "goals": 3,
+        "assists": 5
+      },
+      {
+        "name": "DYLAN",
+        "goals": 6,
+        "assists": 2
+      }
+    ]
+  },
+  {
+    "id": "18288967360025",
+    "timestamp": 1777857257,
+    "date": "May 4, 2026",
+    "opponent": "Whitefellas",
+    "scoreUs": 8,
+    "scoreThem": 5,
+    "matchType": "finals",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 4,
+        "assists": 3
+      },
+      {
+        "name": "JIMMY",
+        "goals": 4,
+        "assists": 2
+      }
+    ]
+  },
+  {
+    "id": "18294716120189",
+    "timestamp": 1777860739,
+    "date": "May 4, 2026",
+    "opponent": "Send Crank",
+    "scoreUs": 5,
+    "scoreThem": 4,
+    "matchType": "finals",
+    "players": [
+      {
+        "name": "JIMMY",
+        "goals": 1,
+        "assists": 3
+      },
+      {
+        "name": "DYLAN",
+        "goals": 4,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "18296596650374",
+    "timestamp": 1777861646,
+    "date": "May 4, 2026",
+    "opponent": "BAND OF THE HAWK",
+    "scoreUs": 2,
+    "scoreThem": 8,
+    "matchType": "finals",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 2,
+        "assists": 0
+      },
+      {
+        "name": "JIMMY",
+        "goals": 0,
+        "assists": 1
+      }
+    ]
+  },
+  {
+    "id": "18296941580487",
+    "timestamp": 1777863835,
+    "date": "May 4, 2026",
+    "opponent": "B A N G N A T I O N",
+    "scoreUs": 5,
+    "scoreThem": 3,
+    "matchType": "finals",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 5,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "18370034580423",
+    "timestamp": 1777946076,
+    "date": "May 5, 2026",
+    "opponent": "Net Sticks n Chiii",
+    "scoreUs": 1,
+    "scoreThem": 3,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "JIMMY",
+        "goals": 1,
+        "assists": 0
+      },
+      {
+        "name": "DYLAN",
+        "goals": 0,
+        "assists": 1
+      },
+      {
+        "name": "LOGAN",
+        "goals": 0,
+        "assists": 1
+      }
+    ]
+  },
+  {
+    "id": "18370257490349",
+    "timestamp": 1777947505,
+    "date": "May 5, 2026",
+    "opponent": "Boston     College",
+    "scoreUs": 6,
+    "scoreThem": 3,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 5,
+        "assists": 1
+      },
+      {
+        "name": "LOGAN",
+        "goals": 1,
+        "assists": 2
+      },
+      {
+        "name": "JIMMY",
+        "goals": 0,
+        "assists": 2
+      }
+    ]
+  },
+  {
+    "id": "18370496280374",
+    "timestamp": 1777949022,
+    "date": "May 5, 2026",
+    "opponent": "Chicago crwsaders",
+    "scoreUs": 9,
+    "scoreThem": 7,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 5,
+        "assists": 2
+      },
+      {
+        "name": "LOGAN",
+        "goals": 3,
+        "assists": 3
+      },
+      {
+        "name": "JIMMY",
+        "goals": 1,
+        "assists": 4
+      }
+    ]
+  },
+  {
+    "id": "18568926170131",
+    "timestamp": 1778209465,
+    "date": "May 8, 2026",
+    "opponent": "Caanaadien",
+    "scoreUs": 4,
+    "scoreThem": 7,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "LOGAN",
+        "goals": 3,
+        "assists": 1
+      }
+    ]
+  },
+  {
+    "id": "18580865000310",
+    "timestamp": 1778221107,
+    "date": "May 8, 2026",
+    "opponent": "Pablo 50s",
+    "scoreUs": 0,
+    "scoreThem": 3,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 6,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "18592044670252",
+    "timestamp": 1778224491,
+    "date": "May 8, 2026",
+    "opponent": "Windsor Spitfires 25",
+    "scoreUs": 12,
+    "scoreThem": 8,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 11,
+        "assists": 1
+      }
+    ]
+  },
+  {
+    "id": "18592154460481",
+    "timestamp": 1778226489,
+    "date": "May 8, 2026",
+    "opponent": "Windsor Spitfires 25",
+    "scoreUs": 3,
+    "scoreThem": 5,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 2,
+        "assists": 1
+      }
+    ]
+  },
+  {
+    "id": "18826835370188",
+    "timestamp": 1778465674,
+    "date": "May 11, 2026",
+    "opponent": "Puckin Gabagools",
+    "scoreUs": 2,
+    "scoreThem": 7,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "JIMMY",
+        "goals": 1,
+        "assists": 1
+      },
+      {
+        "name": "LOGAN",
+        "goals": 1,
+        "assists": 1
+      }
+    ]
+  },
+  {
+    "id": "18828432480131",
+    "timestamp": 1778467463,
+    "date": "May 11, 2026",
+    "opponent": "How u doinnn",
+    "scoreUs": 5,
+    "scoreThem": 4,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "LOGAN",
+        "goals": 3,
+        "assists": 1
+      }
+    ]
+  },
+  {
+    "id": "18932058310211",
+    "timestamp": 1778568733,
+    "date": "May 12, 2026",
+    "opponent": "Oblock 67ers",
+    "scoreUs": 7,
+    "scoreThem": 4,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 7,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "18914250610247",
+    "timestamp": 1778570421,
+    "date": "May 12, 2026",
+    "opponent": "Fighting Johnson",
+    "scoreUs": 5,
+    "scoreThem": 6,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 5,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "18914392220323",
+    "timestamp": 1778573977,
+    "date": "May 12, 2026",
+    "opponent": "NORTHERN EAGLES",
+    "scoreUs": 2,
+    "scoreThem": 3,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 2,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "19036927490247",
+    "timestamp": 1778724013,
+    "date": "May 14, 2026",
+    "opponent": "Pizza Club",
+    "scoreUs": 3,
+    "scoreThem": 8,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "LOGAN",
+        "goals": 3,
+        "assists": 0
+      },
+      {
+        "name": "JIMMY",
+        "goals": 0,
+        "assists": 1
+      }
+    ]
+  },
+  {
+    "id": "19042187560026",
+    "timestamp": 1778725346,
+    "date": "May 14, 2026",
+    "opponent": "Biscuit Slingers",
+    "scoreUs": 4,
+    "scoreThem": 3,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "LOGAN",
+        "goals": 2,
+        "assists": 2
+      },
+      {
+        "name": "JIMMY",
+        "goals": 2,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "19042634220399",
+    "timestamp": 1778727689,
+    "date": "May 14, 2026",
+    "opponent": "OnIceVibing",
+    "scoreUs": 4,
+    "scoreThem": 3,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 3,
+        "assists": 1
+      },
+      {
+        "name": "JIMMY",
+        "goals": 1,
+        "assists": 2
+      },
+      {
+        "name": "LOGAN",
+        "goals": 0,
+        "assists": 3
+      }
+    ]
+  },
+  {
+    "id": "19042863970018",
+    "timestamp": 1778729125,
+    "date": "May 14, 2026",
+    "opponent": "Bottled goose meat",
+    "scoreUs": 8,
+    "scoreThem": 2,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 4,
+        "assists": 4
+      },
+      {
+        "name": "LOGAN",
+        "goals": 3,
+        "assists": 2
+      },
+      {
+        "name": "JIMMY",
+        "goals": 1,
+        "assists": 3
+      }
+    ]
+  },
+  {
+    "id": "19048125210041",
+    "timestamp": 1778730528,
+    "date": "May 14, 2026",
+    "opponent": "Odins Wrath",
+    "scoreUs": 3,
+    "scoreThem": 5,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 2,
+        "assists": 1
+      },
+      {
+        "name": "LOGAN",
+        "goals": 1,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "19048500770482",
+    "timestamp": 1778732164,
+    "date": "May 14, 2026",
+    "opponent": "Tampa Trappers",
+    "scoreUs": 0,
+    "scoreThem": 3,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 0,
+        "assists": 0
+      },
+      {
+        "name": "LOGAN",
+        "goals": 0,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "19048550780277",
+    "timestamp": 1778733539,
+    "date": "May 14, 2026",
+    "opponent": "Walihi Warriors",
+    "scoreUs": 11,
+    "scoreThem": 3,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 5,
+        "assists": 2
+      },
+      {
+        "name": "LOGAN",
+        "goals": 6,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "19134582120321",
+    "timestamp": 1778819246,
+    "date": "May 15, 2026",
+    "opponent": "Cajun Navy",
+    "scoreUs": 8,
+    "scoreThem": 3,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 6,
+        "assists": 2
+      }
+    ]
+  },
+  {
+    "id": "19142234140022",
+    "timestamp": 1778825409,
+    "date": "May 15, 2026",
+    "opponent": "The Goofballs",
+    "scoreUs": 20,
+    "scoreThem": 4,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 20,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "19390784390125",
+    "timestamp": 1779064819,
+    "date": "May 18, 2026",
+    "opponent": "Sunnyvale Samsquantches",
+    "scoreUs": 1,
+    "scoreThem": 6,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "LOGAN",
+        "goals": 1,
+        "assists": 0
+      },
+      {
+        "name": "JIMMY",
+        "goals": 0,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "19396055330236",
+    "timestamp": 1779066209,
+    "date": "May 18, 2026",
+    "opponent": "Winking Stinkstars",
+    "scoreUs": 4,
+    "scoreThem": 6,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "LOGAN",
+        "goals": 3,
+        "assists": 1
+      },
+      {
+        "name": "JIMMY",
+        "goals": 1,
+        "assists": 2
+      }
+    ]
+  },
+  {
+    "id": "19394763690414",
+    "timestamp": 1779067614,
+    "date": "May 18, 2026",
+    "opponent": "Dry Island Boys",
+    "scoreUs": 4,
+    "scoreThem": 7,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "JIMMY",
+        "goals": 2,
+        "assists": 2
+      },
+      {
+        "name": "LOGAN",
+        "goals": 2,
+        "assists": 2
+      }
+    ]
+  },
+  {
+    "id": "19400214750263",
+    "timestamp": 1779069706,
+    "date": "May 18, 2026",
+    "opponent": "Tegridy Farms",
+    "scoreUs": 3,
+    "scoreThem": 6,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "JIMMY",
+        "goals": 2,
+        "assists": 1
+      },
+      {
+        "name": "LOGAN",
+        "goals": 1,
+        "assists": 2
+      }
+    ]
+  },
+  {
+    "id": "19500015150269",
+    "timestamp": 1779161786,
+    "date": "May 19, 2026",
+    "opponent": "The Belt Boys",
+    "scoreUs": 14,
+    "scoreThem": 3,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 8,
+        "assists": 6
+      },
+      {
+        "name": "LOGAN",
+        "goals": 6,
+        "assists": 5
+      }
+    ]
+  },
+  {
+    "id": "19502260260390",
+    "timestamp": 1779166461,
+    "date": "May 19, 2026",
+    "opponent": "LG London Knights",
+    "scoreUs": 2,
+    "scoreThem": 6,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 2,
+        "assists": 0
+      },
+      {
+        "name": "LOGAN",
+        "goals": 0,
+        "assists": 1
+      }
+    ]
+  },
+  {
+    "id": "19658604560072",
+    "timestamp": 1779326862,
+    "date": "May 21, 2026",
+    "opponent": "Long Island Mutants",
+    "scoreUs": 0,
+    "scoreThem": 3,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "JIMMY",
+        "goals": 0,
+        "assists": 0
+      },
+      {
+        "name": "LOGAN",
+        "goals": 0,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "19656748570100",
+    "timestamp": 1779327874,
+    "date": "May 21, 2026",
+    "opponent": "Barred Swamp Rabbits",
+    "scoreUs": 0,
+    "scoreThem": 3,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "LOGAN",
+        "goals": 3,
+        "assists": 0
+      },
+      {
+        "name": "JIMMY",
+        "goals": 0,
+        "assists": 1
+      }
+    ]
+  },
+  {
+    "id": "19658900640326",
+    "timestamp": 1779329255,
+    "date": "May 21, 2026",
+    "opponent": "Horse Wallaces",
+    "scoreUs": 3,
+    "scoreThem": 1,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "JIMMY",
+        "goals": 1,
+        "assists": 2
+      },
+      {
+        "name": "LOGAN",
+        "goals": 2,
+        "assists": 1
+      }
+    ]
+  },
+  {
+    "id": "19664140300394",
+    "timestamp": 1779330581,
+    "date": "May 21, 2026",
+    "opponent": "Odins Wrath",
+    "scoreUs": 3,
+    "scoreThem": 6,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "JIMMY",
+        "goals": 2,
+        "assists": 0
+      },
+      {
+        "name": "LOGAN",
+        "goals": 1,
+        "assists": 1
+      },
+      {
+        "name": "KADEN",
+        "goals": 0,
+        "assists": 1
+      }
+    ]
+  },
+  {
+    "id": "19666346670224",
+    "timestamp": 1779331248,
+    "date": "May 21, 2026",
+    "opponent": "Clhit Commanders",
+    "scoreUs": 1,
+    "scoreThem": 5,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "KADEN",
+        "goals": 1,
+        "assists": 0
+      },
+      {
+        "name": "LOGAN",
+        "goals": 0,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "19666470040039",
+    "timestamp": 1779332741,
+    "date": "May 21, 2026",
+    "opponent": "Eeffoc Na Noor Elite",
+    "scoreUs": 5,
+    "scoreThem": 6,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "LOGAN",
+        "goals": 2,
+        "assists": 2
+      },
+      {
+        "name": "KADEN",
+        "goals": 3,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "19664709320328",
+    "timestamp": 1779334197,
+    "date": "May 21, 2026",
+    "opponent": "Pouch munchers",
+    "scoreUs": 4,
+    "scoreThem": 6,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "LOGAN",
+        "goals": 3,
+        "assists": 1
+      },
+      {
+        "name": "KADEN",
+        "goals": 1,
+        "assists": 2
+      }
+    ]
+  },
+  {
+    "id": "19760110080078",
+    "timestamp": 1779420079,
+    "date": "May 22, 2026",
+    "opponent": "Bad A ss  MOFOs HC",
+    "scoreUs": 2,
+    "scoreThem": 8,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "RYDER",
+        "goals": 2,
+        "assists": 0
+      },
+      {
+        "name": "Treyway6479",
+        "goals": 0,
+        "assists": 1
+      }
+    ]
+  },
+  {
+    "id": "19760443920109",
+    "timestamp": 1779421486,
+    "date": "May 22, 2026",
+    "opponent": "Texas Puck Sticks",
+    "scoreUs": 1,
+    "scoreThem": 3,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "RYDER",
+        "goals": 1,
+        "assists": 0
+      },
+      {
+        "name": "Treyway6479",
+        "goals": 0,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "19762203930141",
+    "timestamp": 1779422109,
+    "date": "May 22, 2026",
+    "opponent": "Amikzz",
+    "scoreUs": 0,
+    "scoreThem": 3,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "RYDER",
+        "goals": 0,
+        "assists": 0
+      },
+      {
+        "name": "Treyway6479",
+        "goals": 0,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "19760886590121",
+    "timestamp": 1779423660,
+    "date": "May 22, 2026",
+    "opponent": "Saint Paul Bison",
+    "scoreUs": 2,
+    "scoreThem": 3,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "RYDER",
+        "goals": 2,
+        "assists": 0
+      },
+      {
+        "name": "Treyway6479",
+        "goals": 0,
+        "assists": 1
+      }
+    ]
+  },
+  {
+    "id": "19766084420243",
+    "timestamp": 1779425187,
+    "date": "May 22, 2026",
+    "opponent": "Team Musty",
+    "scoreUs": 4,
+    "scoreThem": 6,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "RYDER",
+        "goals": 4,
+        "assists": 0
+      },
+      {
+        "name": "Treyway6479",
+        "goals": 0,
+        "assists": 4
+      }
+    ]
+  },
+  {
+    "id": "19766249590184",
+    "timestamp": 1779425463,
+    "date": "May 22, 2026",
+    "opponent": "Leduka boys",
+    "scoreUs": 0,
+    "scoreThem": 3,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "RYDER",
+        "goals": 0,
+        "assists": 0
+      },
+      {
+        "name": "Treyway6479",
+        "goals": 0,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "19944689380175",
+    "timestamp": 1779592785,
+    "date": "May 24, 2026",
+    "opponent": "Mighty Kirkz",
+    "scoreUs": 3,
+    "scoreThem": 7,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "MATT",
+        "goals": 2,
+        "assists": 1
+      },
+      {
+        "name": "KADEN",
+        "goals": 1,
+        "assists": 1
+      }
+    ]
+  },
+  {
+    "id": "19948088760130",
+    "timestamp": 1779594299,
+    "date": "May 24, 2026",
+    "opponent": "The big no3ods",
+    "scoreUs": 4,
+    "scoreThem": 3,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "KADEN",
+        "goals": 2,
+        "assists": 1
+      },
+      {
+        "name": "MATT",
+        "goals": 1,
+        "assists": 1
+      }
+    ]
+  },
+  {
+    "id": "19952389910418",
+    "timestamp": 1779596892,
+    "date": "May 24, 2026",
+    "opponent": "Powder Hounds",
+    "scoreUs": 7,
+    "scoreThem": 8,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "KADEN",
+        "goals": 3,
+        "assists": 3
+      },
+      {
+        "name": "MATT",
+        "goals": 4,
+        "assists": 2
+      }
+    ]
+  },
+  {
+    "id": "20260868850420",
+    "timestamp": 1779937165,
+    "date": "May 28, 2026",
+    "opponent": "Backdoor Legends HC",
+    "scoreUs": 1,
+    "scoreThem": 6,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "KADEN",
+        "goals": 0,
+        "assists": 1
+      },
+      {
+        "name": "RYDER",
+        "goals": 1,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "20266453950276",
+    "timestamp": 1779940228,
+    "date": "May 28, 2026",
+    "opponent": "The Huzz Hounds",
+    "scoreUs": 0,
+    "scoreThem": 4,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "RYDER",
+        "goals": 0,
+        "assists": 0
+      },
+      {
+        "name": "Treyway6479",
+        "goals": 0,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "20428590770171",
+    "timestamp": 1780110362,
+    "date": "May 30, 2026",
+    "opponent": "Marist",
+    "scoreUs": 4,
+    "scoreThem": 3,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "MATT",
+        "goals": 2,
+        "assists": 1
+      },
+      {
+        "name": "LOGAN",
+        "goals": 1,
+        "assists": 2
+      },
+      {
+        "name": "KADEN",
+        "goals": 1,
+        "assists": 1
+      },
+      {
+        "name": "JIMMY",
+        "goals": 0,
+        "assists": 1
+      }
+    ]
+  },
+  {
+    "id": "20432177240315",
+    "timestamp": 1780112007,
+    "date": "May 30, 2026",
+    "opponent": "JHL Canadiens Montreal",
+    "scoreUs": 1,
+    "scoreThem": 4,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "JIMMY",
+        "goals": 0,
+        "assists": 3
+      },
+      {
+        "name": "KADEN",
+        "goals": 0,
+        "assists": 2
+      },
+      {
+        "name": "MATT",
+        "goals": 1,
+        "assists": 1
+      },
+      {
+        "name": "LOGAN",
+        "goals": 2,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "21470152810366",
+    "timestamp": 1781320328,
+    "date": "June 13, 2026",
+    "opponent": "Toxic Terror",
+    "scoreUs": 3,
+    "scoreThem": 5,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "LOGAN",
+        "goals": 1,
+        "assists": 2
+      },
+      {
+        "name": "MATT",
+        "goals": 0,
+        "assists": 2
+      },
+      {
+        "name": "JIMMY",
+        "goals": 2,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "21470480150311",
+    "timestamp": 1781322104,
+    "date": "June 13, 2026",
+    "opponent": "Cheryl and the Pounders",
+    "scoreUs": 2,
+    "scoreThem": 5,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "MATT",
+        "goals": 2,
+        "assists": 0
+      },
+      {
+        "name": "LOGAN",
+        "goals": 0,
+        "assists": 2
+      },
+      {
+        "name": "JIMMY",
+        "goals": 0,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "21474155190453",
+    "timestamp": 1781323851,
+    "date": "June 13, 2026",
+    "opponent": "The moist mitts",
+    "scoreUs": 6,
+    "scoreThem": 5,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "MATT",
+        "goals": 3,
+        "assists": 2
+      },
+      {
+        "name": "LOGAN",
+        "goals": 1,
+        "assists": 3
+      },
+      {
+        "name": "JIMMY",
+        "goals": 1,
+        "assists": 2
+      }
+    ]
+  },
+  {
+    "id": "21470985100029",
+    "timestamp": 1781325241,
+    "date": "June 13, 2026",
+    "opponent": "MD Fireballs",
+    "scoreUs": 1,
+    "scoreThem": 2,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "MATT",
+        "goals": 1,
+        "assists": 0
+      },
+      {
+        "name": "LOGAN",
+        "goals": 0,
+        "assists": 1
+      },
+      {
+        "name": "JIMMY",
+        "goals": 0,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "21604975430301",
+    "timestamp": 1781484298,
+    "date": "June 15, 2026",
+    "opponent": "0bl0ck",
+    "scoreUs": 7,
+    "scoreThem": 8,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 7,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "21892943420255",
+    "timestamp": 1781838110,
+    "date": "June 19, 2026",
+    "opponent": "Tkachuk You",
+    "scoreUs": 1,
+    "scoreThem": 5,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "MATT",
+        "goals": 1,
+        "assists": 0
+      },
+      {
+        "name": "LOGAN",
+        "goals": 0,
+        "assists": 1
+      },
+      {
+        "name": "DYLAN",
+        "goals": 0,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "23414714130258",
+    "timestamp": 1784182248,
+    "date": "July 16, 2026",
+    "opponent": "BILLS 717",
+    "scoreUs": 9,
+    "scoreThem": 8,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 9,
+        "assists": 0
+      }
+    ]
+  },
+  {
+    "id": "23762511030372",
+    "timestamp": 1784687634,
+    "date": "July 22, 2026",
+    "opponent": "Thrasherz",
+    "scoreUs": 6,
+    "scoreThem": 5,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 5,
+        "assists": 1
+      },
+      {
+        "name": "JIMMY",
+        "goals": 1,
+        "assists": 4
+      }
+    ]
+  },
+  {
+    "id": "23760739000184",
+    "timestamp": 1784689213,
+    "date": "July 22, 2026",
+    "opponent": "The Buffalo Wings",
+    "scoreUs": 10,
+    "scoreThem": 4,
+    "matchType": "regular",
+    "players": [
+      {
+        "name": "DYLAN",
+        "goals": 5,
+        "assists": 3
+      },
+      {
+        "name": "JIMMY",
+        "goals": 5,
+        "assists": 2
+      }
+    ]
+  }
+]

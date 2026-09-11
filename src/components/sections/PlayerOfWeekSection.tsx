@@ -41,13 +41,13 @@ function StatPill({ label, value, highlight }: StatPillProps) {
     <div
       className={`flex flex-col items-center px-3 py-1.5 rounded-md ${
         highlight
-          ? "bg-[#cc1533]/15 border border-[#cc1533]/30"
+          ? "bg-[#d4b77b]/15 border border-[#d4b77b]/30"
           : "bg-white/5 border border-white/10"
       }`}
     >
       <span
         className={`text-base font-black leading-none ${
-          highlight ? "text-[#cc1533]" : "text-white"
+          highlight ? "text-[#d4b77b]" : "text-white"
         }`}
       >
         {value}
@@ -98,15 +98,15 @@ export default function PlayerOfWeekSection({ player, standings = [], week }: Pr
           style={{ background: "linear-gradient(135deg, rgba(26,39,68,0.55) 0%, rgba(13,21,40,0.4) 100%)" }}
         >
           {/* Left red accent bar */}
-          <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-gradient-to-b from-[#cc1533]/70 via-[#cc1533]/40 to-transparent" />
+          <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-gradient-to-b from-[#d4b77b]/70 via-[#d4b77b]/40 to-transparent" />
 
           <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-center gap-4 pl-8 pr-6 py-4">
             {/* Left — label + name */}
             <div className="flex items-center gap-4 text-center sm:text-left">
               <div>
                 <div className="flex items-center gap-2 justify-center sm:justify-start mb-0.5">
-                  <span className="w-1 h-3 bg-[#cc1533] rounded-sm" />
-                  <span className="text-[#cc1533] text-[10px] font-bold uppercase tracking-[0.2em]">
+                  <span className="w-1 h-3 bg-[#d4b77b] rounded-sm" />
+                  <span className="text-[#d4b77b] text-[10px] font-bold uppercase tracking-[0.2em]">
                     Player of the Week
                   </span>
                   {weekLabel && (
@@ -135,7 +135,7 @@ export default function PlayerOfWeekSection({ player, standings = [], week }: Pr
               {standings.length > 0 ? (
                 <button
                   onClick={() => setShowStandings(!showStandings)}
-                  className="ml-2 text-xs text-[#cc1533] hover:text-red-400 uppercase tracking-widest font-bold transition-colors whitespace-nowrap"
+                  className="ml-2 text-xs text-[#d4b77b] hover:text-gold-light uppercase tracking-widest font-bold transition-colors whitespace-nowrap"
                 >
                   {showStandings ? "Hide Standings ↑" : "Full Standings →"}
                 </button>
@@ -165,11 +165,11 @@ export default function PlayerOfWeekSection({ player, standings = [], week }: Pr
                       <div
                         key={p.name}
                         className={`flex items-center justify-between gap-4 px-3 py-2 rounded-lg ${
-                          i === 0 ? "bg-[#cc1533]/10 border border-[#cc1533]/20" : "bg-white/[0.03]"
+                          i === 0 ? "bg-[#d4b77b]/10 border border-[#d4b77b]/20" : "bg-white/[0.03]"
                         }`}
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <span className={`text-sm font-bold w-5 ${i === 0 ? "text-[#cc1533]" : "text-white/30"}`}>
+                          <span className={`text-sm font-bold w-5 ${i === 0 ? "text-[#d4b77b]" : "text-white/30"}`}>
                             {i + 1}
                           </span>
                           <span className={`text-sm font-bold truncate ${i === 0 ? "text-white" : "text-white/60"}`}>
@@ -179,7 +179,7 @@ export default function PlayerOfWeekSection({ player, standings = [], week }: Pr
                             {p.isGoalie ? "G" : p.position}
                           </span>
                         </div>
-                        <span className={`text-sm font-bold ${i === 0 ? "text-[#cc1533]" : "text-white/50"}`}>
+                        <span className={`text-sm font-bold ${i === 0 ? "text-[#d4b77b]" : "text-white/50"}`}>
                           {p.weeklyScore.toFixed(0)} pts
                         </span>
                       </div>

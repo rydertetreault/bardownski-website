@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { FcPlayerMatchLog } from "@/lib/fcstats";
 import { FcResultBadge, FcSectionHeading } from "@/components/fc/FcUI";
 
-const GOLD = "#cc1533";
+const GOLD = "#d4b77b";
 const GOLD_LIGHT = "#5b9bd5";
 
 export interface StatsPlayer {

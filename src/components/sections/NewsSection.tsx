@@ -15,14 +15,14 @@ export default function NewsSection({ newsItems }: { newsItems: Article[] }) {
         <FadeUp>
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-3">
-              <div className="w-1 h-7 bg-[#cc1533] rounded-full" />
+              <div className="w-1 h-7 bg-[#d4b77b] rounded-full" />
               <h2 className="text-2xl font-bold uppercase tracking-wider">
                 Latest News
               </h2>
             </div>
             <Link
               href="/news"
-              className="text-sm text-[#cc1533] hover:text-red-light transition-colors font-medium"
+              className="text-sm text-[#d4b77b] hover:text-gold-light transition-colors font-medium"
             >
               View All →
             </Link>
@@ -47,7 +47,7 @@ export default function NewsSection({ newsItems }: { newsItems: Article[] }) {
                       style={{
                         background: isChamp
                           ? "linear-gradient(90deg, transparent 0%, #f4d35e 50%, transparent 100%)"
-                          : "#cc1533",
+                          : "#d4b77b",
                       }}
                     />
                     <div className="relative overflow-hidden flex-shrink-0" style={{ height: "60%" }}>
@@ -86,7 +86,7 @@ export default function NewsSection({ newsItems }: { newsItems: Article[] }) {
                           Champions
                         </span>
                       ) : (
-                        <span className="absolute top-3 left-3 bg-[#cc1533] text-white text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded">
+                        <span className="absolute top-3 left-3 bg-[#d4b77b] text-white text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded">
                           Featured
                         </span>
                       )}
@@ -98,7 +98,7 @@ export default function NewsSection({ newsItems }: { newsItems: Article[] }) {
                       </p>
                       <h3
                         className={`text-xl font-bold text-white mb-3 leading-snug transition-colors ${
-                          isChamp ? "group-hover:text-amber-300" : "group-hover:text-[#cc1533]"
+                          isChamp ? "group-hover:text-amber-300" : "group-hover:text-[#d4b77b]"
                         }`}
                       >
                         {featured.title}
@@ -118,7 +118,7 @@ export default function NewsSection({ newsItems }: { newsItems: Article[] }) {
             {side.map((item) => (
               <StaggerItem key={item.id} className="flex-1">
                 <Link href={`/news/${item.id}`} className="block group h-full">
-                  <GlowCard className="bg-[#0d1528] border border-border rounded-xl overflow-hidden flex flex-col h-full min-h-[227px] border-t-[#cc1533] border-t-2">
+                  <GlowCard className="bg-[#0d1528] border border-border rounded-xl overflow-hidden flex flex-col h-full min-h-[227px] border-t-[#d4b77b] border-t-2">
                     {/* Image or video — 50% of card */}
                     <div className="relative overflow-hidden flex-shrink-0" style={{ height: "50%" }}>
                       {item.video ? (
@@ -148,7 +148,7 @@ export default function NewsSection({ newsItems }: { newsItems: Article[] }) {
                       <p className="text-xs text-[#5b9bd5] font-medium uppercase tracking-wider mb-1.5">
                         {item.date}
                       </p>
-                      <h3 className="text-sm font-bold text-white leading-snug group-hover:text-[#cc1533] transition-colors">
+                      <h3 className="text-sm font-bold text-white leading-snug group-hover:text-[#d4b77b] transition-colors">
                         {item.title}
                       </h3>
                     </div>

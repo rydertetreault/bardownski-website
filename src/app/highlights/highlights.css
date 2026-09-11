@@ -1,0 +1,24 @@
+.offseason-highlights{--highlight-gold:#d4b77b;--highlight-cream:#eeeae2;--highlight-muted:#a4adbc;background:#0b101a;color:var(--highlight-cream);min-height:100vh;font-family:Arial,Helvetica,sans-serif;padding-bottom:65px}
+.highlights-heading{max-width:none;margin:auto;padding:75px 5% 50px;display:flex;align-items:end;justify-content:space-between;gap:35px;background:radial-gradient(ellipse at 100% 0,#d4b77b0f,transparent 65%)}
+.highlights-eyebrow{font-size:10px;font-weight:700;letter-spacing:3px;color:var(--highlight-gold);margin-bottom:25px}
+.highlights-heading h1{font-size:clamp(44px,6.8vw,98px);font-weight:900;line-height:.95;letter-spacing:-4px}
+.highlights-heading h1 em{font-style:normal;color:var(--highlight-gold)}
+.highlights-intro{font-size:14px;line-height:1.8;color:var(--highlight-muted);margin-top:28px}
+.highlights-counts{display:flex;gap:35px;border-left:1px solid #d4b77b40;padding-left:35px;padding-bottom:5px}
+.highlights-counts strong{font-size:50px;line-height:1;letter-spacing:-2px;display:block;color:var(--highlight-gold)}
+.highlights-counts span{font-size:8px;letter-spacing:2px;color:var(--highlight-muted);display:block;margin-top:13px}
+.highlight-player-nav{max-width:none;margin:0 auto 45px;padding:20px 0;border-block:1px solid #ffffff22;display:flex;gap:12px;flex-wrap:wrap;width:90%}
+.highlight-player-nav a{font-size:12px;color:var(--highlight-cream);border:1px solid #ffffff22;padding:12px 17px;text-decoration:none}
+.highlight-player-nav a:hover{border-color:var(--highlight-gold);color:var(--highlight-gold)}
+.highlight-player-nav span{font-size:10px;color:var(--highlight-gold);margin-left:15px}
+.highlights-library{max-width:none;padding:0 5%;margin:auto}
+.highlight-player-section{scroll-margin-top:100px;padding:25px 0 45px;border-bottom:1px solid #ffffff18;margin-bottom:25px}
+.highlight-clip-card{flex-shrink:0;width:320px;text-align:left;cursor:pointer;background:#141d2b;border:1px solid #d4b77b24;border-radius:4px;padding:9px;transition:border-color .2s,background .2s}
+.highlight-clip-card:hover{border-color:var(--highlight-gold);background:#1c2839}
+.highlight-clip-caption{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 9px 12px;font-size:12px;color:var(--highlight-cream)}
+.highlight-clip-caption b{color:var(--highlight-gold);font-size:17px}
+.offseason-highlights a:focus-visible,.offseason-highlights button:focus-visible{outline:3px solid var(--highlight-gold);outline-offset:4px}
+.offseason-highlights .select-none{padding-top:7px;padding-bottom:10px}
+@media(max-width:900px){.highlights-heading{align-items:start;flex-direction:column;padding-top:55px}.highlights-counts{padding-left:0;border:0;gap:35px}.highlights-counts strong{font-size:34px}.highlights-heading h1{font-size:clamp(44px,8vw,72px);letter-spacing:-2px}.highlight-player-nav{margin-bottom:20px}.highlight-clip-card{width:285px}}
+@media(max-width:480px){.highlights-heading h1{font-size:43px}.highlights-intro{font-size:12px}.highlights-intro br{display:none}.highlight-player-nav{gap:8px}.highlight-player-nav a{padding:10px 12px;font-size:11px}.highlight-clip-card{width:270px}.highlights-eyebrow{font-size:8px;letter-spacing:2px}}
+@media(prefers-reduced-motion:reduce){.offseason-highlights *{transition:none!important;scroll-behavior:auto!important}}

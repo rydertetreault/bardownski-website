@@ -26,7 +26,7 @@ export default function GalleryBackground() {
           right: "-12%",
           width: "850px",
           height: "850px",
-          background: "radial-gradient(circle, rgba(255,28,58,0.15) 0%, transparent 50%)",
+          background: "radial-gradient(circle, rgba(212, 183, 123,0.15) 0%, transparent 50%)",
         }}
       />
 

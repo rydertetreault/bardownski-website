@@ -24,7 +24,7 @@ function ChartHeader({
 }) {
   return (
     <div className="flex items-center gap-2 mb-3">
-      <div className="w-0.5 h-4 bg-red rounded-full" />
+      <div className="w-0.5 h-4 bg-gold rounded-full" />
       <span className="text-[10px] font-bold uppercase tracking-widest text-muted">
         {label}
       </span>
@@ -82,22 +82,22 @@ const ResultsStrip = memo(({ matches }: { matches: Match[] }) => {
       {/* Decorative layers clipped to card bounds */}
       <div className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none">
         {/* Accent edges */}
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#cc1533] via-[#cc1533]/60 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-[#cc1533]/20 via-transparent to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#d4b77b] via-[#d4b77b]/60 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-[#d4b77b]/20 via-transparent to-transparent" />
         {/* Corner glow */}
         <div className="absolute top-0 left-0 w-40 h-40" style={{
-          background: "radial-gradient(circle at 0% 0%, rgba(204,21,51,0.08) 0%, transparent 70%)",
+          background: "radial-gradient(circle at 0% 0%, rgba(212, 183, 123,0.08) 0%, transparent 70%)",
         }} />
         {/* Angled accent stripe */}
         <div className="absolute top-0 right-0 w-[30%] h-full" style={{
-          background: "linear-gradient(135deg, transparent 0%, rgba(204,21,51,0.03) 100%)",
+          background: "linear-gradient(135deg, transparent 0%, rgba(212, 183, 123,0.03) 100%)",
           clipPath: "polygon(40% 0, 100% 0, 100% 100%, 0 100%)",
         }} />
       </div>
       <div className="relative">
         {/* Header row */}
         <div className="flex items-center gap-2 mb-3">
-          <div className="w-0.5 h-4 bg-red rounded-full" />
+          <div className="w-0.5 h-4 bg-gold rounded-full" />
           <span className="text-[10px] font-bold uppercase tracking-widest text-muted">
             Results
           </span>
@@ -111,7 +111,7 @@ const ResultsStrip = memo(({ matches }: { matches: Match[] }) => {
               className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ml-auto ${
                 streakType === "W"
                   ? "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20"
-                  : "text-red bg-red/10 border border-red/20"
+                  : "text-gold bg-gold/10 border border-gold/20"
               }`}
             >
               {streakCount}{streakType} Streak
@@ -135,10 +135,10 @@ const ResultsStrip = memo(({ matches }: { matches: Match[] }) => {
                   className={`rounded-md px-2 py-1.5 text-center transition-all duration-150 cursor-default ${
                     isWin
                       ? "bg-emerald-500/10 border border-emerald-500/20"
-                      : "bg-red/10 border border-red/20"
+                      : "bg-gold/10 border border-gold/20"
                   } ${isHovered ? "brightness-150 border-white/20" : ""}`}
                 >
-                  <span className={`block text-[10px] font-black ${isWin ? "text-emerald-400" : "text-red"}`}>
+                  <span className={`block text-[10px] font-black ${isWin ? "text-emerald-400" : "text-gold"}`}>
                     {result}
                   </span>
                   <span className="block text-[9px] text-white/60 font-bold tabular-nums leading-tight">
@@ -179,7 +179,7 @@ const ResultsStrip = memo(({ matches }: { matches: Match[] }) => {
                 <div className="flex items-center gap-1.5">
                   <span className="text-emerald-400 text-xs font-black tabular-nums">{w}<span className="text-[9px] font-bold ml-0.5">W</span></span>
                   <span className="text-muted/30 text-[9px]">/</span>
-                  <span className="text-red text-xs font-black tabular-nums">{l}<span className="text-[9px] font-bold ml-0.5">L</span></span>
+                  <span className="text-gold text-xs font-black tabular-nums">{l}<span className="text-[9px] font-bold ml-0.5">L</span></span>
                 </div>
                 <div className="flex-1 h-1.5 rounded-full bg-white/5 overflow-hidden">
                   <div
@@ -235,27 +235,27 @@ const GoalsTrendChart = memo(({ matches }: { matches: Match[] }) => {
     <div className="relative overflow-hidden rounded-xl border border-border/50 p-4"
       style={{ background: "linear-gradient(145deg, rgba(13,21,38,0.95) 0%, rgba(20,14,24,0.9) 60%, rgba(10,17,32,0.95) 100%)" }}>
       {/* Accent edges */}
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#cc1533] via-[#cc1533]/60 to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-[#cc1533]/20 via-transparent to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#d4b77b] via-[#d4b77b]/60 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-[#d4b77b]/20 via-transparent to-transparent" />
       {/* Angled accent stripe */}
       <div className="absolute top-0 right-0 w-[40%] h-full pointer-events-none" style={{
-        background: "linear-gradient(135deg, transparent 0%, rgba(204,21,51,0.04) 100%)",
+        background: "linear-gradient(135deg, transparent 0%, rgba(212, 183, 123,0.04) 100%)",
         clipPath: "polygon(40% 0, 100% 0, 100% 100%, 0 100%)",
       }} />
       {/* Corner glow */}
       <div className="absolute top-0 left-0 w-40 h-40 pointer-events-none" style={{
-        background: "radial-gradient(circle at 0% 0%, rgba(204,21,51,0.1) 0%, transparent 70%)",
+        background: "radial-gradient(circle at 0% 0%, rgba(212, 183, 123,0.1) 0%, transparent 70%)",
       }} />
       {/* Big stat callout */}
       <div className="absolute top-3 right-4 pointer-events-none select-none">
         <p className="text-[9px] text-white/20 uppercase tracking-widest text-right">Avg GF</p>
-        <p className="text-3xl font-black tabular-nums text-[#cc1533]/20 leading-none text-right">{avgGF}</p>
+        <p className="text-3xl font-black tabular-nums text-[#d4b77b]/20 leading-none text-right">{avgGF}</p>
       </div>
       <div className="relative">
         <ChartHeader
           label="Goals Per Game"
           legend={[
-            { color: "#cc1533", text: "GF" },
+            { color: "#d4b77b", text: "GF" },
             { color: "rgba(255,255,255,0.3)", text: "GA" },
           ]}
         />
@@ -275,8 +275,8 @@ const GoalsTrendChart = memo(({ matches }: { matches: Match[] }) => {
           >
             <defs>
               <linearGradient id="gfAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#cc1533" stopOpacity="0.18" />
-                <stop offset="100%" stopColor="#cc1533" stopOpacity="0.02" />
+                <stop offset="0%" stopColor="#d4b77b" stopOpacity="0.18" />
+                <stop offset="100%" stopColor="#d4b77b" stopOpacity="0.02" />
               </linearGradient>
               <filter id="gfGlow">
                 <feGaussianBlur stdDeviation="3" result="blur" />
@@ -291,21 +291,21 @@ const GoalsTrendChart = memo(({ matches }: { matches: Match[] }) => {
             ))}
             <polygon points={areaGF} fill="url(#gfAreaGrad)" />
             <polyline points={lineGA} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" strokeDasharray="4,4" strokeLinecap="round" />
-            <polyline points={lineGF} fill="none" stroke="#cc1533" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" filter="url(#gfGlow)" />
+            <polyline points={lineGF} fill="none" stroke="#d4b77b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" filter="url(#gfGlow)" />
             {ptsGA.map((p, i) => (
               <circle key={`ga-${i}`} cx={p.x} cy={p.y} r="2.5" fill="rgba(255,255,255,0.25)"
                 opacity={hoveredIndex !== null && hoveredIndex !== i ? 0.3 : 1} />
             ))}
             {ptsGF.map((p, i) => (
-              <circle key={`gf-${i}`} cx={p.x} cy={p.y} r="3.5" fill="#cc1533"
+              <circle key={`gf-${i}`} cx={p.x} cy={p.y} r="3.5" fill="#d4b77b"
                 opacity={hoveredIndex !== null && hoveredIndex !== i ? 0.3 : 1} />
             ))}
             {hoveredIndex !== null && (
               <>
                 <line x1={ptsGF[hoveredIndex].x} y1={pad.t} x2={ptsGF[hoveredIndex].x} y2={pad.t + cH}
                   stroke="rgba(255,255,255,0.12)" strokeWidth="1" strokeDasharray="4,4" />
-                <circle cx={ptsGF[hoveredIndex].x} cy={ptsGF[hoveredIndex].y} r="8" fill="rgba(204,21,51,0.25)" />
-                <circle cx={ptsGF[hoveredIndex].x} cy={ptsGF[hoveredIndex].y} r="4.5" fill="#cc1533" />
+                <circle cx={ptsGF[hoveredIndex].x} cy={ptsGF[hoveredIndex].y} r="8" fill="rgba(212, 183, 123,0.25)" />
+                <circle cx={ptsGF[hoveredIndex].x} cy={ptsGF[hoveredIndex].y} r="4.5" fill="#d4b77b" />
                 <circle cx={ptsGA[hoveredIndex].x} cy={ptsGA[hoveredIndex].y} r="7" fill="rgba(255,255,255,0.1)" />
                 <circle cx={ptsGA[hoveredIndex].x} cy={ptsGA[hoveredIndex].y} r="4" fill="rgba(255,255,255,0.4)" />
               </>
@@ -320,7 +320,7 @@ const GoalsTrendChart = memo(({ matches }: { matches: Match[] }) => {
               {games[hoveredIndex].date} vs {games[hoveredIndex].opponent}
             </p>
             <div className="flex items-center gap-3 mt-0.5">
-              <span className="text-sm font-black text-[#cc1533] tabular-nums">
+              <span className="text-sm font-black text-[#d4b77b] tabular-nums">
                 GF {games[hoveredIndex].scoreUs}
               </span>
               <span className="text-sm font-black text-white/40 tabular-nums">
@@ -375,7 +375,7 @@ const ShotDiffChart = memo(({ matches }: { matches: Match[] }) => {
       {/* Big stat callout */}
       <div className="absolute top-3 right-4 pointer-events-none select-none">
         <p className="text-[9px] text-white/20 uppercase tracking-widest text-right">Total</p>
-        <p className={`text-3xl font-black tabular-nums leading-none text-right ${totalDiff >= 0 ? "text-cyan-500/20" : "text-red/20"}`}>
+        <p className={`text-3xl font-black tabular-nums leading-none text-right ${totalDiff >= 0 ? "text-cyan-500/20" : "text-gold/20"}`}>
           {totalDiff > 0 ? "+" : ""}{totalDiff}
         </p>
       </div>
@@ -401,8 +401,8 @@ const ShotDiffChart = memo(({ matches }: { matches: Match[] }) => {
                 <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.7" />
               </linearGradient>
               <linearGradient id="barNegGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#cc1533" stopOpacity="0.2" />
-                <stop offset="100%" stopColor="#cc1533" stopOpacity="0.7" />
+                <stop offset="0%" stopColor="#d4b77b" stopOpacity="0.2" />
+                <stop offset="100%" stopColor="#d4b77b" stopOpacity="0.7" />
               </linearGradient>
               <filter id="barGlow">
                 <feGaussianBlur stdDeviation="2" result="blur" />
@@ -422,7 +422,7 @@ const ShotDiffChart = memo(({ matches }: { matches: Match[] }) => {
                   x={x} y={y} width={barW} height={Math.max(barH, 1)} rx="3"
                   fill={
                     isHovered
-                      ? diff >= 0 ? "rgba(6,182,212,0.9)" : "rgba(204,21,51,0.9)"
+                      ? diff >= 0 ? "rgba(6,182,212,0.9)" : "rgba(212, 183, 123,0.9)"
                       : diff >= 0 ? "url(#barPosGrad)" : "url(#barNegGrad)"
                   }
                   opacity={dimmed ? 0.3 : 1}
@@ -432,7 +432,7 @@ const ShotDiffChart = memo(({ matches }: { matches: Match[] }) => {
                   x={x + barW / 2}
                   y={diff >= 0 ? y - 6 : y + barH + 12}
                   textAnchor="middle"
-                  fill={diff >= 0 ? "rgba(6,182,212,0.7)" : "rgba(204,21,51,0.7)"}
+                  fill={diff >= 0 ? "rgba(6,182,212,0.7)" : "rgba(212, 183, 123,0.7)"}
                   fontSize="9" fontWeight="bold" fontFamily="monospace"
                   opacity={dimmed ? 0.3 : 1}
                 >
@@ -464,7 +464,7 @@ const ShotDiffChart = memo(({ matches }: { matches: Match[] }) => {
               <p className="text-xs font-bold text-white whitespace-nowrap mt-0.5">
                 BD {g.scoreUs} - {g.scoreThem}
               </p>
-              <p className={`text-sm font-black tabular-nums mt-0.5 ${diff >= 0 ? "text-cyan-500" : "text-red"}`}>
+              <p className={`text-sm font-black tabular-nums mt-0.5 ${diff >= 0 ? "text-cyan-500" : "text-gold"}`}>
                 {diff > 0 ? "+" : ""}{diff} shots
               </p>
             </div>

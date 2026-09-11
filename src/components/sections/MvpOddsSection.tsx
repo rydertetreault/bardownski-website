@@ -31,7 +31,7 @@ export default function MvpOddsSection({ odds }: { odds: MvpOddsEntry[] }) {
     <div className="mb-12">
       <MvpOddsAnimations>
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-1 h-7 bg-[#cc1533] rounded-full" />
+          <div className="w-1 h-7 bg-[#d4b77b] rounded-full" />
           <h2 className="text-xl font-bold uppercase tracking-wider">
             MVP Odds
           </h2>

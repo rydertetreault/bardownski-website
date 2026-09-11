@@ -57,7 +57,7 @@ function StatBar({
       </div>
       <div className="flex h-1.5 rounded-full overflow-hidden bg-navy-dark">
         <div
-          className={`rounded-l-full transition-all duration-500 ${gold ? "" : "bg-red"}`}
+          className={`rounded-l-full transition-all duration-500 ${gold ? "" : "bg-gold"}`}
           style={{
             width: `${pctUs}%`,
             ...(gold && { backgroundColor: "#f4d35e" }),
@@ -113,7 +113,7 @@ function PlayerRow({ player }: { player: MatchPlayerStat }) {
       <div className="flex gap-4 text-xs font-mono">
         <div className="text-center">
           <p className="text-[9px] text-muted uppercase">G</p>
-          <p className={`font-bold ${player.goals > 0 ? "text-red" : ""}`}>{player.goals}</p>
+          <p className={`font-bold ${player.goals > 0 ? "text-gold" : ""}`}>{player.goals}</p>
         </div>
         <div className="text-center">
           <p className="text-[9px] text-muted uppercase">A</p>
@@ -125,7 +125,7 @@ function PlayerRow({ player }: { player: MatchPlayerStat }) {
         </div>
         <div className="text-center">
           <p className="text-[9px] text-muted uppercase">+/-</p>
-          <p className={`font-bold ${player.plusMinus > 0 ? "text-emerald-400" : player.plusMinus < 0 ? "text-red" : ""}`}>
+          <p className={`font-bold ${player.plusMinus > 0 ? "text-emerald-400" : player.plusMinus < 0 ? "text-gold" : ""}`}>
             {player.plusMinus > 0 ? `+${player.plusMinus}` : player.plusMinus}
           </p>
         </div>
@@ -198,8 +198,8 @@ export default async function MatchDetailPage({
                 background: isWin
                   ? isClincher
                     ? "linear-gradient(135deg, rgba(244,211,94,0.20) 0%, rgba(244,211,94,0.07) 40%, transparent 50%, rgba(255,255,255,0.02) 60%, rgba(255,255,255,0.04) 100%)"
-                    : "linear-gradient(135deg, rgba(204,21,51,0.18) 0%, rgba(204,21,51,0.06) 40%, transparent 50%, rgba(255,255,255,0.02) 60%, rgba(255,255,255,0.04) 100%)"
-                  : "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 40%, transparent 50%, rgba(204,21,51,0.06) 60%, rgba(204,21,51,0.12) 100%)",
+                    : "linear-gradient(135deg, rgba(212, 183, 123,0.18) 0%, rgba(212, 183, 123,0.06) 40%, transparent 50%, rgba(255,255,255,0.02) 60%, rgba(255,255,255,0.04) 100%)"
+                  : "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 40%, transparent 50%, rgba(212, 183, 123,0.06) 60%, rgba(212, 183, 123,0.12) 100%)",
               }}
             />
             <div
@@ -255,7 +255,7 @@ export default async function MatchDetailPage({
                     ? isClincher
                       ? "text-amber-300 bg-amber-500/10"
                       : "text-emerald-400 bg-emerald-500/10"
-                    : "text-red bg-red/10"
+                    : "text-gold bg-gold/10"
                 }`}
               >
                 {isWin ? "Victory" : "Defeat"}
@@ -293,14 +293,14 @@ export default async function MatchDetailPage({
               <div className="bg-navy/70 border border-border rounded-xl p-5">
                 <div className="flex items-center justify-between mb-4">
                   <span
-                    className={`text-xs font-bold uppercase tracking-wider ${isClincher ? "" : "text-red"}`}
+                    className={`text-xs font-bold uppercase tracking-wider ${isClincher ? "" : "text-gold"}`}
                     style={isClincher ? { color: "#f4d35e" } : undefined}
                   >
                     BD
                   </span>
                   <div className="flex items-center gap-2">
                     <div
-                      className={`w-0.5 h-3 rounded-full ${isClincher ? "" : "bg-red"}`}
+                      className={`w-0.5 h-3 rounded-full ${isClincher ? "" : "bg-gold"}`}
                       style={isClincher ? { backgroundColor: "#f4d35e" } : undefined}
                     />
                     <span className="text-[10px] font-bold uppercase tracking-widest text-muted">
@@ -329,7 +329,7 @@ export default async function MatchDetailPage({
               <div className="bg-navy/70 border border-border rounded-xl p-5">
                 <div className="flex items-center gap-2 mb-4">
                   <div
-                    className={`w-0.5 h-4 rounded-full ${isClincher ? "" : "bg-red"}`}
+                    className={`w-0.5 h-4 rounded-full ${isClincher ? "" : "bg-gold"}`}
                     style={isClincher ? { backgroundColor: "#f4d35e" } : undefined}
                   />
                   <span className="text-[10px] font-bold uppercase tracking-widest text-muted">
@@ -361,7 +361,7 @@ export default async function MatchDetailPage({
                       key={star.name}
                       className={`rounded-lg p-3 border ${
                         star.isOurPlayer
-                          ? "bg-red/5 border-red/20"
+                          ? "bg-gold/5 border-gold/20"
                           : "bg-surface-light/30 border-border/30"
                       }`}
                     >

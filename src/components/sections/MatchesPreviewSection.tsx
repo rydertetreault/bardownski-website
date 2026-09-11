@@ -44,7 +44,7 @@ function FeaturedMatch({ match }: { match: Match }) {
         style={{
           background: isWin
             ? "linear-gradient(135deg, transparent 0%, rgba(16,185,129,0.06) 100%)"
-            : "linear-gradient(135deg, transparent 0%, rgba(200,16,46,0.08) 100%)",
+            : "linear-gradient(135deg, transparent 0%, rgba(212, 183, 123,0.08) 100%)",
           clipPath: "polygon(30% 0, 100% 0, 100% 100%, 0 100%)",
         }}
       />
@@ -60,7 +60,7 @@ function FeaturedMatch({ match }: { match: Match }) {
       </div>
 
       {/* Red top edge */}
-      <div className="h-[3px] bg-gradient-to-r from-[#cc1533] via-[#cc1533] to-transparent" />
+      <div className="h-[3px] bg-gradient-to-r from-[#d4b77b] via-[#d4b77b] to-transparent" />
 
       <div className="relative px-6 md:px-12 py-10 md:py-14">
         {/* Header row */}
@@ -68,7 +68,7 @@ function FeaturedMatch({ match }: { match: Match }) {
           <div className="flex items-center gap-3">
             <div
               className="w-1 h-5 rounded-sm"
-              style={{ backgroundColor: "#cc1533" }}
+              style={{ backgroundColor: "#d4b77b" }}
             />
             <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] text-white/50">
               Latest Result
@@ -133,7 +133,7 @@ function FeaturedMatch({ match }: { match: Match }) {
             <div
               className="flex items-center justify-center min-w-[56px] md:min-w-[80px] py-2 md:py-3"
               style={{
-                backgroundColor: !isWin ? "rgba(200,16,46,0.12)" : "rgba(255,255,255,0.05)",
+                backgroundColor: !isWin ? "rgba(212, 183, 123,0.12)" : "rgba(255,255,255,0.05)",
                 clipPath: "polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%)",
               }}
             >
@@ -180,7 +180,7 @@ function FeaturedMatch({ match }: { match: Match }) {
               className={`text-[10px] font-black uppercase tracking-[0.3em] px-5 py-1.5 ${
                 isWin
                   ? "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20"
-                  : "text-red bg-red/10 border border-red/20"
+                  : "text-gold bg-gold/10 border border-gold/20"
               }`}
               style={{
                 clipPath: "polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%)",
@@ -216,7 +216,7 @@ function PreviousMatch({ match, index }: { match: Match; index: number }) {
         {/* Left result accent */}
         <div
           className={`w-[3px] self-stretch shrink-0 ${
-            isWin ? "bg-emerald-500" : "bg-red"
+            isWin ? "bg-emerald-500" : "bg-gold"
           }`}
         />
 
@@ -263,7 +263,7 @@ function PreviousMatch({ match, index }: { match: Match; index: number }) {
             </span>
             <span
               className={`text-[10px] font-black uppercase tracking-wider w-5 text-center ml-1 ${
-                isWin ? "text-emerald-400" : "text-red"
+                isWin ? "text-emerald-400" : "text-gold"
               }`}
             >
               {result}
@@ -289,7 +289,7 @@ export default function MatchesPreviewSection({
       <section className="py-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-1 h-5 bg-[#cc1533] rounded-sm" />
+            <div className="w-1 h-5 bg-[#d4b77b] rounded-sm" />
             <h2 className="text-2xl font-bold uppercase tracking-wider">
               Recent Matches
             </h2>
@@ -318,17 +318,17 @@ export default function MatchesPreviewSection({
           className="flex items-center justify-between mb-6 md:mb-8"
         >
           <div className="flex items-center gap-3">
-            <div className="w-1 h-5 bg-[#cc1533] rounded-sm" />
+            <div className="w-1 h-5 bg-[#d4b77b] rounded-sm" />
             <h2 className="text-xl md:text-2xl font-black uppercase tracking-[0.15em] text-white">
               Matches
             </h2>
           </div>
           <Link
             href="/matches"
-            className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-white/30 hover:text-[#cc1533] transition-colors"
+            className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-white/30 hover:text-[#d4b77b] transition-colors"
           >
             View All
-            <span className="inline-block ml-1.5 text-[#cc1533]">→</span>
+            <span className="inline-block ml-1.5 text-[#d4b77b]">→</span>
           </Link>
         </motion.div>
 

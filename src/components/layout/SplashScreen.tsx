@@ -49,7 +49,7 @@ export default function SplashScreen() {
               initial={{ scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="h-[2px] w-8 sm:w-14 bg-[#cc1533] rounded-full origin-right mr-3 sm:mr-4"
+              className="h-[2px] w-8 sm:w-14 bg-[#d4b77b] rounded-full origin-right mr-3 sm:mr-4"
             />
 
             {/* Left half — slides in from left */}
@@ -95,7 +95,7 @@ export default function SplashScreen() {
               initial={{ scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="h-[2px] w-8 sm:w-14 bg-[#cc1533] rounded-full origin-left ml-3 sm:ml-4"
+              className="h-[2px] w-8 sm:w-14 bg-[#d4b77b] rounded-full origin-left ml-3 sm:ml-4"
             />
           </div>
         </motion.div>

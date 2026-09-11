@@ -5,7 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import type { FcHighlightVideo } from "./page";
 
-const GOLD = "#cc1533";
+const GOLD = "#d4b77b";
 
 function VideoPlayer({ video }: { video: FcHighlightVideo }) {
   const ref = useRef<HTMLVideoElement>(null);

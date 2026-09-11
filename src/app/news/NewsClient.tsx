@@ -1,193 +1,39 @@
 "use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { FadeIn, StaggerContainer, StaggerItem, GlowCard, GoldGlowCard } from "@/components/ui/Animate";
+import { motion, useReducedMotion } from "framer-motion";
 
-type NewsItemWithCategory = {
-  id: string;
-  title: string;
-  summary: string;
-  date: string;
-  image?: string;
-  video?: string;
-  category: string;
-};
-
+type NewsItem = {id:string; title:string; summary:string; date:string; image?:string; video?:string; category:string};
 const CATEGORIES = ["All", "Highlights", "Results", "Club News", "Stats", "Announcements"];
 
-export default function NewsClient({ items }: { items: NewsItemWithCategory[] }) {
-  const [active, setActive] = useState("All");
-  const filtered = active === "All" ? items : items.filter((i) => i.category === active);
-  const [featured, ...rest] = filtered;
-
-  return (
-    <div>
-      {/* Category filter pills */}
-      <div className="flex gap-2 mb-10 flex-wrap">
-        {CATEGORIES.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setActive(cat)}
-            className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border transition-all duration-200 ${
-              active === cat
-                ? "bg-[#cc1533] border-[#cc1533] text-white"
-                : "border-border text-muted hover:border-[#cc1533]/40 hover:text-white"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      {/* Featured hero card */}
-      {featured && (() => {
-        const isChamp = featured.id === "10";
-        const Card = isChamp ? GoldGlowCard : GlowCard;
-        return (
-          <FadeIn direction="up" className="mb-8">
-            <Link href={`/news/${featured.id}`} className="block group">
-              <Card
-                className={`bg-[#0d1528] border border-border rounded-xl overflow-hidden ${
-                  isChamp ? "border-amber-400/40" : ""
-                }`}
-              >
-                <div
-                  className="h-[2px] w-full"
-                  style={{
-                    background: isChamp
-                      ? "linear-gradient(90deg, transparent 0%, #f4d35e 50%, transparent 100%)"
-                      : "#cc1533",
-                  }}
-                />
-                <div className="grid grid-cols-1 md:grid-cols-5">
-                  <div className="relative md:col-span-3 h-64 md:h-80 overflow-hidden">
-                    {featured.video ? (
-                      <video
-                        src={featured.video}
-                        muted
-                        autoPlay
-                        loop
-                        playsInline
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : featured.image ? (
-                      <Image
-                        src={featured.image}
-                        alt={featured.title}
-                        fill
-                        className="object-cover object-[center_20%] transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-surface-light" />
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#0d1528] opacity-0 md:opacity-75 hidden md:block" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0d1528] to-transparent md:hidden" />
-                    <div className="absolute top-4 left-4">
-                      {isChamp ? (
-                        <span
-                          className="inline-flex items-center gap-1 text-xs font-black uppercase tracking-widest px-3 py-1 rounded"
-                          style={{
-                            background:
-                              "linear-gradient(90deg, #d4a017 0%, #f4d35e 50%, #d4a017 100%)",
-                            color: "#1a1303",
-                          }}
-                        >
-                          <svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3">
-                            <path d="M7 2h10v2h3v3a4 4 0 0 1-4 4h-.35A5.001 5.001 0 0 1 13 14.9V17h2v2H9v-2h2v-2.1A5.001 5.001 0 0 1 7.35 11H7a4 4 0 0 1-4-4V4h3V2zm0 4H5v1a2 2 0 0 0 2 2V6zm10 3a2 2 0 0 0 2-2V6h-2v3zM6 21h12v2H6v-2z" />
-                          </svg>
-                          Champions
-                        </span>
-                      ) : (
-                        <span className="bg-[#cc1533] text-white text-xs font-black uppercase tracking-widest px-3 py-1 rounded">
-                          Latest
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="md:col-span-2 p-6 md:p-8 flex flex-col justify-center">
-                    <span
-                      className="text-xs font-bold uppercase tracking-widest mb-3"
-                      style={{ color: isChamp ? "#f4d35e" : "#cc1533" }}
-                    >
-                      {featured.category}
-                    </span>
-                    <h2
-                      className={`text-2xl md:text-3xl font-black uppercase tracking-wide text-white mb-4 leading-tight transition-colors ${
-                        isChamp ? "group-hover:text-amber-300" : "group-hover:text-[#cc1533]"
-                      }`}
-                    >
-                      {featured.title}
-                    </h2>
-                    <p className="text-sm text-gray-400 mb-6 line-clamp-4">{featured.summary}</p>
-                    <p className="text-xs text-[#5b9bd5] font-medium uppercase tracking-wider">
-                      {featured.date}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            </Link>
-          </FadeIn>
-        );
-      })()}
-
-      {/* Grid */}
-      {rest.length > 0 && (
-        <StaggerContainer
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          stagger={0.12}
-        >
-          {rest.map((item) => (
-            <StaggerItem key={item.id}>
-              <Link href={`/news/${item.id}`} className="block group">
-                <GlowCard className="bg-[#0d1528] border border-border border-t-2 border-t-[#cc1533] rounded-xl overflow-hidden h-[380px] flex flex-col">
-                  <div className="relative flex-shrink-0 overflow-hidden" style={{ height: "55%" }}>
-                    {item.video ? (
-                      <video
-                        src={item.video}
-                        muted
-                        autoPlay
-                        loop
-                        playsInline
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : item.image ? (
-                      <Image
-                        src={item.image}
-                        alt={item.title}
-                        fill
-                        className="object-cover object-[center_20%] transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-surface-light" />
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0d1528] via-transparent to-transparent" />
-                  </div>
-                  <div className="p-5 flex flex-col">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xs font-bold uppercase tracking-widest text-[#cc1533]">
-                        {item.category}
-                      </span>
-                      <span className="w-1 h-1 rounded-full bg-border inline-block" />
-                      <span className="text-xs text-[#5b9bd5] font-medium uppercase tracking-wider">
-                        {item.date}
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-bold text-white mb-2 leading-snug group-hover:text-[#cc1533] transition-colors">{item.title}</h3>
-                    <p className="text-sm text-gray-400 line-clamp-3">{item.summary}</p>
-                  </div>
-                </GlowCard>
-              </Link>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
-      )}
-
-      {filtered.length === 0 && (
-        <div className="text-center py-24 text-muted">No articles in this category yet.</div>
-      )}
-    </div>
-  );
+function StoryMedia({item, priority = false}: {item:NewsItem; priority?:boolean}) {
+  // Inline videos stay still until played, including for reduced-motion users.
+  return <div className="news-media">{item.video ? <video src={item.video} poster={item.image} controls playsInline preload="none" aria-label={item.title} /> : item.image ? <Image src={item.image} alt={item.title} fill priority={priority} sizes={priority ? "(max-width: 800px) 100vw, 60vw" : "(max-width: 650px) 100vw, 50vw"} /> : <div className="news-media-fallback" aria-hidden="true"><span>BD.</span><small>THE CLUB JOURNAL</small></div>}</div>;
+}
+export default function NewsClient({items}: {items:NewsItem[]}) {
+  const [active,setActive] = useState("All");
+  const reduce = useReducedMotion();
+  const [query, setQuery] = useState("");
+  const [limit, setLimit] = useState(8);
+  const categories = [...new Set([...CATEGORIES, ...items.map(item => item.category)])];
+  const filtered = items.filter(item => (active === "All" || item.category === active) && `${item.title} ${item.summary}`.toLowerCase().includes(query.trim().toLowerCase()));
+  const [featured,...rest] = filtered;
+  const reveal = {initial:reduce ? false as const : {opacity:0,y:25}, whileInView:{opacity:1,y:0}, viewport:{once:true,amount:.1}, transition:{duration:.55}};
+  return <section className="news-stories" id="stories" aria-label="Club stories">
+    <div className="news-search"><label htmlFor="story-search">Find a story</label><input id="story-search" type="search" placeholder="Search the journal…" value={query} onChange={e => { setQuery(e.target.value); setLimit(8); }} /></div>
+    <div className="news-filterbar"><div role="group" aria-label="Filter stories by category">{categories.map(cat => <button key={cat} type="button" aria-pressed={active === cat} onClick={() => { setActive(cat); setLimit(8); }}>{cat}</button>)}</div><p aria-live="polite">{filtered.length} {filtered.length === 1 ? "story" : "stories"}</p></div>
+    {featured && <div className="news-frontpage"><motion.article key={`feature-${featured.id}`} {...reveal} className="news-lead">
+      <div className="news-lead-visual"><StoryMedia item={featured} priority /><span className="news-feature-label">{featured.id === "10" ? "THE CHAMPIONSHIP STORY" : "THE LEAD STORY"}</span></div>
+      <div className="news-lead-copy"><p className="news-eyebrow">{featured.category} <span>/ {featured.date}</span></p><h2><Link href={`/news/${featured.id}`}>{featured.title}</Link></h2><p className="news-summary">{featured.summary}</p><Link className="news-read" href={`/news/${featured.id}`} aria-label={`Read ${featured.title}`}>Read the story <span>↗</span></Link></div>
+    </motion.article>
+      {rest.length > 0 && <aside className="news-dispatch"><p className="news-eyebrow">IN THE ROOM</p><h2>On the radar.</h2><ol>{rest.slice(0,3).map((item,i) => <li key={item.id}><span className="news-dispatch-number">0{i+1}</span><div><p>{item.category} / {item.date}</p><h3><Link href={`/news/${item.id}`}>{item.title}</Link></h3></div></li>)}</ol><a href="#story-feed">Browse the journal ↓</a></aside>}
+    </div>}
+    {rest.length > 0 && <><div className="news-section-heading" id="story-feed"><h2>The story feed.</h2><span>THE JOURNAL / {active === "All" ? "ALL STORIES" : active.toUpperCase()}</span></div><div className="news-story-layout">{rest.slice(0,limit).map((item,i) => <motion.article key={`${active}-${item.id}`} {...reveal} whileHover={reduce ? undefined : {y:-4}} className={`news-story news-story-${i % 5}`}>
+      <StoryMedia item={item} />
+      <div className="news-story-copy"><p className="news-eyebrow">{item.category}<span>{item.date}</span></p><h3><Link href={`/news/${item.id}`}>{item.title}</Link></h3><p className="news-summary">{item.summary}</p><Link className="news-read" href={`/news/${item.id}`} aria-label={`Read ${item.title}`}>Read the story <span>↗</span></Link></div>
+    </motion.article>)}</div>{rest.length > limit && <button className="news-load" type="button" onClick={() => setLimit(n => n + 8)}>More stories <span>+ {Math.min(8, rest.length - limit)}</span></button>}</>}
+    {!filtered.length && <div className="news-empty"><h2>More stories to come.</h2><p>No stories match this selection.</p><button type="button" onClick={() => {setActive("All"); setQuery(""); setLimit(8);}}>Browse all stories ↗</button></div>}
+    <footer className="news-end"><p className="news-eyebrow">MORE THAN THE HEADLINES</p><h2>One club.<br /><em>So many stories.</em></h2><Link href="/">Explore the season recap ↗</Link></footer>
+  </section>;
 }

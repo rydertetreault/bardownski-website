@@ -41,7 +41,7 @@ export function LatestMatchHero({ match }: { match: Match }) {
           viewBox="0 0 400 400"
           preserveAspectRatio="none"
         >
-          <polygon points="260,0 400,0 280,400 160,400" fill="#cc1533" />
+          <polygon points="260,0 400,0 280,400 160,400" fill="#d4b77b" />
         </svg>
       </div>
 
@@ -51,7 +51,7 @@ export function LatestMatchHero({ match }: { match: Match }) {
         style={{
           background: isClincher
             ? "linear-gradient(90deg, transparent 0%, #f4d35e 50%, transparent 100%)"
-            : "linear-gradient(90deg, #cc1533 0%, #cc1533 50%, transparent 100%)",
+            : "linear-gradient(90deg, #d4b77b 0%, #d4b77b 50%, transparent 100%)",
         }}
       />
 
@@ -59,9 +59,9 @@ export function LatestMatchHero({ match }: { match: Match }) {
         {/* Header row */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <div className="w-1 h-4 rounded-sm bg-[#cc1533]" />
+            <div className="w-1 h-4 rounded-sm bg-[#d4b77b]" />
             <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] text-white/50">
-              Latest Result
+              Last Saved Result
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -156,7 +156,7 @@ export function LatestMatchHero({ match }: { match: Match }) {
               className="flex items-center justify-center min-w-[48px] md:min-w-[72px] py-2 md:py-2.5"
               style={{
                 backgroundColor: !isWin
-                  ? "rgba(200,16,46,0.12)"
+                  ? "rgba(212, 183, 123,0.12)"
                   : "rgba(255,255,255,0.05)",
                 clipPath:
                   "polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%)",
@@ -201,7 +201,7 @@ export function LatestMatchHero({ match }: { match: Match }) {
                   ? isClincher
                     ? "text-amber-300 bg-amber-500/10 border border-amber-300/30"
                     : "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20"
-                  : "text-red bg-red/10 border border-red/20"
+                  : "text-gold bg-gold/10 border border-gold/20"
               }`}
               style={{
                 clipPath:
@@ -266,7 +266,7 @@ export function LatestMatchHero({ match }: { match: Match }) {
           <div className="flex justify-center mt-4">
             <span
               className={`text-[10px] uppercase tracking-widest font-bold ${
-                isClincher ? "text-amber-300" : "text-red"
+                isClincher ? "text-amber-300" : "text-gold"
               }`}
             >
               View Full Details &rarr;

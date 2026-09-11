@@ -42,7 +42,7 @@ export default function NewsBackground() {
           right: "-10%",
           width: "600px",
           height: "600px",
-          background: "radial-gradient(circle, rgba(200,16,46,0.12) 0%, transparent 65%)",
+          background: "radial-gradient(circle, rgba(212, 183, 123,0.12) 0%, transparent 65%)",
           filter: "blur(80px)",
         }}
       />

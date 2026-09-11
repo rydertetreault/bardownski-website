@@ -75,17 +75,17 @@ function SectionHeading({ label, count }: { label: string; count: number }) {
       <div className="flex items-center gap-4 mb-2">
         <div
           className="h-px flex-1 rounded-full"
-          style={{ background: "linear-gradient(to right, rgba(204,21,51,0.6), rgba(204,21,51,0.2), transparent)" }}
+          style={{ background: "linear-gradient(to right, rgba(212, 183, 123,0.6), rgba(212, 183, 123,0.2), transparent)" }}
         />
         <span
           className="text-sm font-black uppercase tracking-[0.25em] whitespace-nowrap"
-          style={{ color: "#cc1533" }}
+          style={{ color: "#d4b77b" }}
         >
           {label}
         </span>
         <div
           className="h-px flex-1 rounded-full"
-          style={{ background: "linear-gradient(to left, rgba(204,21,51,0.6), rgba(204,21,51,0.2), transparent)" }}
+          style={{ background: "linear-gradient(to left, rgba(212, 183, 123,0.6), rgba(212, 183, 123,0.2), transparent)" }}
         />
       </div>
       <p className="text-center text-xs uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.25)" }}>
@@ -311,8 +311,8 @@ function PhotoBento({ photos }: { photos: GalleryPhoto[] }) {
               }}
               onClick={() => setLightboxIndex(i)}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = "rgba(204,21,51,0.55)";
-                (e.currentTarget as HTMLElement).style.boxShadow = "0 0 0 1px rgba(204,21,51,0.2)";
+                (e.currentTarget as HTMLElement).style.borderColor = "rgba(212, 183, 123,0.55)";
+                (e.currentTarget as HTMLElement).style.boxShadow = "0 0 0 1px rgba(212, 183, 123,0.2)";
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLElement).style.borderColor = "rgba(125,211,252,0.12)";
@@ -375,8 +375,8 @@ function VideoCard({ video, style, onClick }: { video: GalleryVideo; style?: Rea
       onClick={onClick}
       onMouseEnter={(e) => {
         setHovered(true);
-        (e.currentTarget as HTMLElement).style.borderColor = "rgba(204,21,51,0.55)";
-        (e.currentTarget as HTMLElement).style.boxShadow = "0 0 0 1px rgba(204,21,51,0.2)";
+        (e.currentTarget as HTMLElement).style.borderColor = "rgba(212, 183, 123,0.55)";
+        (e.currentTarget as HTMLElement).style.boxShadow = "0 0 0 1px rgba(212, 183, 123,0.2)";
       }}
       onMouseLeave={(e) => {
         setHovered(false);

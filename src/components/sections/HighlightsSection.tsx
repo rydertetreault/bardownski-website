@@ -95,10 +95,10 @@ function ThumbCard({ clip }: { clip: Clip }) {
       onMouseLeave={() => setHovered(false)}
     >
       <div
-        className="rounded-lg overflow-hidden aspect-video bg-[#1a2744] relative transition-shadow duration-200"
+        className="rounded-lg overflow-hidden aspect-video bg-[#141d2b] relative transition-shadow duration-200"
         style={{
           boxShadow: hovered
-            ? "inset 0 0 0 1px rgba(204,21,51,0.4)"
+            ? "inset 0 0 0 1px rgba(212, 183, 123,0.4)"
             : "inset 0 0 0 1px rgba(255,255,255,0.05)",
         }}
       >
@@ -119,7 +119,7 @@ function ThumbCard({ clip }: { clip: Clip }) {
         <div className="absolute inset-0 flex items-center justify-center bg-black/30">
           <div
             className="w-8 h-8 rounded-full flex items-center justify-center border border-white/20 transition-transform duration-200 hover:scale-110"
-            style={{ backgroundColor: "rgba(120,120,120,0.7)" }}
+            style={{ backgroundColor: "rgba(212,183,123,0.9)" }}
           >
             <svg className="w-3.5 h-3.5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z" />
@@ -171,7 +171,7 @@ function ScrollArrow({ direction, onClick }: { direction: "left" | "right"; onCl
       className="absolute top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
       style={{
         [direction === "right" ? "right" : "left"]: "6px",
-        backgroundColor: "rgba(204,21,51,0.85)",
+        backgroundColor: "rgba(212, 183, 123,0.85)",
         boxShadow: "0 2px 12px rgba(0,0,0,0.5)",
       }}
     >
@@ -186,18 +186,18 @@ export default function HighlightsSection() {
   const { ref: scrollRef, canScrollLeft, canScrollRight, scroll } = useScrollArrows();
 
   return (
-    <section id="highlights" className="py-10 bg-[#0f172a] scroll-mt-16">
+    <section id="highlights" className="py-10 bg-[#0b101a] scroll-mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <div>
             <h2 className="text-lg font-black uppercase tracking-widest text-white">Highlights</h2>
-            <div className="mt-1 h-0.5 w-10 bg-[#cc1533] rounded-full" />
+            <div className="mt-1 h-0.5 w-10 bg-[#d4b77b] rounded-full" />
           </div>
           <Link
             href="/highlights"
-            className="text-xs font-bold text-[#cc1533] hover:text-red-400 transition-colors uppercase tracking-wider"
+            className="text-xs font-bold text-[#d4b77b] hover:text-[#eeeae2] transition-colors uppercase tracking-wider"
           >
             Watch All →
           </Link>
@@ -206,10 +206,10 @@ export default function HighlightsSection() {
         {/* Scroll row with fade edges + arrows */}
         <div className="relative">
           {canScrollLeft && (
-            <div className="pointer-events-none absolute left-0 top-0 h-full w-10 z-10 bg-gradient-to-r from-[#0f172a] to-transparent" />
+            <div className="pointer-events-none absolute left-0 top-0 h-full w-10 z-10 bg-gradient-to-r from-[#0b101a] to-transparent" />
           )}
           {canScrollRight && (
-            <div className="pointer-events-none absolute right-0 top-0 h-full w-16 z-10 bg-gradient-to-l from-[#0f172a] to-transparent" />
+            <div className="pointer-events-none absolute right-0 top-0 h-full w-16 z-10 bg-gradient-to-l from-[#0b101a] to-transparent" />
           )}
 
           {canScrollLeft && <ScrollArrow direction="left" onClick={() => scroll("left")} />}

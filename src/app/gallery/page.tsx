@@ -61,10 +61,10 @@ export default function GalleryPage() {
           style={{ background: "linear-gradient(to right, transparent, rgba(125,211,252,0.4), transparent)" }}
         />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative hockey-page-container text-center">
           <p
             className="text-xs font-bold uppercase tracking-[0.4em] mb-5"
-            style={{ color: "#7dd3fc" }}
+            style={{ color: "var(--gold)" }}
           >
             Bardownski · Newfoundland
           </p>
@@ -73,7 +73,7 @@ export default function GalleryPage() {
           </h1>
           <div className="flex items-center justify-center gap-6 text-xs uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.3)" }}>
             <span>{photos.length} Photos</span>
-            <span className="w-1 h-1 rounded-full" style={{ backgroundColor: "#cc1533" }} />
+            <span className="w-1 h-1 rounded-full" style={{ backgroundColor: "#d4b77b" }} />
             <span>{videos.length} Videos</span>
           </div>
         </div>
@@ -81,11 +81,11 @@ export default function GalleryPage() {
         {/* Red bottom accent */}
         <div
           className="absolute bottom-0 left-1/2 -translate-x-1/2 h-px w-32"
-          style={{ backgroundColor: "#cc1533" }}
+          style={{ backgroundColor: "#d4b77b" }}
         />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 pt-8">
+      <div className="hockey-page-container pb-24 pt-8">
         <GalleryClient photos={photos} videos={videos} />
       </div>
     </div>

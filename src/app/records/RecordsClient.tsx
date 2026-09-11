@@ -138,7 +138,7 @@ function TrackerCard({
         className={`h-0.5 bg-gradient-to-r ${
           isClose
             ? "from-amber-500 via-amber-500/50 to-transparent"
-            : "from-red via-red/50 to-transparent"
+            : "from-gold via-gold/50 to-transparent"
         }`}
       />
 
@@ -164,7 +164,7 @@ function TrackerCard({
             className={`absolute inset-y-0 left-0 rounded-full ${
               isClose
                 ? "bg-gradient-to-r from-amber-500 to-amber-400"
-                : "bg-gradient-to-r from-red to-red-light"
+                : "bg-gradient-to-r from-gold to-gold-light"
             }`}
             initial={{ width: 0 }}
             whileInView={{ width: `${tracker.percentage}%` }}
@@ -178,7 +178,7 @@ function TrackerCard({
         </div>
 
         <div className="flex items-center justify-between text-xs">
-          <span className="font-mono font-bold text-red">
+          <span className="font-mono font-bold text-gold">
             {tracker.prefix}
             {tracker.currentValue}
             {tracker.suffix}
@@ -218,7 +218,7 @@ function SeasonChart({
 
   return (
     <div className="bg-navy/80 border border-border rounded-xl overflow-hidden">
-      <div className="h-0.5 bg-gradient-to-r from-red via-red/50 to-transparent" />
+      <div className="h-0.5 bg-gradient-to-r from-gold via-gold/50 to-transparent" />
       <div className="p-5">
         <p className="text-[10px] text-muted uppercase tracking-[0.2em] font-semibold mb-4">
           {label} by season (leader)
@@ -237,7 +237,7 @@ function SeasonChart({
                   >
                     {c.season}
                     {isFirst && (
-                      <span className="ml-1.5 text-[9px] text-red font-bold uppercase">
+                      <span className="ml-1.5 text-[9px] text-gold font-bold uppercase">
                         Current
                       </span>
                     )}
@@ -287,14 +287,14 @@ function RecordCard({
       whileHover={{ y: -3 }}
       className="group relative bg-navy/80 border border-border rounded-xl overflow-hidden transition-colors hover:border-border/80"
     >
-      <div className="h-0.5 bg-gradient-to-r from-red via-red/50 to-transparent" />
+      <div className="h-0.5 bg-gradient-to-r from-gold via-gold/50 to-transparent" />
       <div className="p-5">
         <p className="text-[10px] text-muted uppercase tracking-[0.2em] font-semibold mb-3">
           {record.label}
         </p>
         <div className="flex items-end justify-between gap-3">
           <div>
-            <p className="text-3xl md:text-4xl font-black text-red font-mono leading-none">
+            <p className="text-3xl md:text-4xl font-black text-gold font-mono leading-none">
               {record.value > 0 ? (
                 <>
                   {record.prefix}
@@ -333,12 +333,12 @@ function FeaturedRecord({ record }: { record: AllTimeRecord }) {
               : ""}
           </span>
         </div>
-        <div className="h-0.5 bg-gradient-to-r from-transparent via-red to-transparent" />
+        <div className="h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent" />
         <div className="relative px-8 py-10 md:py-14 text-center">
-          <p className="text-xs text-red font-bold uppercase tracking-[0.3em] mb-4">
+          <p className="text-xs text-gold font-bold uppercase tracking-[0.3em] mb-4">
             All-Time Record
           </p>
-          <p className="text-5xl md:text-7xl font-black text-red font-mono mb-3">
+          <p className="text-5xl md:text-7xl font-black text-gold font-mono mb-3">
             {record.value > 0 ? (
               <>
                 {record.prefix}
@@ -359,7 +359,7 @@ function FeaturedRecord({ record }: { record: AllTimeRecord }) {
             <p className="text-sm text-muted mt-1.5">{record.season} Season</p>
           )}
         </div>
-        <div className="h-0.5 bg-gradient-to-r from-transparent via-red to-transparent" />
+        <div className="h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent" />
       </div>
     </FadeUp>
   );
@@ -380,9 +380,9 @@ function MVPCard({ mvp, index }: { mvp: SeasonMVP; index: number }) {
         <div className="absolute top-3 right-3 text-4xl opacity-[0.04] select-none font-black">
           MVP
         </div>
-        <div className="inline-flex items-center gap-2 bg-red/10 border border-red/20 rounded-md px-2.5 py-1 mb-4">
-          <div className="w-1.5 h-1.5 rounded-full bg-red" />
-          <span className="text-red text-[10px] font-bold uppercase tracking-widest">
+        <div className="inline-flex items-center gap-2 bg-gold/10 border border-gold/20 rounded-md px-2.5 py-1 mb-4">
+          <div className="w-1.5 h-1.5 rounded-full bg-gold" />
+          <span className="text-gold text-[10px] font-bold uppercase tracking-widest">
             {mvp.projected ? "Projected " : ""}
             {mvp.season} Season
           </span>
@@ -396,7 +396,7 @@ function MVPCard({ mvp, index }: { mvp: SeasonMVP; index: number }) {
             {mvp.highlights.map((h) => (
               <span
                 key={h}
-                className="bg-white/5 border border-border rounded-md px-2 py-0.5 text-[11px] font-mono font-semibold text-red"
+                className="bg-white/5 border border-border rounded-md px-2 py-0.5 text-[11px] font-mono font-semibold text-gold"
               >
                 {h}
               </span>
@@ -413,11 +413,11 @@ function SectionDivider({ title }: { title: string }) {
     <FadeUp>
       <div className="mb-6">
         <div className="flex flex-col gap-px mb-4">
-          <div className="h-px bg-gradient-to-r from-red/50 via-red/20 to-transparent" />
+          <div className="h-px bg-gradient-to-r from-gold/50 via-gold/20 to-transparent" />
           <div className="h-px bg-gradient-to-r from-[#5b9bd5]/30 via-[#5b9bd5]/10 to-transparent" />
         </div>
         <div className="flex items-center gap-3">
-          <span className="block w-1 h-6 bg-red rounded-sm" />
+          <span className="block w-1 h-6 bg-gold rounded-sm" />
           <h2 className="text-2xl font-black uppercase tracking-wider">
             {title}
           </h2>
@@ -484,7 +484,7 @@ function SectionBanner({
           <h2 className="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-center">
             {title}
           </h2>
-          <div className="w-10 h-0.5 bg-red mt-2 rounded-full" />
+          <div className="w-10 h-0.5 bg-gold mt-2 rounded-full" />
           <p className="text-muted text-[10px] uppercase tracking-widest mt-2">
             {subtitle}
           </p>
@@ -619,7 +619,7 @@ export default function RecordsClient({
                 className={`h-0.5 bg-gradient-to-r ${
                   isStreakActive
                     ? "from-emerald-500 via-emerald-500/50 to-transparent"
-                    : "from-red via-red/50 to-transparent"
+                    : "from-gold via-gold/50 to-transparent"
                 }`}
               />
               <div className="p-5">
@@ -630,7 +630,7 @@ export default function RecordsClient({
                   <div>
                     <p
                       className={`text-3xl md:text-4xl font-black font-mono leading-none ${
-                        isStreakActive ? "text-emerald-400" : "text-red"
+                        isStreakActive ? "text-emerald-400" : "text-gold"
                       }`}
                     >
                       <AnimatedNumber from={0} to={longestWinStreak} />
@@ -663,14 +663,14 @@ export default function RecordsClient({
                 href={`/matches/${mostTeamGoalsInGame.matchId}`}
                 className="block"
               >
-                <div className="h-0.5 bg-gradient-to-r from-red via-red/50 to-transparent" />
+                <div className="h-0.5 bg-gradient-to-r from-gold via-gold/50 to-transparent" />
                 <div className="p-5">
                   <p className="text-[10px] text-muted uppercase tracking-[0.2em] font-semibold mb-3">
                     Most Goals in One Game
                   </p>
                   <div className="flex items-end justify-between gap-3">
                     <div>
-                      <p className="text-3xl md:text-4xl font-black font-mono leading-none text-red">
+                      <p className="text-3xl md:text-4xl font-black font-mono leading-none text-gold">
                         <AnimatedNumber from={0} to={mostTeamGoalsInGame.value} />
                       </p>
                     </div>
@@ -722,7 +722,7 @@ export default function RecordsClient({
               <h2 className="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-center">
                 Player Records
               </h2>
-              <div className="w-10 h-0.5 bg-red mt-2 rounded-full" />
+              <div className="w-10 h-0.5 bg-gold mt-2 rounded-full" />
               <p className="text-muted text-[10px] uppercase tracking-widest mt-2">
                 {activePlayerTab === "goalie"
                   ? "Between the pipes"
@@ -754,7 +754,7 @@ export default function RecordsClient({
                 {isActive && (
                   <motion.span
                     layoutId="player-tab-active"
-                    className="absolute inset-0 bg-red rounded-md"
+                    className="absolute inset-0 bg-gold rounded-md"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -787,14 +787,14 @@ export default function RecordsClient({
                       href={`/matches/${mostPlayerGoalsInGame.matchId}`}
                       className="block"
                     >
-                      <div className="h-0.5 bg-gradient-to-r from-red via-red/50 to-transparent" />
+                      <div className="h-0.5 bg-gradient-to-r from-gold via-gold/50 to-transparent" />
                       <div className="p-5">
                         <p className="text-[10px] text-muted uppercase tracking-[0.2em] font-semibold mb-3">
                           Most Goals in One Game
                         </p>
                         <div className="flex items-end justify-between gap-3">
                           <div>
-                            <p className="text-3xl md:text-4xl font-black font-mono leading-none text-red">
+                            <p className="text-3xl md:text-4xl font-black font-mono leading-none text-gold">
                               <AnimatedNumber from={0} to={mostPlayerGoalsInGame.value} />
                             </p>
                           </div>
@@ -865,13 +865,13 @@ export default function RecordsClient({
               comparisons={comparisons}
               statKey="points"
               label="Points"
-              color="#c8102e"
+              color="#d4b77b"
             />
             <SeasonChart
               comparisons={comparisons}
               statKey="goals"
               label="Goals"
-              color="#e0233e"
+              color="#ead6ac"
             />
             <SeasonChart
               comparisons={comparisons}

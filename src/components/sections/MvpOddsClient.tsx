@@ -39,7 +39,7 @@ function MvpInfoModal({ onClose }: { onClose: () => void }) {
           </p>
 
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-[#cc1533] mb-2">
+            <h4 className="text-xs font-bold uppercase tracking-widest text-[#d4b77b] mb-2">
               Skater Score
             </h4>
             <div className="bg-navy-dark/50 rounded-lg p-3 space-y-1 text-xs font-mono">
@@ -55,7 +55,7 @@ function MvpInfoModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-[#cc1533] mb-2">
+            <h4 className="text-xs font-bold uppercase tracking-widest text-[#d4b77b] mb-2">
               Goalie Score
             </h4>
             <div className="bg-navy-dark/50 rounded-lg p-3 space-y-1 text-xs font-mono">
@@ -69,7 +69,7 @@ function MvpInfoModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-[#cc1533] mb-2">
+            <h4 className="text-xs font-bold uppercase tracking-widest text-[#d4b77b] mb-2">
               GP Scaling
             </h4>
             <p>
@@ -86,7 +86,7 @@ function MvpInfoModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-[#cc1533] mb-2">
+            <h4 className="text-xs font-bold uppercase tracking-widest text-[#d4b77b] mb-2">
               Odds Conversion
             </h4>
             <p>
@@ -154,7 +154,7 @@ export function MvpOddsSpin({ entries }: { entries: BannerEntry[] }) {
   return (
     <div className="bg-navy border border-border rounded-xl px-4 sm:px-6 py-3 overflow-hidden">
       <div className="flex items-center gap-3">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-[#cc1533] whitespace-nowrap">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-[#d4b77b] whitespace-nowrap">
           MVP Odds
         </span>
         <div className="h-px w-3 bg-border" />
@@ -166,7 +166,7 @@ export function MvpOddsSpin({ entries }: { entries: BannerEntry[] }) {
               : "opacity-100 translate-y-0"
           }`}
         >
-          <span className={`text-xs font-bold ${isFavorite ? "text-[#cc1533]" : "text-muted/40"}`}>
+          <span className={`text-xs font-bold ${isFavorite ? "text-[#d4b77b]" : "text-muted/40"}`}>
             {active + 1}.
           </span>
           <span className={`text-sm font-semibold truncate ${isFavorite ? "text-white" : "text-white/80"}`}>
@@ -178,7 +178,7 @@ export function MvpOddsSpin({ entries }: { entries: BannerEntry[] }) {
           </span>
           <span className={`text-sm font-mono font-bold ${
             isFavorite
-              ? "text-[#cc1533]"
+              ? "text-[#d4b77b]"
               : entry.americanOdds.startsWith("+")
               ? "text-emerald-400"
               : "text-white/60"
@@ -194,7 +194,7 @@ export function MvpOddsSpin({ entries }: { entries: BannerEntry[] }) {
               key={i}
               onClick={() => { setIsTransitioning(true); setTimeout(() => { setActive(i); setIsTransitioning(false); }, 300); }}
               className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                i === active ? "bg-[#cc1533]" : "bg-border"
+                i === active ? "bg-[#d4b77b]" : "bg-border"
               }`}
             />
           ))}
@@ -221,9 +221,9 @@ function OddsRow({ entry, index, isLast }: { entry: OddsEntry; index: number; is
     <div
       className={`grid grid-cols-[auto_1fr_auto_auto_auto] gap-x-4 px-4 sm:px-6 py-4 items-center transition-colors ${
         !isLast ? "border-b border-border/50" : ""
-      } ${isFavorite ? "bg-[#cc1533]/5" : "hover:bg-surface-light/30"}`}
+      } ${isFavorite ? "bg-[#d4b77b]/5" : "hover:bg-surface-light/30"}`}
     >
-      <span className={`text-lg font-black w-6 text-center ${isFavorite ? "text-[#cc1533]" : "text-muted/40"}`}>
+      <span className={`text-lg font-black w-6 text-center ${isFavorite ? "text-[#d4b77b]" : "text-muted/40"}`}>
         {index + 1}
       </span>
 
@@ -253,7 +253,7 @@ function OddsRow({ entry, index, isLast }: { entry: OddsEntry; index: number; is
 
       <div className={`w-20 text-right font-mono font-bold text-lg ${
         isFavorite
-          ? "text-[#cc1533]"
+          ? "text-[#d4b77b]"
           : entry.americanOdds.startsWith("+")
           ? "text-emerald-400"
           : "text-white"

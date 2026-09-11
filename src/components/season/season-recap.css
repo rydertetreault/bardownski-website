@@ -644,7 +644,7 @@
   font-size: 11px;
 }
 .legacy-home .broadcast-strip > b {
-  background: #ae281e;
+  background: #a88b52;
   color: white;
   padding: 10px;
 }
@@ -652,7 +652,7 @@
   font-size: 16px;
 }
 .legacy-home .broadcast-strip i {
-  color: #ae281e;
+  color: #a88b52;
   margin: 0 10px;
 }
 @media (max-width: 1100px) {
@@ -701,27 +701,27 @@
 .legacy-home.motion-demo {
   overflow-x: clip;
 }
-.legacy-home.motion-guide {
+.legacy-home .motion-guide {
   margin-top: 30px;
   max-width: 440px;
   border-top: 1px solid var(--line);
   padding-top: 20px;
 }
-.legacy-home.motion-guide > span {
+.legacy-home .motion-guide > span {
   font-size: 10px;
   color: var(--accent);
   letter-spacing: 2px;
 }
-.legacy-home.motion-guide p {
+.legacy-home .motion-guide p {
   font-size: 12px;
   color: var(--muted);
   margin: 10px 0;
 }
-.legacy-home.motion-guide a,
-.legacy-home.motion-toggle {
+.legacy-home .motion-guide a,
+.legacy-home .motion-toggle {
   font-size: 11px;
 }
-.legacy-home.motion-toggle {
+.legacy-home .motion-toggle {
   display: block;
   margin-top: 15px;
   background: transparent;
@@ -730,10 +730,10 @@
   padding: 9px 13px;
   cursor: pointer;
 }
-.legacy-home.motion-toggle:disabled {
+.legacy-home .motion-toggle:disabled {
   cursor: default;
 }
-.legacy-home.motion-toggle:focus-visible {
+.legacy-home .motion-toggle:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 3px;
 }
@@ -870,18 +870,7 @@
 .legacy-home.motion-enabled .story-image.arrived {
   clip-path: inset(0);
 }
-.legacy-home.motion-enabled .next-grid article {
-  transform: translateY(90px) rotate(3deg);
-}
-.legacy-home.motion-enabled .next-grid article.arrived {
-  transform: none;
-}
-.legacy-home.motion-enabled .letters b {
-  transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
-}
-.legacy-home.motion-enabled .next-grid article:not(.arrived) .letters b {
-  transform: translateY(25px) rotateY(90deg);
-}
+/* Next-season cards use the scroll-linked --card rules below, not .arrived states. */
 /* A: a large, one-shot reveal when the reader arrives. */
 .legacy-home.motion-curtain.motion-enabled .stage-curtain {
   display: flex;
@@ -1004,10 +993,10 @@
   .legacy-home .stage-star {
     font-size: 25px;
   }
-  .legacy-home.motion-guide {
+  .legacy-home .motion-guide {
     margin-top: 20px;
   }
-  .legacy-home.motion-guide p {
+  .legacy-home .motion-guide p {
     font-size: 11px;
   }
 }
@@ -1106,7 +1095,7 @@
   background: var(--accent);
   border-color: var(--accent);
 }
-.legacy-home .chapter-heading {
+#season-recap .chapter-heading {
   position: fixed;
   bottom: 16px;
   left: 18px;
@@ -1329,7 +1318,7 @@
     height: 17px;
     font-size: 7px;
   }
-  .legacy-home .chapter-heading {
+  #season-recap .chapter-heading {
     bottom: 8px;
     left: 8px;
     padding: 7px;
@@ -1539,9 +1528,46 @@
   transform: none !important;
   clip-path: none !important;
 }
-/* Season awards can have multiple winners and a full list of categories. */
+/* Keep the MVP and the compact supporting honors aligned as one row. */
 .legacy-home .stage-content h2{max-width:1100px;margin-inline:auto;font-size:clamp(48px,8vw,120px);overflow-wrap:normal}
-.legacy-home .awards{align-items:start}
+.legacy-home .awards { align-items: stretch; }
+.legacy-home .supporting-mvp {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.legacy-home .supporting-mvp .award-bottom {
+  margin-top: auto;
+}
+.legacy-home .supporting-mvp > p:first-of-type {
+  margin-bottom: 40px;
+}
+.legacy-home .award-stack {
+  gap: 12px;
+  grid-auto-rows: 1fr;
+  min-width: 0;
+}
+.legacy-home .award-stack article { padding: 18px 22px; }
+.legacy-home .award-stack h3 {
+  margin: 8px 0;
+  font-size: clamp(18px, 2vw, 24px);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.legacy-home .award-stack p { font-size: 13px; }
+@media (max-width: 560px) {
+  .legacy-home .award-stack { grid-auto-rows: auto; }
+}
 .legacy-home .award-methodology{margin-top:35px;max-width:950px}
 .legacy-home .award-methodology p{color:var(--muted);font-size:13px;margin:15px 0}
 @media(max-width:560px){.legacy-home .stage-content h2{font-size:48px;letter-spacing:-2px}}
+
+.legacy-home .supporting-mvp .mvp-description {
+  max-width: 440px;
+  font-size: 16px;
+  line-height: 1.75;
+  margin: 0 0 36px;
+}
+.legacy-home{--preview-height:var(--site-header-height,126px)}
+.legacy-home [id]{scroll-margin-top:calc(var(--site-header-height,126px) + 16px)}
+.legacy-home .film-progress{top:var(--site-header-height,126px)}

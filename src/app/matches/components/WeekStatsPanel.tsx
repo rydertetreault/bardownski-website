@@ -27,14 +27,14 @@ export function WeekStatsPanel({
       {
         label: "Record",
         value: `${w}-${l}`,
-        accent: w > l ? "text-emerald-400" : w < l ? "text-red" : "text-white",
+        accent: w > l ? "text-emerald-400" : w < l ? "text-gold" : "text-white",
       },
       { label: "Goals For", value: `${totalGF}`, accent: "text-emerald-400" },
-      { label: "Goals Against", value: `${totalGA}`, accent: "text-red" },
+      { label: "Goals Against", value: `${totalGA}`, accent: "text-gold" },
       {
         label: "Shot Diff",
         value: `${shotDiff > 0 ? "+" : ""}${shotDiff}`,
-        accent: shotDiff >= 0 ? "text-cyan-500" : "text-red",
+        accent: shotDiff >= 0 ? "text-cyan-500" : "text-gold",
       },
     ];
   }, [matches]);
@@ -51,8 +51,8 @@ export function WeekStatsPanel({
           onClick={onBack}
           className="flex items-center gap-2 text-muted hover:text-white transition-colors cursor-pointer group"
         >
-          <span className="text-red group-hover:-translate-x-1 transition-transform">&larr;</span>
-          <span className="text-xs uppercase tracking-widest font-bold">All Weeks</span>
+          <span className="text-gold group-hover:-translate-x-1 transition-transform">&larr;</span>
+          <span className="text-xs uppercase tracking-widest font-bold">All Saved Games</span>
         </button>
       </motion.div>
 
@@ -63,13 +63,13 @@ export function WeekStatsPanel({
         transition={{ duration: 0.35, delay: 0.05 }}
       >
         <div className="flex items-center gap-3 mb-2">
-          <span className="block w-1 h-6 bg-red rounded-sm" />
+          <span className="block w-1 h-6 bg-gold rounded-sm" />
           <h2 className="text-2xl font-black uppercase tracking-wider">
             {weekLabel}
           </h2>
         </div>
         <div className="flex flex-col gap-px ml-4">
-          <div className="h-px bg-red/30" />
+          <div className="h-px bg-gold/30" />
           <div className="h-px bg-light-blue/15" />
         </div>
       </motion.div>
@@ -102,7 +102,7 @@ export function WeekStatsPanel({
           transition={{ duration: 0.35, delay: 0.25 }}
           className="flex items-center gap-3 mb-4"
         >
-          <span className="block w-1 h-5 bg-red rounded-sm" />
+          <span className="block w-1 h-5 bg-gold rounded-sm" />
           <h3 className="text-lg font-black uppercase tracking-wider">
             Games
           </h3>

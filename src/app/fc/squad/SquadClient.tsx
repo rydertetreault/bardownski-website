@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
-const GOLD = "#cc1533";
+const GOLD = "#d4b77b";
 const GOLD_LIGHT = "#5b9bd5";
 
 export interface SquadPlayer {
@@ -70,7 +70,7 @@ function PlayerCard({ p, index }: { p: SquadPlayer; index: number }) {
             className="absolute inset-0 pointer-events-none"
             style={{
               background:
-                "radial-gradient(circle at 70% 20%, rgba(204,21,51,0.10) 0%, transparent 55%)",
+                "radial-gradient(circle at 70% 20%, rgba(212, 183, 123,0.10) 0%, transparent 55%)",
             }}
           />
           <svg
@@ -78,7 +78,7 @@ function PlayerCard({ p, index }: { p: SquadPlayer; index: number }) {
             viewBox="0 0 200 400"
             preserveAspectRatio="none"
           >
-            <polygon points="120,0 200,0 120,400 40,400" fill="#cc1533" />
+            <polygon points="120,0 200,0 120,400 40,400" fill="#d4b77b" />
           </svg>
 
           {/* Giant kit number */}
@@ -88,8 +88,8 @@ function PlayerCard({ p, index }: { p: SquadPlayer; index: number }) {
                 className="font-black leading-none tabular-nums select-none"
                 style={{
                   fontSize: "7.5rem",
-                  color: "rgba(204,21,51,0.85)",
-                  textShadow: "0 8px 40px rgba(204,21,51,0.25)",
+                  color: "rgba(212, 183, 123,0.85)",
+                  textShadow: "0 8px 40px rgba(212, 183, 123,0.25)",
                 }}
               >
                 {p.number}

@@ -7,7 +7,7 @@ import { getNickname } from "@/lib/nicknames";
 export function TrendArrow({ trend }: { trend?: "up" | "down" | null }) {
   if (!trend) return null;
   if (trend === "up") return <span className="text-green-500 ml-1">↑</span>;
-  return <span className="text-red-light ml-1">↓</span>;
+  return <span className="text-gold-light ml-1">↓</span>;
 }
 
 export function LeaderCard({
@@ -37,7 +37,7 @@ export function LeaderCard({
     >
       {/* Header */}
       <div className="relative">
-        <div className="h-0.5 bg-gradient-to-r from-red via-red/50 to-transparent" />
+        <div className="h-0.5 bg-gradient-to-r from-gold via-gold/50 to-transparent" />
         <div className="px-4 py-2.5 border-b border-border bg-navy-dark/80 flex items-center justify-between">
           <h3 className="font-black uppercase tracking-wider text-xs">
             {title}
@@ -60,7 +60,7 @@ export function LeaderCard({
             {/* Rank */}
             <span
               className={`w-6 text-xs font-mono font-bold shrink-0 ${
-                i === 0 ? "text-red" : "text-muted"
+                i === 0 ? "text-gold" : "text-muted"
               }`}
             >
               {entry.rank}.
@@ -68,7 +68,7 @@ export function LeaderCard({
             {/* Name */}
             <p
               className={`flex-1 min-w-0 max-w-[130px] text-sm font-semibold truncate ${
-                i === 0 ? "text-red" : ""
+                i === 0 ? "text-gold" : ""
               }`}
             >
               {getNickname(entry.name)}
@@ -77,7 +77,7 @@ export function LeaderCard({
             {/* Value */}
             <span
               className={`w-10 text-right font-bold text-sm font-mono shrink-0 ${
-                i === 0 ? "text-red" : "text-foreground"
+                i === 0 ? "text-gold" : "text-foreground"
               }`}
             >
               {fmt(entry.value)}

@@ -212,8 +212,8 @@ export default function WhoWeAreSection() {
 
           <div className="relative z-10 max-w-lg">
             <div className="flex items-center gap-3 mb-5">
-              <span className="block w-1 h-5 bg-[#cc1533] rounded-sm" />
-              <span className="text-[#cc1533] text-xs font-bold uppercase tracking-widest">
+              <span className="block w-1 h-5 bg-[#d4b77b] rounded-sm" />
+              <span className="text-[#d4b77b] text-xs font-bold uppercase tracking-widest">
                 Our Story
               </span>
             </div>
@@ -230,13 +230,13 @@ export default function WhoWeAreSection() {
             </p>
 
             <div className="w-full mb-7 flex flex-col gap-px">
-              <div className="h-px bg-[#cc1533]/40" />
+              <div className="h-px bg-[#d4b77b]/40" />
               <div className="h-px bg-[#5b9bd5]/25" />
             </div>
 
             <div className="flex gap-10 mb-8">
               <div>
-                <p className="text-[#cc1533] text-2xl font-extrabold tracking-tight drop-shadow-[0_0_8px_rgba(204,21,51,0.5)]">
+                <p className="text-[#d4b77b] text-2xl font-extrabold tracking-tight drop-shadow-[0_0_8px_rgba(212, 183, 123,0.5)]">
                   EST. 2020
                 </p>
                 <p className="text-white/40 text-xs uppercase tracking-widest mt-1">
@@ -255,7 +255,7 @@ export default function WhoWeAreSection() {
 
             <Link
               href="/about"
-              className="inline-flex items-center gap-2 border border-white/30 text-white/80 text-sm font-semibold uppercase tracking-wider px-5 py-2.5 rounded hover:border-[#cc1533] hover:text-white transition-colors duration-200"
+              className="inline-flex items-center gap-2 border border-white/30 text-white/80 text-sm font-semibold uppercase tracking-wider px-5 py-2.5 rounded hover:border-[#d4b77b] hover:text-white transition-colors duration-200"
             >
               View Club History
               <span aria-hidden="true">→</span>
@@ -283,9 +283,9 @@ export default function WhoWeAreSection() {
         >
           <defs>
             <linearGradient id="waveGlowOuter" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#ff1a3d" stopOpacity="1" />
-              <stop offset="50%" stopColor="#ff2846" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="#ff2846" stopOpacity="0" />
+              <stop offset="0%" stopColor="#ead6ac" stopOpacity="1" />
+              <stop offset="50%" stopColor="#ead6ac" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="#ead6ac" stopOpacity="0" />
             </linearGradient>
           </defs>
           <path
@@ -304,9 +304,9 @@ export default function WhoWeAreSection() {
           <defs>
             <linearGradient id="waveGlowCore" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
-              <stop offset="7%" stopColor="#ff2244" stopOpacity="1" />
-              <stop offset="55%" stopColor="#ff2244" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#ff2244" stopOpacity="0" />
+              <stop offset="7%" stopColor="#ead6ac" stopOpacity="1" />
+              <stop offset="55%" stopColor="#ead6ac" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="#ead6ac" stopOpacity="0" />
             </linearGradient>
           </defs>
           <path
@@ -330,14 +330,14 @@ export default function WhoWeAreSection() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-3">
-              <span className="block w-1 h-5 bg-[#cc1533] rounded-sm" />
-              <span className="text-[#cc1533] text-xs font-bold uppercase tracking-widest">
+              <span className="block w-1 h-5 bg-[#d4b77b] rounded-sm" />
+              <span className="text-[#d4b77b] text-xs font-bold uppercase tracking-widest">
                 Season History
               </span>
             </div>
             <Link
               href="/stats"
-              className="text-sm text-[#cc1533] hover:text-red-300 transition-colors font-medium hidden sm:block"
+              className="text-sm text-[#d4b77b] hover:text-gold-light transition-colors font-medium hidden sm:block"
             >
               Full Stats →
             </Link>
@@ -392,10 +392,10 @@ export default function WhoWeAreSection() {
                       clipPath:
                         "polygon(0 18px, 100% 0, 100% calc(100% - 18px), 0 100%)",
                       border: isActive
-                        ? "1px solid rgba(204,21,51,0.35)"
+                        ? "1px solid rgba(212, 183, 123,0.35)"
                         : "1px solid rgba(255,255,255,0.07)",
                       boxShadow: isActive
-                        ? "0 8px 40px rgba(204,21,51,0.18)"
+                        ? "0 8px 40px rgba(212, 183, 123,0.18)"
                         : "none",
                       transition:
                         "background-color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease",
@@ -427,7 +427,7 @@ export default function WhoWeAreSection() {
                           className="text-3xl font-black font-mono"
                           style={{
                             color: isActive
-                              ? "#cc1533"
+                              ? "#d4b77b"
                               : "rgba(255,255,255,0.35)",
                             transition: "color 0.35s ease",
                           }}
@@ -435,7 +435,7 @@ export default function WhoWeAreSection() {
                           {season.year}
                         </span>
                         {isCurrent && isActive && (
-                          <span className="text-[9px] font-bold text-[#cc1533]/70 uppercase tracking-widest">
+                          <span className="text-[9px] font-bold text-[#d4b77b]/70 uppercase tracking-widest">
                             Now
                           </span>
                         )}
@@ -445,7 +445,7 @@ export default function WhoWeAreSection() {
                         className="h-px mt-3 mb-5"
                         style={{
                           backgroundColor: isActive
-                            ? "rgba(204,21,51,0.3)"
+                            ? "rgba(212, 183, 123,0.3)"
                             : "rgba(255,255,255,0.08)",
                           transition: "background-color 0.35s ease",
                         }}
@@ -461,7 +461,7 @@ export default function WhoWeAreSection() {
                               className="h-full rounded-full"
                               style={{
                                 backgroundColor: isActive
-                                  ? "#cc1533"
+                                  ? "#d4b77b"
                                   : "#5b9bd5",
                               }}
                               initial={{ width: 0 }}
@@ -594,7 +594,7 @@ export default function WhoWeAreSection() {
                   className="relative mt-2"
                   style={{
                     backgroundColor: "#1e3060",
-                    border: "1px solid rgba(204,21,51,0.35)",
+                    border: "1px solid rgba(212, 183, 123,0.35)",
                     clipPath:
                       "polygon(0 8px, 100% 0, 100% calc(100% - 8px), 0 100%)",
                   }}
@@ -608,8 +608,8 @@ export default function WhoWeAreSection() {
                   </button>
                   <div className="px-5 py-4">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="block w-1 h-3 rounded-sm bg-[#cc1533]/70" />
-                      <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#cc1533]/80">
+                      <span className="block w-1 h-3 rounded-sm bg-[#d4b77b]/70" />
+                      <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#d4b77b]/80">
                         Club Finals
                       </span>
                     </div>
@@ -621,7 +621,7 @@ export default function WhoWeAreSection() {
                     </p>
                     <Link
                       href={`/news/${champ.articleId}`}
-                      className="text-[10px] font-bold uppercase tracking-widest text-[#cc1533] hover:text-red-300 transition-colors"
+                      className="text-[10px] font-bold uppercase tracking-widest text-[#d4b77b] hover:text-gold-light transition-colors"
                     >
                       Read Story →
                     </Link>
@@ -644,7 +644,7 @@ export default function WhoWeAreSection() {
                 height: "6px",
                 borderRadius: "9999px",
                 backgroundColor:
-                  activeIndex === i ? "#cc1533" : "rgba(255,255,255,0.2)",
+                  activeIndex === i ? "#d4b77b" : "rgba(255,255,255,0.2)",
                 transition: "width 0.3s ease, background-color 0.3s ease",
                 border: "none",
                 cursor: "pointer",
@@ -658,7 +658,7 @@ export default function WhoWeAreSection() {
         <div className="mt-6 text-center sm:hidden px-4">
           <Link
             href="/stats"
-            className="text-sm text-[#cc1533] hover:text-red-300 transition-colors font-medium"
+            className="text-sm text-[#d4b77b] hover:text-gold-light transition-colors font-medium"
           >
             Full Stats →
           </Link>

@@ -40,7 +40,7 @@ function FeaturedCard({ match }: { match: Match }) {
   return (
     <div className="px-5 py-5 pr-7">
       {/* Label */}
-      <p className="text-[#cc1533] text-[9px] font-bold uppercase tracking-[0.22em] mb-4">
+      <p className="text-[#d4b77b] text-[9px] font-bold uppercase tracking-[0.22em] mb-4">
         Latest Result
       </p>
 
@@ -95,7 +95,7 @@ function FeaturedCard({ match }: { match: Match }) {
           className={`text-[10px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded-md ${
             isWin
               ? "text-emerald-400 bg-white/5 border border-white/10"
-              : "text-[#cc1533] bg-white/5 border border-white/10"
+              : "text-[#d4b77b] bg-white/5 border border-white/10"
           }`}
         >
           {isWin ? "Victory" : "Defeat"}
@@ -103,7 +103,7 @@ function FeaturedCard({ match }: { match: Match }) {
       </div>
 
       {/* Divider */}
-      <div className="h-px bg-[#cc1533]/20 mb-5" />
+      <div className="h-px bg-[#d4b77b]/20 mb-5" />
 
       {/* Stats */}
       <div className="flex flex-wrap gap-1.5 mb-5">
@@ -127,8 +127,8 @@ function FeaturedCard({ match }: { match: Match }) {
       {/* Three Stars */}
       {match.threeStars && (
         <>
-          <div className="h-px bg-[#cc1533]/20 mb-5" />
-          <p className="text-[#cc1533] text-[9px] font-bold uppercase tracking-[0.22em] mb-3">
+          <div className="h-px bg-[#d4b77b]/20 mb-5" />
+          <p className="text-[#d4b77b] text-[9px] font-bold uppercase tracking-[0.22em] mb-3">
             Three Stars
           </p>
           <div className="space-y-2.5">
@@ -189,7 +189,7 @@ function ScoreRow({ match }: { match: Match }) {
       <div className="flex items-center gap-2">
         <div
           className={`w-1.5 h-1.5 rounded-full ${
-            isWin ? "bg-emerald-400" : "bg-[#cc1533]"
+            isWin ? "bg-emerald-400" : "bg-[#d4b77b]"
           }`}
         />
         <span className="text-white/30 text-[9px] uppercase tracking-widest">
@@ -207,7 +207,7 @@ function ScoreRow({ match }: { match: Match }) {
         </span>
         <span
           className={`text-[10px] font-black w-3 ${
-            isWin ? "text-emerald-400" : "text-[#cc1533]"
+            isWin ? "text-emerald-400" : "text-[#d4b77b]"
           }`}
         >
           {result}
@@ -230,7 +230,7 @@ function CompactMatch({ match }: { match: Match }) {
         </span>
         <span
           className={`text-[10px] font-black ${
-            isWin ? "text-emerald-400" : "text-[#cc1533]"
+            isWin ? "text-emerald-400" : "text-[#d4b77b]"
           }`}
         >
           {result}
@@ -294,10 +294,10 @@ export default function FloatingScoreboard({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.25 }}
-            className="relative bg-[#0d1528] border border-[#cc1533]/15 rounded-2xl overflow-hidden w-[340px] xl:w-[380px]"
+            className="relative bg-[#0d1528] border border-[#d4b77b]/15 rounded-2xl overflow-hidden w-[340px] xl:w-[380px]"
           >
             {/* Red top accent */}
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#cc1533] via-[#cc1533] to-[#cc1533]/30" />
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#d4b77b] via-[#d4b77b] to-[#d4b77b]/30" />
 
             {/* Collapse button */}
             <button
@@ -318,7 +318,7 @@ export default function FloatingScoreboard({
               <div>
                 {sideMatches.map((m) => (
                   <div key={m.id}>
-                    <div className="h-px bg-[#cc1533]/15 mx-5" />
+                    <div className="h-px bg-[#d4b77b]/15 mx-5" />
                     <CompactMatch match={m} />
                   </div>
                 ))}
@@ -328,9 +328,9 @@ export default function FloatingScoreboard({
             {/* Weekly record */}
             {weeklyRecord && (
               <>
-                <div className="h-px bg-[#cc1533]/15 mx-5" />
+                <div className="h-px bg-[#d4b77b]/15 mx-5" />
                 <div className="px-5 py-3">
-                  <p className="text-[#cc1533] text-[9px] font-bold uppercase tracking-[0.22em] mb-2">
+                  <p className="text-[#d4b77b] text-[9px] font-bold uppercase tracking-[0.22em] mb-2">
                     This Week
                   </p>
                   <div className="flex items-center gap-3">
@@ -338,7 +338,7 @@ export default function FloatingScoreboard({
                       {weeklyRecord.w}W
                     </span>
                     <span className="text-white/15 text-xs">-</span>
-                    <span className="text-sm font-black tabular-nums text-[#cc1533]">
+                    <span className="text-sm font-black tabular-nums text-[#d4b77b]">
                       {weeklyRecord.l}L
                     </span>
                     <span className="text-white/10 mx-1">|</span>
@@ -351,12 +351,12 @@ export default function FloatingScoreboard({
             )}
 
             {/* All Matches link */}
-            <div className="h-px bg-[#cc1533]/15 mx-5" />
+            <div className="h-px bg-[#d4b77b]/15 mx-5" />
             <Link
               href="/matches"
-              className="block px-5 py-4 hover:bg-[#cc1533]/5 transition-colors"
+              className="block px-5 py-4 hover:bg-[#d4b77b]/5 transition-colors"
             >
-              <p className="text-[#cc1533] text-[9px] uppercase tracking-widest font-bold">
+              <p className="text-[#d4b77b] text-[9px] uppercase tracking-widest font-bold">
                 All matches →
               </p>
             </Link>
@@ -368,17 +368,17 @@ export default function FloatingScoreboard({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.25 }}
-            className="relative bg-[#0d1528] border border-[#cc1533]/15 rounded-2xl overflow-hidden w-[260px]"
+            className="relative bg-[#0d1528] border border-[#d4b77b]/15 rounded-2xl overflow-hidden w-[260px]"
           >
             {/* Red top accent */}
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#cc1533] via-[#cc1533] to-[#cc1533]/30" />
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#d4b77b] via-[#d4b77b] to-[#d4b77b]/30" />
 
             {/* Header with expand button */}
             <button
               onClick={() => setCollapsed(false)}
               className="w-full flex items-center justify-between px-4 pt-4 pb-2 cursor-pointer"
             >
-              <p className="text-[#cc1533] text-[9px] font-bold uppercase tracking-[0.22em]">
+              <p className="text-[#d4b77b] text-[9px] font-bold uppercase tracking-[0.22em]">
                 Recent Scores
               </p>
               <svg className="w-3.5 h-3.5 text-white/20 hover:text-white/60 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -389,18 +389,18 @@ export default function FloatingScoreboard({
             {/* Score rows */}
             {displayMatches.map((m, i) => (
               <div key={m.id}>
-                {i > 0 && <div className="h-px bg-[#cc1533]/10 mx-4" />}
+                {i > 0 && <div className="h-px bg-[#d4b77b]/10 mx-4" />}
                 <ScoreRow match={m} />
               </div>
             ))}
 
             {/* All Matches link */}
-            <div className="h-px bg-[#cc1533]/15 mx-4" />
+            <div className="h-px bg-[#d4b77b]/15 mx-4" />
             <Link
               href="/matches"
-              className="block px-4 py-2.5 hover:bg-[#cc1533]/5 transition-colors"
+              className="block px-4 py-2.5 hover:bg-[#d4b77b]/5 transition-colors"
             >
-              <p className="text-[#cc1533] text-[9px] uppercase tracking-widest font-bold">
+              <p className="text-[#d4b77b] text-[9px] uppercase tracking-widest font-bold">
                 All matches →
               </p>
             </Link>

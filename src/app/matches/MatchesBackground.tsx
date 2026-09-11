@@ -25,13 +25,13 @@ export default function MatchesBackground() {
           style={{
             width: "3px",
             background:
-              "repeating-linear-gradient(to bottom, #c8102e 0px, #c8102e 20px, transparent 20px, transparent 30px)",
+              "repeating-linear-gradient(to bottom, #d4b77b 0px, #d4b77b 20px, transparent 20px, transparent 30px)",
           }}
         />
         <div className="absolute top-0 bottom-0 bg-blue-400" style={{ left: "33%", width: "2px" }} />
         <div className="absolute top-0 bottom-0 bg-blue-400" style={{ left: "67%", width: "2px" }} />
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-red"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-gold"
           style={{ width: "200px", height: "200px" }}
         />
       </div>
@@ -41,7 +41,7 @@ export default function MatchesBackground() {
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 60% 40% at 30% 0%, rgba(200,16,46,0.04) 0%, transparent 70%), radial-gradient(ellipse 50% 35% at 70% 0%, rgba(91,155,213,0.03) 0%, transparent 70%)",
+            "radial-gradient(ellipse 60% 40% at 30% 0%, rgba(212, 183, 123,0.04) 0%, transparent 70%), radial-gradient(ellipse 50% 35% at 70% 0%, rgba(91,155,213,0.03) 0%, transparent 70%)",
         }}
       />
 
@@ -54,11 +54,11 @@ export default function MatchesBackground() {
       >
         <path d="M-200,2400 Q400,1800 800,1200 Q1200,500 1640,0" fill="none" stroke="#ffffff" strokeOpacity="0.03" strokeWidth="24" />
         <path d="M-200,800 Q400,600 800,500 Q1200,300 1600,0" fill="none" stroke="#ffffff" strokeOpacity="0.04" strokeWidth="28" />
-        <path d="M-200,2800 Q500,2000 900,1300 Q1300,600 1640,200" fill="none" stroke="#8b0a1e" strokeOpacity="0.06" strokeWidth="28" />
+        <path d="M-200,2800 Q500,2000 900,1300 Q1300,600 1640,200" fill="none" stroke="#a88b52" strokeOpacity="0.06" strokeWidth="28" />
         {/* Core lines */}
         <path d="M-200,2400 Q400,1800 800,1200 Q1200,500 1640,0" fill="none" stroke="#ffffff" strokeOpacity="0.08" strokeWidth="1.5" />
         <path d="M-200,800 Q400,600 800,500 Q1200,300 1600,0" fill="none" stroke="#ffffff" strokeOpacity="0.1" strokeWidth="1.5" />
-        <path d="M-200,2800 Q500,2000 900,1300 Q1300,600 1640,200" fill="none" stroke="#8b0a1e" strokeOpacity="0.18" strokeWidth="1.5" />
+        <path d="M-200,2800 Q500,2000 900,1300 Q1300,600 1640,200" fill="none" stroke="#a88b52" strokeOpacity="0.18" strokeWidth="1.5" />
       </svg>
 
       {/* Vignette */}

@@ -85,7 +85,7 @@ export default function PlayerOfWeekBadge({ player, standings = [], week }: Prop
                 className="relative bg-[#0d1528]/95 backdrop-blur-sm border border-white/10 border-l-0 rounded-r-2xl overflow-hidden w-52"
               >
                 {/* Red top accent */}
-                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-l from-[#cc1533] to-[#cc1533]/30" />
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-l from-[#d4b77b] to-[#d4b77b]/30" />
 
                 {/* Collapse button */}
                 <button
@@ -120,7 +120,7 @@ export default function PlayerOfWeekBadge({ player, standings = [], week }: Prop
                       exit={{ opacity: 0 }}
                       className="px-5 py-5 pr-7"
                     >
-                      <p className="text-[#cc1533] text-[9px] font-bold uppercase tracking-[0.22em] mb-1">
+                      <p className="text-[#d4b77b] text-[9px] font-bold uppercase tracking-[0.22em] mb-1">
                         Weekly Standings
                       </p>
                       {weekLabel && (
@@ -132,7 +132,7 @@ export default function PlayerOfWeekBadge({ player, standings = [], week }: Prop
                         {standings.map((p, i) => (
                           <div key={p.name} className="flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2 min-w-0">
-                              <span className={`text-[10px] font-bold ${i === 0 ? "text-[#cc1533]" : "text-white/30"}`}>
+                              <span className={`text-[10px] font-bold ${i === 0 ? "text-[#d4b77b]" : "text-white/30"}`}>
                                 {i + 1}.
                               </span>
                               <span className={`text-xs font-bold truncate ${i === 0 ? "text-white" : "text-white/50"}`}>
@@ -147,7 +147,7 @@ export default function PlayerOfWeekBadge({ player, standings = [], week }: Prop
                       </div>
                       <button
                         onClick={(e) => { e.preventDefault(); setShowInfo(false); }}
-                        className="text-[#cc1533]/60 text-[9px] uppercase tracking-widest mt-4 font-bold"
+                        className="text-[#d4b77b]/60 text-[9px] uppercase tracking-widest mt-4 font-bold"
                       >
                         ← Back
                       </button>
@@ -156,7 +156,7 @@ export default function PlayerOfWeekBadge({ player, standings = [], week }: Prop
                     <motion.div key="main" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                       <Link href="/stats" className="block px-5 py-5 pr-7">
                         {/* Label */}
-                        <p className={`text-[#cc1533] text-[9px] font-bold uppercase tracking-[0.22em] ${weekLabel ? "mb-1" : "mb-4"}`}>
+                        <p className={`text-[#d4b77b] text-[9px] font-bold uppercase tracking-[0.22em] ${weekLabel ? "mb-1" : "mb-4"}`}>
                           Player of the Week
                         </p>
                         {weekLabel && (
@@ -177,7 +177,7 @@ export default function PlayerOfWeekBadge({ player, standings = [], week }: Prop
                         <div className="h-px bg-white/10 mb-5" />
 
                         {/* Top stat big */}
-                        <p className="text-[#cc1533] font-black text-3xl leading-none mb-1">
+                        <p className="text-[#d4b77b] font-black text-3xl leading-none mb-1">
                           {topStat}
                         </p>
                         <p className="text-white/30 text-[9px] uppercase tracking-widest mb-5">
@@ -199,7 +199,7 @@ export default function PlayerOfWeekBadge({ player, standings = [], week }: Prop
                         )}
 
                         {/* CTA */}
-                        <p className="text-[#cc1533]/60 text-[9px] uppercase tracking-widest mt-5 font-bold">
+                        <p className="text-[#d4b77b]/60 text-[9px] uppercase tracking-widest mt-5 font-bold">
                           View stats →
                         </p>
                       </Link>
@@ -224,18 +224,18 @@ export default function PlayerOfWeekBadge({ player, standings = [], week }: Prop
                 aria-label="Expand player of the week"
               >
                 {/* Red top accent */}
-                <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#cc1533]" />
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#d4b77b]" />
 
                 {/* Rotated label */}
                 <span
-                  className="text-[#cc1533] text-[8px] font-bold uppercase tracking-[0.2em] whitespace-nowrap"
+                  className="text-[#d4b77b] text-[8px] font-bold uppercase tracking-[0.2em] whitespace-nowrap"
                   style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
                 >
                   Player of the Week
                 </span>
 
                 {/* Red dot */}
-                <span className="w-1.5 h-1.5 rounded-full bg-[#cc1533]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#d4b77b]" />
 
                 {/* Player initials */}
                 <span className="text-white font-black text-xs">

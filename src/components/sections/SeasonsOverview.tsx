@@ -72,7 +72,7 @@ export default function SeasonsOverview() {
       </div>
 
       {/* Subtle bg glow */}
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-red/5 rounded-full blur-[200px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-gold/5 rounded-full blur-[200px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <FadeUp>
@@ -87,7 +87,7 @@ export default function SeasonsOverview() {
             </div>
             <Link
               href="/stats"
-              className="text-sm text-red hover:text-red-light transition-colors font-medium hidden sm:block"
+              className="text-sm text-gold hover:text-gold-light transition-colors font-medium hidden sm:block"
             >
               Full Stats →
             </Link>
@@ -103,7 +103,7 @@ export default function SeasonsOverview() {
               <GlowCard className="bg-gradient-to-b from-navy to-surface border border-border rounded-xl overflow-hidden h-full flex flex-col">
                 {/* Year header */}
                 <div className="px-6 pt-6 pb-4 border-b border-border/50">
-                  <span className="text-4xl font-black text-red font-mono">
+                  <span className="text-4xl font-black text-gold font-mono">
                     {season.year}
                   </span>
                   <span className="text-xs text-muted uppercase tracking-widest ml-3">
@@ -125,7 +125,7 @@ export default function SeasonsOverview() {
                     <p className="text-xs text-muted uppercase tracking-widest mb-1">
                       Captain
                     </p>
-                    <p className="text-sm font-bold text-red">
+                    <p className="text-sm font-bold text-gold">
                       {season.captain}
                     </p>
                   </div>
@@ -146,7 +146,7 @@ export default function SeasonsOverview() {
         <div className="mt-8 text-center sm:hidden">
           <Link
             href="/stats"
-            className="text-sm text-red hover:text-red-light transition-colors font-medium"
+            className="text-sm text-gold hover:text-gold-light transition-colors font-medium"
           >
             Full Stats →
           </Link>

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useMemo, useId } from "react";
+import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 import type { ParsedStats, SaveEntry } from "@/lib/discord";
 import { getNickname } from "@/lib/nicknames";
 
@@ -42,9 +42,6 @@ const GOALIE_STATS: { key: keyof GoalieProfile; label: string }[] = [
   { key: "shutouts", label: "SO" },
   { key: "ggp", label: "GP" },
 ];
-
-// Keep RADAR_STATS as alias for backward compat in the component
-const RADAR_STATS = SKATER_STATS;
 
 const CX = 150;
 const CY = 150;
@@ -161,8 +158,8 @@ function GenericRadarChart({
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
         points={getPoints(p1)}
-        fill="rgba(200,16,46,0.2)"
-        stroke="#c8102e"
+        fill="rgba(212,183,123,0.2)"
+        stroke="#d4b77b"
         strokeWidth={2}
       />
       <motion.polygon
@@ -170,22 +167,22 @@ function GenericRadarChart({
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.15 }}
         points={getPoints(p2)}
-        fill="rgba(91,155,213,0.2)"
-        stroke="#5b9bd5"
+        fill="rgba(164,173,188,0.2)"
+        stroke="#a4adbc"
         strokeWidth={2}
       />
       {stats.map((s, i) => {
         const v = normalize(p1[s.key] ?? 0, s.key);
         const a = axisAngle(i, total);
         return (
-          <circle key={`p1-${s.key}`} cx={polarX(a, R * v)} cy={polarY(a, R * v)} r={3} fill="#c8102e" />
+          <circle key={`p1-${s.key}`} cx={polarX(a, R * v)} cy={polarY(a, R * v)} r={3} fill="#d4b77b" />
         );
       })}
       {stats.map((s, i) => {
         const v = normalize(p2[s.key] ?? 0, s.key);
         const a = axisAngle(i, total);
         return (
-          <circle key={`p2-${s.key}`} cx={polarX(a, R * v)} cy={polarY(a, R * v)} r={3} fill="#5b9bd5" />
+          <circle key={`p2-${s.key}`} cx={polarX(a, R * v)} cy={polarY(a, R * v)} r={3} fill="#a4adbc" />
         );
       })}
       {stats.map((s, i) => {
@@ -239,14 +236,16 @@ export function HeadToHeadCard({ stats }: { stats: ParsedStats }) {
     return mv;
   }, [profiles, activeStats]);
 
+  const panelId = useId();
   const hasGoalies = goalieProfiles.length >= 2;
   if (skaterProfiles.length < 2) return null;
   if (!p1 || !p2) return null;
 
   const selectClass =
-    "bg-navy-dark border border-border rounded-lg px-2.5 py-1.5 text-xs font-bold uppercase tracking-wider appearance-none cursor-pointer focus:outline-none focus:border-red/50 transition-colors w-full";
+    "bg-navy-dark border border-border rounded-lg px-2.5 py-1.5 text-xs font-bold uppercase tracking-wider appearance-none cursor-pointer focus:outline-none focus:border-gold/50 transition-colors w-full";
 
   return (
+    <MotionConfig reducedMotion="user">
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -256,14 +255,14 @@ export function HeadToHeadCard({ stats }: { stats: ParsedStats }) {
     >
       {/* Outer container with angled clip */}
       <div
-        className="relative bg-gradient-to-br from-[#0d1528] via-[#111d35] to-[#0d1528] border border-white/[0.08]"
+        className="relative bg-gradient-to-br from-[#0b101a] via-[#1c2636] to-[#0b101a] border border-white/[0.08]"
         style={{
           clipPath:
             "polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%)",
         }}
       >
         {/* Top accent — red to blue gradient */}
-        <div className="h-[3px] bg-gradient-to-r from-[#cc1533] via-[#cc1533]/60 to-[#5b9bd5]" />
+        <div className="h-[3px] bg-gradient-to-r from-[#d4b77b] via-[#d4b77b]/60 to-[#a4adbc]" />
 
         {/* Background pattern — subtle diagonal lines */}
         <div
@@ -283,12 +282,14 @@ export function HeadToHeadCard({ stats }: { stats: ParsedStats }) {
 
         {/* Toggle header */}
         <button
+          aria-expanded={open}
+          aria-controls={panelId}
           onClick={() => setOpen((prev) => !prev)}
           className="relative w-full px-6 py-5 flex items-center gap-5 hover:bg-white/[0.02] transition-colors cursor-pointer"
         >
           {/* VS badge */}
           <div
-            className="shrink-0 w-14 h-14 flex items-center justify-center bg-gradient-to-br from-[#cc1533] to-[#a8102a] shadow-lg shadow-[#cc1533]/20"
+            className="shrink-0 w-14 h-14 flex items-center justify-center bg-gradient-to-br from-[#d4b77b] to-[#917546] shadow-lg shadow-[#d4b77b]/20"
             style={{
               clipPath:
                 "polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%)",
@@ -304,7 +305,7 @@ export function HeadToHeadCard({ stats }: { stats: ParsedStats }) {
             <h3 className="text-lg font-black uppercase tracking-[0.1em] text-white mb-1">
               Head to Head
             </h3>
-            <p className="text-xs text-white/35 leading-relaxed">
+            <p className="text-xs text-white/60 leading-relaxed">
               Pick any two players and compare their stats with an
               interactive radar chart and stat breakdown.
             </p>
@@ -344,25 +345,27 @@ export function HeadToHeadCard({ stats }: { stats: ParsedStats }) {
               transition={{ duration: 0.35, ease: "easeOut" }}
               className="overflow-hidden"
             >
-              <div className="px-6 pb-6 pt-2">
+              <div id={panelId} className="px-6 pb-6 pt-2">
                 {/* Mode toggle — Skater / Goalie */}
                 {hasGoalies && (
                   <div className="flex items-center justify-center gap-1 mb-5">
                     <button
+                      aria-pressed={mode === "skater"}
                       onClick={() => setMode("skater")}
                       className={`px-4 py-1.5 rounded-md text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
                         mode === "skater"
-                          ? "bg-[#cc1533] text-white shadow-lg shadow-[#cc1533]/20"
+                          ? "bg-[#d4b77b] text-[#0b101a] shadow-lg shadow-[#d4b77b]/20"
                           : "bg-white/[0.04] text-white/40 hover:text-white/60 border border-white/[0.06]"
                       }`}
                     >
                       Skater
                     </button>
                     <button
+                      aria-pressed={mode === "goalie"}
                       onClick={() => setMode("goalie")}
                       className={`px-4 py-1.5 rounded-md text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
                         mode === "goalie"
-                          ? "bg-[#5b9bd5] text-white shadow-lg shadow-[#5b9bd5]/20"
+                          ? "bg-[#a4adbc] text-[#0b101a] shadow-lg shadow-[#a4adbc]/20"
                           : "bg-white/[0.04] text-white/40 hover:text-white/60 border border-white/[0.06]"
                       }`}
                     >
@@ -373,24 +376,25 @@ export function HeadToHeadCard({ stats }: { stats: ParsedStats }) {
 
                 {/* Divider */}
                 <div className="flex items-center gap-3 mb-5">
-                  <div className="flex-1 h-px bg-gradient-to-r from-[#cc1533]/30 to-transparent" />
+                  <div className="flex-1 h-px bg-gradient-to-r from-[#d4b77b]/30 to-transparent" />
                   <span className="text-[9px] text-white/20 uppercase tracking-widest font-bold">
                     Select {mode === "goalie" ? "Goalies" : "Players"}
                   </span>
-                  <div className="flex-1 h-px bg-gradient-to-l from-[#5b9bd5]/30 to-transparent" />
+                  <div className="flex-1 h-px bg-gradient-to-l from-[#a4adbc]/30 to-transparent" />
                 </div>
 
                 {/* Player selectors */}
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div>
-                    <label className="block text-[9px] text-[#cc1533] font-bold uppercase tracking-widest mb-1.5">
+                    <label className="block text-[9px] text-[#d4b77b] font-bold uppercase tracking-widest mb-1.5">
                       {mode === "goalie" ? "Goalie 1" : "Player 1"}
                     </label>
                     <select
+                      aria-label={mode === "goalie" ? "Goalie 1" : "Player 1"}
                       value={effectiveP1Name}
                       onChange={(e) => setP1Name(e.target.value)}
                       className={selectClass}
-                      style={{ color: "#c8102e" }}
+                      style={{ color: "#d4b77b" }}
                     >
                       {profiles.map((p) => (
                         <option key={p.name} value={p.name}>
@@ -400,14 +404,15 @@ export function HeadToHeadCard({ stats }: { stats: ParsedStats }) {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[9px] text-[#5b9bd5] font-bold uppercase tracking-widest mb-1.5">
+                    <label className="block text-[9px] text-[#a4adbc] font-bold uppercase tracking-widest mb-1.5">
                       {mode === "goalie" ? "Goalie 2" : "Player 2"}
                     </label>
                     <select
+                      aria-label={mode === "goalie" ? "Goalie 2" : "Player 2"}
                       value={effectiveP2Name}
                       onChange={(e) => setP2Name(e.target.value)}
                       className={selectClass}
-                      style={{ color: "#5b9bd5" }}
+                      style={{ color: "#a4adbc" }}
                     >
                       {profiles.map((p) => (
                         <option key={p.name} value={p.name}>
@@ -420,13 +425,13 @@ export function HeadToHeadCard({ stats }: { stats: ParsedStats }) {
 
                 {/* Player name labels */}
                 <div className="flex items-center justify-between mb-2 px-1">
-                  <span className="text-xs font-black text-[#cc1533] uppercase tracking-wider">
+                  <span className="text-xs font-black text-[#d4b77b] uppercase tracking-wider">
                     {getNickname(p1.name)}
                   </span>
                   <span className="text-[10px] text-white/15 font-bold">
                     vs
                   </span>
-                  <span className="text-xs font-black text-[#5b9bd5] uppercase tracking-wider">
+                  <span className="text-xs font-black text-[#a4adbc] uppercase tracking-wider">
                     {getNickname(p2.name)}
                   </span>
                 </div>
@@ -460,7 +465,7 @@ export function HeadToHeadCard({ stats }: { stats: ParsedStats }) {
                         <span
                           className={`w-10 text-right text-xs font-mono font-bold ${
                             winner === "p1"
-                              ? "text-[#cc1533]"
+                              ? "text-[#d4b77b]"
                               : "text-white/30"
                           }`}
                         >
@@ -477,10 +482,10 @@ export function HeadToHeadCard({ stats }: { stats: ParsedStats }) {
                                   : "50%",
                               backgroundColor:
                                 winner === "p1"
-                                  ? "#c8102e"
+                                  ? "#d4b77b"
                                   : winner === "tie"
                                     ? "#7a8ba8"
-                                    : "rgba(200,16,46,0.25)",
+                                    : "rgba(212,183,123,0.25)",
                             }}
                           />
                           <div
@@ -492,10 +497,10 @@ export function HeadToHeadCard({ stats }: { stats: ParsedStats }) {
                                   : "50%",
                               backgroundColor:
                                 winner === "p2"
-                                  ? "#5b9bd5"
+                                  ? "#a4adbc"
                                   : winner === "tie"
                                     ? "#7a8ba8"
-                                    : "rgba(91,155,213,0.25)",
+                                    : "rgba(164,173,188,0.25)",
                             }}
                           />
                         </div>
@@ -503,7 +508,7 @@ export function HeadToHeadCard({ stats }: { stats: ParsedStats }) {
                         <span
                           className={`w-10 text-left text-xs font-mono font-bold ${
                             winner === "p2"
-                              ? "text-[#5b9bd5]"
+                              ? "text-[#a4adbc]"
                               : "text-white/30"
                           }`}
                         >
@@ -530,5 +535,6 @@ export function HeadToHeadCard({ stats }: { stats: ParsedStats }) {
         </AnimatePresence>
       </div>
     </motion.div>
+    </MotionConfig>
   );
 }

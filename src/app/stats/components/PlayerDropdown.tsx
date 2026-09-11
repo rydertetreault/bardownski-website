@@ -23,7 +23,7 @@ export function PlayerDropdown({ player }: { player: EnrichedPlayer }) {
         className="w-full px-5 py-4 flex items-center justify-between hover:bg-navy-light/30 transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-3 min-w-0">
-          <span className="text-red font-black text-sm">
+          <span className="text-gold font-black text-sm">
             {getNickname(player.name)}
           </span>
           <span className="text-muted text-xs uppercase tracking-wider">

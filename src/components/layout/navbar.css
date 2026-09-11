@@ -1,0 +1,43 @@
+/* Demo-style hockey navigation. Scoped so FC keeps its own navigation identity. */
+.legacy-site-header{position:fixed;inset:0 0 auto;z-index:50;background:#0b101af5;border-bottom:1px solid #ffffff22;color:#f1ece2;backdrop-filter:blur(12px);font-family:Arial,Helvetica,sans-serif}
+.legacy-nav-inner{max-width:none;margin:auto;min-height:72px;padding:14px 5%;display:flex;align-items:center;justify-content:space-between;gap:25px}
+.legacy-nav-brand{display:flex;gap:10px;align-items:center;text-decoration:none;flex-shrink:0}
+.legacy-nav-brand img{width:40px;height:40px}
+.legacy-nav-brand>span{font-size:18px;font-weight:900;letter-spacing:1px;line-height:1.3}
+.legacy-nav-brand small{display:block;font-size:7px;font-weight:400;color:#a1aec2;letter-spacing:2px;margin-top:4px}
+.legacy-site-links{display:flex;align-items:center;gap:20px;font-size:11px}
+.legacy-site-links a{color:#f1ece2;text-decoration:none;padding:9px 0;border-bottom:2px solid transparent;white-space:nowrap}
+.legacy-site-links a:hover{color:#d4b77b}
+.legacy-site-links a[aria-current=page]{color:#d4b77b;border-bottom-color:#d4b77b}
+.legacy-site-links .legacy-nav-fc{border:1px solid #ffffff22;padding:10px 12px}
+.legacy-site-links .legacy-nav-fc:hover{border-color:#d4b77b}
+.legacy-nav-toggle{display:none;background:transparent;color:#f1ece2;border:1px solid #ffffff22;padding:10px 14px;font:inherit;font-size:12px;cursor:pointer}
+.legacy-nav-toggle span{margin-left:10px}
+.legacy-site-header a:focus-visible,.legacy-site-header button:focus-visible{outline:3px solid #d4b77b;outline-offset:4px}
+@media(max-width:1100px){.legacy-nav-inner{gap:18px}.legacy-site-links{gap:14px}.legacy-nav-brand>span{font-size:16px}.legacy-nav-brand small{font-size:6px}}
+@media(max-width:950px){.legacy-nav-inner{flex-wrap:wrap;gap:0;min-height:72px}.legacy-nav-toggle{display:block;margin-left:auto}.legacy-site-links{display:none;width:100%;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:18px 0 6px;max-height:calc(100dvh - 90px);overflow-y:auto}.legacy-site-links.open{display:grid}.legacy-site-links a{padding:13px 10px;border:1px solid #ffffff22}.legacy-site-links a[aria-current=page]{border-color:#d4b77b;background:#d4b77b0c}.legacy-site-links .legacy-nav-fc{padding:13px 10px}}
+@media(max-width:400px){.legacy-nav-brand>span{font-size:14px}.legacy-nav-brand small{letter-spacing:1px}.legacy-nav-toggle{padding:9px 10px}.legacy-site-links{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Same five-percent gutters as the homepage recap navigation below. */
+/* One persistent two-row shell for hockey and FC. No route/scroll height changes. */
+:root{--site-header-height:126px}
+html{scrollbar-gutter:stable;scroll-padding-top:calc(var(--site-header-height) + 16px)}
+.site-main{padding-top:var(--site-header-height)}
+.legacy-nav-inner{height:72px;min-height:72px;box-sizing:border-box;flex-wrap:nowrap}
+.legacy-subnav{height:54px;box-sizing:border-box;padding:0 5%;display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:1px solid #ffffff22;font-size:9px;letter-spacing:1px}
+.legacy-subnav>span{color:#d4b77b;font-weight:700;white-space:nowrap}
+.legacy-subnav nav{display:flex;gap:22px;align-items:center;white-space:nowrap}
+.legacy-subnav a{color:#eeeae2;text-decoration:none}
+.legacy-subnav a:hover{color:#d4b77b}
+.legacy-site-links .legacy-nav-fc{min-width:143px;text-align:center}
+@media(max-width:950px){.legacy-site-links{position:absolute;top:126px;left:0;right:0;background:#0b101a;width:100%;padding:18px 5%;border-bottom:1px solid #ffffff22;max-height:calc(100dvh - 126px)}.legacy-nav-toggle{min-width:89px}}
+@media(max-width:560px){.legacy-subnav{flex-direction:column;justify-content:center;gap:7px;font-size:8px}.legacy-subnav nav{gap:20px}}
+/* Keep chapter targets and the progress indicator below both header rows. */
+.legacy-home{--preview-height:var(--site-header-height)}
+.legacy-home [id]{scroll-margin-top:calc(var(--site-header-height) + 16px)}
+.legacy-home .film-progress{top:var(--site-header-height)}
+.legacy-site-header{border-bottom:0}.legacy-subnav{border-bottom:1px solid #ffffff22}
+.legacy-subnav nav{min-width:0;overflow-x:auto;scrollbar-width:none;max-width:70%;padding-block:8px}
+.legacy-subnav nav::-webkit-scrollbar{display:none}
+.legacy-subnav nav a{flex-shrink:0}
+@media(max-width:560px){.legacy-subnav nav{max-width:100%;width:100%;justify-content:flex-start;padding-block:2px}.legacy-subnav>span{font-size:7px}}

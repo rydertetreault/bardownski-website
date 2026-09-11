@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 // Static season content is server rendered; motion is a progressive enhancement.
 import Link from "next/link";
-import { SEASON_AWARDS, SEASON_MVP, UNSUNG_HERO } from "@/lib/season-awards";
+import { RECAP_HONORS, SEASON_MVP, UNSUNG_HERO } from "@/lib/season-awards";
 import SeasonMotion from "./SeasonMotion";
 import "./season-recap.css";
 
@@ -11,14 +11,6 @@ export default function SeasonRecap() {
       id="season-recap"
       className="legacy-home concept-1 motion-demo motion-curtain"
     >
-      <nav className="recap-nav" aria-label="Season chapters">
-        <span>NHL 26 / SEASON COMPLETE</span>
-        <nav aria-label="Recap sections">
-          <a href="#story">The recap</a>
-          <a href="#mvp-stage">MVP &amp; honors</a>
-          <a href="#next">What’s next ↗</a>
-        </nav>
-      </nav>
       <section className="hero" id="film-0">
         <div className="hero-copy">
           <p className="eyebrow">THE LEGACY EDITION</p>
@@ -215,22 +207,32 @@ export default function SeasonRecap() {
             <div className="award-mark" aria-hidden="true">★</div>
             <h3>{SEASON_MVP.winners.join(" & ")}</h3>
             <p>{SEASON_MVP.result}</p>
+            <p className="mvp-description">
+              The engine of Bardownski’s offense. Xavier delivered 920 goals and
+              490 assists for 1,410 points across 290 games, finishing at +483.
+              With 43 game-winning goals and 2,189 hits, his impact went beyond
+              the scoresheet—a season of production and physical presence that
+              earned the highest score in our position-adjusted MVP model.
+            </p>
             <div className="award-bottom">NHL 26 <b>FULL-SEASON PERFORMANCE</b></div>
-            <p>{SEASON_MVP.criteria}</p>
           </article>
           <div className="award-stack">
             <article>
               <span className="tag">TEAM SELECTION · {UNSUNG_HERO.title}</span>
               <h3>{UNSUNG_HERO.winner}</h3>
               <p>{UNSUNG_HERO.detail}</p>
-              <small>{UNSUNG_HERO.description}</small>
+
             </article>
-            {SEASON_AWARDS.slice(1).map(award => (
+            {RECAP_HONORS.map(award => (
               <article key={award.id}>
-                <span className="tag">{award.title}</span>
-                <h3>{award.winners.join(" & ") || "No eligible players"}</h3>
+                <span className="tag">{award.selection === "editorial" ? "EDITORIAL · " : ""}{award.title}</span>
+                <h3>{award.winners.join(" & ") || "To be announced"}</h3>
                 <p>{award.result}</p>
-                <small>{award.criteria}</small>
+                {award.description && <small>{award.description}</small>}
+                {award.id === "individual-performance" && (
+                  <small>Based on this season’s archived games</small>
+                )}
+
               </article>
             ))}
           </div>
@@ -238,8 +240,10 @@ export default function SeasonRecap() {
         <details className="award-methodology">
           <summary>How the awards are calculated</summary>
           <p>Season MVP and the calculated awards are statistical honors, not vote results. Season MVP and positional honors use the same weighted performance model as the site’s MVP rankings, applied to the frozen final-season snapshot. Ranking scores are not vote counts or win probabilities. Defensemen receive position-specific weighting; goalies have a separate rate-and-workload model. Skater volume is dampened above 100 games. All exact ties share an award.</p>
-          <p>The remaining awards use raw season totals. A player can earn multiple awards; no winner is forced into a different category just to distribute honors.</p>
-          <p>Slobby Robby is the team-approved Unsung Hero, a judgment-based selection rather than a model result. Teammate of the Year remains a team selection and has not been announced.</p>
+          {RECAP_HONORS.map(award => (
+            <p key={award.id}><b>{award.title}:</b> {award.criteria}</p>
+          ))}
+          <p>Slobby Robby is the team-approved Unsung Hero, recognizing the supporting work outside the scoring spotlight. This is a judgment-based selection rather than a model result.</p>
         </details>
         <div className="standouts">
           <p className="eyebrow">

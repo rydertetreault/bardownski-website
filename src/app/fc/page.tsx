@@ -229,7 +229,7 @@ export default async function FcHomePage() {
                     className="absolute -top-20 -right-20 w-[500px] h-[500px] rounded-full transition-transform duration-700 group-hover:scale-110"
                     style={{
                       background:
-                        "radial-gradient(circle, rgba(204,21,51,0.35) 0%, transparent 60%)",
+                        "radial-gradient(circle, rgba(212, 183, 123,0.35) 0%, transparent 60%)",
                       filter: "blur(60px)",
                     }}
                   />

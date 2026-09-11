@@ -26,7 +26,7 @@ export default function StatsPreviewSection({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <StatsPreviewAnimated>
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-1 h-7 bg-[#cc1533] rounded-full" />
+              <div className="w-1 h-7 bg-[#d4b77b] rounded-full" />
               <h2 className="text-2xl font-bold uppercase tracking-wider">
                 Top Players
               </h2>
@@ -45,7 +45,7 @@ export default function StatsPreviewSection({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <StatsPreviewAnimated>
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-1 h-7 bg-[#cc1533] rounded-full" />
+            <div className="w-1 h-7 bg-[#d4b77b] rounded-full" />
             <h2 className="text-2xl font-bold uppercase tracking-wider">
               Top Players
             </h2>
@@ -107,7 +107,7 @@ export default function StatsPreviewSection({
                         key={label}
                         className={`flex-1 text-center rounded-lg py-3 px-2 ${
                           style === "red"
-                            ? "bg-red/10 border border-red/20"
+                            ? "bg-gold/10 border border-gold/20"
                             : style === "blue"
                             ? "border border-[#5b9bd5]/20"
                             : "bg-surface-light"
@@ -121,7 +121,7 @@ export default function StatsPreviewSection({
                         <p
                           className={`text-[10px] uppercase tracking-wider ${
                             style === "red"
-                              ? "text-red"
+                              ? "text-gold"
                               : style === "blue"
                               ? "text-[#5b9bd5]"
                               : "text-muted"
@@ -132,7 +132,7 @@ export default function StatsPreviewSection({
                         <p
                           className={`font-bold text-lg ${
                             style === "red"
-                              ? "text-red"
+                              ? "text-gold"
                               : style === "blue"
                               ? "text-[#5b9bd5]"
                               : "text-white"
@@ -152,7 +152,7 @@ export default function StatsPreviewSection({
         <div className="flex justify-end mt-4">
           <Link
             href="/stats"
-            className="text-sm text-[#cc1533] hover:text-red-light transition-colors font-medium uppercase tracking-wider"
+            className="text-sm text-[#d4b77b] hover:text-gold-light transition-colors font-medium uppercase tracking-wider"
           >
             View Full Stats →
           </Link>

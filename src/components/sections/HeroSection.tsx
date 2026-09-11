@@ -31,7 +31,7 @@ export default function HeroSection() {
           viewBox="0 0 400 900"
           preserveAspectRatio="none"
         >
-          <polygon points="280,0 400,0 300,900 180,900" fill="#cc1533" />
+          <polygon points="280,0 400,0 300,900 180,900" fill="#d4b77b" />
         </svg>
       </div>
 
@@ -42,8 +42,8 @@ export default function HeroSection() {
           {...fadeUp(0.1)}
           className="flex items-center gap-3 mb-6"
         >
-          <div className="w-0.5 h-5 bg-[#cc1533]" />
-          <span className="text-xs font-bold tracking-[0.25em] uppercase text-[#cc1533]">
+          <div className="w-0.5 h-5 bg-[#d4b77b]" />
+          <span className="text-xs font-bold tracking-[0.25em] uppercase text-[#d4b77b]">
             Est. 2020 · Newfoundland
           </span>
         </motion.div>
@@ -71,13 +71,13 @@ export default function HeroSection() {
         >
           <Link
             href="/matches"
-            className="px-8 py-3.5 bg-[#cc1533] hover:bg-[#a8102a] text-white font-bold uppercase tracking-wider text-sm transition-colors rounded"
+            className="px-8 py-3.5 bg-[#d4b77b] hover:bg-[#a88b52] text-white font-bold uppercase tracking-wider text-sm transition-colors rounded"
           >
             Matches
           </Link>
           <Link
             href="/highlights"
-            className="px-8 py-3.5 border border-white/60 hover:border-[#cc1533] text-white font-bold uppercase tracking-wider text-sm transition-colors rounded"
+            className="px-8 py-3.5 border border-white/60 hover:border-[#d4b77b] text-white font-bold uppercase tracking-wider text-sm transition-colors rounded"
           >
             Watch Highlights
           </Link>

@@ -37,7 +37,7 @@ function RecordBannerSmall({
           <p className="text-[9px] text-muted uppercase tracking-[0.2em] mb-2 font-semibold">
             {record.label}
           </p>
-          <p className="text-3xl md:text-4xl font-black text-red font-mono leading-none mb-2">
+          <p className="text-3xl md:text-4xl font-black text-gold font-mono leading-none mb-2">
             {record.value > 0 ? (
               <>
                 {record.prefix}
@@ -65,7 +65,7 @@ export default function ClubRecords({ records }: { records: AllTimeRecord[] }) {
   return (
     <section className="py-20 bg-navy-dark relative overflow-hidden">
       {/* Subtle bg accent */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-red/5 rounded-full blur-[200px] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gold/5 rounded-full blur-[200px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <FadeUp>
@@ -81,7 +81,7 @@ export default function ClubRecords({ records }: { records: AllTimeRecord[] }) {
 
         {/* Skater Records */}
         <FadeUp delay={0.1}>
-          <h3 className="text-sm font-bold uppercase tracking-widest text-red mb-6 text-center">
+          <h3 className="text-sm font-bold uppercase tracking-widest text-gold mb-6 text-center">
             Skater Records
           </h3>
         </FadeUp>
@@ -93,7 +93,7 @@ export default function ClubRecords({ records }: { records: AllTimeRecord[] }) {
 
         {/* Goalie Records */}
         <FadeUp delay={0.1}>
-          <h3 className="text-sm font-bold uppercase tracking-widest text-red mb-6 text-center">
+          <h3 className="text-sm font-bold uppercase tracking-widest text-gold mb-6 text-center">
             Goalie Records
           </h3>
         </FadeUp>
@@ -107,7 +107,7 @@ export default function ClubRecords({ records }: { records: AllTimeRecord[] }) {
           <div className="text-center">
             <Link
               href="/records"
-              className="inline-block text-sm font-medium text-red hover:text-white transition-colors uppercase tracking-wider border border-red/30 hover:border-red px-6 py-3 rounded-lg"
+              className="inline-block text-sm font-medium text-gold hover:text-white transition-colors uppercase tracking-wider border border-gold/30 hover:border-gold px-6 py-3 rounded-lg"
             >
               View All Records →
             </Link>

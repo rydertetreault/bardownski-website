@@ -89,6 +89,7 @@ function VideoModal({ clip, onClose }: { clip: PlayerClip; onClose: () => void }
         className="absolute top-4 right-4 p-2 transition-colors"
         style={{ color: "rgba(255,255,255,0.5)" }}
         onClick={onClose}
+        aria-label="Close video"
       >
         <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -105,6 +106,7 @@ function VideoModal({ clip, onClose }: { clip: PlayerClip; onClose: () => void }
         {getYouTubeId(clip.src) ? (
           <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
             <iframe
+              title={clip.title}
               src={`https://www.youtube.com/embed/${getYouTubeId(clip.src)}?autoplay=1`}
               allow="autoplay; fullscreen"
               allowFullScreen
@@ -169,14 +171,15 @@ function ScrollArrow({ direction, onClick }: { direction: "left" | "right"; onCl
   return (
     <button
       onClick={onClick}
+      aria-label={`Scroll clips ${direction}`}
       className="absolute top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
       style={{
         [direction === "right" ? "right" : "left"]: "6px",
-        backgroundColor: "rgba(204,21,51,0.85)",
+        backgroundColor: "rgba(212, 183, 123,0.85)",
         boxShadow: "0 2px 12px rgba(0,0,0,0.5)",
       }}
     >
-      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+      <svg className="w-4 h-4 text-[#0b101a]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d={direction === "right" ? "M9 5l7 7-7 7" : "M15 19l-7-7 7-7"} />
       </svg>
     </button>
@@ -188,8 +191,10 @@ function ClipCard({ clip, onClick }: { clip: PlayerClip; onClick: () => void }) 
   const [hovered, setHovered] = useState(false);
 
   return (
-    <div
-      className="flex-shrink-0 w-52 sm:w-64 cursor-pointer transition-transform duration-200 ease-out hover:scale-[1.04]"
+    <button
+      type="button"
+      aria-label={`Play ${clip.title}`}
+      className="highlight-clip-card"
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -197,8 +202,8 @@ function ClipCard({ clip, onClick }: { clip: PlayerClip; onClick: () => void }) 
       <div
         className="rounded overflow-hidden aspect-video relative transition-colors duration-200"
         style={{
-          backgroundColor: "#0b0f1a",
-          border: `1px solid ${hovered ? "rgba(204,21,51,0.5)" : "rgba(125,211,252,0.12)"}`,
+          backgroundColor: "#141d2b",
+          border: `1px solid ${hovered ? "rgba(212, 183, 123,0.5)" : "rgba(212,183,123,0.12)"}`,
         }}
       >
         {getYouTubeId(clip.src) ? (
@@ -223,9 +228,9 @@ function ClipCard({ clip, onClick }: { clip: PlayerClip; onClick: () => void }) 
         <div className="absolute inset-0 flex items-center justify-center">
           <div
             className="w-10 h-10 rounded-full flex items-center justify-center transition-transform duration-200 hover:scale-110"
-            style={{ backgroundColor: "rgba(120,120,120,0.7)" }}
+            style={{ backgroundColor: "rgba(212,183,123,0.95)" }}
           >
-            <svg className="w-4 h-4 text-white" style={{ marginLeft: "2px" }} fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-[#0b101a]" style={{ marginLeft: "2px" }} fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z" />
             </svg>
           </div>
@@ -235,12 +240,13 @@ function ClipCard({ clip, onClick }: { clip: PlayerClip; onClick: () => void }) 
         <div
           className="absolute top-0 left-0 w-5 h-5 pointer-events-none"
           style={{
-            borderTop: "2px solid rgba(125,211,252,0.35)",
-            borderLeft: "2px solid rgba(125,211,252,0.35)",
+            borderTop: "2px solid rgba(212,183,123,0.35)",
+            borderLeft: "2px solid rgba(212,183,123,0.35)",
           }}
         />
       </div>
-    </div>
+      <span className="highlight-clip-caption"><span>{clip.title}</span><b aria-hidden="true">↗</b></span>
+    </button>
   );
 }
 
@@ -248,16 +254,16 @@ function ClipCard({ clip, onClick }: { clip: PlayerClip; onClick: () => void }) 
 function PlayerSection({ player }: { player: PlayerHighlights }) {
   const [activeClip, setActiveClip] = useState<PlayerClip | null>(null);
   const { ref: scrollRef, canScrollLeft, canScrollRight, scroll } = useScrollArrows();
-  const isTeam = player.id === "team";
+
 
   return (
     <>
-      <div className="mb-14">
+      <div id={`highlights-${player.id}`} className="highlight-player-section">
         {/* Player header */}
         <div className="flex items-center gap-5 mb-5">
           <div
             className="w-1 self-stretch rounded-full flex-shrink-0"
-            style={{ backgroundColor: isTeam ? "#cc1533" : "#7dd3fc", minHeight: "48px" }}
+            style={{ backgroundColor: "#d4b77b", minHeight: "48px" }}
           />
 
           <div className="flex-1 min-w-0">
@@ -265,12 +271,12 @@ function PlayerSection({ player }: { player: PlayerHighlights }) {
               {player.number && (
                 <span
                   className="text-xs font-black uppercase tracking-widest"
-                  style={{ color: "#cc1533" }}
+                  style={{ color: "#d4b77b" }}
                 >
                   {player.number}
                 </span>
               )}
-              <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white leading-none">
+              <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight leading-none">
                 {player.name}
               </h2>
               {player.position && (
@@ -284,9 +290,9 @@ function PlayerSection({ player }: { player: PlayerHighlights }) {
           <div
             className="flex-shrink-0 px-3 py-1 rounded text-xs font-black uppercase tracking-wider"
             style={{
-              backgroundColor: "rgba(204,21,51,0.12)",
-              border: "1px solid rgba(204,21,51,0.25)",
-              color: "#cc1533",
+              backgroundColor: "rgba(212, 183, 123,0.12)",
+              border: "1px solid rgba(212, 183, 123,0.25)",
+              color: "#d4b77b",
             }}
           >
             {player.clips.length} {player.clips.length === 1 ? "clip" : "clips"}
@@ -304,13 +310,13 @@ function PlayerSection({ player }: { player: PlayerHighlights }) {
           {canScrollLeft && (
             <div
               className="pointer-events-none absolute left-0 top-0 h-full w-16 z-10"
-              style={{ background: "linear-gradient(to right, #06080e, transparent)" }}
+              style={{ background: "linear-gradient(to right, #0b101a, transparent)" }}
             />
           )}
           {canScrollRight && (
             <div
               className="pointer-events-none absolute right-0 top-0 h-full w-16 z-10"
-              style={{ background: "linear-gradient(to left, #06080e, transparent)" }}
+              style={{ background: "linear-gradient(to left, #0b101a, transparent)" }}
             />
           )}
 

@@ -53,7 +53,7 @@ function TeamRow({
 
       {/* Win indicator dot */}
       {isWinner && (
-        <div className="w-1.5 h-1.5 rounded-full bg-red shrink-0" />
+        <div className="w-1.5 h-1.5 rounded-full bg-gold shrink-0" />
       )}
 
       {/* Score */}
@@ -106,7 +106,7 @@ export function ScoreCard({ match, index }: { match: Match; index: number }) {
           isWinner: isFinal && !isWin,
         };
 
-  const accentColor = isClincher ? "#f4d35e" : isWin ? "#10b981" : "#cc1533";
+  const accentColor = isClincher ? "#f4d35e" : isWin ? "#10b981" : "#d4b77b";
 
   const cardContent = (
     <div className="relative overflow-hidden">
@@ -139,13 +139,13 @@ export function ScoreCard({ match, index }: { match: Match; index: number }) {
           {isFinal && result ? (
             <span
               className={`text-[10px] font-black uppercase tracking-wider ${
-                isWin ? "text-emerald-400" : "text-red"
+                isWin ? "text-emerald-400" : "text-gold"
               }`}
             >
               {isWin ? "Victory" : "Defeat"}
             </span>
           ) : match.status === "live" ? (
-            <span className="text-[10px] font-bold uppercase tracking-wider text-red animate-pulse">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-gold animate-pulse">
               Live
             </span>
           ) : (
@@ -202,7 +202,7 @@ export function ScoreCard({ match, index }: { match: Match; index: number }) {
               ? "text-muted/30"
               : isClincher
               ? "text-amber-300"
-              : "text-red/70"
+              : "text-gold/70"
           }`}
         >
           {isSyntheticForfeit ? "Opponent DNF" : "View Details \u2192"}
@@ -234,7 +234,7 @@ export function ScoreCard({ match, index }: { match: Match; index: number }) {
           className={`block rounded-xl border overflow-hidden transition-all duration-200 hover:scale-[1.02] ${
             isClincher
               ? "border-amber-400/50 hover:border-amber-300/80 hover:shadow-xl hover:shadow-amber-500/25"
-              : "border-border/50 hover:border-red/40 hover:shadow-xl hover:shadow-red/10"
+              : "border-border/50 hover:border-gold/40 hover:shadow-xl hover:shadow-gold/10"
           }`}
           style={{
             background: isClincher

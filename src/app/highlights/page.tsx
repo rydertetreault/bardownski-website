@@ -1,4 +1,4 @@
-import GalleryBackground from "../gallery/GalleryBackground";
+import "./highlights.css";
 import HighlightsClient from "./HighlightsClient";
 
 export interface PlayerClip {
@@ -69,40 +69,16 @@ export default function HighlightsPage() {
   const totalClips = players.reduce((sum, p) => sum + p.clips.length, 0);
 
   return (
-    <div className="min-h-screen">
-      <GalleryBackground />
-
-      {/* Header */}
-      <div className="relative pt-24 pb-16 overflow-hidden">
-        <div
-          className="absolute top-0 left-0 right-0 h-px pointer-events-none"
-          style={{ background: "linear-gradient(to right, transparent, rgba(204,21,51,0.5), transparent)" }}
-        />
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p
-            className="text-xs font-bold uppercase tracking-[0.4em] mb-5"
-            style={{ color: "#cc1533" }}
-          >
-            Bardownski · Newfoundland
-          </p>
-          <h1 className="text-7xl md:text-9xl font-black uppercase tracking-tight text-white mb-6 leading-none">
-            Highlights
-          </h1>
-          <div className="flex items-center justify-center gap-6 text-xs uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.3)" }}>
-            <span>{players.length} Players</span>
-            <span className="w-1 h-1 rounded-full" style={{ backgroundColor: "#cc1533" }} />
-            <span>{totalClips} Clips</span>
-          </div>
+    <div className="offseason-highlights">
+      <section className="highlights-heading">
+        <div>
+          <p className="highlights-eyebrow">BARDOWNSKI / THE FILM ROOM</p>
+          <h1>THE HIGHLIGHT<br /><em>COLLECTION.</em></h1>
+          <p className="highlights-intro">The goals. The saves. The plays worth watching again.<br />Explore the club’s highlights, player by player.</p>
         </div>
-
-        <div
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 h-px w-32"
-          style={{ backgroundColor: "#cc1533" }}
-        />
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 pt-4">
+        <div className="highlights-counts"><div><strong>{players.length.toString().padStart(2, "0")}</strong><span>PLAYERS</span></div><div><strong>{totalClips}</strong><span>CLIPS</span></div></div>
+      </section>
+      <div className="highlights-library">
         <HighlightsClient players={players} />
       </div>
     </div>

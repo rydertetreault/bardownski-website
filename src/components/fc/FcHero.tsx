@@ -32,10 +32,10 @@ export default function FcHero({
           preserveAspectRatio="xMidYMid meet"
         >
           {/* Halfway line */}
-          <line x1="300" y1="0" x2="300" y2="900" stroke="#cc1533" strokeWidth="2" />
+          <line x1="300" y1="0" x2="300" y2="900" stroke="#d4b77b" strokeWidth="2" />
           {/* Center circle */}
-          <circle cx="300" cy="450" r="220" stroke="#cc1533" strokeWidth="2" />
-          <circle cx="300" cy="450" r="8" fill="#cc1533" />
+          <circle cx="300" cy="450" r="220" stroke="#d4b77b" strokeWidth="2" />
+          <circle cx="300" cy="450" r="8" fill="#d4b77b" />
           {/* Penalty box arc */}
           <path
             d="M 600 250 A 260 260 0 0 0 600 650"
@@ -54,7 +54,7 @@ export default function FcHero({
             <polyline
               key={i}
               points={`${i * 100},100 ${i * 100 + 50},20 ${i * 100 + 100},100`}
-              stroke="#cc1533"
+              stroke="#d4b77b"
               strokeWidth="3"
               fill="none"
             />
@@ -65,10 +65,10 @@ export default function FcHero({
       {/* Content */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 flex flex-col items-center md:items-start text-center md:text-left">
         <motion.div {...fadeUp(0.1)} className="flex items-center gap-3 mb-6">
-          <div className="w-0.5 h-5" style={{ backgroundColor: "#cc1533" }} />
+          <div className="w-0.5 h-5" style={{ backgroundColor: "#d4b77b" }} />
           <span
             className="text-xs font-bold tracking-[0.25em] uppercase"
-            style={{ color: "#cc1533" }}
+            style={{ color: "#d4b77b" }}
           >
             EA FC 26 · Pro Clubs
           </span>
@@ -79,7 +79,7 @@ export default function FcHero({
           className="text-5xl sm:text-7xl md:text-8xl xl:text-9xl font-black tracking-tighter text-white leading-none mb-4"
         >
           BARDOWNSKI{" "}
-          <span style={{ color: "#cc1533" }}>FC</span>
+          <span style={{ color: "#d4b77b" }}>FC</span>
         </motion.h1>
 
         <motion.p
@@ -131,13 +131,13 @@ export default function FcHero({
           <Link
             href="/fc/fixtures"
             className="px-8 py-3.5 font-bold uppercase tracking-wider text-sm transition-all rounded hover:brightness-110"
-            style={{ backgroundColor: "#cc1533", color: "#ffffff" }}
+            style={{ backgroundColor: "#d4b77b", color: "#ffffff" }}
           >
             Fixtures &amp; Results
           </Link>
           <Link
             href="/fc/highlights"
-            className="px-8 py-3.5 border border-white/60 text-white font-bold uppercase tracking-wider text-sm transition-colors rounded hover:border-[#cc1533]"
+            className="px-8 py-3.5 border border-white/60 text-white font-bold uppercase tracking-wider text-sm transition-colors rounded hover:border-[#d4b77b]"
           >
             Watch Highlights
           </Link>
@@ -155,9 +155,9 @@ export default function FcHero({
           animate={{ y: [0, 8, 0] }}
           transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
           className="w-5 h-8 border-2 rounded-full flex justify-center pt-1.5"
-          style={{ borderColor: "rgba(204,21,51,0.5)" }}
+          style={{ borderColor: "rgba(212, 183, 123,0.5)" }}
         >
-          <div className="w-1 h-2 rounded-full" style={{ backgroundColor: "rgba(204,21,51,0.7)" }} />
+          <div className="w-1 h-2 rounded-full" style={{ backgroundColor: "rgba(212, 183, 123,0.7)" }} />
         </motion.div>
       </motion.div>
     </section>

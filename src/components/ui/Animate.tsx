@@ -131,7 +131,7 @@ export function GlowCard({
     <motion.div
       whileHover={{
         scale: 1.03,
-        boxShadow: "0 0 30px rgba(200, 16, 46, 0.15)",
+        boxShadow: "0 0 30px rgba(212, 183, 123, 0.15)",
       }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       className={className}

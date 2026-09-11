@@ -1,5 +1,8 @@
 import Image from "next/image";
-import { fetchChelstatsData, type ClubMember } from "@/lib/chelstats";
+import Link from "next/link";
+import "@/components/season/season-recap.css";
+import "./roster.css";
+import { fetchChelstatsData } from "@/lib/chelstats";
 import { getNickname, getDisplayName } from "@/lib/nicknames";
 import RosterClient from "./RosterClient";
 
@@ -20,9 +23,10 @@ function resolveName(gamertag: string): string {
   return GAMERTAG_TO_NAME[gamertag] || gamertag;
 }
 
-// Captain and assistant captains (by real name or gamertag)
-const CAPTAIN = "ROB";
-const ASSISTANTS = ["COLIN", "KADEN"];
+// Roster roles can differ from the archived stats feed (Ryder is tagged SKTR).
+const POSITION_OVERRIDES: Record<string, string> = {
+  RYDER: "G",
+};
 
 // Jersey numbers (by real name or gamertag)
 const JERSEY_NUMBERS: Record<string, number> = {
@@ -80,12 +84,6 @@ const PLAYER_SCOUTING: Record<string, { role: string; description: string }> = {
   },
 };
 
-function getLeadershipRole(name: string): "C" | "A" | null {
-  if (name === CAPTAIN) return "C";
-  if (ASSISTANTS.includes(name)) return "A";
-  return null;
-}
-
 function getPositionGroup(
   position: string
 ): "forward" | "defense" | "goalie" {
@@ -123,15 +121,17 @@ export default async function RosterPage() {
 
   const players: RosterPlayer[] = members.map((m) => {
     const name = resolveName(m.username);
+    const position = POSITION_OVERRIDES[name] ?? m.position;
     const svPct =
       m.savePct > 1 ? m.savePct : m.savePct * 100;
 
     return {
       name,
-      position: m.position,
+      position,
       number: JERSEY_NUMBERS[name] ?? 0,
-      leadership: getLeadershipRole(name),
-      positionGroup: getPositionGroup(m.position),
+      // Next season’s captain and assistants have not been announced.
+      leadership: null,
+      positionGroup: getPositionGroup(position),
       nickname: getNickname(name),
       displayName: getDisplayName(name),
       scouting: PLAYER_SCOUTING[name],
@@ -154,101 +154,70 @@ export default async function RosterPage() {
   const goalies = players.filter((p) => p.positionGroup === "goalie");
 
   return (
-    <div className="min-h-screen relative">
-      {/* Red diagonal streak background */}
-      <div
-        className="fixed inset-0 pointer-events-none overflow-hidden"
-        style={{ zIndex: -1 }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            width: "220px",
-            height: "300%",
-            left: "10%",
-            top: "-100%",
-            transform: "rotate(-38deg)",
-            background:
-              "linear-gradient(90deg, transparent, rgba(200,16,46,0.04) 40%, rgba(200,16,46,0.06) 50%, rgba(200,16,46,0.04) 60%, transparent)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            width: "1px",
-            height: "300%",
-            left: "18%",
-            top: "-100%",
-            transform: "rotate(-38deg)",
-            background:
-              "linear-gradient(to bottom, transparent 0%, rgba(200,16,46,0.2) 25%, rgba(200,16,46,0.35) 50%, rgba(200,16,46,0.2) 75%, transparent 100%)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            width: "300px",
-            height: "300%",
-            left: "58%",
-            top: "-100%",
-            transform: "rotate(-38deg)",
-            background:
-              "linear-gradient(90deg, transparent, rgba(200,16,46,0.03) 40%, rgba(200,16,46,0.05) 50%, rgba(200,16,46,0.03) 60%, transparent)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            width: "1px",
-            height: "300%",
-            left: "74%",
-            top: "-100%",
-            transform: "rotate(-38deg)",
-            background:
-              "linear-gradient(to bottom, transparent 0%, rgba(200,16,46,0.18) 25%, rgba(200,16,46,0.3) 50%, rgba(200,16,46,0.18) 75%, transparent 100%)",
-          }}
-        />
-      </div>
-
-      {/* Page title */}
-      <div className="pt-24 pb-8">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-4">
-            <div className="h-px w-8 bg-red/40" />
-            <h1 className="text-3xl md:text-4xl font-black uppercase tracking-[0.15em]">
-              Roster
-            </h1>
-          </div>
-          <p className="text-muted text-sm uppercase tracking-widest mt-1 ml-12">
-            The Bardownski Squad
+    <div className="legacy-home concept-1 roster-edition">
+      <section className="hero roster-hero">
+        <div className="hero-copy">
+          <p className="eyebrow">THE LEGACY EDITION / OUR PEOPLE</p>
+          <h1>ONE CLUB.<br /><em>EVERY SHIFT.</em></h1>
+          <p className="hero-description">
+            The names behind the season. The teammates behind the first banner.
+            A room that made Bardownski history.
           </p>
+          <div className="actions">
+            <a className="button" href="#squad">Meet the squad ↗</a>
+            <a href="#leadership">Leadership pending ↓</a>
+          </div>
+          <span className="season-label">NHL 26 <span>/</span> SEASON COMPLETE</span>
         </div>
+        <figure>
+          <Image src="/images/gallery/screenshots/team2.webp" alt="Bardownski players gathering in a post-game huddle" fill priority sizes="(max-width: 850px) 100vw, 50vw" />
+          <figcaption>NEWFOUNDLAND ROOTS. BARDOWNSKI FOREVER.</figcaption>
+          <div className="photo-stamp">THE<br /><b>ROOM.</b><small>ONE CLUB / EVERY NAME</small></div>
+        </figure>
+      </section>
+
+      <div className="stats roster-counts" aria-label="Roster by position">
+        <div><strong>{String(forwards.length).padStart(2, "0")}</strong><small>FORWARDS</small></div>
+        <div><strong>{String(defense.length).padStart(2, "0")}</strong><small>DEFENSEMEN</small></div>
+        <div><strong>{String(goalies.length).padStart(2, "0")}</strong><small>GOALTENDERS</small></div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+      <section id="squad" className="section roster-squad" aria-labelledby="squad-title">
+        <div className="section-head">
+          <div><p className="eyebrow">01 / THE SQUAD</p><h2 id="squad-title">The names on the sweaters.</h2></div>
+          <p>The completed season’s squad.<br />Offseason positions. Next season’s lineup is not final.</p>
+        </div>
         {players.length === 0 ? (
-          <div className="text-center py-24 bg-navy border border-border rounded-xl">
-            <div className="w-20 h-20 mx-auto mb-6 relative overflow-hidden rounded-xl opacity-20">
-              <Image
-                src="/images/logo/BD - logo.png"
-                alt="Bardownski"
-                fill
-                className="object-contain"
-              />
-            </div>
-            <p className="text-muted text-lg">Roster coming soon.</p>
-            <p className="text-muted/50 text-sm mt-2">
-              Unable to load roster from chelstats.
-            </p>
-          </div>
+          <div className="roster-empty"><h3>The room is loading.</h3><p>Roster data is unavailable right now. Please check back soon.</p></div>
         ) : (
-          <RosterClient
-            forwards={forwards}
-            defense={defense}
-            goalies={goalies}
-          />
+          <RosterClient forwards={forwards} defense={defense} goalies={goalies} />
         )}
-      </div>
+      </section>
+
+      <section id="leadership" className="section roster-leadership" aria-labelledby="leadership-title">
+        <div className="section-head">
+          <div><p className="eyebrow">02 / THE NEXT CHAPTER</p><h2 id="leadership-title">Who wears the letters?</h2></div>
+          <p>Same club. New era.<br />No selections announced yet.</p>
+        </div>
+        <div className="roster-letters">
+          {[{ letter: "C", role: "Captain" }, { letter: "A", role: "Assistant captain" }, { letter: "A", role: "Assistant captain" }].map(({ letter, role }, index) => (
+            <article key={index}>
+              <span className="letter-index">0{index + 1} / {role}</span>
+              <b aria-hidden="true">{letter}</b>
+              <h3>To be announced.</h3>
+              <p>Next season’s {role.toLowerCase()} has not been selected publicly.</p>
+              <span className="roster-tag">LEADERSHIP · PENDING</span>
+            </article>
+          ))}
+        </div>
+        <p className="roster-fine">A fresh leadership chapter. The letters stay unassigned until selections are official.</p>
+      </section>
+
+      <section className="roster-closing">
+        <p className="eyebrow">THE SEASON ENDS. THE CLUB CONTINUES.</p>
+        <h2>Same club.<br /><em>Next chapter.</em></h2>
+        <Link className="button" href="/">Revisit the season ↗</Link>
+      </section>
     </div>
   );
 }

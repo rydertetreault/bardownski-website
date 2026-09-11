@@ -33,7 +33,7 @@ export function StreakBanner({
                 key={i}
                 className="flex-1"
                 style={{
-                  backgroundColor: i % 2 === 0 ? "#bf0a30" : "#ffffff",
+                  backgroundColor: i % 2 === 0 ? "#d4b77b" : "#ffffff",
                 }}
               />
             ))}
@@ -43,7 +43,7 @@ export function StreakBanner({
         {/* ── Main content ── */}
         <div className="relative flex-1 px-5 md:px-6 py-4 md:py-5">
           {/* Top accent line */}
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#bf0a30] via-[#bf0a30]/50 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#d4b77b] via-[#d4b77b]/50 to-transparent" />
 
           {/* Watermark number */}
           <div className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 pointer-events-none select-none">
@@ -72,17 +72,17 @@ export function StreakBanner({
                 </p>
                 {isClubRecord && (
                   <span
-                    className="bg-[#bf0a30]/15 border border-[#bf0a30]/30 text-[#bf0a30] text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 shrink-0"
+                    className="bg-[#d4b77b]/15 border border-[#d4b77b]/30 text-[#d4b77b] text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 shrink-0"
                     style={{
                       clipPath: "polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%)",
                     }}
                   >
-                    Club Record
+                    Best in Saved Results
                   </span>
                 )}
               </div>
               <p className="text-[10px] text-muted/40 uppercase tracking-widest mt-0.5">
-                Currently active
+                At the close of the saved results
               </p>
             </div>
           </div>

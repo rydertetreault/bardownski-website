@@ -141,9 +141,9 @@ const jerseys: JerseyData[] = [
     label: "ALTERNATE",
     description: "Red with eagle crest",
     video: "/videos/BD - Alt.mp4",
-    accentColor: "#9b0c23",
-    glowColor: "rgba(155, 12, 35, 0.4)",
-    borderHover: "rgba(204, 21, 51, 0.9)",
+    accentColor: "#a88b52",
+    glowColor: "rgba(212, 183, 123, 0.4)",
+    borderHover: "rgba(212, 183, 123, 0.9)",
     cardBg: "#152840",
   },
 ];
@@ -167,7 +167,7 @@ export default function JerseyShowcase() {
           zIndex: 2,
           height: "140px",
           background:
-            "linear-gradient(90deg, #ff1a3d 0%, rgba(255, 40, 70, 0.6) 50%, transparent 100%)",
+            "linear-gradient(90deg, #ead6ac 0%, rgba(212, 183, 123, 0.6) 50%, transparent 100%)",
           clipPath: "polygon(0 0, 100% 0, 0 100%)",
           filter: "blur(14px)",
         }}
@@ -178,7 +178,7 @@ export default function JerseyShowcase() {
           zIndex: 2,
           height: "122px",
           background:
-            "linear-gradient(90deg, #ffffff 0%, #ff2244 8%, rgba(255, 40, 70, 0.4) 55%, transparent 100%)",
+            "linear-gradient(90deg, #ffffff 0%, #ead6ac 8%, rgba(212, 183, 123, 0.4) 55%, transparent 100%)",
           clipPath: "polygon(0 0, 100% 0, 0 100%)",
           filter: "blur(2px)",
         }}
@@ -267,7 +267,7 @@ export default function JerseyShowcase() {
           zIndex: 2,
           height: "140px",
           background:
-            "linear-gradient(90deg, #ff1a3d 0%, rgba(255, 40, 70, 0.6) 50%, transparent 100%)",
+            "linear-gradient(90deg, #ead6ac 0%, rgba(212, 183, 123, 0.6) 50%, transparent 100%)",
           clipPath: "polygon(0 100%, 100% 0, 100% 100%)",
           filter: "blur(14px)",
         }}
@@ -278,7 +278,7 @@ export default function JerseyShowcase() {
           zIndex: 2,
           height: "122px",
           background:
-            "linear-gradient(90deg, #ffffff 0%, #ff2244 8%, rgba(255, 40, 70, 0.4) 55%, transparent 100%)",
+            "linear-gradient(90deg, #ffffff 0%, #ead6ac 8%, rgba(212, 183, 123, 0.4) 55%, transparent 100%)",
           clipPath: "polygon(0 100%, 100% 0, 100% 100%)",
           filter: "blur(2px)",
         }}

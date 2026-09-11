@@ -49,8 +49,8 @@ export default function MeetTheLeaderButton({
         onClick={() => setOpen(!open)}
         className={`w-full mt-2 px-4 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
           open
-            ? "bg-red/20 text-red border border-red/30"
-            : "bg-navy-light text-cream border border-border hover:border-red/40 hover:text-red"
+            ? "bg-gold/20 text-gold border border-gold/30"
+            : "bg-navy-light text-cream border border-border hover:border-gold/40 hover:text-gold"
         }`}
       >
         {open ? "Close" : label}

@@ -1,134 +1,29 @@
 import Image from "next/image";
-import { fetchChannelMessages, parseAllSeasons, computePlayerOfWeek } from "@/lib/discord";
+import Link from "next/link";
+import { fetchChannelMessages, parseAllSeasons } from "@/lib/discord";
 import { fetchChelstatsData, chelstatsToSeasonData, computeMvpOddsFromMembers } from "@/lib/chelstats";
-import { getPlayerOfWeek, getPotwStandings, getPotwWeek } from "@/lib/articles";
+import { getNickname } from "@/lib/nicknames";
 import StatsClient from "./StatsClient";
-import PlayerOfWeekSection from "@/components/sections/PlayerOfWeekSection";
-import MvpOddsSection from "@/components/sections/MvpOddsSection";
+import "./stats.css";
 
 export default async function StatsPage() {
-  // Fetch both sources in parallel
-  const [messages, chelstats] = await Promise.all([
-    fetchChannelMessages(),
-    fetchChelstatsData(),
-  ]);
-
-  // Discord seasons (2023, 2024 only — 2025 comes from chelstats)
-  const discordSeasons = parseAllSeasons(messages).filter(
-    (s) => s.season !== "2025"
-  );
-
-  // Player of the Week: prefer KV (set by weekly cron), fall back to Discord computation
-  const [kvPlayer, potwStandings, potwWeek] = await Promise.all([
-    getPlayerOfWeek(),
-    getPotwStandings(),
-    getPotwWeek(),
-  ]);
-  const weeklyPlayer = kvPlayer ?? computePlayerOfWeek(messages);
-
-  // Chelstats 2025 season (live from EA)
-  const chelstatsSeason = chelstats
-    ? chelstatsToSeasonData(chelstats.members)
-    : null;
-
-  // MVP odds from live chelstats data
-  const mvpOdds = chelstats ? computeMvpOddsFromMembers(chelstats.members) : [];
-
-  // Combine: 2025 first, then historical
-  const seasons = [
-    ...(chelstatsSeason ? [chelstatsSeason] : []),
-    ...discordSeasons,
-  ];
-
-  return (
-    <div className="min-h-screen relative">
-      {/* Analytical grid background */}
-      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: -1 }}>
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
-            backgroundSize: "30px 30px",
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px)",
-            backgroundSize: "90px 90px",
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255,255,255,0.04) 0%, transparent 100%)",
-          }}
-        />
-      </div>
-
-      {/* Scoreboard-style header */}
-      <div className="relative pt-16">
-        <div className="relative h-56 md:h-64 overflow-hidden">
-          <div className="absolute inset-0 opacity-[0.04]">
-            <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-2 bg-red" />
-            <div className="absolute top-0 bottom-0 left-1/3 -translate-x-1/2 w-1 bg-blue-400" />
-            <div className="absolute top-0 bottom-0 left-2/3 -translate-x-1/2 w-1 bg-blue-400" />
-            <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-32 h-32 border-2 border-red rounded-full" />
-            <div className="absolute top-1/2 left-3/4 -translate-x-1/2 -translate-y-1/2 w-32 h-32 border-2 border-red rounded-full" />
-          </div>
-
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 to-background" />
-
-          <div className="absolute top-6 left-1/2 -translate-x-1/2 w-16 h-16 opacity-10">
-            <Image
-              src="/images/logo/BD - logo.png"
-              alt=""
-              fill
-              className="object-contain"
-            />
-          </div>
-
-          <div className="absolute inset-0 flex flex-col items-center justify-end pb-8">
-            <div className="flex items-center gap-4 mb-2">
-              <div className="h-px w-12 bg-red/50" />
-              <h1 className="text-4xl md:text-5xl font-black uppercase tracking-[0.15em]">
-                Player Stats
-              </h1>
-              <div className="h-px w-12 bg-red/50" />
-            </div>
-            <p className="text-muted text-sm uppercase tracking-widest">
-              Season statistics and leaderboards
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {weeklyPlayer && <PlayerOfWeekSection player={weeklyPlayer} standings={potwStandings} week={potwWeek} />}
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <MvpOddsSection odds={mvpOdds} />
-        {seasons.length === 0 ? (
-          <div className="text-center py-24 bg-navy border border-border rounded-xl">
-            <div className="w-20 h-20 mx-auto mb-6 relative overflow-hidden rounded-xl opacity-20">
-              <Image
-                src="/images/logo/BD - logo.png"
-                alt="Bardownski"
-                fill
-                className="object-contain"
-              />
-            </div>
-            <p className="text-muted text-lg">Stats coming soon.</p>
-            <p className="text-muted/50 text-sm mt-2">
-              Player stats will be available soon.
-            </p>
-          </div>
-        ) : (
-          <StatsClient seasons={seasons} />
-        )}
-      </div>
-    </div>
-  );
+  const [messages, chelstats] = await Promise.all([fetchChannelMessages(), fetchChelstatsData()]);
+  const historical = parseAllSeasons(messages).filter(s => s.season !== "2025");
+  const seasons = [...(chelstats ? [chelstatsToSeasonData(chelstats.members)] : []), ...historical];
+  const standings = chelstats ? computeMvpOddsFromMembers(chelstats.members) : [];
+  const winner = standings[0];
+  return <div className="stats-edition">
+    <header className="stats-hero">
+      <div><p className="stats-eyebrow">THE LEGACY EDITION · STATISTICS</p><h1>THE GAME.<br /><em>BY NUMBERS.</em></h1><p className="stats-intro">Every point earned. Every save made.<br />The players behind the numbers, and the numbers behind the team.</p><a className="stats-button" href="#numbers">Explore player stats ↘</a><p className="stats-caption">BARDOWNSKI <span>/</span> THE STAT BOOK</p></div>
+      <figure><Image src="/images/gallery/screenshots/Screenshot 2026-03-16 183710.webp" alt="An overhead view of the Bardownski goaltender defending the crease" fill priority sizes="(max-width: 850px) 100vw, 50vw" /><figcaption>THE SWEATER. THE WORK. THE NUMBERS.</figcaption></figure>
+    </header>
+    {winner && <section className="stats-standings" id="standings" aria-labelledby="standings-title">
+      <div className="stats-section-heading"><div><p className="stats-eyebrow">01 / THE MVP TABLE</p><h2 id="standings-title">Final standings.</h2></div><p>NHL 26 · Ranked by performance.<br />The same position-adjusted model. No projections or betting odds.</p></div>
+      <div className="stats-mvp-layout"><article className="stats-mvp"><span className="stats-eyebrow">SEASON MVP / NO. 01</span><span className="stats-watermark" aria-hidden="true">01</span><h3>{getNickname(winner.name)}</h3><p>{winner.isGoalie ? "Goaltender" : winner.position} · {winner.highlights.join(" · ")}</p><div><strong>{winner.score.toFixed(2)}</strong><span>PERFORMANCE SCORE</span></div></article>
+      <div className="stats-ranking-wrap" tabIndex={0} role="region" aria-label="MVP final standings"><table className="stats-ranking"><thead><tr><th scope="col">Rank</th><th scope="col">Player / role</th><th scope="col">Score</th></tr></thead><tbody>{standings.map((entry, i) => <tr key={`${entry.name}-${entry.isGoalie}`}><td>{standings.findIndex(e => e.score === entry.score) + 1 < i + 1 ? "=" : ""}{standings.findIndex(e => e.score === entry.score) + 1}</td><th scope="row">{getNickname(entry.name)}<small>{entry.isGoalie ? "Goaltender" : entry.position}</small></th><td>{entry.score.toFixed(2)}</td></tr>)}</tbody></table></div></div>
+      <details className="stats-method"><summary>How the standings are calculated</summary><p>Rankings use the existing position-adjusted MVP performance model, with a minimum of five games in the scored role. Skater and goalie roles are scored separately; a player may appear in both. The highest individual role score determines the MVP, not the sum. Scores are performance ratings, not vote totals or win probabilities. Exact ties share a rank.</p></details>
+    </section>}
+    <section className="stats-numbers" id="numbers"><div className="stats-section-heading"><div><p className="stats-eyebrow">02 / THE PLAYER LEDGER</p><h2>Every contribution counts.</h2></div><p>Explore the leaders, compare teammates,<br />and open a player’s full statistical profile.</p></div>{seasons.length ? <StatsClient seasons={seasons} /> : <p className="stats-empty">Player statistics are currently unavailable. Please check back later.</p>}</section>
+    <section className="stats-end"><p className="stats-eyebrow">BEYOND THE NUMBERS</p><h2>The names behind<br /><em>the sweater.</em></h2><Link className="stats-button" href="/roster">Meet the roster ↗</Link></section>
+  </div>;
 }

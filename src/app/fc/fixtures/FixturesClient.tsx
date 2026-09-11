@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { FcClubMatch, FcMatchPlayer } from "@/lib/fcstats";
 import { FcResultBadge } from "@/components/fc/FcUI";
 
-const GOLD = "#cc1533";
+const GOLD = "#d4b77b";
 const GOLD_LIGHT = "#5b9bd5";
 
 type Filter = "all" | "league" | "playoff" | "friendly";

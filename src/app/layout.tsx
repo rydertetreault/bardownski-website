@@ -40,7 +40,7 @@ export default function RootLayout({
       >
         <SplashScreen />
         <Navbar />
-        <main className="pt-16">{children}</main>
+        <main className="site-main">{children}</main>
         <SiteFooter />
         <Analytics />
       </body>

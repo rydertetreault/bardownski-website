@@ -70,7 +70,7 @@ export default function StatsTicker({ messages, members }: { messages: unknown[]
   const doubled = [...items, ...items];
 
   return (
-    <div className="w-full h-12 bg-[#cc1533] overflow-hidden flex items-center">
+    <div className="w-full h-12 bg-[#d4b77b] overflow-hidden flex items-center">
       <style>{`
         @keyframes ticker-scroll {
           0%   { transform: translateX(0); }
