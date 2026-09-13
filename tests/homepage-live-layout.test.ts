@@ -274,7 +274,7 @@ test("homepage and real Navbar section links resolve to unique rendered targets"
   for (const href of [...headerAnchors, ...root.querySelectorAll("a[href]").map(a => a.getAttribute("href")!)]) {
     const url = new URL(href, "http://localhost:3000");
     assert.equal(url.origin, "http://localhost:3000", `No demo/external route: ${href}`);
-    if (url.hash) assert.ok(ids.includes(decodeURIComponent(url.hash.slice(1))), `Dead anchor: ${href}`);
+    if (url.hash && url.pathname === "/") assert.ok(ids.includes(decodeURIComponent(url.hash.slice(1))), `Dead anchor: ${href}`);
     else {
       const route = url.pathname.startsWith("/news/") ? "/news/[id]" : url.pathname === "/" ? "" : url.pathname;
       assert.ok(existsSync(`src/app${route}/page.tsx`), `Missing route: ${href}`);
@@ -339,14 +339,14 @@ test("generated images, history portraits, album, font/license, and lazy videos 
   }
   for (const root of roots) {
     for (const image of root.querySelectorAll("img")) {
-      assertLocalAsset(image.getAttribute("src")!, "/images/homepage/");
+      assertLocalAsset(image.getAttribute("src")!, image.getAttribute("src")!.startsWith("/images/announcements/") ? "/images/announcements/" : "/images/homepage/");
       assert.ok(image.hasAttribute("alt"));
     }
   }
   assertLocalAsset("/images/homepage/barlow-condensed.ttf", "/images/homepage/");
   assertLocalAsset("/images/homepage/licenses/barlowcondensed.txt", "/images/homepage/");
   const clips = [...new Set(home().querySelectorAll("[data-video]").map(button => button.getAttribute("data-video")))];
-  assert.deepEqual(clips, ["finish", "crease"]);
+  assert.deepEqual(clips, ["reveal", "finish", "crease"]);
   assert.equal(ui.root.querySelectorAll("video, source").length, 0, "Poster only before explicit play intent");
   for (const clip of clips) {
     ui.click(`[data-video="${clip}"]`);
@@ -354,9 +354,9 @@ test("generated images, history portraits, album, font/license, and lazy videos 
     assert.ok(video.hasAttribute("controls") && video.hasAttribute("playsinline"));
     assert.ok(!video.hasAttribute("autoplay"));
     assert.equal(video.getAttribute("preload"), "metadata");
-    assertLocalAsset(video.getAttribute("poster")!, "/images/homepage/");
-    assertLocalAsset(one(video, "source").getAttribute("src")!, "/videos/homepage/");
-    assert.match(text(ui.body(), ".fineprint"), /archived club gameplay/i);
+    assertLocalAsset(video.getAttribute("poster")!, clip === "reveal" ? "/images/announcements/" : "/images/homepage/");
+    assertLocalAsset(one(video, "source").getAttribute("src")!, clip === "reveal" ? "/videos/announcements/" : "/videos/homepage/");
+    assert.match(text(ui.body(), ".fineprint"), clip === "reveal" ? /official jersey and leadership announcement/i : /archived club gameplay/i);
   }
 });
 

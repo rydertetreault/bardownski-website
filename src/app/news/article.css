@@ -1,0 +1,13 @@
+.hockey-article #reveal-film {scroll-margin-top:24px;background:#0b0c0d;}
+.hockey-article .article-video-error{height:100%;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:14px;padding:24px;font-size:12px;line-height:1.8;background:#101b1e;color:#f0efeb}
+.hockey-article .article-video-error p{flex-basis:100%;text-align:center}
+.article-video-error button{padding:9px 14px;border:1px solid #68c8ce;color:#f0efeb;background:#006775}
+.article-video-error a{color:#68c8ce;font-size:12px}
+.hockey-article .reveal-resources{border-block:1px solid #563465;margin-top:38px;padding:26px 0;color:#c8d4d4;font-size:13px;line-height:1.9}
+.hockey-article .reveal-resources h2{font-family:HockeyDisplay,Impact,sans-serif;font-size:32px;line-height:1.1;color:#f0efeb;margin-bottom:18px;text-transform:uppercase}
+.hockey-article .reveal-resources p{margin-bottom:16px}
+.hockey-article .reveal-resources a{display:block;margin-top:12px;color:#68c8ce}
+.hockey-article .reveal-archive-note{border-left:2px solid #c4a1dc;padding-left:14px;font-size:12px}
+.hockey-site.hockey-interior .reveal-article h1{font-family:HockeyDisplay,Impact,sans-serif;font-size:clamp(36px,5vw,58px);line-height:1.05;letter-spacing:0}
+.hockey-article .reveal-transcript summary{cursor:pointer;color:#c4a1dc;font-weight:700;padding:12px 0}
+.hockey-article .reveal-transcript h3{font-size:14px;font-weight:700;color:#f0efeb;margin:18px 0 8px}

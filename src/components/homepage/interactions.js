@@ -1,3 +1,4 @@
+import { SEASON_REVEAL } from "@/lib/season-reveal";
 import { homeArchive as a } from "./home-data";
 import { num, photo, mvpRows, seasonContent, resultRow, escape } from "./views";
 export function initHomeInteractions(runtime, motion, news) {
@@ -82,6 +83,12 @@ function match(index, b) {
   );
 }
 const films = {
+  reveal: {
+    title: "Bardownski 2027 / The season reveal",
+    src: SEASON_REVEAL.videoSrc,
+    poster: SEASON_REVEAL.poster,
+    captions: SEASON_REVEAL.captionsSrc,
+  },
   finish: {
     title: "Matt / Archived hockey highlight",
     src: "/videos/homepage/finish.mp4",
@@ -97,7 +104,7 @@ function video(id, b) {
   const f = films[id];
   if (!f) return;
   show(
-    `<span class="data-stamp">CLUB HIGHLIGHTS ARCHIVE</span><h2 id="dialog-title">${f.title}</h2><video controls playsinline preload="metadata" poster="${f.poster}" aria-label="${f.title}"><source src="${f.src}" type="video/mp4"></video><p class="fineprint">Archived club gameplay. Use the player controls to start playback. Upload dates are not recorded.</p>`,
+    `<span class="data-stamp">${id === "reveal" ? "2027 SEASON REVEAL" : "CLUB HIGHLIGHTS ARCHIVE"}</span><h2 id="dialog-title">${f.title}</h2><video controls playsinline preload="metadata" poster="${f.poster}" aria-label="${f.title}"><source src="${f.src}" type="video/mp4">${f.captions ? `<track kind="captions" src="${f.captions}" srclang="en" label="English" default>` : ""}</video><p class="fineprint">${id === "reveal" ? `The official jersey and leadership announcement. <a href="/news/${SEASON_REVEAL.articleId}">Read the full story and film transcript ↗</a>` : "Archived club gameplay. Use the player controls to start playback. Upload dates are not recorded."}</p>`,
     b,
   );
   const v = modal.querySelector("video");
@@ -105,7 +112,7 @@ function video(id, b) {
     if (!v.isConnected) return;
     const p = document.createElement("p");
     p.setAttribute("role", "status");
-    p.innerHTML = 'This clip could not be loaded. Please try again later or <a href="/highlights">browse all highlights</a>.';
+    p.innerHTML = id === "reveal" ? `The film could not be loaded. <a href="/news/${SEASON_REVEAL.articleId}">Open the announcement and transcript</a>.` : 'This clip could not be loaded. Please try again later or <a href="/highlights">browse all highlights</a>.';
     v.pause();
     v.replaceWith(p);
   };
@@ -122,13 +129,13 @@ function awardDetail(h) {
   return `<article class="award-detail"><span class="data-stamp">${h.selection === "editorial" ? "TEAM / EDITORIAL HONOR" : "STATISTICAL HONOR"}</span><h3>${escape(h.title)}</h3><strong>${h.winners.map(escape).join(" & ")}</strong><p>${escape(h.result)}</p><p class="fineprint">${escape(h.criteria)}</p></article>`;
 }
 document.addEventListener("click", (e) => {
-  const b = e.target.closest("button, a[data-news]");
+  const b = e.target.closest("button, a[data-news], a[data-video]");
   if (!b) return;
   // Preserve native new-tab/download behavior on progressively enhanced links.
   if (b.tagName === "A" && (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || (b.target && b.target !== "_self") || b.hasAttribute("download"))) return;
   if (b.dataset.player) profile(b.dataset.player, b);
   if (b.hasAttribute("data-match")) match(Number(b.dataset.match), b);
-  if (b.dataset.video) video(b.dataset.video, b);
+  if (b.dataset.video) { if (b.tagName === "A") e.preventDefault(); video(b.dataset.video, b); }
   if (b.hasAttribute("data-weekly"))
     show(
       `${stamp}<h2 id="dialog-title">${a.weekly.title}</h2><p>Published ${a.weekly.date} · Official archived weekly selection</p>${paragraphs(a.weekly.summary)}`,
@@ -157,6 +164,7 @@ document.addEventListener("click", (e) => {
       `${stamp}<h2 id="dialog-title">Recent saved matches</h2><p>Latest eight saved games. The archive is incomplete.</p><div class="modal-games result-rows">${a.matches.map((m, i) => resultRow(m, i)).join("")}</div>`,
       b,
     );
+  if (b.dataset.news === SEASON_REVEAL.articleId && b.tagName === "A") return; // Full, accessible film/article route.
   if (b.dataset.news) {
     const article = news.find((article) => article.id === b.dataset.news);
     if (article) {

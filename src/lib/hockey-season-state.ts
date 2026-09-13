@@ -1,5 +1,7 @@
+import type { HockeyAwards } from "./hockey-awards";
 import type { ChelstatsData } from "./chelstats";
 import type { Match } from "@/types";
+import { SEASON_REVEAL } from "./season-reveal";
 
 export const HOCKEY_SEASON = "2026–2027";
 export const HOCKEY_ARCHIVE_SEASON = "2025–2026";
@@ -10,22 +12,24 @@ export type HockeyAnnouncement = {
   videoSrc: string | null;
   captionsSrc?: string;
   poster: string;
+  posterAlt?: string;
   title: string;
 };
 
-/** Set videoSrc to a public MP4 URL when the announcement is ready to publish.
- * Keep it null until then: no dead play button, autoplay or last-year video.
- */
+/** Published announcement assets from the approved final reveal film. */
 export const HOCKEY_ANNOUNCEMENT: HockeyAnnouncement = {
-  videoSrc: null,
-  poster: HOCKEY_ARTWORK,
-  title: "The letters. The look. The next chapter.",
+  videoSrc: SEASON_REVEAL.videoSrc,
+  poster: SEASON_REVEAL.poster,
+  posterAlt: SEASON_REVEAL.posterAlt,
+  captionsSrc: SEASON_REVEAL.captionsSrc,
+  title: SEASON_REVEAL.title,
 };
 
 export type HockeySeasonState = {
   season: typeof HOCKEY_SEASON;
   syncedAt: string | null;
   error?: string;
+  awards?: HockeyAwards | null;
   coverage: {storedMatches: number; totalGames: number | null};
 } & (
   | {status: "awaiting-setup" | "unavailable"; data: null; matches: Match[]; updatedAt: null}

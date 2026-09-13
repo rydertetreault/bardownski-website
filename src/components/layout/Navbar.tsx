@@ -36,7 +36,7 @@ export default function Navbar() {
     "/": { title: "2026–2027 / BARDOWNSKI HOCKEY", links: [["/#results", "Recent matches"], ["/#standings", "MVP tracker"], ["/#history", "Past seasons"]] },
     "/matches": { title: "2026–2027 / THE MATCH CENTRE", links: [["/matches#results", "Season matches"], ["/matches#archive", "2025–2026 archive ↗"]] },
     "/roster": { title: "2026–2027 / THE ROSTER", links: [["/roster#squad", "The squad"], ["/roster#leadership", "The next chapter ↗"]] },
-    "/stats": { title: "2026–2027 / THE STAT BOOK", links: [["/stats#numbers", "Season stats"], ["/stats#standings", "MVP tracker"], ["/stats#archive", "Previous seasons"]] },
+    "/stats": { title: "2026–2027 / THE STAT BOOK", links: [["/stats#numbers", "Season stats"], ["/stats#standings", "MVP tracker"], ["/stats#weekly-tracker", "Player of the Week"], ["/stats#archive", "Previous seasons"]] },
     "/lab": { title: "BARDOWNSKI / THE PLAYER LAB", links: [["/lab#comparison", "Compare players"], ["/lab#lines", "Build lines"], ["/lab#chemistry-method", "How it works ↗"]] },
     "/awards": { title: "2025–2026 / AWARD WINNERS", links: [["/stats#archive", "Archived stats"], ["/stats#standings", "New-season MVP tracker ↗"]] },
     "/records": { title: "BARDOWNSKI / CLUB RECORDS", links: [["/stats", "Season stats"], ["/matches#archive", "Match archive ↗"]] },

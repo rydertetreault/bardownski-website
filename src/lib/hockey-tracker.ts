@@ -1,4 +1,5 @@
 import { Redis } from "@upstash/redis";
+import { calculateHockeyAwards, type HockeyAwards } from "./hockey-awards";
 import { randomUUID } from "node:crypto";
 import { fetchNhl27Snapshot, NHL27_IDENTITY, type Nhl27Snapshot } from "./nhl27-api";
 import type { ChelstatsData, ClubMatch } from "./chelstats";
@@ -10,7 +11,7 @@ export const TRACKER_KEYS = {
 } as const;
 export const SYNC_INTERVAL_MS = 5 * 60 * 1000;
 export const STALE_AFTER_MS = 15 * 60 * 1000;
-export type StoredSnapshot = Nhl27Snapshot & { syncedAt: string };
+export type StoredSnapshot = Nhl27Snapshot & { syncedAt: string; awards?: HockeyAwards };
 export type TrackerResult = {
   status: "connected" | "stale" | "unavailable";
   snapshot: StoredSnapshot | null;
@@ -101,15 +102,24 @@ export async function refreshHockeyTracker(options: {
   let previous: {snapshot: StoredSnapshot | null; matches: ClubMatch[]};
   try { previous = await readStored(store); }
   catch { return state(null, [], now(), false, "Tracking storage is temporarily unavailable."); }
-  if (!options.force && previous.snapshot && now() - Date.parse(previous.snapshot.fetchedAt) < SYNC_INTERVAL_MS) return state(previous.snapshot, previous.matches, now(), false);
+  if (!options.force && previous.snapshot?.awards && now() - Date.parse(previous.snapshot.fetchedAt) < SYNC_INTERVAL_MS) return state(previous.snapshot, previous.matches, now(), false);
   const owner = randomUUID();
   let leased = false;
   try {
     leased = Boolean(await store.set(TRACKER_KEYS.lock, owner, {nx: true, ex: 60}));
     if (!leased) return state(previous.snapshot, previous.matches, now(), false, previous.snapshot ? undefined : "The first sync is in progress. Please refresh shortly.");
+    previous = await readStored(store);
     const incoming = await (options.fetchSnapshot ?? fetchNhl27Snapshot)();
     if (!isIdentity(incoming as StoredSnapshot)) throw new Error("Source identity mismatch");
-    const snapshot: StoredSnapshot = {...incoming, syncedAt: new Date(now()).toISOString()};
+    // Calculate against the same whole-match merge the commit accepts. The
+    // lease keeps writers serialized; this snapshot persists the award audit.
+    const merged = new Map(previous.matches.map(game => [game.id, game]));
+    for (const game of incoming.data.matches) {
+      const old = merged.get(game.id);
+      if (!old || old.players.length <= game.players.length) merged.set(game.id, game);
+    }
+    const awardData = {...incoming.data, matches:[...merged.values()]};
+    const snapshot: StoredSnapshot = {...incoming, syncedAt: new Date(now()).toISOString(), awards:calculateHockeyAwards(awardData, new Date(now()).toISOString())};
     const meta = {schemaVersion:1, identity:NHL27_IDENTITY, lastSuccessfulSync:snapshot.syncedAt, feedCheckedAt:snapshot.fetchedAt, apiMatches:incoming.data.matches.length, totalGames:incoming.data.clubStats.totalGames};
     const result = await store.eval(COMMIT_SNAPSHOT, Object.values(TRACKER_KEYS), [owner, JSON.stringify(snapshot), JSON.stringify(meta), JSON.stringify(Object.fromEntries(incoming.data.matches.map(game => [game.id, JSON.stringify(game)])))]);
     const saved = await readStored(store);

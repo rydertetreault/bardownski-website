@@ -34,3 +34,12 @@ html:has(.bd-home.motion-off) { scroll-behavior:auto; }
  .bd-home .v4-film-hero { min-height:690px; }
 }
 @media(prefers-reduced-motion:reduce){.bd-home * {scroll-behavior:auto!important}}
+/* The reveal uses its actual colors, not the grayscale archive-photo filter. */
+.bd-home.demo-10 .v4-film-hero .cinema-backdrop img,
+.bd-home.demo-10 .featured-news .news-image img { filter:none; }
+.bd-home.demo-10 .v4-film-hero .cinema-backdrop img { object-position:76% center; }
+.bd-home.demo-10 .featured-news { border-top-color:#006775; }
+.bd-home.demo-10 .featured-news .news-image>span { font-size:9px;letter-spacing:1px; }
+@media(max-width:700px){
+ .bd-home.demo-10 .v4-film-hero .cinema-backdrop img { object-position:50% top; }
+}

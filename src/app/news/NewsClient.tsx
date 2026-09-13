@@ -1,16 +1,18 @@
 "use client";
 import Image from "next/image";
+import ArticleVideo from "./ArticleVideo";
+import "./article.css";
 import Link from "next/link";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useHockeyMotionPaused } from "@/components/layout/hockey-motion-preference";
 
-type NewsItem = {id:string; title:string; summary:string; date:string; image?:string; video?:string; category:string};
+type NewsItem = {id:string; title:string; summary:string; date:string; image?:string; video?:string; captions?:string; featured?:boolean; category:string};
 const CATEGORIES = ["All", "Highlights", "Results", "Club News", "Stats", "Announcements"];
 
 function StoryMedia({item, priority = false}: {item:NewsItem; priority?:boolean}) {
   // Inline videos stay still until played, including for reduced-motion users.
-  return <div className="news-media">{item.video ? <video src={item.video} poster={item.image} controls playsInline preload="none" aria-label={item.title} /> : item.image ? <Image src={item.image} alt={item.title} fill priority={priority} sizes={priority ? "(max-width: 800px) 100vw, 60vw" : "(max-width: 650px) 100vw, 50vw"} /> : <div className="news-media-fallback" aria-hidden="true"><span>BD.</span><small>THE CLUB JOURNAL</small></div>}</div>;
+  return <div className="news-media">{item.video ? <ArticleVideo src={item.video} poster={item.image} captions={item.captions} title={item.title} /> : item.image ? <Image src={item.image} alt={item.title} fill priority={priority} sizes={priority ? "(max-width: 800px) 100vw, 60vw" : "(max-width: 650px) 100vw, 50vw"} /> : <div className="news-media-fallback" aria-hidden="true"><span>BD.</span><small>THE CLUB JOURNAL</small></div>}</div>;
 }
 export default function NewsClient({items}: {items:NewsItem[]}) {
   const [active,setActive] = useState("All");
@@ -25,7 +27,7 @@ export default function NewsClient({items}: {items:NewsItem[]}) {
     <div className="news-search"><label htmlFor="story-search">Find a story</label><input id="story-search" type="search" placeholder="Search the journal…" value={query} onChange={e => { setQuery(e.target.value); setLimit(8); }} /></div>
     <div className="news-filterbar"><div role="group" aria-label="Filter stories by category">{categories.map(cat => <button key={cat} type="button" aria-pressed={active === cat} onClick={() => { setActive(cat); setLimit(8); }}>{cat}</button>)}</div><p aria-live="polite">{filtered.length} {filtered.length === 1 ? "story" : "stories"}</p></div>
     {featured && <div className="news-frontpage"><motion.article key={`feature-${featured.id}`} {...reveal} className="news-lead">
-      <div className="news-lead-visual"><StoryMedia item={featured} priority /><span className="news-feature-label">{featured.id === "10" ? "THE CHAMPIONSHIP STORY" : "THE LEAD STORY"}</span></div>
+      <div className="news-lead-visual"><StoryMedia item={featured} priority /><span className="news-feature-label">{featured.featured ? "THE 2027 REVEAL / FEATURED FILM" : featured.id === "10" ? "THE CHAMPIONSHIP STORY" : "THE LEAD STORY"}</span></div>
       <div className="news-lead-copy"><p className="news-eyebrow">{featured.category} <span>/ {featured.date}</span></p><h2><Link href={`/news/${featured.id}`}>{featured.title}</Link></h2><p className="news-summary">{featured.summary}</p><Link className="news-read" href={`/news/${featured.id}`} aria-label={`Read ${featured.title}`}>Read the story <span>↗</span></Link></div>
     </motion.article>
       {rest.length > 0 && <aside className="news-dispatch"><p className="news-eyebrow">IN THE ROOM</p><h2>On the radar.</h2><ol>{rest.slice(0,3).map((item,i) => <li key={item.id}><span className="news-dispatch-number">0{i+1}</span><div><p>{item.category} / {item.date}</p><h3><Link href={`/news/${item.id}`}>{item.title}</Link></h3></div></li>)}</ol><a href="#story-feed">Browse the journal ↓</a></aside>}

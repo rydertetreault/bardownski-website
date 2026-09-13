@@ -3,9 +3,10 @@ import Link from "next/link";
 import "@/components/season/season-recap.css";
 import "./roster.css";
 import { FROZEN_CHELSTATS } from "@/lib/chelstats-frozen";
+import { SEASON_REVEAL } from "@/lib/season-reveal";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "2026–2027 Roster | Bardownski Hockey", description: "Meet the Bardownski room as we prepare for 2026–2027. Returning roster profiles and the upcoming captain announcement." };
+export const metadata: Metadata = { title: "2026–2027 Roster | Bardownski Hockey", description: "Meet Bardownski captain Xavier Laflamme and assistant captain Matt Hut for 2026–2027. Returning player profiles with archived 2025–2026 totals." };
 import { getNickname, getDisplayName } from "@/lib/nicknames";
 import RosterClient from "./RosterClient";
 
@@ -42,6 +43,12 @@ const JERSEY_NUMBERS: Record<string, number> = {
   JIMMY: 69,
   LOGAN: 6,
 };
+
+// Only the letters announced in the approved film apply to current profiles.
+const ANNOUNCED_LEADERS = [
+  SEASON_REVEAL.leadership.captain,
+  ...SEASON_REVEAL.leadership.assistants,
+];
 
 // Scouting reports / play style descriptions
 const PLAYER_SCOUTING: Record<string, { role: string; description: string }> = {
@@ -133,8 +140,8 @@ export default async function RosterPage() {
       name,
       position,
       number: JERSEY_NUMBERS[name] ?? 0,
-      // Next season’s captain and assistants have not been announced.
-      leadership: null,
+      // Current letters only; all performance totals below remain archived.
+      leadership: ANNOUNCED_LEADERS.find((leader) => leader.profileName === name)?.letter ?? null,
       positionGroup: getPositionGroup(position),
       nickname: getNickname(name),
       displayName: getDisplayName(name),
@@ -169,7 +176,7 @@ export default async function RosterPage() {
           </p>
           <div className="actions">
             <a className="button" href="#squad">Meet the squad ↗</a>
-            <a href="#leadership">Leadership pending ↓</a>
+            <a href="#leadership">Meet the leadership ↓</a>
           </div>
           <span className="season-label">2026–2027 <span>/</span> THE NEXT CHAPTER</span>
         </div>
@@ -200,21 +207,28 @@ export default async function RosterPage() {
 
       <section id="leadership" className="section roster-leadership" aria-labelledby="leadership-title">
         <div className="section-head">
-          <div><p className="eyebrow">02 / THE NEXT CHAPTER</p><h2 id="leadership-title">Who wears the letters?</h2></div>
-          <p>Same club. New era.<br />No selections announced yet.</p>
+          <div><p className="eyebrow">02 / THE NEXT CHAPTER</p><h2 id="leadership-title">The letters. The leaders.</h2></div>
+          <p>Same club. New era.<br />Our captain and assistant for 2026–2027.</p>
         </div>
         <div className="roster-letters">
-          {[{ letter: "C", role: "Captain" }, { letter: "A", role: "Assistant captain" }, { letter: "A", role: "Assistant captain" }].map(({ letter, role }, index) => (
-            <article key={index}>
+          {ANNOUNCED_LEADERS.map(({ name, letter, role }, index) => (
+            <article key={letter}>
               <span className="letter-index">0{index + 1} / {role}</span>
               <b aria-hidden="true">{letter}</b>
-              <h3>To be announced.</h3>
-              <p>The 2026–2027 {role.toLowerCase()} will be introduced in the upcoming announcement.</p>
-              <span className="roster-tag">LEADERSHIP · PENDING</span>
+              <h3>{name}</h3>
+              <p>{name} will wear the {letter} as Bardownski’s {role.toLowerCase()} for 2026–2027.</p>
+              <span className="roster-tag">LEADERSHIP · ANNOUNCED</span>
             </article>
           ))}
+          <article>
+            <span className="letter-index">03 / The reveal film</span>
+            <b aria-hidden="true">↗</b>
+            <h3>New jerseys. Same club.</h3>
+            <p>See the leadership introductions and the home, away and alternate looks in the full {SEASON_REVEAL.durationLabel} film.</p>
+            <Link className="roster-tag" href={`/news/${SEASON_REVEAL.articleId}`}>WATCH THE REVEAL ↗</Link>
+          </article>
         </div>
-        <p className="roster-fine">A fresh leadership chapter. The letters stay unassigned until selections are official. Watch for the captain and jersey announcement on the homepage.</p>
+        <p className="roster-fine">The film confirms Xavier Laflamme as captain and Matt Hut as assistant captain. Returning profiles retain their archived 2025–2026 totals; the 2026–2027 lineup and jersey numbers are not yet final.</p>
       </section>
 
       <section className="roster-closing">

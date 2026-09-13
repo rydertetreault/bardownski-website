@@ -1,4 +1,9 @@
 import Image from "next/image";
+import type { Metadata } from "next";
+import ArticleVideo from "../ArticleVideo";
+import revealTranscript from "@/lib/season-reveal-transcript.json";
+import { SEASON_REVEAL } from "@/lib/season-reveal";
+import "../article.css";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllArticles, getArticleById } from "@/lib/articles";
@@ -13,6 +18,13 @@ export function generateStaticParams() {
   return manualArticles.map((a) => ({ id: a.id }));
 }
 
+export async function generateMetadata({params}: {params:Promise<{id:string}>}): Promise<Metadata> {
+  const article=await getArticleById((await params).id);
+  if(!article)return {title:"Story not found | Bardownski"};
+  const description=article.summary.split("\n\n")[0];
+  return {title:`${article.title} | Bardownski Hockey`,description,openGraph:{title:article.title,description,type:"article",publishedTime:article.date,images:article.image?[{url:article.image}]:[]}};
+}
+
 export default async function ArticlePage({
   params,
 }: {
@@ -22,6 +34,7 @@ export default async function ArticlePage({
   const article = await getArticleById(id);
   if (!article) notFound();
 
+  const isReveal = article.id === SEASON_REVEAL.articleId;
   const allArticles = await getAllArticles();
   const paragraphs = article.summary.split(/\n\n+/);
   const idx = allArticles.findIndex((a) => a.id === id);
@@ -29,7 +42,7 @@ export default async function ArticlePage({
   const next = allArticles[idx + 1] ?? null;
 
   return (
-    <div className="min-h-screen">
+    <div className={`min-h-screen hockey-article${isReveal ? " reveal-article" : ""}`}>
       <NewsBackground />
 
       <div className="relative pt-24 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
@@ -59,13 +72,8 @@ export default async function ArticlePage({
 
         {/* Hero video or image */}
         {article.video ? (
-          <div className="relative w-full rounded-xl overflow-hidden mb-10 border border-border aspect-video">
-            <video
-              src={article.video}
-              controls
-              playsInline
-              className="w-full h-full object-cover"
-            />
+          <div id={isReveal ? "reveal-film" : undefined} className="relative w-full rounded-xl overflow-hidden mb-10 border border-border aspect-video">
+            <ArticleVideo src={article.video} poster={article.image} captions={article.captions} title={article.title} />
           </div>
         ) : article.image ? (
           <div className="relative w-full h-64 md:h-80 rounded-xl overflow-hidden mb-10 border border-border">
@@ -90,6 +98,8 @@ export default async function ArticlePage({
             </p>
           ))}
         </div>
+
+        {isReveal && <section className="reveal-resources" aria-labelledby="reveal-resources-title"><h2 id="reveal-resources-title">The 2027 reveal</h2><p>The film names Xavier Laflamme captain and Matt Hut assistant captain, then introduces the home, away and alternate uniforms. The number shown on the uniform models is presentation artwork, not a new roster-number announcement.</p><p className="reveal-archive-note">Archive note: the introduction says “307 games.” The preserved final 2025–2026 record is 207–144–15 across 366 games; those historical totals remain unchanged.</p><details className="reveal-transcript"><summary>Read the film transcript</summary>{revealTranscript.map(section => <div key={section.title}><h3>{section.title}</h3><p>{section.text}</p></div>)}</details><a href={SEASON_REVEAL.captionsSrc}>Download timed English captions ↗</a><Link href="/roster#leadership">Meet the leadership group ↗</Link></section>}
 
         {/* Prev / Next */}
         {(prev || next) && (

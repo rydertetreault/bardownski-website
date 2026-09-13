@@ -10,6 +10,10 @@ async function main() {
   console.log(JSON.stringify({
     status:result.status, synced:result.synced, identity:NHL27_IDENTITY,
     storedMatches:result.matches.length, totalGames:result.snapshot?.data.clubStats.totalGames ?? null,
+    mvpRankings:result.snapshot?.awards?.seasonMvp.length ?? 0,
+    weeklyRankings:result.snapshot?.awards?.currentWeek.standings.length ?? 0,
+    weeklyObservedGames:result.snapshot?.awards?.currentWeek.games ?? 0,
+    weeklyLeaders:result.snapshot?.awards?.currentWeek.leaders.map(player=>({name:player.name,eligible:player.eligible,games:player.games})) ?? [],
     fetchedAt:result.snapshot?.fetchedAt ?? null, syncedAt:result.snapshot?.syncedAt ?? null,
     ...(result.error ? {error:result.error} : {}),
   },null,2));

@@ -14,7 +14,7 @@ async function test() {
   assert.equal(season.updatedAt, null);
   assert.equal(hockeyTrackingLabel(season), "Tracking temporarily unavailable");
   assert.deepEqual(computeMvpOddsFromMembers(members), []);
-  assert.equal(HOCKEY_ANNOUNCEMENT.videoSrc, null, "Do not publish last year's video as the new announcement");
+  assert.equal(HOCKEY_ANNOUNCEMENT.videoSrc, "/videos/announcements/bardownski-2027.mp4", "Publish the approved 2027 film, not archived gameplay");
   assert.ok(readFileSync(`public${HOCKEY_ANNOUNCEMENT.poster}`).length > 0);
 
   const archive = chelstatsToSeasonData(FROZEN_CHELSTATS.members);

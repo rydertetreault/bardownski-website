@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { computeMvpOddsFromMembers, type ClubMember } from "@/lib/chelstats";
+import { type ClubMember } from "@/lib/chelstats";
+import { calculateSeasonMvp } from "@/lib/hockey-awards";
 import { getDisplayNameFromGamertag, getNickname } from "@/lib/nicknames";
 import { HOCKEY_SEASON, type HockeySeasonState } from "@/lib/hockey-season-state";
 import "./season-tracking.css";
@@ -25,7 +26,7 @@ export function TopPerformers({ members }: { members: ClubMember[] }) {
 }
 
 export function MvpTracker({ members }: { members: ClubMember[] }) {
-  const rankings = computeMvpOddsFromMembers(members);
+  const rankings = calculateSeasonMvp(members);
   return <div className="season-mvp-tracker">
     <div className="tracker-intro">
       <span className="tracking-card-label">{HOCKEY_SEASON} / PERFORMANCE RANKINGS</span>
@@ -34,7 +35,7 @@ export function MvpTracker({ members }: { members: ClubMember[] }) {
       <Link href="/awards">2025–2026 award winners ↗</Link>
     </div>
     <div className="tracker-table-wrap">
-      {rankings.length ? <table className="tracker-table"><caption>Current season MVP rankings</caption><thead><tr><th scope="col">Rank</th><th scope="col">Player / role</th><th scope="col">Score</th></tr></thead><tbody>{rankings.map(entry => <tr key={`${entry.name}-${entry.isGoalie}`}><td>{rankings.findIndex(r => r.score === entry.score) + 1}</td><th scope="row">{getNickname(entry.name)}<small>{entry.isGoalie ? "Goaltender" : entry.position}</small></th><td>{entry.score.toFixed(2)}</td></tr>)}</tbody></table> : <div className="tracker-waiting"><span className="tracker-letters" aria-hidden="true">MVP</span><b>Awaiting eligible performances</b><p>Rankings unlock after players reach five games in a scored role.</p></div>}
+      {rankings.length ? <table className="tracker-table"><caption>Current season MVP rankings</caption><thead><tr><th scope="col">Rank</th><th scope="col">Player / role</th><th scope="col">Score</th></tr></thead><tbody>{rankings.map(entry => <tr key={`${entry.name}-${entry.isGoalie}`}><td>{entry.rank}</td><th scope="row">{getNickname(entry.name)}<small>{entry.isGoalie ? "Goaltender" : entry.position}</small></th><td>{entry.score.toFixed(2)}</td></tr>)}</tbody></table> : <div className="tracker-waiting"><span className="tracker-letters" aria-hidden="true">MVP</span><b>Awaiting eligible performances</b><p>Rankings unlock after players reach five games in a scored role.</p></div>}
       <details className="tracker-method"><summary>How the MVP tracker works</summary><p>The position-adjusted performance model requires at least five games in a scored role. Skater and goalie roles are scored separately; the highest role score counts, not their sum. Exact ties share a rank. Scores are performance ratings—not betting odds, vote totals, or win probabilities.</p></details>
     </div>
   </div>;

@@ -1,6 +1,8 @@
 // Approved Variation 4 markup; server-rendered and progressively enhanced.
 // Archive values never masquerade as live current-season data.
 export const escape = (value) => String(value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
+import { getNickname } from "@/lib/nicknames";
+import { SEASON_REVEAL } from "@/lib/season-reveal";
 import { homeArchive as a } from "./home-data";
 // Published articles use both ISO dates and long English calendar dates.
 export const articleDate = (value) => {
@@ -76,7 +78,10 @@ function highlightList() {
 /** @param {string} variant @param {string} title @param {import("@/lib/news").Article[]} items */
 function news(variant = "", title = "Recent news", items = a.news) {
   const imgs = ["goalie-purple", "player-purple", "championship"];
-  return `<section class="news-section section ${variant}" id="news" data-module="news">${head("RECENT CLUB NEWS", title, '<a class="text-link" href="/news">All news ↗</a>')}<div class="news-grid" data-reveal-group>${items.slice(0, 3).map((n, i) => `<article class="news-item" data-reveal><a href="/news/${encodeURIComponent(n.id)}" data-news="${escape(n.id)}" class="news-button"><span class="news-image">${photo(imgs[i], "Club archive imagery accompanying " + n.category)}<span>0${i + 1}</span></span><span class="news-meta">${escape(n.category)} / <time${articleDate(n.date) ? ` datetime="${articleDate(n.date)}"` : ""}>${escape(n.date)}</time></span><h3>${escape(n.title)}</h3><p>${escape(n.summary.split(/\.\s/)[0] + ".")}</p><span class="text-link">Read the story ↗</span></a></article>`).join("")}</div></section>`;
+  const artwork = (item, index) => item.id === SEASON_REVEAL.articleId
+    ? `<img src="${SEASON_REVEAL.poster}" alt="The 2027 Bardownski home, away and alternate jerseys" loading="lazy" decoding="async">`
+    : photo(imgs[index], "Club archive imagery accompanying " + item.category);
+  return `<section class="news-section section ${variant}" id="news" data-module="news">${head("RECENT CLUB NEWS", title, '<a class="text-link" href="/news">All news ↗</a>')}<div class="news-grid" data-reveal-group>${items.slice(0, 3).map((n, i) => `<article class="news-item${n.featured ? " featured-news" : ""}" data-reveal><a href="/news/${encodeURIComponent(n.id)}" data-news="${escape(n.id)}" class="news-button"><span class="news-image">${artwork(n, i)}<span>${n.featured ? "FEATURED FILM" : `0${i + 1}`}</span></span><span class="news-meta">${escape(n.category)} / <time${articleDate(n.date) ? ` datetime="${articleDate(n.date)}"` : ""}>${escape(n.date)}</time></span><h3>${escape(n.title)}</h3><p>${escape(n.summary.split(/\.\s/)[0] + ".")}</p><span class="text-link">Read the story ↗</span></a></article>`).join("")}</div></section>`;
 }
 export function seasonContent(year) {
   const s = a.seasons.find((x) => x.year === year);
@@ -92,7 +97,7 @@ export function seasonContent(year) {
 function history(variant = "", title = "Past seasons") {
   return `<section class="season-register section ${variant}" id="history" data-module="history">${head("PAST SEASONS / THE CAPTAINS & THEIR STORIES", title)}<div class="history-workspace"><div class="season-selector" role="group" aria-label="Choose a previous season">${a.seasons.map((s, i) => `<button data-season="${s.year}" aria-pressed="${i === 0}" aria-controls="season-panel"><b>${s.label}</b><small>C / ${s.captain}</small><span aria-hidden="true">↗</span></button>`).join("")}</div><div class="season-detail" id="season-panel" data-season-panel aria-live="polite">${seasonContent("2025")}</div></div><small class="fine">Captain assignments follow the club register. Labels use the season’s start and end year; player photos are from the club archive and may be from a later season.</small></section>`;
 }
-function awards() {
+function archivedAwards() {
   return `<section class="awards-shelf section" id="awards" data-module="awards">${head("PREVIOUS AWARD WINNERS / 2025–2026", "Previous award winners", `<button class="text-link" data-awards>All ${a.honors.length} honors ↗</button>`)}<p class="awards-note">Last season’s honorees stay here until this season’s awards are presented.</p><div class="award-grid" data-reveal-group>${[
     "mvp",
     "defense",
@@ -110,7 +115,7 @@ function scrapbook() {
   return `<section class="scrapbook section" id="scrapbook" data-module="scrapbook"><div class="scrapbook-copy" data-reveal>${tag("TEAM PHOTOS")}<h2>Club photos</h2><p>Browse photos of the team, from games together to our first championship.</p><small class="fine">Archival club images · use the arrows or swipe.</small></div><div class="photo-album" data-reveal><div class="album-stage"><figure data-album-image>${photo("bench-wide", "Bardownski bench")}<figcaption>01 / ON THE BENCH</figcaption></figure></div><div class="album-controls"><button data-album-prev aria-label="Previous scrapbook photo">←</button><span data-album-label aria-live="polite">1 / 3</span><button data-album-next aria-label="Next scrapbook photo">→</button></div></div></section>`;
 }
 function cinemaHero(extraClass = "") {
-  return `<section class="cinema-hero${extraClass ? ` ${extraClass}` : ""}" data-load><div class="cinema-backdrop">${photo("player-teal", "Archived Bardownski hockey footage poster", "", true)}</div><div class="cinema-topline"><span><i aria-hidden="true">▶</i> BARDOWNSKI HOCKEY CLUB</span><span>TEAM UPDATES / SEASON 2026–2027</span></div><div class="hero-copy">${tag("WELCOME TO BARDOWNSKI HOCKEY")}<h1>BARDOWNSKI<br><em>HOCKEY.</em></h1><p>Watch team highlights and catch up on results,<br>player performances and club news.</p><div class="actions"><button class="button" data-video="finish">▶ &nbsp; WATCH THE HIGHLIGHT</button><a href="#highlights" class="text-link">Browse highlights ↓</a></div></div><div class="cinema-credits"><span>FEATURED CLIP</span><strong>MATT / HOCKEY HIGHLIGHT</strong><span>CLUB ARCHIVE · SELECT TO PLAY</span></div><div class="cinema-bottom"><span>FEATURED HIGHLIGHT</span><span>SELECT A CLIP TO WATCH</span><span>BARDOWNSKI HOCKEY</span></div></section>`;
+  return `<section class="cinema-hero${extraClass ? ` ${extraClass}` : ""}" data-load><div class="cinema-backdrop"><img src="${SEASON_REVEAL.poster}" alt="Bardownski’s 2027 home, away and alternate jerseys" fetchpriority="high" decoding="async"></div><div class="cinema-topline"><span><i aria-hidden="true">▶</i> BARDOWNSKI HOCKEY CLUB</span><span>THE 2027 REVEAL / NOW SHOWING</span></div><div class="hero-copy">${tag("NEW JERSEYS. NEW LEADERSHIP.")}<h1>BARDOWNSKI<br><em>2027.</em></h1><p>The new home, away and alternate jerseys.<br>A new leadership chapter. The same club.</p><div class="actions"><a class="button" href="/news/${SEASON_REVEAL.articleId}#reveal-film" data-video="reveal">▶ &nbsp; WATCH THE REVEAL</a><a href="/news/${SEASON_REVEAL.articleId}" class="text-link">Read the announcement ↗</a></div></div><div class="cinema-credits"><span>FEATURED FILM / ${SEASON_REVEAL.durationLabel}</span><strong>BARDOWNSKI 2027</strong><span>THE JERSEYS. THE LETTERS. THE NEXT CHAPTER.</span></div><div class="cinema-bottom"><span>2026–2027 SEASON REVEAL</span><span>SELECT TO WATCH WITH SOUND</span><span>BARDOWNSKI HOCKEY</span></div></section>`;
 }
 
 function openRankings() {
@@ -136,6 +141,22 @@ function openRankings() {
       "",
     )}</div><div class="rank-footer"><button class="text-link" data-standings>Full standings & scoring ↗</button><small class="fine">Final 2025–2026 position-adjusted model scores. Not votes or odds.</small></div></section></div>`;
 }
+/** @param {import("@/lib/hockey-awards").HockeyAwards|null} awards @param {boolean} stale */
+function currentWeekly(awards, stale) {
+  const week = awards?.currentWeek;
+  const leaders = week?.leaders ?? [];
+  const title = leaders.length ? leaders.map(p => escape(getNickname(p.name))).join(" / ") : "The week is open.";
+  const player = leaders[0];
+  const qualifier = player?.eligible ? "CURRENT WEEK LEADER" : player ? "PROVISIONAL LEADER" : "PLAYER OF THE WEEK TRACKER";
+  const stats = player ? [["ROLE GAMES",player.games],[player.isGoalie?"SAVES":"POINTS",player.isGoalie?player.saves:player.points],["MODEL SCORE",player.score]] : [];
+  return `<section class="weekly-story section film-weekly cut-weekly" id="weekly" data-module="weekly" data-scroll><div class="weekly-image" data-reveal>${photo(player?.isGoalie ? "goalie-purple" : "player-purple", "Club archive imagery, not a verified portrait of the current weekly leader")}<span class="image-caption">CLUB IMAGERY / CURRENT TRACKER</span><span class="weekly-seal" aria-hidden="true">PLAYER<br>OF THE<br>WEEK ★</span></div><article class="weekly-copy" data-reveal>${tag(`${qualifier} / 2026–2027`)}<h2>${title}</h2><p>${week ? `Week of ${escape(week.start.slice(0,10))} UTC. Rankings use ${week.games} usable saved games. The week is in progress; this is not a final award.` : "A verified current-season snapshot is not available. No past-season selection is substituted."}${stale ? " The latest refresh is unavailable; these rankings use the last saved data." : ""}</p><div class="mini-stats">${stats.map(([label,value])=>`<div><strong>${num(value)}</strong><small>${label}</small></div>`).join("")}</div><a class="text-link" href="/stats#weekly-tracker">Weekly standings & criteria ↗</a><small class="fine">Three recorded games in a scored role are required for selection. Weeks close Monday at 00:00 UTC. Coverage may be incomplete.</small></article></section>`;
+}
+/** @param {import("@/lib/hockey-awards").HockeyAwards|null} awards @param {boolean} stale */
+function currentRankings(awards, stale) {
+  const players = awards?.seasonMvp ?? [];
+  return `<div class="section cut-desk open-rank-section"><section class="mvp-card open-rankings" id="standings" data-module="mvp"><div class="rank-intro" data-reveal><div>${tag("MVP TRACKER / 2026–2027")}<h2>MVP tracker</h2><p>Current-season position-adjusted performance scores. Five games in a scored role unlock eligibility.${stale ? " Showing the last saved current-season totals." : ""}</p></div><div class="rank-leader-note"><span>CURRENT MODEL LEADER</span><strong>${players[0] ? escape(getNickname(players[0].name)) : "Awaiting eligible players"}</strong><small>Not a final season award</small></div></div><div class="rank-column-labels" aria-hidden="true"><span>RANK</span><span>PLAYER / ROLE</span><span>MODEL SCORE</span></div><div class="standings-preview rank-disclosures">${players.slice(0,3).map((p,i)=>`<details class="rank-entry" name="mvp-preview" ${i===0?"open":""}><summary class="standing-row"><span class="rank-number">${String(p.rank).padStart(2,"0")}</span><b>${escape(getNickname(p.name))}<small>${escape(p.position)} · ${p.games} GP</small></b><strong>${Number(p.score).toFixed(2)}</strong><span class="rank-toggle-icon" aria-hidden="true">+</span><i class="rank-meter" style="--score:${players[0].score>0?Math.max(0,p.score)/players[0].score:0}" aria-hidden="true"></i></summary><div class="rank-details"><p>${p.isGoalie?"Goaltender":"Skater"} performance over ${p.games} games in the scored role. Each player appears once at their strongest eligible role.</p><a href="/stats#numbers" class="text-link">Current player statistics ↗</a></div></details>`).join("")}${players.length?"":'<p class="fine">No eligible current-season rankings available. Archived winners remain below.</p>'}</div><div class="rank-footer"><a class="text-link" href="/stats#standings">Full MVP standings & scoring ↗</a><small class="fine">Current-season model scores. Not votes or odds.</small></div></section></div>`;
+}
+
 function pageThread() {
   return `<svg class="page-thread" aria-hidden="true" focusable="false"><g class="thread-segments"></g></svg>`;
 }
@@ -147,17 +168,17 @@ function sectionCut(kind) {
   return `<div class="section-cut ${kind}" aria-hidden="true"><svg viewBox="0 0 1000 64" preserveAspectRatio="none" focusable="false"><polygon class="section-cut-fill" points="${reverse ? "0,0 1000,64 0,64" : "0,64 1000,0 1000,64"}"/><path class="section-cut-trace" pathLength="1" d="${reverse ? "M0 0L1000 64" : "M0 64L1000 0"}"/></svg></div>`;
 }
 
-/** @param {import("@/lib/news").Article[]} items @param {string} [trackingNotice] */
-export function renderHome(items = a.news, trackingNotice = "Current-season tracking is being prepared. Explore the latest saved results and performances from 2025–2026 below.") {
+/** @param {import("@/lib/news").Article[]} items @param {string} [trackingNotice] @param {import("@/lib/hockey-awards").HockeyAwards|null} [awards] @param {boolean} [stale] */
+export function renderHome(items = a.news, trackingNotice = "Current-season tracking is being prepared. Explore the latest saved results and performances from 2025–2026 below.", awards, stale = false) {
   return `${cinemaHero("v4-film-hero")}${pageThread()}
   <div class="season-status"><span>2026–2027</span><p>${escape(trackingNotice)}</p><a href="/stats">Season tracking ↗</a></div>
   <nav class="mono-section-nav" aria-label="Homepage sections"><span class="mono-nav-label">ON THIS PAGE</span><div>${[["results","Matches"],["weekly","Weekly player"],["standings","MVP tracker"],["highlights","Highlights"],["news","News"],["history","Past seasons"]].map(([id,label])=>`<a href="#${id}" data-section-link="${id}">${label}</a>`).join("")}</div><button class="motion-toggle" aria-pressed="false" hidden>Pause animations</button><span class="mono-nav-progress" aria-hidden="true"></span></nav>
   ${results("score-strip cut-results")}
-  <div class="interlude cut-interlude" data-scroll>${logoReveal()}<span class="cut-label">PLAYER OF THE WEEK / APRIL 22, 2026</span><p>Five starts. Five wins.</p><em>55 saves for JRT IV.</em><span class="interlude-line" aria-hidden="true"></span></div>
-  ${weekly("section film-weekly cut-weekly")}
-  ${sectionCut("to-rankings")}${openRankings()}${sectionCut("from-rankings")}
+  <div class="interlude cut-interlude" data-scroll>${logoReveal()}${awards !== undefined ? '<span class="cut-label">2026–2027 / THE PERFORMANCE TRACKERS</span><p>Every shift counts.</p><em>The race is on.</em>' : '<span class="cut-label">PLAYER OF THE WEEK / APRIL 22, 2026</span><p>Five starts. Five wins.</p><em>55 saves for JRT IV.</em>'}<span class="interlude-line" aria-hidden="true"></span></div>
+  ${awards !== undefined ? currentWeekly(awards, stale) : weekly("section film-weekly cut-weekly")}
+  ${sectionCut("to-rankings")}${awards !== undefined ? currentRankings(awards, stale) : openRankings()}${sectionCut("from-rankings")}
   ${highlightList()}${sectionCut("to-news")}${news("cut-news","Recent news",items)}
-  ${history("cut-history")}${awards()}${scrapbook()}
+  ${history("cut-history")}${archivedAwards()}${scrapbook()}
   <footer class="site-footer"><a class="footer-wordmark" href="/">BARDOWNSKI<span>®</span></a><div class="footer-bottom"><p>Bardownski Hockey Club · Newfoundland · Established 2020.</p><nav aria-label="Footer navigation"><a href="/roster">The club ↗</a><a href="/news">News ↗</a><a href="/highlights">Highlights ↗</a></nav><small>2026–2027 SEASON</small></div></footer>
   ${dialogs()}`;
 }

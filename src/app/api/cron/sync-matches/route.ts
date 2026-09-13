@@ -16,6 +16,8 @@ export async function GET(request: NextRequest) {
     success: result.status === "connected", status:result.status, synced:result.synced,
     identity:NHL27_IDENTITY, storedMatches:result.matches.length,
     totalGames:result.snapshot?.data.clubStats.totalGames ?? null,
+    mvpRankings:result.snapshot?.awards?.seasonMvp.length ?? 0,
+    weeklyRankings:result.snapshot?.awards?.currentWeek.standings.length ?? 0,
     updatedAt:result.snapshot?.fetchedAt ?? null, syncedAt:result.snapshot?.syncedAt ?? null,
     ...(result.error ? {error:result.error} : {}),
   },{status:result.status === "connected" ? 200 : 503});

@@ -6,6 +6,7 @@ import { chelstatsToSeasonData } from "@/lib/chelstats";
 import { FROZEN_CHELSTATS } from "@/lib/chelstats-frozen";
 import { getHockeySeason, HOCKEY_SEASON } from "@/lib/hockey-season";
 import { TopPerformers, MvpTracker, TrackingNotice } from "@/components/season/SeasonTracking";
+import WeeklyTracker from "@/components/season/WeeklyTracker";
 import StatsClient from "./StatsClient";
 import "./stats.css";
 
@@ -30,6 +31,7 @@ export default async function StatsPage() {
     </header>
     <section className="stats-numbers" id="numbers" aria-labelledby="numbers-title"><div className="stats-section-heading"><div><p className="stats-eyebrow">01 / THE NEW-SEASON LEDGER</p><h2 id="numbers-title">Top performers.</h2></div><p>{HOCKEY_SEASON} · Current season only.<br />Historical totals are kept below in the archive.</p></div><TrackingNotice state={season} />{currentStats && members.length ? <StatsClient seasons={[currentStats]} /> : <TopPerformers members={members} />}</section>
     <section className="stats-standings" id="standings" aria-labelledby="standings-title"><div className="stats-section-heading"><div><p className="stats-eyebrow">02 / THE MVP RACE</p><h2 id="standings-title">MVP tracker.</h2></div><p>A season-long performance ranking.<br />Not a final award or a betting market.</p></div><MvpTracker members={members} /></section>
+    <WeeklyTracker awards={season.awards ?? null} stale={season.status !== "connected"} />
     <section className="stats-numbers" id="archive" aria-labelledby="archive-title">
       <div className="stats-archive-heading">
         <div className="stats-section-heading"><div><p className="stats-eyebrow">03 / THE ARCHIVE</p><h2 id="archive-title">Previous seasons.</h2></div><p>The final 2025–2026 snapshot and earlier seasons.<br />These numbers do not count toward the new race.</p></div>

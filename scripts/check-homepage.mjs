@@ -71,7 +71,7 @@ try {
   assert.deepEqual(mediaRequests, [], "No autoplay/preloaded film before selection");
   await page.setViewportSize({ width: 1440, height: 900 });
   await load();
-  for (const selector of ['#results [data-match="0"]', '[data-weekly]', '[data-award="mvp"]', '[data-awards]', '#news [data-news]:first-of-type']) {
+  for (const selector of ['#results [data-match="0"]', '[data-award="mvp"]', '[data-awards]', '#news .news-item:not(.featured-news) [data-news]']) {
     const trigger = page.locator(selector).first();
     await trigger.click();
     assert.equal(await page.locator("dialog").evaluate(el => el.open), true);
@@ -84,11 +84,10 @@ try {
   await page.locator('dialog [data-match="0"]').click();
   assert.equal(await page.locator("dialog table").count(), 1);
   await closeAndReturn('[data-games]');
-  await page.locator('[data-standings]').click();
-  assert.equal(await page.locator("dialog .standing-row").count(), 9);
-  await page.locator("dialog .standing-row").first().click();
-  assert.equal(await page.locator("dialog .profile-numbers").count(), 1);
-  await closeAndReturn('[data-standings]');
+  assert.match(await page.locator('#weekly .eyebrow').innerText(), /2026–2027/);
+  assert.equal(await page.locator('#weekly a[href="/stats#weekly-tracker"]').count(),1);
+  assert.match(await page.locator('#standings .eyebrow').innerText(), /2026–2027/);
+  assert.equal(await page.locator('#standings a[href="/stats#standings"]').count(),1);
   await page.locator(".rank-entry summary").nth(1).focus();
   await page.keyboard.press("Enter");
   assert.equal(await page.locator(".rank-entry[open]").count(), 1);

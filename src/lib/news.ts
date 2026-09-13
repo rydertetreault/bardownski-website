@@ -1,4 +1,5 @@
 import { SEASON_AWARDS, SEASON_MVP, UNSUNG_HERO } from "./season-awards";
+import { SEASON_REVEAL } from "./season-reveal";
 
 export interface Article {
   id: string;
@@ -7,10 +8,30 @@ export interface Article {
   date: string;
   image?: string;
   video?: string;
+  captions?: string;
+  featured?: boolean;
   category: string;
 }
 
 export const articles: Article[] = [
+  {
+    id: SEASON_REVEAL.articleId,
+    title: SEASON_REVEAL.title,
+    date: SEASON_REVEAL.date,
+    category: "Announcements",
+    image: SEASON_REVEAL.poster,
+    video: SEASON_REVEAL.videoSrc,
+    captions: SEASON_REVEAL.captionsSrc,
+    featured: true,
+    summary: [
+      "New jerseys. New leadership. Same Bardownski. The 2027 reveal is here, bringing the next chapter into focus with a new set of sweaters and the names wearing the letters. The film looks back at what the club has built before turning toward the season ahead. This is a change of look, not a change of who we are.",
+      "There is plenty worth carrying forward. Bardownski finished the NHL 26 season with 207 wins and, after seven years of playing together, its first Club Finals championship. The reveal opens with that achievement for a reason: the new chapter starts with a club that finally got to celebrate a title together. That season has its own place in our history, and a new sweater does not turn the page on what it meant.",
+      "Xavier Laflamme will wear the C as captain for 2026–2027. His introduction follows the film's look back at a championship season, linking what the club has accomplished with the responsibility of leading it forward. There is a new letter on the sweater, but the point is bigger than one name: the next chapter still belongs to the whole room.",
+      "Joining him is Matt Hut as assistant captain, wearing the A. His announcement completes the pair of leadership introductions in the film before the focus shifts to the new look. Xavier and Matt are the two leaders named for the season ahead. The full lineup and player jersey numbers are not finalized by this reveal; this is the introduction of the captain and assistant who will wear the letters.",
+      "Then come the jerseys. The home look pairs a teal sweater with purple and white striping and black pants. Away switches to an off-white sweater with teal and purple striping over teal pants. The alternate puts purple up front, with teal and white striping and purple pants. Shown together, the three looks bring teal, purple, off-white and black into a shared club identity while giving each sweater its own character.",
+      "Watch the full 2:35 reveal for the leadership introductions and all three uniforms. It is a chance to take in the details, celebrate the season behind us and see the look of the next one. A first championship is now part of Bardownski's story. The letters and the jerseys mark what comes next. New season, same club.",
+    ].join("\n\n"),
+  },
   {
     id: "season-finale-nhl26",
     title: "Season Over. History Made. Bardownski Closes the NHL 26 Chapter",

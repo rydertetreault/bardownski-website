@@ -1,5 +1,8 @@
 # Homepage: Variation 4 production handoff
 
+> **2027 reveal:** the approved film and announcement are now prepared for publication; see [season reveal handoff](season-reveal-2027.md). Older “announcement pending” notes below describe earlier stages.
+
+
 > **Tracking is now active.** This document records an earlier stage. See [NHL27 activation](tracking-active-2026-2027.md) for current data wiring, preserved archives, hosted collection and deployment details.
 
 
