@@ -1,5 +1,8 @@
 # Hockey interior retouch and Player lab
 
+> **Tracking is now active.** This document records an earlier stage. See [NHL27 activation](tracking-active-2026-2027.md) for current data wiring, preserved archives, hosted collection and deployment details.
+
+
 ## Local entry points
 
 - Actual app: **http://localhost:3000**

@@ -71,3 +71,11 @@ AXE_PATH=/path/to/axe.min.js node scripts/check-live-tracking.mjs
 ```
 
 The real Redis protocol check verifies original JSON array preservation, replay, lease ownership, record-decrease protection and no early match writes when later preflight JSON is invalid. Unit tests never activate real collection. Browser tests verify live stats, current and archive line data, separate draft restoration, explicit detail routing, full historical record and new lab accessibility at desktop/phone sizes.
+
+## Activation receipt — September 13, 2026
+
+- Site/collector commit `07c7157` pushed to the existing `master` branch. The connected Vercel production deployment completed successfully.
+- Hosted workflow [run 34742841615](https://github.com/rydertetreault/bardownski-website/actions/runs/34742841615) completed successfully at 06:29 UTC. It captured a newly played match: 6 saved detailed games from 11 season games (club record 6–5–0 at that check). This was a manual dispatch of the hosted job; the recurring five-minute schedule is enabled, but GitHub's timing is best-effort.
+- Live production `/stats`, `/matches`, `/lab` passed desktop/390px/320px browser checks, archived/current match routing, dataset/draft isolation and lab axe checks.
+- Original NHL26 Redis match checksum and metadata still exactly match the pre-activation export; all 102 originals remain unchanged.
+- Repo secrets were supplied securely via stdin to GitHub, never committed or printed. Raw uploaded hockey media, local environment files, demos and scratch scripts were not published.

@@ -1,5 +1,8 @@
 # Homepage: Variation 4 production handoff
 
+> **Tracking is now active.** This document records an earlier stage. See [NHL27 activation](tracking-active-2026-2027.md) for current data wiring, preserved archives, hosted collection and deployment details.
+
+
 > Follow-up: the comparison lab now lives at `/lab`, and other hockey tabs share this visual identity. See [Player lab and interior retouch](player-lab-and-interior-retouch.md). The later pass skips the old splash on all hockey routes, not only `/`.
 
 ## Scope and local URLs

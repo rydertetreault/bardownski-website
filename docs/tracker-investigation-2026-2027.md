@@ -1,5 +1,8 @@
 # NHL 27 tracker investigation — September 13, 2026
 
+> **Tracking is now active.** This document records an earlier stage. See [NHL27 activation](tracking-active-2026-2027.md) for current data wiring, preserved archives, hosted collection and deployment details.
+
+
 ## Scope
 
 Read-only investigation requested before resuming Stats, Matches and Player Lab tracking. No tracker activation, enrollment, cron/admin calls, environment changes, Redis writes, deployment or application-code changes were performed. Local credential presence was checked without printing values; production Vercel environment/scheduler configuration was not independently inspected.

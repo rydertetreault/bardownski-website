@@ -39,6 +39,7 @@ try {
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
   await load("/lab");
+  await page.locator("#line-season").selectOption("hockey:nhl26:2025-2026:common-gen5:149602");
   assert.match(await page.locator(".line-archive-note").innerText(), /2025–2026 ARCHIVE/);
   assert.equal(await page.locator(".line-evaluation .line-stat-grid").count(), 0, "No partial draft statistics");
   const useLine = page.getByRole("button", { name: /^Use combination / }).first();
@@ -74,10 +75,12 @@ try {
   assert.equal(await page.locator(".line-slot select").count(), 5);
   await page.locator("#line-min-games").selectOption("10");
   assert.equal(await page.locator(".line-stat-grid").count(), 0);
-  await page.evaluate(() => localStorage.setItem("bardownski-line-draft-v1", JSON.stringify({size:3, slots:["SLOBBY ROBBY","SLOBBY ROBBY","unknown"], available:["SLOBBY ROBBY","unknown"]})));
+  const datasetId="hockey:nhl26:2025-2026:common-gen5:149602", seasonLabel="2025–2026";
+  const draftKey=`bardownski-line-draft-v2:${encodeURIComponent(datasetId)}:${encodeURIComponent(seasonLabel)}`;
+  await page.evaluate(({draftKey,datasetId,seasonLabel}) => localStorage.setItem(draftKey, JSON.stringify({datasetId,season:seasonLabel,size:3, slots:["SLOBBY ROBBY","SLOBBY ROBBY","unknown"], available:["SLOBBY ROBBY","unknown"]})),{draftKey,datasetId,seasonLabel});
   await page.getByRole("button", { name: "Restore draft", exact: true }).click();
   assert.deepEqual(await page.locator(".line-slot select").evaluateAll(els => els.map(el => el.value)), ["SLOBBY ROBBY", "", ""]);
-  await page.evaluate(() => localStorage.setItem("bardownski-line-draft-v1", "{broken"));
+  await page.evaluate(draftKey => localStorage.setItem(draftKey, "{broken"),draftKey);
   await page.getByRole("button", { name: "Restore draft", exact: true }).click();
   assert.match(await page.locator(".line-message").innerText(), /could not be restored/);
   console.log("Line selections, recommendation evidence, swapping, available pool and draft persistence passed");
