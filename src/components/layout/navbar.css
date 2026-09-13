@@ -41,3 +41,12 @@ html{scrollbar-gutter:stable;scroll-padding-top:calc(var(--site-header-height) +
 .legacy-subnav nav::-webkit-scrollbar{display:none}
 .legacy-subnav nav a{flex-shrink:0}
 @media(max-width:560px){.legacy-subnav nav{max-width:100%;width:100%;justify-content:flex-start;padding-block:2px}.legacy-subnav>span{font-size:7px}}
+/* The extra hockey lab tab wraps into the existing menu before crowding links.
+   Football retains its original breakpoint and full-width navigation. */
+@media(min-width:951px) and (max-width:1250px){
+ .hockey-site .legacy-nav-toggle{display:block;margin-left:auto;min-width:89px}
+ .hockey-site .legacy-site-links{display:none;position:absolute;top:126px;left:0;right:0;background:#0b0c0d;width:100%;padding:18px 5%;border-bottom:1px solid #ffffff22;max-height:calc(100dvh - 126px);overflow-y:auto;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+ .hockey-site .legacy-site-links.open{display:grid}
+ .hockey-site .legacy-site-links a{padding:13px 10px;border:1px solid #ffffff22}
+ .hockey-site .legacy-site-links a[aria-current=page]{border-color:#68c8ce;background:#00677526}
+}

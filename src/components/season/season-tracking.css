@@ -1,0 +1,43 @@
+.season-performers { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; }
+.season-performers article { border:1px solid var(--border); background:var(--surface); padding:28px; border-top:3px solid #006775; }
+.season-performers article:nth-child(even) { border-top-color:#774496; }
+.tracking-card-label { display:flex; justify-content:space-between; gap:12px; color:var(--hockey-accent); font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; }
+.season-performers strong { display:block; font-size:clamp(40px,4.5vw,66px); letter-spacing:-2px; margin:32px 0 20px; line-height:1; }
+.season-performers strong small { color:var(--muted); font-size:11px; letter-spacing:1px; }
+.season-performers h3 { font-size:18px; line-height:1.3; font-weight:700; }
+.season-performers p { font-size:12px; line-height:1.75; color:var(--muted); margin-top:12px; }
+.season-mvp-tracker { display:grid; grid-template-columns:1fr 1.15fr; gap:50px; padding:40px; background:linear-gradient(125deg,#320d4866,var(--surface) 70%); border:1px solid var(--border); }
+.tracker-intro h3 { font-size:clamp(30px,3vw,46px); font-weight:800; letter-spacing:-1.5px; line-height:1.1; max-width:400px; margin:30px 0 20px; }
+.tracker-intro p { color:var(--muted); line-height:1.8; font-size:14px; max-width:440px; }
+.tracker-intro a { display:inline-block; margin-top:30px; color:var(--hockey-accent); font-size:12px; font-weight:700; }
+.tracker-table-wrap { min-width:0; }
+.tracker-waiting { padding:20px 0; }
+.tracker-letters { display:block; color:var(--hockey-lilac); opacity:.5; font-size:75px; font-weight:950; letter-spacing:-5px; line-height:1; margin-bottom:20px; }
+.tracker-waiting b { font-size:14px; }
+.tracker-waiting p,.tracker-method p { color:var(--muted); font-size:12px; line-height:1.8; margin-top:10px; }
+.tracker-method { margin-top:20px; border-top:1px solid var(--border); }
+.tracker-method summary { padding-top:20px; font-size:12px; cursor:pointer; color:var(--hockey-accent); }
+.tracker-table { width:100%; border-collapse:collapse; font-size:13px; }
+.tracker-table caption { text-align:left; font-size:12px; color:var(--muted); padding-bottom:15px; }
+.tracker-table :is(th,td) { text-align:left; border-bottom:1px solid var(--border); padding:14px 8px; }
+.tracker-table thead { font-size:10px; color:var(--hockey-accent); }
+.tracker-table :is(th,td):last-child { text-align:right; font-variant-numeric:tabular-nums; }
+.tracker-table small { display:block; color:var(--muted); font-weight:400; font-size:10px; margin-top:5px; }
+.season-tracking-notice { display:flex; gap:14px; align-items:flex-start; background:#00677518; border:1px solid var(--border); padding:20px 24px; margin-bottom:30px; }
+.season-tracking-notice p { color:var(--muted); font-size:13px; line-height:1.8; }
+.season-tracking-notice strong { color:var(--foreground); }
+.tracking-dot { display:inline-block; flex-shrink:0; width:7px; height:7px; background:var(--hockey-accent); border-radius:50%; margin-top:8px; }
+.hockey-site :is(.season-mvp-tracker,.season-tracking-notice) :is(a,summary):focus-visible { outline:2px solid var(--hockey-accent); outline-offset:5px; }
+@media(max-width:1000px) { .season-performers { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:650px) { .season-mvp-tracker { grid-template-columns:1fr; gap:25px; padding:25px; } .season-performers article { padding:20px; } .season-performers h3 { font-size:16px; } }
+@media(max-width:380px) { .season-performers { grid-template-columns:1fr; } }
+.season-tracking-notice > div { min-width:0; }
+.season-tracking-notice .tracking-freshness { margin-top:8px; font-size:12px; }
+.tracking-freshness span { display:inline-block; margin-right:8px; }
+.season-tracking-notice.tracking-stale { border-left:3px solid #d9b877; }
+.tracking-stale .tracking-dot { background:#d9b877; }
+.season-tracking-notice.tracking-unavailable { border-left:3px solid #c4a1dc; }
+.tracking-unavailable .tracking-dot { background:#c4a1dc; }
+.season-tracking-notice.tracking-connected { border-left:3px solid #68c8ce; }
+.tracking-connected .tracking-dot { background:#68c8ce; }
+.player-lab > .season-tracking-notice { margin:24px var(--lab-gutter,5vw); }

@@ -5,7 +5,7 @@ function PlayerCard({ player }: { player: RosterPlayer }) {
   return (
     <article className="roster-player">
       <div className="player-topline">
-        <span>BARDOWNSKI / NHL 26</span>
+        <span>BARDOWNSKI / RETURNING PROFILE</span>
         <span className="player-position">{player.position}</span>
       </div>
       <div className="player-identity">

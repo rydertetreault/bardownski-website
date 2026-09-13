@@ -2,19 +2,22 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useHockeyMotionPaused } from "@/components/layout/hockey-motion-preference";
 import type { EnrichedPlayer } from "@/lib/discord";
 import { getNickname } from "@/lib/nicknames";
 
 export function PlayerDropdown({ player }: { player: EnrichedPlayer }) {
+  const motionPaused = useHockeyMotionPaused();
   const [open, setOpen] = useState(false);
   const isGoalie = /\b(goalie|gk|g)\b/i.test(player.position);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={false}
+      animate={motionPaused ? { opacity: 1, y: 0 } : undefined}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={motionPaused ? { duration: 0 } : { duration: 0.3 }}
       className="bg-navy border border-border rounded-xl overflow-hidden"
     >
       {/* Clickable header */}
@@ -54,7 +57,7 @@ export function PlayerDropdown({ player }: { player: EnrichedPlayer }) {
           {/* Chevron */}
           <motion.span
             animate={{ rotate: open ? 180 : 0 }}
-            transition={{ duration: 0.2 }}
+            transition={motionPaused ? { duration: 0 } : { duration: 0.2 }}
             className="text-muted text-lg"
           >
             ▾
@@ -69,7 +72,7 @@ export function PlayerDropdown({ player }: { player: EnrichedPlayer }) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25 }}
+            transition={motionPaused ? { duration: 0 } : { duration: 0.25 }}
             className="overflow-hidden"
           >
             <div className="px-5 pb-5 pt-1 border-t border-border/30">

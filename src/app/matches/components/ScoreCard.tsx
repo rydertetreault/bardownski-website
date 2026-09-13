@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useHockeyMotionPaused } from "@/components/layout/hockey-motion-preference";
 import Image from "next/image";
 import Link from "next/link";
 import type { Match } from "@/types";
@@ -69,6 +70,7 @@ function TeamRow({
 }
 
 export function ScoreCard({ match, index }: { match: Match; index: number }) {
+  const motionPaused = useHockeyMotionPaused();
   const result = getResult(match);
   const isWin = result === "W";
   const isFinal = match.status === "final";
@@ -106,7 +108,7 @@ export function ScoreCard({ match, index }: { match: Match; index: number }) {
           isWinner: isFinal && !isWin,
         };
 
-  const accentColor = isClincher ? "#f4d35e" : isWin ? "#10b981" : "#d4b77b";
+  const accentColor = isClincher ? "#f4d35e" : isWin ? "#10b981" : "#68c8ce";
 
   const cardContent = (
     <div className="relative overflow-hidden">
@@ -214,10 +216,11 @@ export function ScoreCard({ match, index }: { match: Match; index: number }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={false}
+      animate={motionPaused ? { opacity: 1, y: 0 } : undefined}
+        whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0 }}
-      transition={{ duration: 0.35, delay: Math.min(index * 0.05, 0.3), ease: "easeOut" }}
+      transition={motionPaused ? { duration: 0 } : { duration: 0.35, delay: Math.min(index * 0.05, 0.3), ease: "easeOut" }}
     >
       {isSyntheticForfeit ? (
         <div

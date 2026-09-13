@@ -2,6 +2,7 @@
 
 import { useState, useMemo, memo } from "react";
 import { motion } from "framer-motion";
+import { useHockeyMotionPaused } from "@/components/layout/hockey-motion-preference";
 import type { Match } from "@/types";
 import { getResult } from "../utils";
 
@@ -82,15 +83,15 @@ const ResultsStrip = memo(({ matches }: { matches: Match[] }) => {
       {/* Decorative layers clipped to card bounds */}
       <div className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none">
         {/* Accent edges */}
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#d4b77b] via-[#d4b77b]/60 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-[#d4b77b]/20 via-transparent to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#68c8ce] via-[#68c8ce]/60 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-[#68c8ce]/20 via-transparent to-transparent" />
         {/* Corner glow */}
         <div className="absolute top-0 left-0 w-40 h-40" style={{
-          background: "radial-gradient(circle at 0% 0%, rgba(212, 183, 123,0.08) 0%, transparent 70%)",
+          background: "radial-gradient(circle at 0% 0%, rgba(104, 200, 206,0.08) 0%, transparent 70%)",
         }} />
         {/* Angled accent stripe */}
         <div className="absolute top-0 right-0 w-[30%] h-full" style={{
-          background: "linear-gradient(135deg, transparent 0%, rgba(212, 183, 123,0.03) 100%)",
+          background: "linear-gradient(135deg, transparent 0%, rgba(104, 200, 206,0.03) 100%)",
           clipPath: "polygon(40% 0, 100% 0, 100% 100%, 0 100%)",
         }} />
       </div>
@@ -235,27 +236,27 @@ const GoalsTrendChart = memo(({ matches }: { matches: Match[] }) => {
     <div className="relative overflow-hidden rounded-xl border border-border/50 p-4"
       style={{ background: "linear-gradient(145deg, rgba(13,21,38,0.95) 0%, rgba(20,14,24,0.9) 60%, rgba(10,17,32,0.95) 100%)" }}>
       {/* Accent edges */}
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#d4b77b] via-[#d4b77b]/60 to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-[#d4b77b]/20 via-transparent to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#68c8ce] via-[#68c8ce]/60 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-[#68c8ce]/20 via-transparent to-transparent" />
       {/* Angled accent stripe */}
       <div className="absolute top-0 right-0 w-[40%] h-full pointer-events-none" style={{
-        background: "linear-gradient(135deg, transparent 0%, rgba(212, 183, 123,0.04) 100%)",
+        background: "linear-gradient(135deg, transparent 0%, rgba(104, 200, 206,0.04) 100%)",
         clipPath: "polygon(40% 0, 100% 0, 100% 100%, 0 100%)",
       }} />
       {/* Corner glow */}
       <div className="absolute top-0 left-0 w-40 h-40 pointer-events-none" style={{
-        background: "radial-gradient(circle at 0% 0%, rgba(212, 183, 123,0.1) 0%, transparent 70%)",
+        background: "radial-gradient(circle at 0% 0%, rgba(104, 200, 206,0.1) 0%, transparent 70%)",
       }} />
       {/* Big stat callout */}
       <div className="absolute top-3 right-4 pointer-events-none select-none">
         <p className="text-[9px] text-white/20 uppercase tracking-widest text-right">Avg GF</p>
-        <p className="text-3xl font-black tabular-nums text-[#d4b77b]/20 leading-none text-right">{avgGF}</p>
+        <p className="text-3xl font-black tabular-nums text-[#68c8ce]/20 leading-none text-right">{avgGF}</p>
       </div>
       <div className="relative">
         <ChartHeader
           label="Goals Per Game"
           legend={[
-            { color: "#d4b77b", text: "GF" },
+            { color: "#68c8ce", text: "GF" },
             { color: "rgba(255,255,255,0.3)", text: "GA" },
           ]}
         />
@@ -275,8 +276,8 @@ const GoalsTrendChart = memo(({ matches }: { matches: Match[] }) => {
           >
             <defs>
               <linearGradient id="gfAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#d4b77b" stopOpacity="0.18" />
-                <stop offset="100%" stopColor="#d4b77b" stopOpacity="0.02" />
+                <stop offset="0%" stopColor="#68c8ce" stopOpacity="0.18" />
+                <stop offset="100%" stopColor="#68c8ce" stopOpacity="0.02" />
               </linearGradient>
               <filter id="gfGlow">
                 <feGaussianBlur stdDeviation="3" result="blur" />
@@ -291,21 +292,21 @@ const GoalsTrendChart = memo(({ matches }: { matches: Match[] }) => {
             ))}
             <polygon points={areaGF} fill="url(#gfAreaGrad)" />
             <polyline points={lineGA} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" strokeDasharray="4,4" strokeLinecap="round" />
-            <polyline points={lineGF} fill="none" stroke="#d4b77b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" filter="url(#gfGlow)" />
+            <polyline points={lineGF} fill="none" stroke="#68c8ce" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" filter="url(#gfGlow)" />
             {ptsGA.map((p, i) => (
               <circle key={`ga-${i}`} cx={p.x} cy={p.y} r="2.5" fill="rgba(255,255,255,0.25)"
                 opacity={hoveredIndex !== null && hoveredIndex !== i ? 0.3 : 1} />
             ))}
             {ptsGF.map((p, i) => (
-              <circle key={`gf-${i}`} cx={p.x} cy={p.y} r="3.5" fill="#d4b77b"
+              <circle key={`gf-${i}`} cx={p.x} cy={p.y} r="3.5" fill="#68c8ce"
                 opacity={hoveredIndex !== null && hoveredIndex !== i ? 0.3 : 1} />
             ))}
             {hoveredIndex !== null && (
               <>
                 <line x1={ptsGF[hoveredIndex].x} y1={pad.t} x2={ptsGF[hoveredIndex].x} y2={pad.t + cH}
                   stroke="rgba(255,255,255,0.12)" strokeWidth="1" strokeDasharray="4,4" />
-                <circle cx={ptsGF[hoveredIndex].x} cy={ptsGF[hoveredIndex].y} r="8" fill="rgba(212, 183, 123,0.25)" />
-                <circle cx={ptsGF[hoveredIndex].x} cy={ptsGF[hoveredIndex].y} r="4.5" fill="#d4b77b" />
+                <circle cx={ptsGF[hoveredIndex].x} cy={ptsGF[hoveredIndex].y} r="8" fill="rgba(104, 200, 206,0.25)" />
+                <circle cx={ptsGF[hoveredIndex].x} cy={ptsGF[hoveredIndex].y} r="4.5" fill="#68c8ce" />
                 <circle cx={ptsGA[hoveredIndex].x} cy={ptsGA[hoveredIndex].y} r="7" fill="rgba(255,255,255,0.1)" />
                 <circle cx={ptsGA[hoveredIndex].x} cy={ptsGA[hoveredIndex].y} r="4" fill="rgba(255,255,255,0.4)" />
               </>
@@ -320,7 +321,7 @@ const GoalsTrendChart = memo(({ matches }: { matches: Match[] }) => {
               {games[hoveredIndex].date} vs {games[hoveredIndex].opponent}
             </p>
             <div className="flex items-center gap-3 mt-0.5">
-              <span className="text-sm font-black text-[#d4b77b] tabular-nums">
+              <span className="text-sm font-black text-[#68c8ce] tabular-nums">
                 GF {games[hoveredIndex].scoreUs}
               </span>
               <span className="text-sm font-black text-white/40 tabular-nums">
@@ -353,7 +354,7 @@ const ShotDiffChart = memo(({ matches }: { matches: Match[] }) => {
   }, [games]);
 
   if (!chartData) return null;
-  const { W, H, pad, cW, cH, diffs, maxAbs, barGap, barW, zeroY } = chartData;
+  const { W, H, pad, cH, diffs, maxAbs, barGap, barW, zeroY } = chartData;
 
   const totalDiff = diffs.reduce((s, d) => s + d, 0);
 
@@ -401,8 +402,8 @@ const ShotDiffChart = memo(({ matches }: { matches: Match[] }) => {
                 <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.7" />
               </linearGradient>
               <linearGradient id="barNegGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#d4b77b" stopOpacity="0.2" />
-                <stop offset="100%" stopColor="#d4b77b" stopOpacity="0.7" />
+                <stop offset="0%" stopColor="#68c8ce" stopOpacity="0.2" />
+                <stop offset="100%" stopColor="#68c8ce" stopOpacity="0.7" />
               </linearGradient>
               <filter id="barGlow">
                 <feGaussianBlur stdDeviation="2" result="blur" />
@@ -422,7 +423,7 @@ const ShotDiffChart = memo(({ matches }: { matches: Match[] }) => {
                   x={x} y={y} width={barW} height={Math.max(barH, 1)} rx="3"
                   fill={
                     isHovered
-                      ? diff >= 0 ? "rgba(6,182,212,0.9)" : "rgba(212, 183, 123,0.9)"
+                      ? diff >= 0 ? "rgba(6,182,212,0.9)" : "rgba(104, 200, 206,0.9)"
                       : diff >= 0 ? "url(#barPosGrad)" : "url(#barNegGrad)"
                   }
                   opacity={dimmed ? 0.3 : 1}
@@ -432,7 +433,7 @@ const ShotDiffChart = memo(({ matches }: { matches: Match[] }) => {
                   x={x + barW / 2}
                   y={diff >= 0 ? y - 6 : y + barH + 12}
                   textAnchor="middle"
-                  fill={diff >= 0 ? "rgba(6,182,212,0.7)" : "rgba(212, 183, 123,0.7)"}
+                  fill={diff >= 0 ? "rgba(6,182,212,0.7)" : "rgba(104, 200, 206,0.7)"}
                   fontSize="9" fontWeight="bold" fontFamily="monospace"
                   opacity={dimmed ? 0.3 : 1}
                 >
@@ -614,44 +615,54 @@ const WinPctChart = memo(({ matches }: { matches: Match[] }) => {
 });
 
 export function TrendsPanel({ matches }: { matches: Match[] }) {
+  const motionPaused = useHockeyMotionPaused();
   return (
     <div className="space-y-4 mb-8">
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={false}
+        animate={motionPaused ? { opacity: 1, y: 0 } : undefined}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0 }}
-        transition={{ duration: 0.35 }}
+        transition={motionPaused ? { duration: 0 } : { duration: 0.35 }}
       >
         <ResultsStrip matches={matches} />
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={false}
+          animate={motionPaused ? { opacity: 1, y: 0 } : undefined}
+        whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0 }}
-          transition={{ duration: 0.35, delay: 0.05 }}
+          transition={motionPaused ? { duration: 0 } : { duration: 0.35, delay: 0.05 }}
         >
           <WinPctChart matches={matches} />
         </motion.div>
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={false}
+          animate={motionPaused ? { opacity: 1, y: 0 } : undefined}
+        whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0 }}
-          transition={{ duration: 0.35, delay: 0.1 }}
+          transition={motionPaused ? { duration: 0 } : { duration: 0.35, delay: 0.1 }}
         >
           <ShotDiffChart matches={matches} />
         </motion.div>
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={false}
+        animate={motionPaused ? { opacity: 1, y: 0 } : undefined}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0 }}
-        transition={{ duration: 0.35, delay: 0.15 }}
+        transition={motionPaused ? { duration: 0 } : { duration: 0.35, delay: 0.15 }}
       >
         <GoalsTrendChart matches={matches} />
       </motion.div>
     </div>
   );
 }
+
+ResultsStrip.displayName = "ResultsStrip";
+GoalsTrendChart.displayName = "GoalsTrendChart";
+ShotDiffChart.displayName = "ShotDiffChart";
+WinPctChart.displayName = "WinPctChart";

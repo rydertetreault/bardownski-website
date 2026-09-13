@@ -4,7 +4,7 @@ export default function GalleryBackground() {
   return (
     <div
       className="fixed inset-0 -z-10 overflow-hidden pointer-events-none"
-      style={{ backgroundColor: "#06080e" }}
+      style={{ backgroundColor: "#0b0c0d" }}
     >
       {/* ── Blob 1: Powder blue — top left (no filter blur, baked into gradient) ── */}
       <div
@@ -14,7 +14,7 @@ export default function GalleryBackground() {
           left: "-15%",
           width: "900px",
           height: "900px",
-          background: "radial-gradient(circle, rgba(125,211,252,0.18) 0%, transparent 50%)",
+          background: "radial-gradient(circle, rgba(104,200,206,0.18) 0%, transparent 50%)",
         }}
       />
 
@@ -26,7 +26,7 @@ export default function GalleryBackground() {
           right: "-12%",
           width: "850px",
           height: "850px",
-          background: "radial-gradient(circle, rgba(212, 183, 123,0.15) 0%, transparent 50%)",
+          background: "radial-gradient(circle, rgba(89, 36, 118,0.25) 0%, transparent 50%)",
         }}
       />
 

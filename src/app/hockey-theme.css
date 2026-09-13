@@ -1,0 +1,48 @@
+/* 2026–2027 hockey identity. Never set these tokens on :root: FC keeps its
+   existing navy/gold identity, including shared Tailwind utilities. */
+.hockey-site {
+  --hockey-teal: #006775;
+  --hockey-purple: #320d48;
+  --hockey-accent: #68c8ce;
+  --hockey-lilac: #c4a1dc;
+  --background: #0b0c0d;
+  --foreground: #f0efeb;
+  --surface: #101b1e;
+  --surface-light: #17282c;
+  --border: #2b4146;
+  --muted: #a5babc;
+  /* Compatibility aliases for existing hockey components. Light teal is
+     deliberately used for small text/controls, not the darker fabric teal. */
+  --navy: #12343b;
+  --navy-light: #1d4851;
+  --navy-dark: #0a1417;
+  --gold: var(--hockey-accent);
+  --gold-dark: #378f98;
+  --gold-light: #b7e7e6;
+  --cream: #f0efeb;
+  --light-blue: var(--hockey-lilac);
+  background: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
+}
+.hockey-site .legacy-site-header { background: #0b0c0df5; color: var(--foreground); }
+.hockey-site .legacy-nav-brand small { color: var(--muted); }
+.hockey-site .legacy-site-links a { color: var(--foreground); }
+.hockey-site .legacy-site-links a:hover,
+.hockey-site .legacy-site-links a[aria-current=page],
+.hockey-site .legacy-subnav > span,
+.hockey-site .legacy-subnav a:hover { color: var(--hockey-accent); }
+.hockey-site .legacy-site-links a[aria-current=page],
+.hockey-site .legacy-site-links .legacy-nav-fc:hover { border-color: var(--hockey-accent); }
+.hockey-site .legacy-site-header :is(a,button):focus-visible { outline-color: var(--hockey-accent); }
+.hockey-site .legacy-subnav { border-bottom: 2px solid var(--hockey-teal); }
+.hockey-site .legacy-subnav a { color: var(--foreground); }
+.hockey-site .hockey-splash { background-color: var(--background) !important; }
+.hockey-site ::selection { background: var(--hockey-purple); color: var(--foreground); }
+@media (max-width:950px) {
+  .hockey-site .legacy-site-links { background: #0b0c0d; }
+  .hockey-site .legacy-site-links a[aria-current=page] { background: #00677526; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .hockey-site *, .hockey-site *::before, .hockey-site *::after { scroll-behavior: auto !important; }
+}

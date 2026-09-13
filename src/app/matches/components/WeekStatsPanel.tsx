@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { motion } from "framer-motion";
+import { useHockeyMotionPaused } from "@/components/layout/hockey-motion-preference";
 import type { Match } from "@/types";
 import { getResult } from "../utils";
 import { ScoreCard } from "./ScoreCard";
@@ -15,6 +16,7 @@ export function WeekStatsPanel({
   weekLabel: string;
   onBack: () => void;
 }) {
+  const motionPaused = useHockeyMotionPaused();
   const summary = useMemo(() => {
     const totalGF = matches.reduce((s, m) => s + (m.scoreUs ?? 0), 0);
     const totalGA = matches.reduce((s, m) => s + (m.scoreThem ?? 0), 0);
@@ -43,9 +45,9 @@ export function WeekStatsPanel({
     <div className="space-y-6">
       {/* Back navigation */}
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={false}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+        transition={motionPaused ? { duration: 0 } : { duration: 0.3 }}
       >
         <button
           onClick={onBack}
@@ -58,9 +60,9 @@ export function WeekStatsPanel({
 
       {/* Week header */}
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={false}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, delay: 0.05 }}
+        transition={motionPaused ? { duration: 0 } : { duration: 0.35, delay: 0.05 }}
       >
         <div className="flex items-center gap-3 mb-2">
           <span className="block w-1 h-6 bg-gold rounded-sm" />
@@ -79,9 +81,9 @@ export function WeekStatsPanel({
         {summary.map((s, i) => (
           <motion.div
             key={s.label}
-            initial={{ opacity: 0, y: 16 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: 0.1 + i * 0.05 }}
+            transition={motionPaused ? { duration: 0 } : { duration: 0.35, delay: 0.1 + i * 0.05 }}
             className="bg-navy/70 border border-border rounded-lg px-4 py-3 text-center"
           >
             <p className="text-[10px] text-muted uppercase tracking-widest mb-1">
@@ -97,9 +99,9 @@ export function WeekStatsPanel({
       {/* Game cards section */}
       <div className="mt-2">
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, delay: 0.25 }}
+          transition={motionPaused ? { duration: 0 } : { duration: 0.35, delay: 0.25 }}
           className="flex items-center gap-3 mb-4"
         >
           <span className="block w-1 h-5 bg-gold rounded-sm" />

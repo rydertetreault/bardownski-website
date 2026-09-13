@@ -2,7 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import "@/components/season/season-recap.css";
 import "./roster.css";
-import { fetchChelstatsData } from "@/lib/chelstats";
+import { FROZEN_CHELSTATS } from "@/lib/chelstats-frozen";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "2026–2027 Roster | Bardownski Hockey", description: "Meet the Bardownski room as we prepare for 2026–2027. Returning roster profiles and the upcoming captain announcement." };
 import { getNickname, getDisplayName } from "@/lib/nicknames";
 import RosterClient from "./RosterClient";
 
@@ -116,7 +119,8 @@ export type RosterPlayer = {
 };
 
 export default async function RosterPage() {
-  const chelstats = await fetchChelstatsData();
+  // Returning profiles only; this does not declare the new-season lineup final.
+  const chelstats = FROZEN_CHELSTATS;
   const members = chelstats?.members ?? [];
 
   const players: RosterPlayer[] = members.map((m) => {
@@ -157,20 +161,20 @@ export default async function RosterPage() {
     <div className="legacy-home concept-1 roster-edition">
       <section className="hero roster-hero">
         <div className="hero-copy">
-          <p className="eyebrow">THE LEGACY EDITION / OUR PEOPLE</p>
+          <p className="eyebrow">2026–2027 / OUR PEOPLE</p>
           <h1>ONE CLUB.<br /><em>EVERY SHIFT.</em></h1>
           <p className="hero-description">
-            The names behind the season. The teammates behind the first banner.
-            A room that made Bardownski history.
+            The room behind the next chapter. Newfoundland roots, a new set of
+            sweaters, and the same Bardownski spirit.
           </p>
           <div className="actions">
             <a className="button" href="#squad">Meet the squad ↗</a>
             <a href="#leadership">Leadership pending ↓</a>
           </div>
-          <span className="season-label">NHL 26 <span>/</span> SEASON COMPLETE</span>
+          <span className="season-label">2026–2027 <span>/</span> THE NEXT CHAPTER</span>
         </div>
         <figure>
-          <Image src="/images/gallery/screenshots/team2.webp" alt="Bardownski players gathering in a post-game huddle" fill priority sizes="(max-width: 850px) 100vw, 50vw" />
+          <Image src="/images/team pic.png" alt="Bardownski players gathering in a post-game huddle" fill priority sizes="(max-width: 850px) 100vw, 50vw" />
           <figcaption>NEWFOUNDLAND ROOTS. BARDOWNSKI FOREVER.</figcaption>
           <div className="photo-stamp">THE<br /><b>ROOM.</b><small>ONE CLUB / EVERY NAME</small></div>
         </figure>
@@ -185,7 +189,7 @@ export default async function RosterPage() {
       <section id="squad" className="section roster-squad" aria-labelledby="squad-title">
         <div className="section-head">
           <div><p className="eyebrow">01 / THE SQUAD</p><h2 id="squad-title">The names on the sweaters.</h2></div>
-          <p>The completed season’s squad.<br />Offseason positions. Next season’s lineup is not final.</p>
+          <p>Returning profiles from the 2025–2026 squad.<br />The 2026–2027 lineup and jersey numbers are not yet final.</p>
         </div>
         {players.length === 0 ? (
           <div className="roster-empty"><h3>The room is loading.</h3><p>Roster data is unavailable right now. Please check back soon.</p></div>
@@ -205,18 +209,18 @@ export default async function RosterPage() {
               <span className="letter-index">0{index + 1} / {role}</span>
               <b aria-hidden="true">{letter}</b>
               <h3>To be announced.</h3>
-              <p>Next season’s {role.toLowerCase()} has not been selected publicly.</p>
+              <p>The 2026–2027 {role.toLowerCase()} will be introduced in the upcoming announcement.</p>
               <span className="roster-tag">LEADERSHIP · PENDING</span>
             </article>
           ))}
         </div>
-        <p className="roster-fine">A fresh leadership chapter. The letters stay unassigned until selections are official.</p>
+        <p className="roster-fine">A fresh leadership chapter. The letters stay unassigned until selections are official. Watch for the captain and jersey announcement on the homepage.</p>
       </section>
 
       <section className="roster-closing">
-        <p className="eyebrow">THE SEASON ENDS. THE CLUB CONTINUES.</p>
+        <p className="eyebrow">NEW COLORS. SAME BARDOWNSKI.</p>
         <h2>Same club.<br /><em>Next chapter.</em></h2>
-        <Link className="button" href="/">Revisit the season ↗</Link>
+        <Link className="button" href="/">Visit the new-season hub ↗</Link>
       </section>
     </div>
   );

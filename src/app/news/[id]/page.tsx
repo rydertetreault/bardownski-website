@@ -43,7 +43,7 @@ export default async function ArticlePage({
 
         {/* Category + date */}
         <div className="flex items-center gap-3 mb-4">
-          <span className="text-xs font-black uppercase tracking-widest text-[#d4b77b]">
+          <span className="text-xs font-black uppercase tracking-widest text-[#68c8ce]">
             {article.category}
           </span>
           <span className="w-1 h-1 rounded-full bg-border inline-block" />
@@ -80,7 +80,7 @@ export default async function ArticlePage({
         ) : null}
 
         {/* Red rule */}
-        <div className="h-px bg-gradient-to-r from-[#d4b77b] via-[#d4b77b]/30 to-transparent mb-10" />
+        <div className="h-px bg-gradient-to-r from-[#68c8ce] via-[#68c8ce]/30 to-transparent mb-10" />
 
         {/* Body */}
         <div className="space-y-6">
@@ -97,10 +97,10 @@ export default async function ArticlePage({
             {next && (
               <Link
                 href={`/news/${next.id}`}
-                className="flex-1 group bg-navy border border-border rounded-xl p-5 hover:border-[#d4b77b]/40 transition-colors"
+                className="flex-1 group bg-navy border border-border rounded-xl p-5 hover:border-[#68c8ce]/40 transition-colors"
               >
                 <p className="text-xs text-muted uppercase tracking-widest mb-2">← Older</p>
-                <p className="text-sm font-bold text-white group-hover:text-[#d4b77b] transition-colors line-clamp-2">
+                <p className="text-sm font-bold text-white group-hover:text-[#68c8ce] transition-colors line-clamp-2">
                   {next.title}
                 </p>
               </Link>
@@ -108,10 +108,10 @@ export default async function ArticlePage({
             {prev && (
               <Link
                 href={`/news/${prev.id}`}
-                className="flex-1 group bg-navy border border-border rounded-xl p-5 hover:border-[#d4b77b]/40 transition-colors text-right"
+                className="flex-1 group bg-navy border border-border rounded-xl p-5 hover:border-[#68c8ce]/40 transition-colors text-right"
               >
                 <p className="text-xs text-muted uppercase tracking-widest mb-2">Newer →</p>
-                <p className="text-sm font-bold text-white group-hover:text-[#d4b77b] transition-colors line-clamp-2">
+                <p className="text-sm font-bold text-white group-hover:text-[#68c8ce] transition-colors line-clamp-2">
                   {prev.title}
                 </p>
               </Link>

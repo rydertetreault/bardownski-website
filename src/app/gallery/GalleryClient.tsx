@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useHockeyMotionPaused } from "@/components/layout/hockey-motion-preference";
 import type { GalleryPhoto, GalleryVideo } from "./page";
 
 function getYouTubeId(src: string): string | null {
@@ -20,6 +21,7 @@ function ThumbnailVideo({
   className?: string;
   playing: boolean;
 }) {
+  const motionPaused = useHockeyMotionPaused();
   const ref = useRef<HTMLVideoElement>(null);
   const [visible, setVisible] = useState(false);
 
@@ -49,12 +51,12 @@ function ThumbnailVideo({
   useEffect(() => {
     const video = ref.current;
     if (!video || !visible) return;
-    if (playing) {
+    if (playing && !motionPaused) {
       video.play().catch(() => {});
     } else {
       video.pause();
     }
-  }, [playing, visible]);
+  }, [playing, visible, motionPaused]);
 
   return (
     <video
@@ -71,21 +73,21 @@ function ThumbnailVideo({
 // ─── Section heading ────────────────────────────────────────────────────────────
 function SectionHeading({ label, count }: { label: string; count: number }) {
   return (
-    <div className="mb-6 mt-4">
+    <div className="hockey-gallery-heading mb-6 mt-4">
       <div className="flex items-center gap-4 mb-2">
         <div
           className="h-px flex-1 rounded-full"
-          style={{ background: "linear-gradient(to right, rgba(212, 183, 123,0.6), rgba(212, 183, 123,0.2), transparent)" }}
+          style={{ background: "linear-gradient(to right, rgba(104, 200, 206,0.6), rgba(104, 200, 206,0.2), transparent)" }}
         />
         <span
           className="text-sm font-black uppercase tracking-[0.25em] whitespace-nowrap"
-          style={{ color: "#d4b77b" }}
+          style={{ color: "#68c8ce" }}
         >
           {label}
         </span>
         <div
           className="h-px flex-1 rounded-full"
-          style={{ background: "linear-gradient(to left, rgba(212, 183, 123,0.6), rgba(212, 183, 123,0.2), transparent)" }}
+          style={{ background: "linear-gradient(to left, rgba(104, 200, 206,0.6), rgba(104, 200, 206,0.2), transparent)" }}
         />
       </div>
       <p className="text-center text-xs uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.25)" }}>
@@ -109,6 +111,7 @@ function PhotoLightbox({
   onPrev: () => void;
   onNext: () => void;
 }) {
+  const motionPaused = useHockeyMotionPaused();
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -121,7 +124,8 @@ function PhotoLightbox({
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
+      initial={false}
+      transition={{ duration: motionPaused ? 0 : 0.2 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[100] flex items-center justify-center p-6"
@@ -164,9 +168,9 @@ function PhotoLightbox({
 
       <motion.div
         key={index}
-        initial={{ opacity: 0, scale: 0.93 }}
+        initial={false}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.2 }}
+        transition={{ duration: motionPaused ? 0 : 0.2 }}
         className="relative max-w-5xl w-full mx-16"
         onClick={(e) => e.stopPropagation()}
       >
@@ -191,6 +195,7 @@ function PhotoLightbox({
 
 // ─── Video modal ─────────────────────────────────────────────────────────────────
 function VideoModal({ video, onClose }: { video: GalleryVideo; onClose: () => void }) {
+  const motionPaused = useHockeyMotionPaused();
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -201,7 +206,8 @@ function VideoModal({ video, onClose }: { video: GalleryVideo; onClose: () => vo
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
+      initial={false}
+      transition={{ duration: motionPaused ? 0 : 0.2 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[100] flex items-center justify-center p-6"
@@ -219,9 +225,9 @@ function VideoModal({ video, onClose }: { video: GalleryVideo; onClose: () => vo
       </button>
 
       <motion.div
-        initial={{ opacity: 0, scale: 0.93 }}
+        initial={false}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.25 }}
+        transition={{ duration: motionPaused ? 0 : 0.25 }}
         className="relative max-w-5xl w-full"
         onClick={(e) => e.stopPropagation()}
       >
@@ -274,7 +280,7 @@ const cardBase =
 const cardStyle = {
   borderRadius: "3px",
   backgroundColor: "rgba(8,12,20,0.82)",
-  border: "1px solid rgba(125,211,252,0.15)",
+  border: "1px solid rgba(104,200,206,0.15)",
 };
 
 // ─── Photo bento (CSS only, no Framer Motion on grid items) ──────────────────
@@ -295,7 +301,7 @@ function PhotoBento({ photos }: { photos: GalleryPhoto[] }) {
       <SectionHeading label="Photos" count={photos.length} />
 
       <div
-        className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-16"
+        className="hockey-gallery-photos grid grid-cols-2 sm:grid-cols-4 gap-2 mb-16"
         style={{ gridAutoRows: "clamp(140px, 18vw, 240px)", gridAutoFlow: "dense" }}
       >
         {photos.map((photo, i) => {
@@ -311,11 +317,11 @@ function PhotoBento({ photos }: { photos: GalleryPhoto[] }) {
               }}
               onClick={() => setLightboxIndex(i)}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = "rgba(212, 183, 123,0.55)";
-                (e.currentTarget as HTMLElement).style.boxShadow = "0 0 0 1px rgba(212, 183, 123,0.2)";
+                (e.currentTarget as HTMLElement).style.borderColor = "rgba(104, 200, 206,0.55)";
+                (e.currentTarget as HTMLElement).style.boxShadow = "0 0 0 1px rgba(104, 200, 206,0.2)";
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = "rgba(125,211,252,0.12)";
+                (e.currentTarget as HTMLElement).style.borderColor = "rgba(104,200,206,0.12)";
                 (e.currentTarget as HTMLElement).style.boxShadow = "none";
               }}
             >
@@ -339,8 +345,8 @@ function PhotoBento({ photos }: { photos: GalleryPhoto[] }) {
               <div
                 className="absolute top-0 left-0 w-5 h-5 pointer-events-none"
                 style={{
-                  borderTop: "2px solid rgba(125,211,252,0.35)",
-                  borderLeft: "2px solid rgba(125,211,252,0.35)",
+                  borderTop: "2px solid rgba(104,200,206,0.35)",
+                  borderLeft: "2px solid rgba(104,200,206,0.35)",
                 }}
               />
             </div>
@@ -375,12 +381,12 @@ function VideoCard({ video, style, onClick }: { video: GalleryVideo; style?: Rea
       onClick={onClick}
       onMouseEnter={(e) => {
         setHovered(true);
-        (e.currentTarget as HTMLElement).style.borderColor = "rgba(212, 183, 123,0.55)";
-        (e.currentTarget as HTMLElement).style.boxShadow = "0 0 0 1px rgba(212, 183, 123,0.2)";
+        (e.currentTarget as HTMLElement).style.borderColor = "rgba(104, 200, 206,0.55)";
+        (e.currentTarget as HTMLElement).style.boxShadow = "0 0 0 1px rgba(104, 200, 206,0.2)";
       }}
       onMouseLeave={(e) => {
         setHovered(false);
-        (e.currentTarget as HTMLElement).style.borderColor = "rgba(125,211,252,0.12)";
+        (e.currentTarget as HTMLElement).style.borderColor = "rgba(104,200,206,0.12)";
         (e.currentTarget as HTMLElement).style.boxShadow = "none";
       }}
     >
@@ -435,8 +441,8 @@ function VideoCard({ video, style, onClick }: { video: GalleryVideo; style?: Rea
       <div
         className="absolute top-0 left-0 w-5 h-5 pointer-events-none"
         style={{
-          borderTop: "2px solid rgba(125,211,252,0.35)",
-          borderLeft: "2px solid rgba(125,211,252,0.35)",
+          borderTop: "2px solid rgba(104,200,206,0.35)",
+          borderLeft: "2px solid rgba(104,200,206,0.35)",
         }}
       />
     </div>
@@ -452,7 +458,7 @@ function VideoBento({ videos }: { videos: GalleryVideo[] }) {
       <SectionHeading label="Videos" count={videos.length} />
 
       <div
-        className="grid grid-cols-2 sm:grid-cols-4 gap-2"
+        className="hockey-gallery-videos grid grid-cols-2 sm:grid-cols-4 gap-2"
         style={{ gridAutoRows: "clamp(140px, 18vw, 240px)", gridAutoFlow: "dense" }}
       >
         {videos.map((video, i) => {

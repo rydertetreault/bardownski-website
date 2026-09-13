@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useHockeyMotionPaused } from "@/components/layout/hockey-motion-preference";
 
 export function StreakBanner({
   streakType,
@@ -11,14 +12,16 @@ export function StreakBanner({
   streakCount: number;
   isClubRecord: boolean;
 }) {
+  const motionPaused = useHockeyMotionPaused();
   const isWin = streakType === "W";
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={false}
+      animate={motionPaused ? { opacity: 1, y: 0 } : undefined}
+        whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.4 }}
+      transition={motionPaused ? { duration: 0 } : { duration: 0.4 }}
       className="mb-6 flex justify-center"
     >
       <div className="relative overflow-hidden rounded-xl border border-border/50 flex w-full max-w-md"
@@ -33,7 +36,7 @@ export function StreakBanner({
                 key={i}
                 className="flex-1"
                 style={{
-                  backgroundColor: i % 2 === 0 ? "#d4b77b" : "#ffffff",
+                  backgroundColor: i % 2 === 0 ? "#68c8ce" : "#ffffff",
                 }}
               />
             ))}
@@ -43,7 +46,7 @@ export function StreakBanner({
         {/* ── Main content ── */}
         <div className="relative flex-1 px-5 md:px-6 py-4 md:py-5">
           {/* Top accent line */}
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#d4b77b] via-[#d4b77b]/50 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#68c8ce] via-[#68c8ce]/50 to-transparent" />
 
           {/* Watermark number */}
           <div className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 pointer-events-none select-none">
@@ -72,7 +75,7 @@ export function StreakBanner({
                 </p>
                 {isClubRecord && (
                   <span
-                    className="bg-[#d4b77b]/15 border border-[#d4b77b]/30 text-[#d4b77b] text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 shrink-0"
+                    className="bg-[#68c8ce]/15 border border-[#68c8ce]/30 text-[#68c8ce] text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 shrink-0"
                     style={{
                       clipPath: "polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%)",
                     }}

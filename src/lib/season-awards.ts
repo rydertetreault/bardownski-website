@@ -68,7 +68,7 @@ export function calculateRecapHighlights(games: typeof awardGames): SeasonAward[
       title: "Best Individual Performance",
       winners: [...new Set(bestGames.map(p => getNickname(p.name)))],
       result: bestGames.map(p => `${p.goals} goals · ${p.assists} assists in a ${p.game.scoreUs}–${p.game.scoreThem} game vs ${p.game.opponent} · ${p.game.date}`).join("; ") || "No eligible performances",
-      criteria: "Highest single-game skater points (goals + assists) in this year’s archived regular-season and finals games. All ties share the award. Based on 75 archived games from March 7–July 22, 2026, not all 366 season games.",
+      criteria: "Highest single-game skater points (goals + assists) in the 2025–2026 archived regular-season and finals games. All ties share the award. Based on 75 archived games from March 7–July 22, 2026, not all 366 season games.",
     },
 
   ];
@@ -85,7 +85,7 @@ export const BREAKOUT_PLAYER: SeasonAward = {
   winners: ["GOTTA BE"],
   result: "317 points · 109 blocks · 117 games",
   description: "More than doubled his appearances from the previous listed season, raised his shooting percentage from 25.1% to 35%, and delivered 121 goals, 196 assists and 109 blocks from defense.",
-  criteria: "An editorial selection for a larger sustained contribution, improved finishing and production from defense—not a PPG leaderboard or a calculated most-improved award. Compared with the stats page’s 2024 table, appearances rose from 55 to 117, points from 133 to 317, goals from 54 to 121, and shooting percentage from 25.1% to 35%. This year also included 255 takeaways and 384 hits. The larger workload explains part of the totals increase. His −33 and 745 giveaways remain caveats; historical defensive and discipline data are incomplete, so this is not a claim of across-the-board improvement.",
+  criteria: "An editorial selection for a larger sustained contribution, improved finishing and production from defense—not a PPG leaderboard or a calculated most-improved award. Compared with the stats page’s 2024 table, appearances rose from 55 to 117, points from 133 to 317, goals from 54 to 121, and shooting percentage from 25.1% to 35%. The 2025–2026 season also included 255 takeaways and 384 hits. The larger workload explains part of the totals increase. His −33 and 745 giveaways remain caveats; historical defensive and discipline data are incomplete, so this is not a claim of across-the-board improvement.",
 };
 
 export const RECAP_HONORS: SeasonAward[] = [

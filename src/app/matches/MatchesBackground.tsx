@@ -25,7 +25,7 @@ export default function MatchesBackground() {
           style={{
             width: "3px",
             background:
-              "repeating-linear-gradient(to bottom, #d4b77b 0px, #d4b77b 20px, transparent 20px, transparent 30px)",
+              "repeating-linear-gradient(to bottom, #68c8ce 0px, #68c8ce 20px, transparent 20px, transparent 30px)",
           }}
         />
         <div className="absolute top-0 bottom-0 bg-blue-400" style={{ left: "33%", width: "2px" }} />
@@ -41,7 +41,7 @@ export default function MatchesBackground() {
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 60% 40% at 30% 0%, rgba(212, 183, 123,0.04) 0%, transparent 70%), radial-gradient(ellipse 50% 35% at 70% 0%, rgba(91,155,213,0.03) 0%, transparent 70%)",
+            "radial-gradient(ellipse 60% 40% at 30% 0%, rgba(104, 200, 206,0.04) 0%, transparent 70%), radial-gradient(ellipse 50% 35% at 70% 0%, rgba(91,155,213,0.03) 0%, transparent 70%)",
         }}
       />
 

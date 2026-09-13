@@ -11,11 +11,11 @@
   background: var(--bg);
   color: var(--text);
   font-family: Arial, Helvetica, sans-serif;
-  --bg: #0b101a;
-  --panel: #141d2b;
-  --text: #eeeae2;
-  --muted: #a4adbc;
-  --accent: #d4b77b;
+  --bg: #0b0c0d;
+  --panel: #101b1e;
+  --text: #f0efeb;
+  --muted: #a5babc;
+  --accent: #68c8ce;
   --line: #ffffff26;
 }
 .legacy-home a {
@@ -283,9 +283,9 @@
   position: relative;
   overflow: hidden;
   padding: 36px;
-  background: linear-gradient(130deg, #293347, #111927);
-  color: #eeeae2;
-  border: 1px solid #d4b77b60;
+  background: linear-gradient(130deg, #320d48, #10262b);
+  color: #f0efeb;
+  border: 1px solid #68c8ce60;
 }
 .legacy-home .tag {
   font-size: 9px;
@@ -302,7 +302,7 @@
 .legacy-home .mvp p {
   max-width: 310px;
   font-size: 13px;
-  color: #bdc5d2;
+  color: #bdd0d0;
   margin-top: 20px;
   position: relative;
 }
@@ -311,7 +311,7 @@
   right: 25px;
   top: 60px;
   font-size: 180px;
-  color: #d4b77b18;
+  color: #68c8ce18;
 }
 .legacy-home .award-bottom {
   border-top: 1px solid #ffffff30;
@@ -638,13 +638,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  background: #eff4fc;
-  color: #09152a;
+  background: #f0efeb;
+  color: #0a171b;
   padding: 20px 5%;
   font-size: 11px;
 }
 .legacy-home .broadcast-strip > b {
-  background: #a88b52;
+  background: #378f98;
   color: white;
   padding: 10px;
 }
@@ -652,7 +652,7 @@
   font-size: 16px;
 }
 .legacy-home .broadcast-strip i {
-  color: #a88b52;
+  color: #378f98;
   margin: 0 10px;
 }
 @media (max-width: 1100px) {
@@ -739,7 +739,7 @@
 }
 .legacy-home .mvp-stage {
   position: relative;
-  background: #080b12;
+  background: #0b0c0d;
 }
 .legacy-home .stage-pin {
   min-height: 740px;
@@ -757,8 +757,8 @@
   z-index: -2;
   opacity: 0.25;
   background-image:
-    linear-gradient(#d4b77b20 1px, transparent 1px),
-    linear-gradient(90deg, #d4b77b20 1px, transparent 1px);
+    linear-gradient(#68c8ce20 1px, transparent 1px),
+    linear-gradient(90deg, #68c8ce20 1px, transparent 1px);
   background-size: 80px 80px;
   mask-image: linear-gradient(transparent, #000);
 }
@@ -766,7 +766,7 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: radial-gradient(ellipse at 50% 40%, #91754655, transparent 65%);
+  background: radial-gradient(ellipse at 50% 40%, #68358055, transparent 65%);
 }
 .legacy-home .stage-top,
 .legacy-home .stage-bottom {
@@ -880,8 +880,8 @@
   width: 50.1%;
   z-index: 2;
   align-items: center;
-  background: linear-gradient(110deg, #172238, #0c1220);
-  border: 1px solid #d4b77b35;
+  background: linear-gradient(110deg, #320d48, #10262b);
+  border: 1px solid #68c8ce35;
   transition: transform 1.8s cubic-bezier(0.76, 0, 0.24, 1);
   pointer-events: none;
 }
@@ -1047,7 +1047,7 @@
   height: 3px;
   z-index: 15;
   pointer-events: none;
-  background: linear-gradient(90deg, var(--accent), #f3dfb0);
+  background: linear-gradient(90deg, var(--accent), #c4a1dc);
   transform: scaleX(var(--film-progress, 0));
   transform-origin: left;
 }
@@ -1072,7 +1072,7 @@
   display: none;
   position: absolute;
   right: 27px;
-  background: #0b101a;
+  background: #0b0c0d;
   padding: 7px 10px;
   white-space: nowrap;
   font-weight: 400;
@@ -1086,12 +1086,12 @@
   place-items: center;
   width: 22px;
   height: 22px;
-  border: 1px solid #d4b77b50;
-  background: #0b101acc;
+  border: 1px solid #68c8ce50;
+  background: #0b0c0dcc;
   border-radius: 50%;
 }
 .legacy-home .film-rail [aria-current] span {
-  color: #0b101a;
+  color: #0b0c0d;
   background: var(--accent);
   border-color: var(--accent);
 }
@@ -1100,8 +1100,8 @@
   bottom: 16px;
   left: 18px;
   z-index: 8;
-  background: #0b101ae6;
-  border: 1px solid #d4b77b40;
+  background: #0b0c0de6;
+  border: 1px solid #68c8ce40;
   padding: 10px 13px;
   font-size: 8px;
   letter-spacing: 2px;
@@ -1200,8 +1200,8 @@
   padding-bottom: 110px;
   background: radial-gradient(
     ellipse at 50% calc(var(--through, 0) * 100%),
-    #344052,
-    #141d2b 65%
+    #29454b,
+    #101b1e 65%
   );
 }
 .legacy-home.motion-enabled #awards .section-head.scroll-reveal {
@@ -1263,7 +1263,7 @@
   font-size: clamp(90px, 19vw, 290px);
   font-weight: 900;
   letter-spacing: -8px;
-  color: #d4b77b09;
+  color: #68c8ce09;
   transform: translateX(calc(25% - var(--through, 0) * 50%));
   pointer-events: none;
 }
@@ -1281,7 +1281,7 @@
   opacity: calc(0.08 + var(--card, 0) * 0.92);
   transform: translateY(calc((1 - var(--card, 0)) * 140px))
     rotateX(calc((1 - var(--card, 0)) * 35deg));
-  background: #101723e8;
+  background: #101b1ee8;
   border-color: color-mix(
     in srgb,
     var(--accent) calc(var(--card, 0) * 60%),
@@ -1367,7 +1367,7 @@
   padding: 100px 5%;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  background: #090d15;
+  background: #0a1417;
 }
 .legacy-home .interlude-inner > span {
   font-size: 9px;
@@ -1415,8 +1415,8 @@
   opacity: calc(0.1 + var(--pass, 0) * 0.9);
 }
 .legacy-home .replay-curtain {
-  border: 1px solid #d4b77b60;
-  background: #111a29;
+  border: 1px solid #68c8ce60;
+  background: #101b1e;
   color: var(--accent);
   font-size: 10px;
   padding: 12px;
@@ -1571,3 +1571,9 @@
 .legacy-home{--preview-height:var(--site-header-height,126px)}
 .legacy-home [id]{scroll-margin-top:calc(var(--site-header-height,126px) + 16px)}
 .legacy-home .film-progress{top:var(--site-header-height,126px)}
+
+/* The live layout's color-preview tiles now show the 2026–2027 palette. */
+#season-recap .swatches i:nth-child(1) { background: #006775; }
+#season-recap .swatches i:nth-child(2) { background: #320d48; }
+#season-recap .swatches i:nth-child(3) { background: #f0efeb; }
+#season-recap .swatches i:nth-child(4) { background: #0b0c0d; }

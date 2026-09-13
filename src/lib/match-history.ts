@@ -18,7 +18,16 @@
  */
 
 import { Redis } from "@upstash/redis";
+import preservedArchive from "./archives/nhl26-match-history.json";
 import type { ClubMatch, ChelstatsData } from "./chelstats";
+
+// Durable code-backed copy, like the earlier published seasons. It is never
+// mixed into the NHL27 pipeline and protects the archive if Redis is unavailable.
+const PRESERVED_MATCHES = preservedArchive.matches as ClubMatch[];
+function archiveFallback(chelstats: ChelstatsData): ClubMatch[] {
+  return [...new Map([...PRESERVED_MATCHES, ...chelstats.matches].map(match => [match.id, match])).values()]
+    .sort((a,b) => b.timestamp - a.timestamp);
+}
 
 interface LegacyMatchHistoryState {
   lastRecord: { wins: number; losses: number; otl: number };
@@ -230,17 +239,18 @@ export async function getAllMatchesForRecords(
   chelstats: ChelstatsData
 ): Promise<ClubMatch[]> {
   const redis = getRedis();
-  if (!redis) return chelstats.matches;
+  if (!redis) return archiveFallback(chelstats);
 
   try {
     // Season frozen: read-only. No pollAndAccumulate — chelstats data is a
     // static snapshot with no per-game list, so there is nothing to sync.
-    const matches = await readAllMatches(redis);
+    const stored = await readAllMatches(redis);
+    const matches = [...new Map([...PRESERVED_MATCHES, ...stored].map(match => [match.id, match])).values()];
     matches.sort((a, b) => b.timestamp - a.timestamp);
     return matches;
   } catch (err) {
     console.error("[match-history] Failed to load all matches:", err);
-    return chelstats.matches;
+    return archiveFallback(chelstats);
   }
 }
 
@@ -254,14 +264,16 @@ export async function getMatchHistory(
   chelstats: ChelstatsData
 ): Promise<ClubMatch[]> {
   const redis = getRedis();
-  if (!redis) return chelstats.matches;
+  if (!redis) return archiveFallback(chelstats);
 
   try {
     // Season frozen: read-only (see getAllMatchesForRecords).
-    const [matches, storedForfeits] = await Promise.all([
+    const [stored, storedForfeits] = await Promise.all([
       readAllMatches(redis),
       readAllForfeits(redis),
     ]);
+
+    const matches = [...new Map([...PRESERVED_MATCHES, ...stored].map(match => [match.id, match])).values()];
 
     // Stored forfeits + hardcoded manual forfeits. MANUAL_FORFEITS always
     // win on id collision: they're the authoritative safety-net list the
@@ -307,7 +319,7 @@ export async function getMatchHistory(
     return combined;
   } catch (err) {
     console.error("[match-history] Failed to load:", err);
-    return chelstats.matches;
+    return archiveFallback(chelstats);
   }
 }
 

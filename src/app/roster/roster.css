@@ -24,7 +24,7 @@
 .roster-edition .player-scouting[open] summary span { transform: rotate(90deg); }
 .roster-edition .player-scouting p { color: var(--muted); font-size: 13px; padding-top: 16px; }
 .roster-edition .player-no-report { border-top: 1px solid var(--line); padding-top: 17px; color: var(--muted); font-size: 11px; }
-.roster-edition .roster-leadership { background: #101824; border-block: 1px solid var(--line); }
+.roster-edition .roster-leadership { background: #0a171b; border-block: 1px solid var(--line); }
 .roster-edition .roster-letters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 40px; border: 1px solid var(--line); }
 .roster-edition .roster-letters article { padding: 30px; }
 .roster-edition .roster-letters article + article { border-left: 1px solid var(--line); }
@@ -32,9 +32,9 @@
 .roster-edition .roster-letters b { display: block; font-size: clamp(95px, 12vw, 160px); line-height: 1.3; font-weight: 900; color: transparent; -webkit-text-stroke: 1px var(--accent); opacity: .65; }
 .roster-edition .roster-letters h3 { font-size: 22px; font-weight: 800; }
 .roster-edition .roster-letters p { color: var(--muted); font-size: 13px; margin: 15px 0 25px; }
-.roster-edition .roster-tag { color: var(--accent); font-size: 8px; letter-spacing: 1.5px; border: 1px solid #d4b77b55; padding: 7px 9px; display: inline-block; }
+.roster-edition .roster-tag { color: var(--accent); font-size: 8px; letter-spacing: 1.5px; border: 1px solid #68c8ce55; padding: 7px 9px; display: inline-block; }
 .roster-edition .roster-fine { color: var(--muted); font-size: 11px; margin-top: 25px; }
-.roster-edition .roster-closing { text-align: center; padding: 100px 5%; background: radial-gradient(ellipse at center, #d4b77b09, transparent 65%); }
+.roster-edition .roster-closing { text-align: center; padding: 100px 5%; background: radial-gradient(ellipse at center, #68c8ce09, transparent 65%); }
 .roster-edition .roster-closing h2 { font-size: clamp(46px, 7vw, 90px); font-weight: 900; letter-spacing: -3px; }
 .roster-edition .roster-closing em { color: var(--accent); font-style: normal; }
 .roster-edition .roster-closing .button { margin-top: 35px; font-size: 12px; font-weight: 700; }
@@ -65,7 +65,7 @@
 .roster-edition .roster-groups { gap: 90px; }
 .roster-edition .roster-player-list { display: flex; flex-direction: column; }
 .roster-edition .roster-player { display: grid; grid-template-columns: 90px minmax(0, 1fr) minmax(120px, .5fr) minmax(140px, .55fr); align-items: center; gap: 24px; padding: 22px 16px; background: transparent; border: 0; border-bottom: 1px solid var(--line); }
-.roster-edition .roster-player:hover, .roster-edition .roster-player:focus-within { transform: none; background: #d4b77b06; }
+.roster-edition .roster-player:hover, .roster-edition .roster-player:focus-within { transform: none; background: #68c8ce06; }
 .roster-edition .player-topline { flex-direction: column; align-items: start; gap: 7px; }
 .roster-edition .player-topline > span:first-child { font-size: 7px; letter-spacing: 1px; }
 .roster-edition .player-identity { min-height: 76px; }
@@ -92,7 +92,7 @@
 }
 
 /* Editorial chapter transitions. Typography is the visual, not an illustration. */
-.roster-edition .position-scene { position: relative; padding: 28px 0 22px; border-top: 1px solid #d4b77b60; border-bottom: 1px solid var(--line); overflow: hidden; }
+.roster-edition .position-scene { position: relative; padding: 28px 0 22px; border-top: 1px solid #68c8ce60; border-bottom: 1px solid var(--line); overflow: hidden; }
 .roster-edition .chapter-meta, .roster-edition .chapter-bottom { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
 .roster-edition .chapter-meta { font-size: 10px; font-weight: 600; letter-spacing: 1.8px; color: var(--accent); }
 .roster-edition .chapter-meta > span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -104,7 +104,7 @@
 .roster-edition .chapter-word-mask { display: block; overflow: hidden; padding-bottom: 3px; }
 .roster-edition .chapter-word { display: block; }
 .roster-edition .chapter-word-mask:last-child { color: var(--accent); }
-.roster-edition .chapter-bottom { font-size: 8px; letter-spacing: 1.5px; color: #a4adbc80; }
+.roster-edition .chapter-bottom { font-size: 8px; letter-spacing: 1.5px; color: #a5babc80; }
 .roster-edition .scene-replay { display: inline-flex; align-items: center; gap: 14px; background: none; border: 0; padding: 10px 0 10px 14px; color: var(--muted); font: inherit; font-size: 10px; letter-spacing: .4px; cursor: pointer; transition: color .2s; }
 .roster-edition .scene-replay:hover { color: var(--text); }
 .roster-edition .scene-replay:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }

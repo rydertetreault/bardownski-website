@@ -8,7 +8,7 @@ import "./navbar.css";
 
 const hockeyLinks = [
   ["/", "Home"], ["/matches", "Matches"], ["/roster", "Roster"],
-  ["/stats", "Stats"], ["/records", "Records"], ["/gallery", "Gallery"],
+  ["/stats", "Stats"], ["/lab", "Player lab"], ["/records", "Records"], ["/gallery", "Gallery"],
   ["/highlights", "Highlights"], ["/news", "News"],
 ];
 const fcLinks = [
@@ -33,11 +33,13 @@ export default function Navbar() {
   }, [open]);
   const active = (href: string) => href === "/" || href === "/fc" ? pathname === href : pathname.startsWith(href + "/") || pathname === href;
   const pageStrips: Record<string, { title: string; links: string[][] }> = {
-    "/": { title: "NHL 26 / SEASON COMPLETE", links: [["/#story", "The recap"], ["/#mvp-stage", "MVP & honors"], ["/#next", "What’s next ↗"]] },
-    "/matches": { title: "NHL 26 / THE MATCH ARCHIVE", links: [["/matches#streak", "The record run"], ["/", "Season recap ↗"]] },
-    "/roster": { title: "NHL 26 / THE ROSTER EDITION", links: [["/roster#squad", "The squad"], ["/roster#leadership", "The next chapter ↗"]] },
-    "/stats": { title: "THE STAT BOOK / BARDOWNSKI HOCKEY", links: [["/stats#standings", "Final standings"], ["/stats#numbers", "Player stats"], ["/records", "Records ↗"]] },
-    "/records": { title: "BARDOWNSKI / CLUB RECORDS", links: [["/stats", "Season stats"], ["/matches", "Match archive ↗"]] },
+    "/": { title: "2026–2027 / BARDOWNSKI HOCKEY", links: [["/#results", "Recent matches"], ["/#standings", "MVP tracker"], ["/#history", "Past seasons"]] },
+    "/matches": { title: "2026–2027 / THE MATCH CENTRE", links: [["/matches#results", "Season matches"], ["/matches#archive", "2025–2026 archive ↗"]] },
+    "/roster": { title: "2026–2027 / THE ROSTER", links: [["/roster#squad", "The squad"], ["/roster#leadership", "The next chapter ↗"]] },
+    "/stats": { title: "2026–2027 / THE STAT BOOK", links: [["/stats#numbers", "Season stats"], ["/stats#standings", "MVP tracker"], ["/stats#archive", "Previous seasons"]] },
+    "/lab": { title: "BARDOWNSKI / THE PLAYER LAB", links: [["/lab#comparison", "Compare players"], ["/lab#lines", "Build lines"], ["/lab#chemistry-method", "How it works ↗"]] },
+    "/awards": { title: "2025–2026 / AWARD WINNERS", links: [["/stats#archive", "Archived stats"], ["/stats#standings", "New-season MVP tracker ↗"]] },
+    "/records": { title: "BARDOWNSKI / CLUB RECORDS", links: [["/stats", "Season stats"], ["/matches#archive", "Match archive ↗"]] },
     "/gallery": { title: "BARDOWNSKI / GALLERY", links: [["/highlights", "Watch highlights ↗"]] },
     "/highlights": { title: "BARDOWNSKI / THE FILM ROOM", links: [["/highlights#highlights-ryder", "JRT IV"], ["/highlights#highlights-dylan", "Xavier Laflamme"], ["/highlights#highlights-kaden", "Gotta Be"], ["/highlights#highlights-slobby-robby", "Slobby Robby"], ["/highlights#highlights-matt", "Matt"]] },
     "/news": { title: "BARDOWNSKI / THE CLUB JOURNAL", links: [["/news#stories", "Explore the stories ↘"]] },
@@ -50,7 +52,7 @@ export default function Navbar() {
     <header className="legacy-site-header">
       <div className="legacy-nav-inner">
         <Link href={isFc ? "/fc" : "/"} className="legacy-nav-brand" onClick={() => setOpen(false)}>
-          <Image src="/icon-192.png" width={40} height={40} alt="" />
+          <Image src={isFc ? "/icon-192.png" : "/images/logo/B-logo.png"} width={40} height={40} alt="" />
           <span>BARDOWNSKI<small>NEWFOUNDLAND / {isFc ? "FOOTBALL" : "HOCKEY"} CLUB</small></span>
         </Link>
         <button ref={toggle} type="button" className="legacy-nav-toggle" aria-controls="legacy-site-links" aria-expanded={open} onClick={() => setOpen(!open)}>

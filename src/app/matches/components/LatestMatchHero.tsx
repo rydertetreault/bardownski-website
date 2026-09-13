@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useHockeyMotionPaused } from "@/components/layout/hockey-motion-preference";
 import Image from "next/image";
 import Link from "next/link";
 import type { Match } from "@/types";
@@ -9,6 +10,7 @@ import { isChampionshipClincher } from "@/lib/championship";
 import { getResult } from "../utils";
 
 export function LatestMatchHero({ match }: { match: Match }) {
+  const motionPaused = useHockeyMotionPaused();
   const result = getResult(match);
   const isWin = result === "W";
   const isForfeit = match.id.startsWith("forfeit-");
@@ -41,7 +43,7 @@ export function LatestMatchHero({ match }: { match: Match }) {
           viewBox="0 0 400 400"
           preserveAspectRatio="none"
         >
-          <polygon points="260,0 400,0 280,400 160,400" fill="#d4b77b" />
+          <polygon points="260,0 400,0 280,400 160,400" fill="#68c8ce" />
         </svg>
       </div>
 
@@ -51,7 +53,7 @@ export function LatestMatchHero({ match }: { match: Match }) {
         style={{
           background: isClincher
             ? "linear-gradient(90deg, transparent 0%, #f4d35e 50%, transparent 100%)"
-            : "linear-gradient(90deg, #d4b77b 0%, #d4b77b 50%, transparent 100%)",
+            : "linear-gradient(90deg, #68c8ce 0%, #68c8ce 50%, transparent 100%)",
         }}
       />
 
@@ -59,7 +61,7 @@ export function LatestMatchHero({ match }: { match: Match }) {
         {/* Header row */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <div className="w-1 h-4 rounded-sm bg-[#d4b77b]" />
+            <div className="w-1 h-4 rounded-sm bg-[#68c8ce]" />
             <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] text-white/50">
               Last Saved Result
             </span>
@@ -156,7 +158,7 @@ export function LatestMatchHero({ match }: { match: Match }) {
               className="flex items-center justify-center min-w-[48px] md:min-w-[72px] py-2 md:py-2.5"
               style={{
                 backgroundColor: !isWin
-                  ? "rgba(212, 183, 123,0.12)"
+                  ? "rgba(104, 200, 206,0.12)"
                   : "rgba(255,255,255,0.05)",
                 clipPath:
                   "polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%)",
@@ -281,10 +283,11 @@ export function LatestMatchHero({ match }: { match: Match }) {
   if (isForfeit) {
     return (
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
+        initial={false}
+        animate={motionPaused ? { opacity: 1, y: 0 } : undefined}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
+        transition={motionPaused ? { duration: 0 } : { duration: 0.4 }}
         className="mb-8"
       >
         {content}
@@ -294,10 +297,11 @@ export function LatestMatchHero({ match }: { match: Match }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={false}
+      animate={motionPaused ? { opacity: 1, y: 0 } : undefined}
+        whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.4 }}
+      transition={motionPaused ? { duration: 0 } : { duration: 0.4 }}
       className="mb-8"
     >
       <Link

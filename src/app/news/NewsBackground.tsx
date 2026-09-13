@@ -4,7 +4,7 @@ export default function NewsBackground() {
   return (
     <div
       className="fixed inset-0 -z-10 overflow-hidden pointer-events-none"
-      style={{ backgroundColor: "#0b0f1a" }}
+      style={{ backgroundColor: "#0b0c0d" }}
     >
       {/* Diagonal BARDOWNSKI text watermark */}
       <div
@@ -42,7 +42,7 @@ export default function NewsBackground() {
           right: "-10%",
           width: "600px",
           height: "600px",
-          background: "radial-gradient(circle, rgba(212, 183, 123,0.12) 0%, transparent 65%)",
+          background: "radial-gradient(circle, rgba(104, 200, 206,0.12) 0%, transparent 65%)",
           filter: "blur(80px)",
         }}
       />
@@ -55,7 +55,7 @@ export default function NewsBackground() {
           left: "-8%",
           width: "520px",
           height: "520px",
-          background: "radial-gradient(circle, rgba(27,42,74,0.45) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(50,13,72,0.45) 0%, transparent 70%)",
           filter: "blur(70px)",
         }}
       />

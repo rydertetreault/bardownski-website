@@ -13,27 +13,27 @@ export default function SeasonRecap() {
     >
       <section className="hero" id="film-0">
         <div className="hero-copy">
-          <p className="eyebrow">THE LEGACY EDITION</p>
+          <p className="eyebrow">THE 2026–2027 EDITION</p>
           <h1>
-            ONE SEASON.
+            SAME CLUB.
             <br />
-            <em>FOREVER OURS.</em>
+            <em>NEXT CHAPTER.</em>
           </h1>
           <p className="hero-description">
-            366 games. Our first championship. A season that belongs in the
-            rafters.
+            New colors. The same Bardownski spirit. Building on our first
+            championship as we move into 2026–2027.
           </p>
           <div className="actions">
-            <a className="button" href="#story">
-              Relive the season ↗
+            <a className="button" href="#next">
+              The next chapter ↗
             </a>
-            <a href="#mvp-stage">Meet the standouts ↓</a>
+            <a href="#mvp-stage">2025–2026 standouts ↓</a>
           </div>
           <span className="season-label">
-            NHL 26 <span> / </span> FINAL SEASON RECAP
+            2026–2027 <span> / </span> THE NEXT CHAPTER
           </span>
           <div className="motion-guide">
-            <a href="#mvp-stage">Jump to the MVP reveal ↓</a>
+            <a href="#mvp-stage">2025–2026 MVP reveal ↓</a>
             <button
               className="motion-toggle"
               type="button"
@@ -53,7 +53,7 @@ export default function SeasonRecap() {
             FIRST
             <br />
             <b>CLASS.</b>
-            <small>CHAMPIONS / SEASON 4</small>
+            <small>2025–2026 / SEASON 4 CHAMPIONS</small>
           </div>
         </figure>
       </section>
@@ -62,11 +62,11 @@ export default function SeasonRecap() {
           <strong>
             207<span>–144–15</span>
           </strong>
-          <small>FINAL RECORD · W–L–OTL</small>
+          <small>2025–2026 RECORD · W–L–OTL</small>
         </div>
         <div className="scroll-reveal">
           <strong>366</strong>
-          <small>GAMES IN THE BOOKS</small>
+          <small>2025–2026 GAMES PLAYED</small>
         </div>
         <div className="scroll-reveal">
           <strong>01</strong>
@@ -94,12 +94,13 @@ export default function SeasonRecap() {
           <span>SEASON 4 / ELITE DIVISION CLUB FINALS</span>
         </div>
         <article className="scroll-reveal">
-          <p className="eyebrow">01 / CLUB NEWS · SEASON RECAP</p>
-          <h2>A championship deserves a curtain call.</h2>
+          <p className="eyebrow">01 / THE STANDARD WE CARRY</p>
+          <h2>A championship to build on.</h2>
           <p>
-            The NHL 26 season is officially in the books. Bardownski closes the
-            year at <b>207–144–15</b> across 366 games, with something we had
-            been chasing for seven years: our first club championship.
+            Bardownski enters 2026–2027 with a new look and a standard to chase.
+            Our 2025–2026 campaign brought a <b>207–144–15</b> record across
+            366 games and something we had been chasing for seven years:
+            our first club championship.
           </p>
           <p>
             A 5–3 win over B A N G N A T I O N sealed the Season 4 Elite
@@ -108,7 +109,7 @@ export default function SeasonRecap() {
           </p>
           <details>
             <summary>
-              Read the full season-ending article <span>↗</span>
+              The championship story <span>↗</span>
             </summary>
             <div className="article-body">
               <p>
@@ -119,24 +120,23 @@ export default function SeasonRecap() {
                 the championship-run MVP.
               </p>
               <p>
-                Season MVP and statistical team awards are now calculated from
-                the final-season snapshot using the criteria below. Community
-                honors remain team selections. Until then, the final numbers
-                tell part of the story—but not all of it. Every shift, every
-                late night, and every teammate helped make this season ours.
+                The 2025–2026 MVP and statistical team awards below preserve the
+                performances that set our standard. Community honors remain
+                team selections. Every shift, every late night, and every
+                teammate helped build the club we take into the new season.
               </p>
               <p>
-                Now comes the annual reset. New colors and a new leadership
-                chapter are ahead, with reveal details still to come. This
-                season’s identity and achievements deserve to be preserved as we
-                prepare for what follows.
+                Now we move forward in teal, purple, white and black. The captain
+                and jersey announcement is coming soon, while 2026–2027 match
+                and stats tracking are being prepared. Last season’s achievements
+                stay in their own chapter.
               </p>
               <p>
-                To everyone who took the ice with Bardownski: thank you. Season
-                over. History made.
+                To everyone who takes the ice with Bardownski: the next chapter
+                is ours to write.
               </p>
               <Link href="/news/season-finale-nhl26">
-                Read the season-ending article ↗
+                Read the 2025–2026 championship recap ↗
               </Link>
             </div>
           </details>
@@ -145,17 +145,17 @@ export default function SeasonRecap() {
       <section
         id="mvp-stage"
         className="mvp-stage"
-        aria-label="Season MVP reveal"
+        aria-label="2025–2026 Season MVP reveal"
       >
         <div className="stage-pin">
           <div className="stage-grid" aria-hidden="true"></div>
           <div className="stage-halo" aria-hidden="true"></div>
           <div className="stage-top">
-            <span>THE LEGACY / NHL 26</span>
-            <span>SEASON HONORS</span>
+            <span>THE LEGACY / 2025–2026</span>
+            <span>2025–2026 HONORS</span>
           </div>
           <div className="stage-content">
-            <p className="eyebrow">NHL 26 · FINAL SEASON AWARDS</p>
+            <p className="eyebrow">2025–2026 · AWARD WINNERS</p>
             <div className="stage-star" aria-hidden="true">
               ★
             </div>
@@ -164,7 +164,7 @@ export default function SeasonRecap() {
               <em>{SEASON_MVP.winners.join(" & ")}</em>
             </h2>
             <p className="stage-description">
-              The season’s highest-rated performance.
+              The highest-rated performance of 2025–2026.
               <br />
               The name we’ll remember.
             </p>
@@ -173,7 +173,7 @@ export default function SeasonRecap() {
                 {SEASON_MVP.result.split(" ")[0]} <small>PERFORMANCE SCORE</small>
               </span>
               <span>
-                NHL 26 <small>FINAL SEASON</small>
+                2025–2026 <small>ARCHIVED SEASON</small>
               </span>
             </div>
           </div>
@@ -185,7 +185,7 @@ export default function SeasonRecap() {
           </div>
           <div className="stage-bottom">
             <span>
-              Calculated from final-season stats · Position-adjusted MVP model
+              2025–2026 stats · Position-adjusted MVP model
             </span>
             <a href="#awards">All team honors ↓</a>
             <button className="replay-curtain">Replay curtain reveal ↻</button>
@@ -197,9 +197,9 @@ export default function SeasonRecap() {
         <div className="section-head">
           <div>
             <p className="eyebrow">02 / THE PEOPLE WHO MADE IT</p>
-            <h2>The team behind the legacy.</h2>
+            <h2>2025–2026 award winners.</h2>
           </div>
-          <p>Final NHL 26 stats and team-selected honors.<br />Transparent criteria. Shared honors for ties.</p>
+          <p>2025–2026 stats and team-selected honors.<br />Transparent criteria. Shared honors for ties.</p>
         </div>
         <div className="awards">
           <article className="mvp supporting-mvp">
@@ -214,7 +214,7 @@ export default function SeasonRecap() {
               the scoresheet—a season of production and physical presence that
               earned the highest score in our position-adjusted MVP model.
             </p>
-            <div className="award-bottom">NHL 26 <b>FULL-SEASON PERFORMANCE</b></div>
+            <div className="award-bottom">2025–2026 <b>FULL-SEASON PERFORMANCE</b></div>
           </article>
           <div className="award-stack">
             <article>
@@ -230,7 +230,7 @@ export default function SeasonRecap() {
                 <p>{award.result}</p>
                 {award.description && <small>{award.description}</small>}
                 {award.id === "individual-performance" && (
-                  <small>Based on this season’s archived games</small>
+                  <small>Based on the 2025–2026 archived games</small>
                 )}
 
               </article>
@@ -239,7 +239,7 @@ export default function SeasonRecap() {
         </div>
         <details className="award-methodology">
           <summary>How the awards are calculated</summary>
-          <p>Season MVP and the calculated awards are statistical honors, not vote results. Season MVP and positional honors use the same weighted performance model as the site’s MVP rankings, applied to the frozen final-season snapshot. Ranking scores are not vote counts or win probabilities. Defensemen receive position-specific weighting; goalies have a separate rate-and-workload model. Skater volume is dampened above 100 games. All exact ties share an award.</p>
+          <p>Season MVP and the calculated awards are statistical honors, not vote results. Season MVP and positional honors use the same weighted performance model as the site’s MVP rankings, applied to the frozen 2025–2026 snapshot. Ranking scores are not vote counts or win probabilities. Defensemen receive position-specific weighting; goalies have a separate rate-and-workload model. Skater volume is dampened above 100 games. All exact ties share an award.</p>
           {RECAP_HONORS.map(award => (
             <p key={award.id}><b>{award.title}:</b> {award.criteria}</p>
           ))}
@@ -247,7 +247,7 @@ export default function SeasonRecap() {
         </details>
         <div className="standouts">
           <p className="eyebrow">
-            BY THE NUMBERS / STATISTICAL STANDOUTS, NOT VOTED AWARDS
+            2025–2026 / STATISTICAL STANDOUTS, NOT VOTED AWARDS
           </p>
           <div>
             <article className="scroll-reveal">
@@ -277,9 +277,9 @@ export default function SeasonRecap() {
         <div className="interlude-inner">
           <span>NEW COLORS. NEW LEADERSHIP. SAME CLUB.</span>
           <p>
-            THIS CHAPTER CLOSES.
+            THE NEXT SHIFT.
             <br />
-            <em>THE NEXT ONE IS OURS.</em>
+            <em>THE NEXT CHAPTER.</em>
           </p>
           <div className="interlude-line" aria-hidden="true"></div>
         </div>
@@ -293,24 +293,24 @@ export default function SeasonRecap() {
           <p>
             Every season, we make it ours again.
             <br />
-            No reveals announced yet.
+            2026–2027 starts here.
           </p>
         </div>
         <div className="next-grid">
           <article className="scroll-reveal">
             <span className="number">01</span>
             <h3>A new set of colors.</h3>
-            <div className="swatches">
+            <div className="swatches" role="img" aria-label="Teal, purple, white and black">
               <i></i>
               <i></i>
               <i></i>
-              <span>?</span>
+              <i></i>
             </div>
             <p>
-              The next identity is still under wraps. This season’s colors stay
-              in the archive.
+              Teal, purple, white and black. A fresh look for 2026–2027,
+              with the same club behind every sweater.
             </p>
-            <span className="tag">COLOR REVEAL · PENDING</span>
+            <span className="tag">2026–2027 · NEW COLORS</span>
           </article>
           <article className="scroll-reveal">
             <span className="number">02</span>
@@ -321,27 +321,27 @@ export default function SeasonRecap() {
               <b>A</b>
             </div>
             <p>
-              A fresh leadership chapter. Meet the next captain and leadership
-              group when selections are official.
+              The 2026–2027 captain and leadership group will be introduced
+              in the upcoming captain and jersey announcement.
             </p>
-            <span className="tag">LEADERSHIP · PENDING</span>
+            <span className="tag">ANNOUNCEMENT · COMING SOON</span>
           </article>
           <article className="scroll-reveal">
             <span className="number">03</span>
             <h3>Keep the history.</h3>
             <div className="archive-year">
-              26<span>→</span>?
+              26<span>→</span>27
             </div>
             <p>
-              A home for the season’s record, honors, and championship story as
-              the club moves forward.
+              The 2025–2026 record, honors and championship story stay with
+              us. New-season tracking is being prepared for what comes next.
             </p>
-            <a href="#story">Revisit the season ↗</a>
+            <Link href="/stats">2026–2027 stats & tracking ↗</Link>
           </article>
         </div>
         <p className="fine">
-          Next season’s colors and leadership have not been announced. This
-          season’s identity stays in the archive.
+          The captain and jersey announcement is coming soon. The honors and
+          totals above belong to 2025–2026; 2026–2027 tracking is being prepared.
         </p>
       </section>
       <SeasonMotion />

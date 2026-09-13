@@ -1,0 +1,73 @@
+.hockey-home { font-family:Arial,Helvetica,sans-serif; background:var(--background); color:var(--foreground); }
+.hockey-home * { box-sizing:border-box; }
+.hockey-home :is(h1,h2,h3,p,figure) { margin:0; }
+.hockey-home a { text-decoration:none; }
+.hockey-home a:hover { text-decoration:underline; text-underline-offset:5px; }
+.hockey-home :is(a,button,summary):focus-visible { outline:3px solid var(--hockey-accent); outline-offset:5px; }
+.hockey-home [id] { scroll-margin-top:145px; }
+.hockey-home .new-eyebrow { font-size:10px; font-weight:700; letter-spacing:2px; color:var(--hockey-accent); text-transform:uppercase; }
+.new-season-hero { padding:40px 5% 0; overflow:hidden; background:radial-gradient(ellipse at 70% 0%,#320d4866,transparent 45%),radial-gradient(ellipse at 25% 70%,#00677540,transparent 60%),#0b0c0d; }
+.new-season-hero-top { display:flex; justify-content:space-between; align-items:center; gap:20px; }
+.new-season-pill { border:1px solid var(--border); padding:10px 14px; font-size:9px; letter-spacing:1.5px; color:var(--muted); }
+.new-season-headline { display:flex; align-items:end; justify-content:space-between; gap:40px; margin:44px 0 10px; position:relative; z-index:1; }
+.new-season-headline h1 { font-size:clamp(56px,8vw,125px); line-height:.91; font-weight:950; letter-spacing:-.055em; }
+.new-season-headline em { font-style:normal; color:var(--hockey-accent); }
+.new-season-headline > div { padding:0 2% 5px 0; }
+.new-season-headline p { font-size:14px; line-height:1.8; color:var(--muted); }
+.hockey-home .new-button { display:inline-flex; justify-content:space-between; align-items:center; gap:30px; background:var(--hockey-accent); color:#0b0c0d; font-size:12px; font-weight:700; padding:16px 20px; margin-top:24px; }
+.new-button span { font-size:20px; }
+.new-jersey-hero { position:relative; }
+.new-jersey-hero img { display:block; width:100%; height:auto; mix-blend-mode:lighten; }
+.new-jersey-hero figcaption { display:grid; grid-template-columns:repeat(4,1fr); text-align:center; font-size:9px; letter-spacing:2px; padding:12px 0 28px; color:var(--muted); }
+.new-identity-rule { display:flex; height:7px; }
+.new-identity-rule i:nth-child(1) { width:45%; background:var(--hockey-teal); }
+.new-identity-rule i:nth-child(2) { width:30%; background:var(--hockey-purple); }
+.new-identity-rule i:nth-child(3) { width:15%; background:var(--foreground); }
+.new-identity-rule i:nth-child(4) { width:10%; background:#17191b; }
+.new-season-pulse { display:grid; grid-template-columns:1fr 1fr 1.2fr; padding:30px 5%; border-bottom:1px solid var(--border); }
+.new-season-pulse > div { padding:0 30px; border-left:1px solid var(--border); }
+.new-season-pulse > div:first-child { padding-left:0; border-left:0; }
+.new-season-pulse span,.new-season-pulse small { display:block; font-size:10px; color:var(--muted); }
+.new-season-pulse span { letter-spacing:1.5px; margin-bottom:14px; }
+.new-season-pulse strong { display:block; font-size:20px; font-weight:700; margin-bottom:10px; }
+.new-season-pulse a { font-size:11px; color:var(--hockey-accent); }
+.new-section { padding:85px 5%; }
+.new-section-panel { background:#0d171a; border-block:1px solid var(--border); }
+.new-section-heading { display:flex; justify-content:space-between; align-items:end; gap:30px; margin-bottom:36px; }
+.new-section-heading .new-eyebrow { margin-bottom:18px; }
+.hockey-home h2 { font-size:clamp(34px,4vw,60px); font-weight:900; line-height:1.02; letter-spacing:-2px; }
+.new-section-heading > p { font-size:13px; line-height:1.8; color:var(--muted); max-width:390px; }
+.new-section-heading > a,.new-text-link { color:var(--hockey-accent); font-size:12px; font-weight:700; }
+.new-announcement { display:grid; grid-template-columns:1.5fr 1fr; border:1px solid var(--border); background:#101b1e; }
+.new-announcement-media { position:relative; background:#080d0f; display:flex; align-items:center; }
+.new-announcement-media :is(img,video) { display:block; width:100%; height:auto; }
+.new-announcement-media video { aspect-ratio:3/2; object-fit:contain; }
+.new-film-label { position:absolute; left:18px; bottom:18px; padding:10px 12px; background:#0b0c0dee; color:var(--foreground); border-left:2px solid var(--hockey-accent); font-size:8px; letter-spacing:1.5px; }
+.new-announcement-copy { padding:45px; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; }
+.new-announcement-copy h3 { font-size:clamp(30px,3vw,44px); font-weight:800; line-height:1.1; letter-spacing:-1.5px; margin:25px 0; }
+.new-announcement-copy p { color:var(--muted); font-size:14px; line-height:1.8; }
+.new-film-status { margin-top:26px; color:var(--hockey-lilac); font-size:10px; line-height:1.7; }
+.new-announcement-copy a { color:var(--hockey-accent); font-size:12px; margin-top:26px; }
+.new-awards { background:linear-gradient(120deg,#320d4850,var(--surface)); border-block:1px solid var(--border); }
+.new-award-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:28px; }
+.new-award-grid article { padding-top:25px; border-top:1px solid #c4a1dc50; }
+.new-award-grid article > span { color:var(--hockey-lilac); font-size:10px; letter-spacing:1px; text-transform:uppercase; }
+.new-award-grid h3 { font-size:25px; letter-spacing:-.8px; line-height:1.15; font-weight:800; margin:20px 0 15px; }
+.new-award-grid p { font-size:12px; line-height:1.8; color:var(--muted); }
+.new-awards .new-text-link { display:inline-block; margin-top:40px; }
+.new-club-links { display:grid; grid-template-columns:1fr 1.2fr; gap:60px; }
+.new-club-links h2 { margin-top:25px; }
+.new-club-links nav a { display:flex; justify-content:space-between; align-items:center; gap:20px; padding:25px 0; border-bottom:1px solid var(--border); font-size:24px; font-weight:700; }
+.new-club-links nav small { display:block; font-size:9px; color:var(--muted); letter-spacing:1.5px; margin-bottom:10px; font-weight:400; }
+.new-club-links nav b { color:var(--hockey-accent); font-weight:400; }
+.new-home-signoff { padding:25px 5%; display:flex; justify-content:space-between; gap:25px; border-top:1px solid var(--border); font-size:9px; letter-spacing:1.5px; color:var(--muted); }
+.new-home-signoff a { color:var(--hockey-accent); }
+@media(max-width:1000px) { .new-announcement-copy { padding:30px; } .new-award-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .new-season-headline > div { padding-right:0; } }
+@media(max-width:800px) { .new-announcement { grid-template-columns:1fr; } .new-announcement-copy { padding:35px; } .new-season-headline { align-items:start; gap:24px; } .new-season-headline h1 { font-size:clamp(48px,8vw,75px); } .new-season-headline p { font-size:12px; } .new-club-links { gap:30px; } }
+@media(max-width:600px) { .new-season-hero { padding-top:25px; } .new-season-hero-top { align-items:start; flex-direction:column; gap:15px; } .new-season-headline { flex-direction:column; margin-top:30px; } .new-season-headline h1 { font-size:clamp(49px,12vw,72px); } .new-season-headline > div { display:flex; justify-content:space-between; align-items:center; gap:20px; width:100%; margin-bottom:12px; } .hockey-home .new-button { margin-top:0; gap:12px; padding:12px; font-size:10px; white-space:nowrap; } .new-jersey-hero { margin-inline:-4%; } .new-jersey-hero figcaption { font-size:7px; letter-spacing:.5px; padding-block:8px 20px; } .new-section { padding-block:55px; } .new-section-heading { align-items:start; flex-direction:column; gap:20px; } .new-season-pulse { grid-template-columns:1fr; padding-block:10px; } .new-season-pulse > div { border-left:0; padding:20px 0; border-bottom:1px solid var(--border); } .new-season-pulse > div:last-child { border:0; } .new-season-pulse strong { font-size:18px; } .new-season-pulse span { font-size:9px; } .new-club-links { grid-template-columns:1fr; } .new-award-grid { gap:24px; } .new-award-grid h3 { font-size:22px; } .new-home-signoff { flex-direction:column; line-height:1.7; } }
+@media(prefers-reduced-motion:reduce) { .hockey-home * { scroll-behavior:auto!important; } }
+/* Preserve shared tracking component rhythm against the homepage reset. */
+.hockey-home .tracker-intro h3 { margin:30px 0 20px; }
+.hockey-home .season-performers p { margin-top:12px; }
+.hockey-home .tracker-waiting p,.hockey-home .tracker-method p { margin-top:10px; }
+.season-performers .tracking-card-label { min-height:28px; }

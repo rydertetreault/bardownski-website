@@ -600,7 +600,10 @@ function makeLeaderboard(
     }));
 }
 
-export function chelstatsToSeasonData(members: ClubMember[]): SeasonData {
+export function chelstatsToSeasonData(
+  members: ClubMember[],
+  snapshot: { season: string; date: string } = { season: "2025", date: FROZEN_SEASON_LABEL },
+): SeasonData {
   const roster: RosterEntry[] = members.map((m) => ({
     name: resolveName(m.username),
     position: m.position,
@@ -707,7 +710,7 @@ export function chelstatsToSeasonData(members: ClubMember[]): SeasonData {
   );
 
   const stats: ParsedStats = {
-    date: FROZEN_SEASON_LABEL,
+    date: snapshot.date,
     roster,
     points,
     goals,
@@ -727,7 +730,7 @@ export function chelstatsToSeasonData(members: ClubMember[]): SeasonData {
     faceoffPct,
   };
 
-  return { season: "2025", stats };
+  return { season: snapshot.season, stats };
 }
 
 /* ── Top Players (driven by MVP odds ranking) ────────────────────────── */

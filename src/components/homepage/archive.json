@@ -1,0 +1,556 @@
+{
+  "season": "2025–2026",
+  "record": "207-144-15",
+  "played": 366,
+  "wins": 207,
+  "goals": 1886,
+  "players": [
+    {
+      "name": "XAVIER LAFLAMME",
+      "short": "DYLAN",
+      "role": "F",
+      "score": 2075.54,
+      "games": 290,
+      "points": 1410,
+      "goals": 920,
+      "assists": 490,
+      "saves": 0,
+      "shutouts": 0,
+      "highlights": [
+        "290 GP",
+        "1410 PTS",
+        "920 G",
+        "490 A"
+      ]
+    },
+    {
+      "name": "MATT HUT",
+      "short": "MATT",
+      "role": "F",
+      "score": 1337.51,
+      "games": 233,
+      "points": 801,
+      "goals": 472,
+      "assists": 329,
+      "saves": 18,
+      "shutouts": 0,
+      "highlights": [
+        "233 GP",
+        "801 PTS",
+        "472 G",
+        "329 A"
+      ]
+    },
+    {
+      "name": "JENE RENE TETREAU IV",
+      "short": "RYDER",
+      "role": "G",
+      "score": 1284.03,
+      "games": 209,
+      "points": 42,
+      "goals": 15,
+      "assists": 27,
+      "saves": 2135,
+      "shutouts": 21,
+      "highlights": [
+        "209 GP",
+        "71.0% SV",
+        "21 SO",
+        "4.78 GAA"
+      ]
+    },
+    {
+      "name": "GOTTA BE",
+      "short": "KADEN",
+      "role": "D",
+      "score": 1036.2,
+      "games": 117,
+      "points": 317,
+      "goals": 121,
+      "assists": 196,
+      "saves": 14,
+      "shutouts": 2,
+      "highlights": [
+        "117 GP",
+        "317 PTS",
+        "121 G",
+        "196 A"
+      ]
+    },
+    {
+      "name": "SLOBBY ROBBY",
+      "short": "ROB",
+      "role": "D",
+      "score": 840.84,
+      "games": 91,
+      "points": 203,
+      "goals": 33,
+      "assists": 170,
+      "saves": 0,
+      "shutouts": 0,
+      "highlights": [
+        "91 GP",
+        "203 PTS",
+        "33 G",
+        "170 A"
+      ]
+    },
+    {
+      "name": "TOP G",
+      "short": "LOGAN",
+      "role": "F",
+      "score": 838.45,
+      "games": 125,
+      "points": 322,
+      "goals": 150,
+      "assists": 172,
+      "saves": 0,
+      "shutouts": 0,
+      "highlights": [
+        "125 GP",
+        "322 PTS",
+        "150 G",
+        "172 A"
+      ]
+    },
+    {
+      "name": "JIMMY LEMONS",
+      "short": "JIMMY",
+      "role": "F",
+      "score": 772.67,
+      "games": 112,
+      "points": 282,
+      "goals": 95,
+      "assists": 187,
+      "saves": 220,
+      "shutouts": 2,
+      "highlights": [
+        "112 GP",
+        "282 PTS",
+        "95 G",
+        "187 A"
+      ]
+    },
+    {
+      "name": "WOLFGANG MOZART",
+      "short": "COLIN",
+      "role": "F",
+      "score": 677.49,
+      "games": 101,
+      "points": 221,
+      "goals": 80,
+      "assists": 141,
+      "saves": 201,
+      "shutouts": 5,
+      "highlights": [
+        "101 GP",
+        "221 PTS",
+        "80 G",
+        "141 A"
+      ]
+    },
+    {
+      "name": "Treyway6479",
+      "short": "Treyway6479",
+      "role": "F",
+      "score": 43.66,
+      "games": 8,
+      "points": 6,
+      "goals": 0,
+      "assists": 6,
+      "saves": 0,
+      "shutouts": 0,
+      "highlights": [
+        "8 GP",
+        "6 PTS",
+        "0 G",
+        "6 A"
+      ]
+    }
+  ],
+  "matches": [
+    {
+      "id": "23760739000184",
+      "timestamp": 1784689213,
+      "date": "July 22, 2026",
+      "opponent": "The Buffalo Wings",
+      "scoreUs": 10,
+      "scoreThem": 4,
+      "matchType": "regular",
+      "players": [
+        {
+          "name": "DYLAN",
+          "goals": 5,
+          "assists": 3
+        },
+        {
+          "name": "JIMMY",
+          "goals": 5,
+          "assists": 2
+        }
+      ]
+    },
+    {
+      "id": "23762511030372",
+      "timestamp": 1784687634,
+      "date": "July 22, 2026",
+      "opponent": "Thrasherz",
+      "scoreUs": 6,
+      "scoreThem": 5,
+      "matchType": "regular",
+      "players": [
+        {
+          "name": "DYLAN",
+          "goals": 5,
+          "assists": 1
+        },
+        {
+          "name": "JIMMY",
+          "goals": 1,
+          "assists": 4
+        }
+      ]
+    },
+    {
+      "id": "23414714130258",
+      "timestamp": 1784182248,
+      "date": "July 16, 2026",
+      "opponent": "BILLS 717",
+      "scoreUs": 9,
+      "scoreThem": 8,
+      "matchType": "regular",
+      "players": [
+        {
+          "name": "DYLAN",
+          "goals": 9,
+          "assists": 0
+        }
+      ]
+    },
+    {
+      "id": "21892943420255",
+      "timestamp": 1781838110,
+      "date": "June 19, 2026",
+      "opponent": "Tkachuk You",
+      "scoreUs": 1,
+      "scoreThem": 5,
+      "matchType": "regular",
+      "players": [
+        {
+          "name": "MATT",
+          "goals": 1,
+          "assists": 0
+        },
+        {
+          "name": "LOGAN",
+          "goals": 0,
+          "assists": 1
+        },
+        {
+          "name": "DYLAN",
+          "goals": 0,
+          "assists": 0
+        }
+      ]
+    },
+    {
+      "id": "21604975430301",
+      "timestamp": 1781484298,
+      "date": "June 15, 2026",
+      "opponent": "0bl0ck",
+      "scoreUs": 7,
+      "scoreThem": 8,
+      "matchType": "regular",
+      "players": [
+        {
+          "name": "DYLAN",
+          "goals": 7,
+          "assists": 0
+        }
+      ]
+    },
+    {
+      "id": "21470985100029",
+      "timestamp": 1781325241,
+      "date": "June 13, 2026",
+      "opponent": "MD Fireballs",
+      "scoreUs": 1,
+      "scoreThem": 2,
+      "matchType": "regular",
+      "players": [
+        {
+          "name": "MATT",
+          "goals": 1,
+          "assists": 0
+        },
+        {
+          "name": "LOGAN",
+          "goals": 0,
+          "assists": 1
+        },
+        {
+          "name": "JIMMY",
+          "goals": 0,
+          "assists": 0
+        }
+      ]
+    },
+    {
+      "id": "21474155190453",
+      "timestamp": 1781323851,
+      "date": "June 13, 2026",
+      "opponent": "The moist mitts",
+      "scoreUs": 6,
+      "scoreThem": 5,
+      "matchType": "regular",
+      "players": [
+        {
+          "name": "MATT",
+          "goals": 3,
+          "assists": 2
+        },
+        {
+          "name": "LOGAN",
+          "goals": 1,
+          "assists": 3
+        },
+        {
+          "name": "JIMMY",
+          "goals": 1,
+          "assists": 2
+        }
+      ]
+    },
+    {
+      "id": "21470480150311",
+      "timestamp": 1781322104,
+      "date": "June 13, 2026",
+      "opponent": "Cheryl and the Pounders",
+      "scoreUs": 2,
+      "scoreThem": 5,
+      "matchType": "regular",
+      "players": [
+        {
+          "name": "MATT",
+          "goals": 2,
+          "assists": 0
+        },
+        {
+          "name": "LOGAN",
+          "goals": 0,
+          "assists": 2
+        },
+        {
+          "name": "JIMMY",
+          "goals": 0,
+          "assists": 0
+        }
+      ]
+    }
+  ],
+  "weekly": {
+    "name": "Jene Rene Tetreau IV",
+    "short": "RYDER",
+    "display": "JRT IV",
+    "title": "Player of the Week: Jene Rene Tetreau IV",
+    "date": "2026-04-22",
+    "games": 5,
+    "wins": 5,
+    "saves": 55,
+    "shots": 68,
+    "savePercentage": ".809",
+    "gaa": "2.60",
+    "shutouts": 1,
+    "summary": "This week's Player of the Week spotlight goes to Jene Rene Tetreau IV, the backbone of the Bardownski defense. Goaltending is the most thankless position in hockey. You can make 30 saves and the one that beats you is the one everyone remembers. But JRT IV has been making sure those moments are rare all season, and this week was a reminder of exactly why.\n\nFive starts, five wins. 55 saves on 68 shots for an .809 save percentage, 2.60 GAA, and a shutout to cap the run. JRT IV opened the slate by stopping 7 of 8 in a 6-1 win over Deporting Aliens, then turned aside 15 of 20 in a 10-5 win over Fat Dabs, held PatechinoisQC to four on 15 of 19 in a 7-4 win, denied 13 of 16 against Pounding Snatches in a 9-3 win with a shutout period buried in it, and closed the week 5-for-5 in a 7-0 blanking of Bomoeschabo. That is the kind of week that earns this nod.\n\nOn the season, JRT IV has posted a 71.0% save percentage with a 4.85 goals-against average across 140 games in net. 14 shutouts and 68 shutout periods show this is not a fluke. When JRT IV is locked in, the opposition knows it is going to be a long night.\n\nJRT IV has stopped 1488 of 2067 shots faced this season. That is the kind of volume that would break most goalies, but JRT IV thrives under pressure. With an 87-47 record in net, the win column backs up everything the advanced numbers show.\n\nGoaltending at this level is what keeps a team in games they have no business winning. JRT IV has been that player all year, and this week was no exception. The wall stands.",
+    "source": "src/lib/news.ts#8"
+  },
+  "honors": [
+    {
+      "id": "mvp",
+      "title": "Season MVP",
+      "winners": [
+        "XAVIER LAFLAMME"
+      ],
+      "result": "2075.54 performance score",
+      "criteria": "Highest score from the site's existing position-adjusted MVP model. Minimum 5 games in the scored role. Skater and goalie roles are scored separately; the highest role score wins, not their sum."
+    },
+    {
+      "id": "defense",
+      "title": "Top Defenseman",
+      "winners": [
+        "GOTTA BE"
+      ],
+      "result": "1036.20 performance score",
+      "criteria": "Highest existing MVP-model score among listed defensemen, minimum 5 skater games. SKTR is not a confirmed defense position and is excluded from this positional award."
+    },
+    {
+      "id": "goalie",
+      "title": "Top Goaltender",
+      "winners": [
+        "JENE RENE TETREAU IV"
+      ],
+      "result": "1284.03 performance score",
+      "criteria": "Highest existing goalie MVP-model score, minimum 5 goalie games. Weights save percentage, GAA, wins, shutouts, shutout periods, workload, and games played."
+    },
+    {
+      "id": "points",
+      "title": "Scoring Champion",
+      "winners": [
+        "XAVIER LAFLAMME"
+      ],
+      "result": "1,410 points",
+      "criteria": "Highest full-season points total. No minimum games; tied totals share the award."
+    },
+    {
+      "id": "goals",
+      "title": "Top Goal Scorer",
+      "winners": [
+        "XAVIER LAFLAMME"
+      ],
+      "result": "920 goals",
+      "criteria": "Highest full-season goals total. No minimum games; tied totals share the award."
+    },
+    {
+      "id": "assists",
+      "title": "Playmaker",
+      "winners": [
+        "XAVIER LAFLAMME"
+      ],
+      "result": "490 assists",
+      "criteria": "Highest full-season assists total. No minimum games; tied totals share the award."
+    },
+    {
+      "id": "hits",
+      "title": "Heavy Hitter",
+      "winners": [
+        "XAVIER LAFLAMME"
+      ],
+      "result": "2,189 hits",
+      "criteria": "Highest full-season hits total. No minimum games; tied totals share the award."
+    },
+    {
+      "id": "blocks",
+      "title": "Shot Blocker",
+      "winners": [
+        "XAVIER LAFLAMME"
+      ],
+      "result": "152 blocked shots",
+      "criteria": "Highest full-season blocked shots total. No minimum games; tied totals share the award."
+    },
+    {
+      "id": "clutch",
+      "title": "Game Winner",
+      "winners": [
+        "XAVIER LAFLAMME"
+      ],
+      "result": "43 game-winning goals",
+      "criteria": "Highest full-season game-winning goals total. No minimum games; tied totals share the award."
+    },
+    {
+      "id": "unsung",
+      "title": "Unsung Hero",
+      "winners": [
+        "Slobby Robby"
+      ],
+      "result": "170 assists · 123 blocked shots · 261 takeaways · 399 hits · +51 in 91 games",
+      "criteria": "The work outside the scoring spotlight: creating chances, blocking shots, and doing the supporting work that makes a team stronger.",
+      "selection": "editorial"
+    },
+    {
+      "id": "breakout",
+      "title": "Breakout Player",
+      "selection": "editorial",
+      "winners": [
+        "GOTTA BE"
+      ],
+      "result": "317 points · 109 blocks · 117 games",
+      "description": "More than doubled his appearances from the previous listed season, raised his shooting percentage from 25.1% to 35%, and delivered 121 goals, 196 assists and 109 blocks from defense.",
+      "criteria": "An editorial selection for a larger sustained contribution, improved finishing and production from defense—not a PPG leaderboard or a calculated most-improved award. Compared with the stats page’s 2024 table, appearances rose from 55 to 117, points from 133 to 317, goals from 54 to 121, and shooting percentage from 25.1% to 35%. The 2025–2026 season also included 255 takeaways and 384 hits. The larger workload explains part of the totals increase. His −33 and 745 giveaways remain caveats; historical defensive and discipline data are incomplete, so this is not a claim of across-the-board improvement."
+    }
+  ],
+  "seasons": [
+    {
+      "year": "2025",
+      "label": "2025–2026",
+      "rosterSize": 10,
+      "captain": "Rob",
+      "accomplishment": "First club championship · Season 4 Elite Division Club Finals. A 16–2–1 title run, sealed with a 5–3 win.",
+      "image": "championship"
+    },
+    {
+      "year": "2024",
+      "label": "2024",
+      "rosterSize": 10,
+      "captain": "JRT IV",
+      "accomplishment": "A breakout year. JRT IV became the first goaltender named captain in club history. The roster solidified and the team started climbing the ranks.",
+      "image": "goalie-purple"
+    },
+    {
+      "year": "2023",
+      "label": "2023",
+      "rosterSize": 8,
+      "captain": "Jimmy",
+      "accomplishment": "Key additions elevated the team's competitiveness. The pieces were finally coming together. Bardownski also debuted the iconic Miami Vice jerseys.",
+      "image": "bench-wide"
+    },
+    {
+      "year": "2022",
+      "label": "2022",
+      "rosterSize": 6,
+      "captain": "Matt",
+      "accomplishment": "Matt continued leading the club into year three. The roster grew and the team continued to build chemistry, finding its identity as a competitive unit.",
+      "image": "bench-wide"
+    },
+    {
+      "year": "2021",
+      "label": "2021",
+      "rosterSize": 5,
+      "captain": "Matt",
+      "accomplishment": "Bardownski kept grinding through another season, developing a core group of players.",
+      "image": "bench-wide"
+    },
+    {
+      "year": "2020",
+      "label": "2020",
+      "rosterSize": 3,
+      "captain": "Xavier Laflamme",
+      "accomplishment": "Where it all began. Bardownski was founded and hit the ice for the first time, laying the foundation for everything to come.",
+      "image": "bench-wide"
+    }
+  ],
+  "news": [
+    {
+      "id": "12",
+      "title": "The Wall: JRT IV Breaks the Club Shutouts Record",
+      "summary": "It took three years to catch himself. Jene Rene Tetreau IV has broken the Bardownski single-season shutouts record with his 21st clean sheet, one better than the mark of 20 he set back in 2023. The only goalie in club history who could touch that number was the one wearing the mask, and now the record book has to be rewritten in his own handwriting.\n\nGoaltending records do not get talked about the way goal-scoring records do. A 100-goal season lights up the room. A shutout is a quiet win. You walk off the ice, the scoreboard says 0 on the wrong side, and everyone moves on. Stack 21 of them and it stops being quiet. It becomes the standard. Every time JRT IV pulls the mask on, the opposition knows there is a real chance they do not score at all. That is what a shutout record means.\n\nThe 2023 mark stood for three years because nobody, JRT IV included, could match the run of goaltending that put it there. Twenty shutouts in a single season is the kind of number that ages well. It is the kind of number a goalie looks back on and figures nobody is ever getting near it again, himself included. That was the read on it for three straight years. Then this season happened, and the wall came back stronger than the version that set the record in the first place.\n\nThe supporting numbers on this year back up the headline. 2096 saves on 2916 shots faced. A 71% save percentage across 205 goalie games. A 4.78 GAA in a league where volume is the name of the game and the puck finds the back of the net on possessions that would never survive against a real defensive structure. Through all of that, JRT IV has posted a 128-69-8 record between the pipes. Wins on wins on wins, and 21 nights where the other team did not get one past him. Not a single one.\n\nA lot of this run has been visible in real time. The Player of the Week nod in April. The championship-clinching goaltending performance in Season 4 Club Finals. The 24-game winning streak the boys strung together in the spring, where JRT IV stood on his head night after night to keep the streak alive. Every one of those moments piled another brick on the wall, and the wall is now the tallest thing in club history. Taller than the version that stood in 2023, which is saying something.\n\nThe record has changed hands, from JRT IV in 2023 to JRT IV in 2026. It will change hands again some day, and if the last three years are any indication, the guy taking the next crack at it might be the same man in the same crease. 21 shutouts. The wall stands, and it just got a little taller.",
+      "date": "2026-07-16",
+      "image": "/images/gallery/screenshots/t.webp",
+      "category": "Club News"
+    },
+    {
+      "id": "11",
+      "title": "Milestone: Top G Surpasses 100 Goals on the Season",
+      "summary": "Top G has officially crossed the 100-goal mark on the season, joining the short list of Bardownski players to hit triple digits in the goal column. The #6 now sits at 129 goals across 107 games, and the way he is getting there tells you everything about how his role has evolved this year. The hands are real. The release is real. And when he gets a step on a defender, he is finishing.\n\nIt is not just goals either. Top G has stacked 276 points on the season with 147 assists to go with the 129 goals, good for a 2.60 points-per-game pace. He is shooting at 23.9% on 540 shots, which is the kind of efficiency you want from a winger asked to drive a line. The playmaking and the finishing both keep showing up in the same shifts, and that is what separates a one-trick scorer from a real top-six weapon.\n\n478 hits on the year says the rest of it. Top G plays the kind of heavy game that makes a winger hard to defend. He is not waiting around the perimeter for pucks, he is going to get them, and once they hit his stick the opposition has a real problem. This is the version of the game Bardownski has been asking of its wingers all season, and Top G has been delivering it shift after shift.\n\nThe 100-goal club in Bardownski is a short list. Xavier Laflamme lives there. Matt Hut lives there. Gotta Be punched his ticket earlier this year. Top G is the latest name on the list, and the way he is playing right now, the next milestone is not far off.",
+      "date": "2026-05-18",
+      "image": "/images/gallery/screenshots/milestone-highlight.webp",
+      "category": "Stats"
+    },
+    {
+      "id": "10",
+      "title": "Champions: Bardownski Captures First Title in Club History",
+      "summary": "It is done. After seven years of building this club, Bardownski has lifted the Season 4 Elite Division Club Finals trophy. The first championship in the history of this club. The first time the boys get to call themselves the best in the room. And it came in a 5-3 final that looked nothing like the Bardownski of seasons past. The score does not tell the real story of tonight. This club has been built on offense for years. Out-shoot, out-skill, out-score, and let the top line carry the night. Tonight was a different team. Sticks in lanes. Bodies in front of pucks. Structure in our own end that this roster has been quietly building toward all season. JRT IV between the pipes turning aside everything that broke through, and a room that trusted the defensive game over the highlight reel. We won this one with our wall. Not despite it. Because of it. Anyone who has watched this team grow knows exactly what that means.\n\nThe run itself was 16-2-1, and the shape of it tells you everything about the team that won it. The boys came out of the gate at six straight wins to open the bracket. Then the inevitable happened. Two losses. The kind of stretch that has tested past Bardownski rosters and broken them. This room did not break. The structure tightened, the room locked in, and what came next was a seven-game winning streak that flipped the tournament back in our favour. From there it was 3-1 to close, with the championship-clinching game the last name on the schedule.\n\nXavier Laflamme was the MVP of the run, and that should not surprise anyone who has watched a single game this season. Goals when we needed them. Plays when we did not have anything else. The relentless physical and offensive effort that has defined his year, carried straight into the highest-stakes hockey on the calendar. He has been the engine of this team for a long time, and through the bracket he kept the engine running. The difference, though, was between the pipes. JRT IV came through clutch in multiple games during the run, and the championship game was the loudest version of it. The kind of saves that swing series. The kind of goaltending that turns a roster of skill players into champions. The wall stood every time the bracket asked it to, and the wall stood when the trophy was on the line. Take either of them out of this run and the trophy stays out of reach. A massive cameo from Matt Hut, too, who suited up for two games during the bracket and made every minute count. Three goals and four assists in the night of our first loss, a seven-point performance that on most nights wins the game on its own. He bounced right back the very next game with four goals and three assists in a win. Fourteen points across two appearances. A reminder of the kind of weapon Matt Hut is when he laces up for this club. Jimmy Lemons earned a nod as well. Steady all regular season and stepping up offensively in the bracket in a way that helped carry the boys through the back half of the run. The improvement he has put in all season showed up when it mattered.\n\nIt meant more to them. The bots. Amar Gill. Isaiah Williams. Anthony Jackson. They were on the ice for every shift this run asked of them, and they delivered every single one. Anybody who plays this game knows what it means to have AI you can actually trust through a championship bracket. These three have earned a permanent place in the history of this club. They wore the sweater through a championship run, and the record book will remember them for it. So will this room. A season ago, this club walked into the Div 1 bracket and did not make it out of round 2. That run got cut short by time constraints that came from a slow start, and the slow start came from a room that was not pulling in the same direction. Internal stuff. The kind of thing a regular season can paper over but a bracket exposes immediately. Last season, the bracket exposed it. This year, the room walked in different. Tighter, more locked in, aligned on what we were here to do. The result is the difference between losing in round 2 and lifting the trophy.\n\nSeven years. That is how long this club has been chasing this. Through roster changes, losing seasons, near-misses and rebuilds. The first championship in club history is the kind of milestone a club only gets to earn once, and tonight is the night Bardownski earned it. The Elite Division. The highest level. 16-2-1 through the bracket. A defensive identity that finally caught up to the offensive talent. A goaltender who refused to lose. A roster that bought in from the top of the lineup to the bots on the depth chart. The club has its first banner. Hang it in the rafters.",
+      "date": "2026-05-03",
+      "image": "/images/club%20finals.png",
+      "category": "Club News"
+    }
+  ],
+  "championship": {
+    "season": "Season 4",
+    "division": "Elite Division",
+    "recordInRun": "16-2-1",
+    "opponent": "B A N G N A T I O N",
+    "scoreUs": 5,
+    "scoreThem": 3,
+    "date": "May 3, 2026"
+  }
+}

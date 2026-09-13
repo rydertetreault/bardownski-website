@@ -1,4 +1,4 @@
-.stats-edition { --stat-bg:#0b101a; --stat-panel:#141d2b; --stat-text:#eeeae2; --stat-muted:#a4adbc; --stat-gold:#d4b77b; --stat-line:#ffffff26; background:var(--stat-bg); color:var(--stat-text); font-family:Arial,Helvetica,sans-serif; }
+.stats-edition { --stat-bg:#0b0c0d; --stat-panel:#101b1e; --stat-text:#f0efeb; --stat-muted:#a5babc; --stat-gold:#68c8ce; --stat-line:#ffffff26; background:var(--stat-bg); color:var(--stat-text); font-family:Arial,Helvetica,sans-serif; }
 .stats-edition * { box-sizing:border-box; }
 .stats-edition :is(h1,h2,h3,h4,p,figure) { margin:0; }
 .stats-edition a { color:inherit; text-decoration:none; }
@@ -26,8 +26,8 @@
 .stats-edition h2 { font-size:clamp(34px,4vw,58px); line-height:1.05; letter-spacing:-2px; font-weight:900; }
 .stats-section-heading > p { font-size:12px; line-height:1.7; color:var(--stat-muted); max-width:340px; }
 .stats-mvp-layout { display:grid; grid-template-columns:1fr 1.3fr; gap:35px; align-items:start; }
-.stats-mvp { position:relative; overflow:hidden; border:1px solid #d4b77b60; background:linear-gradient(130deg,#293347,#111927); padding:35px; min-height:400px; }
-.stats-watermark { position:absolute; right:20px; top:40px; font-size:200px; font-weight:900; line-height:1; color:#d4b77b15; pointer-events:none; }
+.stats-mvp { position:relative; overflow:hidden; border:1px solid #68c8ce60; background:linear-gradient(130deg,#320d48,#10262b); padding:35px; min-height:400px; }
+.stats-watermark { position:absolute; right:20px; top:40px; font-size:200px; font-weight:900; line-height:1; color:#68c8ce15; pointer-events:none; }
 .stats-mvp h3 { position:relative; margin-top:95px; font-size:clamp(36px,4vw,60px); font-weight:900; letter-spacing:-2px; line-height:1; }
 .stats-mvp p { position:relative; color:var(--stat-muted); font-size:13px; line-height:1.8; margin-top:24px; }
 .stats-mvp > div { display:flex; justify-content:space-between; align-items:center; gap:20px; border-top:1px solid var(--stat-line); padding-top:22px; margin-top:35px; }
@@ -96,19 +96,19 @@
 
 /* Uneven editorial rhythm: feature, supporting pair, then compact ribbons. */
 .stats-leaders { grid-template-columns:1.35fr 1fr 1fr; gap:24px; align-items:start; }
-.stats-leader { position:relative; overflow:hidden; border:0; border-top:1px solid #d4b77b55; border-radius:4px 4px 28px 4px; background:linear-gradient(145deg,#1e2a3c,#111a28); padding:30px; isolation:isolate; box-shadow:0 18px 45px #00000020; }
-.stats-leader::before { content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse at 90% 0%,#d4b77b18,transparent 65%); }
-.stats-leader-index { position:absolute; right:20px; top:8px; color:#d4b77b0d; font-size:110px; font-weight:900; letter-spacing:-8px; z-index:-1; }
+.stats-leader { position:relative; overflow:hidden; border:0; border-top:1px solid #68c8ce55; border-radius:4px 4px 28px 4px; background:linear-gradient(145deg,#1d353b,#101c20); padding:30px; isolation:isolate; box-shadow:0 18px 45px #00000020; }
+.stats-leader::before { content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse at 90% 0%,#68c8ce18,transparent 65%); }
+.stats-leader-index { position:absolute; right:20px; top:8px; color:#68c8ce0d; font-size:110px; font-weight:900; letter-spacing:-8px; z-index:-1; }
 .stats-leader-total { font-size:64px; }
 .stats-leader h4 { max-width:240px; }
-.stats-leader-0 { grid-row:span 2; min-height:100%; padding:40px 32px; border-radius:4px 60px 4px 4px; background:linear-gradient(160deg,#334056,#101826 70%); }
+.stats-leader-0 { grid-row:span 2; min-height:100%; padding:40px 32px; border-radius:4px 60px 4px 4px; background:linear-gradient(160deg,#37575e,#0e1e22 70%); }
 .stats-leader-0 .stats-leader-total { font-size:clamp(70px,7.5vw,112px); margin-top:65px; }
 .stats-leader-0 h4 { font-size:30px; line-height:1.05; letter-spacing:-1px; margin:20px 0 50px; }
 .stats-leader-0 li { padding-block:20px; }
 .stats-leader-1 { margin-top:35px; }
-.stats-leader-2 { background:linear-gradient(155deg,#262b30,#121b28); }
+.stats-leader-2 { background:linear-gradient(155deg,#262b30,#101c20); }
 .stats-leader-3,.stats-leader-4 { background:transparent; border-bottom:1px solid var(--stat-line); box-shadow:none; border-radius:0; }
-.stats-leader-5 { grid-column:span 2; display:grid; grid-template-columns:1fr 1.2fr; column-gap:30px; border-radius:35px 4px 4px 4px; background:linear-gradient(110deg,#253449,#111a28); }
+.stats-leader-5 { grid-column:span 2; display:grid; grid-template-columns:1fr 1.2fr; column-gap:30px; border-radius:35px 4px 4px 4px; background:linear-gradient(110deg,#233f46,#101c20); }
 .stats-leader-5 ol { grid-column:2; grid-row:1 / 5; }
 .stats-leader-5 .stats-leader-total { font-size:80px; }
 .stats-leader-5 h4 { align-self:start; }
@@ -116,14 +116,22 @@
 .stats-mvp { border:0; border-left:2px solid var(--stat-gold); border-radius:0 55px 8px 0; box-shadow:0 20px 50px #00000025; }
 .stats-ranking-wrap { border-radius:0 0 25px 0; }
 .stats-ranking tbody tr { transition:background .2s; }
-.stats-ranking tbody tr:hover { background:#d4b77b0a; }
-.stats-arena { margin-top:80px; }
-.stats-arena > div:last-child { border-radius:30px 4px 30px 4px; box-shadow:0 24px 70px #00000035; }
-.stats-arena { --color-gold:#d4b77b; --color-navy-dark:#0b101a; --color-navy:#141d2b; --color-muted:#a4adbc; }
+.stats-ranking tbody tr:hover { background:#68c8ce0a; }
 .stats-profile { padding-inline:20px; border-radius:0 18px 0 18px; transition:background .25s; }
-.stats-profile:hover,.stats-profile[open] { background:#141d2b80; }
+.stats-profile:hover,.stats-profile[open] { background:#101b1e80; }
 .stats-profile-grid { background:transparent; padding-inline:0; gap:35px; }
-.stats-profile-grid > div { border-left:2px solid #d4b77b40; padding-left:15px; }
+.stats-profile-grid > div { border-left:2px solid #68c8ce40; padding-left:15px; }
 @media(max-width:1050px) { .stats-leaders { grid-template-columns:1fr 1fr; } .stats-leader-0 { grid-row:span 2; } .stats-leader-5 { grid-column:span 2; } .stats-leader-6 { margin-top:0; } }
 @media(max-width:650px) { .stats-leaders { grid-template-columns:1fr; gap:25px; } .stats-leader-0 { grid-row:auto; padding:30px; } .stats-leader-0 .stats-leader-total { margin-top:25px; font-size:85px; } .stats-leader-0 h4 { margin-bottom:30px; } .stats-leader-1,.stats-leader-6 { margin-top:0; } .stats-leader-5 { grid-column:auto; display:block; } .stats-leader-5 ol { margin-top:25px; } .stats-leader-0 li { padding-block:12px; } .stats-profile { padding-inline:10px; } .stats-leader-total { font-size:60px; } }
 @media(prefers-reduced-motion:reduce) { .stats-ranking tbody tr,.stats-profile { transition:none; } }
+
+/* 2026–2027: existing stat-book layout, distinct current and archived data. */
+.stats-archive-link { margin-bottom:28px!important; font-size:12px; color:var(--stat-gold); }
+.stats-edition .stats-hero img { object-position:50% center; }
+.stats-edition .season-performers h3 { font-size:18px; }
+.stats-edition .season-performers p { margin-top:12px; }
+.stats-edition .tracker-intro h3 { margin:30px 0 20px; }
+.stats-edition .tracker-waiting p,.stats-edition .tracker-method p { margin-top:10px; }
+
+/* Keep SSR/client styles identical; show archived leaders immediately for reduced motion. */
+@media(prefers-reduced-motion:reduce) { .stats-leader { opacity:1!important; transform:none!important; } }

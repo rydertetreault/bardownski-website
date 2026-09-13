@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+<title id="title">Bardownski — original sweater illustration</title><desc id="desc">Three illustrated hockey sweaters in deep teal, eggplant purple and black, with white stripes and a custom BD shield. Original website artwork, not a photograph of the uniforms.</desc>
+<defs><radialGradient id="arena"><stop stop-color="#16494f"/><stop offset="1" stop-color="#0b0c0d"/></radialGradient><pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M50 0H0V50" stroke="#78cbd0" opacity=".06" fill="none"/></pattern><linearGradient id="ice"><stop stop-color="#006775" stop-opacity="0"/><stop offset=".5" stop-color="#68c8ce"/><stop offset="1" stop-color="#320d48" stop-opacity="0"/></linearGradient></defs>
+<rect width="1200" height="700" fill="#0b0c0d"/><ellipse cx="620" cy="370" rx="630" ry="340" fill="url(#arena)"/>
+<path d="M-70 640 L480 0 H600 L40 700Z M690 700 L1200 115 V310 L890 700Z" fill="#5b2977" opacity=".12"/>
+<rect width="1200" height="700" fill="url(#grid)"/>
+<ellipse cx="610" cy="622" rx="420" ry="18" fill="url(#ice)" opacity=".3"/>
+<g fill="none" stroke="#8ec8ca" opacity=".13"><ellipse cx="600" cy="610" rx="550" ry="51"/><path d="M50 610H1150 M600 560V660"/></g>
+<g transform="translate(310 352) rotate(-13) scale(0.91)">
+ <defs><linearGradient id="purple-cloth" x1="0" x2="1" y1="0" y2=".7"><stop stop-color="#502167"/><stop offset=".45" stop-color="#502167"/><stop offset="1" stop-color="#260d39"/></linearGradient><clipPath id="purple-cut"><path d="M -64 -156 L -135 -131 L -212 -27 L -158 25 L -109 -33 L -98 183 Q 0 202 98 183 L 109 -33 L 158 25 L 212 -27 L 135 -131 L 64 -156 Q 0 -114 -64 -156 Z"/></clipPath></defs>
+ <path d="M -64 -156 L -135 -131 L -212 -27 L -158 25 L -109 -33 L -98 183 Q 0 202 98 183 L 109 -33 L 158 25 L 212 -27 L 135 -131 L 64 -156 Q 0 -114 -64 -156 Z" transform="translate(0 14)" fill="#000" opacity=".4"/>
+ <path d="M -64 -156 L -135 -131 L -212 -27 L -158 25 L -109 -33 L -98 183 Q 0 202 98 183 L 109 -33 L 158 25 L 212 -27 L 135 -131 L 64 -156 Q 0 -114 -64 -156 Z" fill="url(#purple-cloth)" stroke="#8bc7cd" stroke-opacity=".45" stroke-width="2"/>
+ <g clip-path="url(#purple-cut)">
+ <path d="M-185 -160 Q0 -45 185 -160" fill="none" stroke="#090e13" stroke-width="40"/>
+ <path d="M-175 -139 Q0 -45 175 -139" fill="none" stroke="#006775" stroke-width="8"/>
+ <path d="M-115 116 H115" stroke="#f0efeb" stroke-width="15"/><path d="M-115 136 H115" stroke="#006775" stroke-width="22"/><path d="M-115 156 H115" stroke="#f0efeb" stroke-width="7"/>
+ <path d="M-214 -57 L-142 0 M214 -57 L142 0" stroke="#f0efeb" stroke-width="17"/><path d="M-223 -37 L-157 20 M223 -37 L157 20" stroke="#006775" stroke-width="19"/>
+ <path d="M-109 -33 L-89 175 M109 -33 L89 175 M-50 -85 L-39 96 M60 -73 L44 104" stroke="#fff" opacity=".09" stroke-width="2"/>
+ <path d="M-92 105 L-78 -12 L-94 29 M93 111 L81 -20 L98 31" fill="none" stroke="#000" opacity=".2" stroke-width="7"/>
+ </g>
+ <path d="M-64 -156 Q0 -105 64 -156 L43 -127 L0 -102 L-43 -127 Z" fill="#080e12" stroke="#7eafb8" stroke-opacity=".6" stroke-width="2"/>
+ <path d="M-12 -111 L12 -91 M12 -111 L-12 -91 M-12 -95 L12 -75 M12 -95 L-12 -75" stroke="#f0efeb" stroke-width="3"/>
+ <g transform="translate(0 24)"><path d="M0 -74 L67 -45 L54 38 L0 70 L-54 38 L-67 -45 Z" fill="#0b1016" stroke="#f0efeb" stroke-width="3"/><path d="M0 -61 L55 -37 L43 31 L0 55 L-43 31 L-55 -37 Z" fill="none" stroke="#006775" stroke-width="4"/>
+ <text text-anchor="middle" y="-14" fill="#f0efeb" font-family="Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="2">BARDOWNSKI</text><text text-anchor="middle" y="26" fill="#f0efeb" font-family="Arial,sans-serif" font-size="47" font-weight="900" font-style="italic">BD</text></g>
+ <text x="-149" y="-66" text-anchor="middle" fill="#f0efeb" font-family="Arial,sans-serif" font-size="24" font-weight="900" transform="rotate(35 -149 -66)">27</text>
+ <path d="M-95 177 Q0 194 95 177" fill="none" stroke="#fff" opacity=".23" stroke-width="2"/>
+ </g><g transform="translate(902 365) rotate(13) scale(0.92)">
+ <defs><linearGradient id="black-cloth" x1="0" x2="1" y1="0" y2=".7"><stop stop-color="#1b2427"/><stop offset=".45" stop-color="#1b2427"/><stop offset="1" stop-color="#0b1014"/></linearGradient><clipPath id="black-cut"><path d="M -64 -156 L -135 -131 L -212 -27 L -158 25 L -109 -33 L -98 183 Q 0 202 98 183 L 109 -33 L 158 25 L 212 -27 L 135 -131 L 64 -156 Q 0 -114 -64 -156 Z"/></clipPath></defs>
+ <path d="M -64 -156 L -135 -131 L -212 -27 L -158 25 L -109 -33 L -98 183 Q 0 202 98 183 L 109 -33 L 158 25 L 212 -27 L 135 -131 L 64 -156 Q 0 -114 -64 -156 Z" transform="translate(0 14)" fill="#000" opacity=".4"/>
+ <path d="M -64 -156 L -135 -131 L -212 -27 L -158 25 L -109 -33 L -98 183 Q 0 202 98 183 L 109 -33 L 158 25 L 212 -27 L 135 -131 L 64 -156 Q 0 -114 -64 -156 Z" fill="url(#black-cloth)" stroke="#8bc7cd" stroke-opacity=".45" stroke-width="2"/>
+ <g clip-path="url(#black-cut)">
+ <path d="M-185 -160 Q0 -45 185 -160" fill="none" stroke="#090e13" stroke-width="40"/>
+ <path d="M-175 -139 Q0 -45 175 -139" fill="none" stroke="#006775" stroke-width="8"/>
+ <path d="M-115 116 H115" stroke="#f0efeb" stroke-width="15"/><path d="M-115 136 H115" stroke="#006775" stroke-width="22"/><path d="M-115 156 H115" stroke="#f0efeb" stroke-width="7"/>
+ <path d="M-214 -57 L-142 0 M214 -57 L142 0" stroke="#f0efeb" stroke-width="17"/><path d="M-223 -37 L-157 20 M223 -37 L157 20" stroke="#006775" stroke-width="19"/>
+ <path d="M-109 -33 L-89 175 M109 -33 L89 175 M-50 -85 L-39 96 M60 -73 L44 104" stroke="#fff" opacity=".09" stroke-width="2"/>
+ <path d="M-92 105 L-78 -12 L-94 29 M93 111 L81 -20 L98 31" fill="none" stroke="#000" opacity=".2" stroke-width="7"/>
+ </g>
+ <path d="M-64 -156 Q0 -105 64 -156 L43 -127 L0 -102 L-43 -127 Z" fill="#080e12" stroke="#7eafb8" stroke-opacity=".6" stroke-width="2"/>
+ <path d="M-12 -111 L12 -91 M12 -111 L-12 -91 M-12 -95 L12 -75 M12 -95 L-12 -75" stroke="#f0efeb" stroke-width="3"/>
+ <g transform="translate(0 24)"><path d="M0 -74 L67 -45 L54 38 L0 70 L-54 38 L-67 -45 Z" fill="#0b1016" stroke="#f0efeb" stroke-width="3"/><path d="M0 -61 L55 -37 L43 31 L0 55 L-43 31 L-55 -37 Z" fill="none" stroke="#006775" stroke-width="4"/>
+ <text text-anchor="middle" y="-14" fill="#f0efeb" font-family="Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="2">BARDOWNSKI</text><text text-anchor="middle" y="26" fill="#f0efeb" font-family="Arial,sans-serif" font-size="47" font-weight="900" font-style="italic">BD</text></g>
+ <text x="-149" y="-66" text-anchor="middle" fill="#f0efeb" font-family="Arial,sans-serif" font-size="24" font-weight="900" transform="rotate(35 -149 -66)">27</text>
+ <path d="M-95 177 Q0 194 95 177" fill="none" stroke="#fff" opacity=".23" stroke-width="2"/>
+ </g><g transform="translate(600 362) rotate(0) scale(1.2)">
+ <defs><linearGradient id="teal-cloth" x1="0" x2="1" y1="0" y2=".7"><stop stop-color="#087f8b"/><stop offset=".45" stop-color="#087f8b"/><stop offset="1" stop-color="#06414c"/></linearGradient><clipPath id="teal-cut"><path d="M -64 -156 L -135 -131 L -212 -27 L -158 25 L -109 -33 L -98 183 Q 0 202 98 183 L 109 -33 L 158 25 L 212 -27 L 135 -131 L 64 -156 Q 0 -114 -64 -156 Z"/></clipPath></defs>
+ <path d="M -64 -156 L -135 -131 L -212 -27 L -158 25 L -109 -33 L -98 183 Q 0 202 98 183 L 109 -33 L 158 25 L 212 -27 L 135 -131 L 64 -156 Q 0 -114 -64 -156 Z" transform="translate(0 14)" fill="#000" opacity=".4"/>
+ <path d="M -64 -156 L -135 -131 L -212 -27 L -158 25 L -109 -33 L -98 183 Q 0 202 98 183 L 109 -33 L 158 25 L 212 -27 L 135 -131 L 64 -156 Q 0 -114 -64 -156 Z" fill="url(#teal-cloth)" stroke="#8bc7cd" stroke-opacity=".45" stroke-width="2"/>
+ <g clip-path="url(#teal-cut)">
+ <path d="M-185 -160 Q0 -45 185 -160" fill="none" stroke="#090e13" stroke-width="40"/>
+ <path d="M-175 -139 Q0 -45 175 -139" fill="none" stroke="#320d48" stroke-width="8"/>
+ <path d="M-115 116 H115" stroke="#f0efeb" stroke-width="15"/><path d="M-115 136 H115" stroke="#320d48" stroke-width="22"/><path d="M-115 156 H115" stroke="#f0efeb" stroke-width="7"/>
+ <path d="M-214 -57 L-142 0 M214 -57 L142 0" stroke="#f0efeb" stroke-width="17"/><path d="M-223 -37 L-157 20 M223 -37 L157 20" stroke="#320d48" stroke-width="19"/>
+ <path d="M-109 -33 L-89 175 M109 -33 L89 175 M-50 -85 L-39 96 M60 -73 L44 104" stroke="#fff" opacity=".09" stroke-width="2"/>
+ <path d="M-92 105 L-78 -12 L-94 29 M93 111 L81 -20 L98 31" fill="none" stroke="#000" opacity=".2" stroke-width="7"/>
+ </g>
+ <path d="M-64 -156 Q0 -105 64 -156 L43 -127 L0 -102 L-43 -127 Z" fill="#080e12" stroke="#7eafb8" stroke-opacity=".6" stroke-width="2"/>
+ <path d="M-12 -111 L12 -91 M12 -111 L-12 -91 M-12 -95 L12 -75 M12 -95 L-12 -75" stroke="#f0efeb" stroke-width="3"/>
+ <g transform="translate(0 24)"><path d="M0 -74 L67 -45 L54 38 L0 70 L-54 38 L-67 -45 Z" fill="#0b1016" stroke="#f0efeb" stroke-width="3"/><path d="M0 -61 L55 -37 L43 31 L0 55 L-43 31 L-55 -37 Z" fill="none" stroke="#320d48" stroke-width="4"/>
+ <text text-anchor="middle" y="-14" fill="#f0efeb" font-family="Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="2">BARDOWNSKI</text><text text-anchor="middle" y="26" fill="#f0efeb" font-family="Arial,sans-serif" font-size="47" font-weight="900" font-style="italic">BD</text></g>
+ <text x="-149" y="-66" text-anchor="middle" fill="#f0efeb" font-family="Arial,sans-serif" font-size="24" font-weight="900" transform="rotate(35 -149 -66)">27</text>
+ <path d="M-95 177 Q0 194 95 177" fill="none" stroke="#fff" opacity=".23" stroke-width="2"/>
+ </g><g font-family="Arial,sans-serif" font-size="11" letter-spacing="3" fill="#91b0b4"><text x="48" y="48">BD / THE NEXT CHAPTER</text><text x="1152" y="48" text-anchor="end">2026—2027</text><text x="48" y="668">ORIGINAL CLUB ARTWORK</text><text x="1152" y="668" text-anchor="end">SAME CLUB. NEW ERA.</text></g></svg>

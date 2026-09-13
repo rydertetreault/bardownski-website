@@ -58,7 +58,7 @@ export default function GalleryPage() {
         {/* Powder blue top rule */}
         <div
           className="absolute top-0 left-0 right-0 h-px pointer-events-none"
-          style={{ background: "linear-gradient(to right, transparent, rgba(125,211,252,0.4), transparent)" }}
+          style={{ background: "linear-gradient(to right, transparent, rgba(104,200,206,0.4), transparent)" }}
         />
 
         <div className="relative hockey-page-container text-center">
@@ -73,7 +73,7 @@ export default function GalleryPage() {
           </h1>
           <div className="flex items-center justify-center gap-6 text-xs uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.3)" }}>
             <span>{photos.length} Photos</span>
-            <span className="w-1 h-1 rounded-full" style={{ backgroundColor: "#d4b77b" }} />
+            <span className="w-1 h-1 rounded-full" style={{ backgroundColor: "#68c8ce" }} />
             <span>{videos.length} Videos</span>
           </div>
         </div>
@@ -81,7 +81,7 @@ export default function GalleryPage() {
         {/* Red bottom accent */}
         <div
           className="absolute bottom-0 left-1/2 -translate-x-1/2 h-px w-32"
-          style={{ backgroundColor: "#d4b77b" }}
+          style={{ backgroundColor: "#68c8ce" }}
         />
       </div>
 

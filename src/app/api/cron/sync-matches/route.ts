@@ -1,57 +1,22 @@
-/**
- * Match sync cron endpoint.
- *
- * Runs daily via Vercel Cron as a safety net. Matches are primarily
- * accumulated on page loads via getMatchHistory / pollAndAccumulate;
- * this cron catches anything missed during long quiet stretches before
- * games rotate out of the Chelstats 5-game API window.
- */
-
 import { NextRequest, NextResponse } from "next/server";
-import { fetchChelstatsData } from "@/lib/chelstats";
-import { pollAndAccumulate } from "@/lib/match-history";
+import { refreshHockeyTracker } from "@/lib/hockey-tracker";
+import { NHL27_IDENTITY } from "@/lib/nhl27-api";
 
+export const dynamic = "force-dynamic";
+export const maxDuration = 60;
+
+/** NHL27 only. Legacy NHL26 persistence and weekly publishing stay retired. */
 export async function GET(request: NextRequest) {
-  const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const secret = process.env.CRON_SECRET;
+  if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
+    return NextResponse.json({error:"Unauthorized"},{status:401});
   }
-
-  // Season frozen: chelstats is a static snapshot, nothing to sync.
-  // Cron schedule removed from vercel.json; this stays as a manual no-op.
-  if (process.env.SEASON_LIVE !== "true") {
-    return NextResponse.json({ skipped: true, reason: "season frozen" });
-  }
-
-  try {
-    const chelstats = await fetchChelstatsData();
-    if (!chelstats) {
-      return NextResponse.json(
-        { error: "Failed to fetch chelstats data" },
-        { status: 502 }
-      );
-    }
-
-    const result = await pollAndAccumulate(chelstats);
-
-    return NextResponse.json({
-      success: true,
-      newMatches: result.newMatches,
-      newForfeits: result.newForfeits,
-      totalGamesInRecord:
-        chelstats.clubStats.wins +
-        chelstats.clubStats.losses +
-        chelstats.clubStats.otl,
-      apiMatchesReturned: chelstats.matches.length,
-    });
-  } catch (err) {
-    console.error("[sync-matches] Failed:", err);
-    return NextResponse.json(
-      {
-        error: "sync-matches failed",
-        message: err instanceof Error ? err.message : String(err),
-      },
-      { status: 500 }
-    );
-  }
+  const result = await refreshHockeyTracker({force:true});
+  return NextResponse.json({
+    success: result.status === "connected", status:result.status, synced:result.synced,
+    identity:NHL27_IDENTITY, storedMatches:result.matches.length,
+    totalGames:result.snapshot?.data.clubStats.totalGames ?? null,
+    updatedAt:result.snapshot?.fetchedAt ?? null, syncedAt:result.snapshot?.syncedAt ?? null,
+    ...(result.error ? {error:result.error} : {}),
+  },{status:result.status === "connected" ? 200 : 503});
 }

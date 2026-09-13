@@ -10,7 +10,7 @@ export default function Footer() {
             <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 relative overflow-hidden rounded">
                 <Image
-                  src="/images/logo/BD - logo.png"
+                  src="/images/logo/B-logo.png"
                   alt="Bardownski"
                   fill
                   className="object-contain"
@@ -28,6 +28,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm text-muted">
               <li><Link href="/roster" className="hover:text-white transition-colors">Roster</Link></li>
               <li><Link href="/stats" className="hover:text-white transition-colors">Stats</Link></li>
+              <li><Link href="/awards" className="hover:text-white transition-colors">2025–2026 Awards</Link></li>
               <li><Link href="/records" className="hover:text-white transition-colors">Records</Link></li>
               <li><Link href="/gallery" className="hover:text-white transition-colors">Gallery</Link></li>
             </ul>

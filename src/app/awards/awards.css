@@ -1,0 +1,15 @@
+.awards-hero { background:radial-gradient(ellipse at 85% 40%,#320d4890,transparent 70%); border-bottom:1px solid var(--border); }
+.awards-hero h1 { font-size:clamp(42px,6.5vw,98px); font-weight:950; line-height:1; letter-spacing:-.045em; margin:25px 0; }
+.awards-hero em { color:var(--hockey-accent); font-style:normal; }
+.awards-hero > p:not(.new-eyebrow) { max-width:610px; color:var(--muted); font-size:16px; line-height:1.8; margin-bottom:30px; }
+.awards-archive-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
+.awards-archive-grid article { padding:28px; border:1px solid var(--border); background:var(--surface); }
+.awards-archive-grid h3 { font-size:19px; margin:22px 0 12px; font-weight:700; }
+.awards-archive-grid strong { display:block; color:var(--hockey-lilac); font-size:25px; line-height:1.2; font-weight:800; }
+.awards-archive-grid p { font-size:12px; color:var(--muted); line-height:1.8; margin-top:18px; }
+.awards-archive-grid details { border-top:1px solid var(--border); margin-top:25px; padding-top:20px; }
+.awards-archive-grid summary { cursor:pointer; color:var(--hockey-accent); font-size:12px; }
+.awards-page .awards-note { margin-top:30px; color:var(--muted); font-size:12px; line-height:1.8; max-width:850px; }
+.awards-links { display:flex; gap:30px; flex-wrap:wrap; }
+@media(max-width:1000px) { .awards-archive-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:600px) { .awards-archive-grid { grid-template-columns:1fr; } }

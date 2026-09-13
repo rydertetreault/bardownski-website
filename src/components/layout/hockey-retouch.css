@@ -1,0 +1,272 @@
+/* Variation 4 interior retouch. The shell owns this stylesheet's import.
+ * Deliberately no layout, chart/SVG, homepage, FC or reveal/motion rules.
+ * Route-qualified selectors also win when route CSS loads after navigation. */
+@font-face {
+  font-family: HockeyDisplay;
+  src: url("/images/homepage/barlow-condensed.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+}
+
+.hockey-site.hockey-interior {
+  --retouch-black: #0b0c0d;
+  --retouch-panel: #141617;
+  --retouch-paper: #f0efeb;
+  --retouch-teal: #006775;
+  --retouch-accent: #68c8ce;
+  --retouch-lilac: #c4a1dc;
+  --retouch-rule: #563465;
+  --retouch-line: #ffffff26;
+}
+
+/* Display faces only: tables, chart labels and body copy keep their metrics. */
+.hockey-site.hockey-interior .match-archive :is(h1, h2),
+.hockey-site.hockey-interior .roster-edition :is(h1, h2, .roster-chapter-heading h3),
+.hockey-site.hockey-interior .stats-edition :is(.stats-hero h1, .stats-section-heading h2, .stats-end h2),
+.hockey-site.hockey-interior .records-redesign :is(h1, h2),
+.hockey-site.hockey-interior .offseason-highlights :is(.highlights-heading h1, .highlight-player-section h2),
+.hockey-site.hockey-interior .news-edition :is(h1, h2, h3),
+.hockey-site.hockey-interior .awards-page :is(h1, h2, h3),
+.hockey-site.hockey-interior .site-main > .min-h-screen:has(.hockey-gallery-heading) h1 {
+  font-family: HockeyDisplay, Impact, "Arial Narrow", sans-serif;
+  font-weight: 800;
+  letter-spacing: -.015em;
+  text-transform: uppercase;
+}
+
+/* Matches: the match board, totals and history remain in their original order. */
+.hockey-site.hockey-interior .match-archive {
+  --archive-panel: var(--retouch-panel);
+  --archive-line: var(--retouch-line);
+}
+.hockey-site.hockey-interior .match-archive .archive-hero {
+  background: var(--retouch-black);
+}
+.hockey-site.hockey-interior .match-archive :is(.archive-totals, .archive-toolbar, .archive-history-summary) {
+  border-color: var(--retouch-rule);
+}
+.hockey-site.hockey-interior .match-archive .archive-history-details summary {
+  color: var(--retouch-lilac);
+}
+.hockey-site.hockey-interior .match-archive .archive-toolbar select {
+  border-color: var(--retouch-rule);
+  border-radius: 2px;
+  color-scheme: dark;
+}
+.hockey-site.hockey-interior .match-archive .archive-closing {
+  --archive-gold: var(--retouch-paper);
+  --archive-muted: #d6e7e7;
+  background: var(--retouch-teal);
+}
+.hockey-site.hockey-interior .match-archive .archive-stamp {
+  border-color: var(--retouch-lilac);
+}
+
+/* Roster: preserve the ledger, scouting disclosures and position scenes. */
+.hockey-site.hockey-interior .roster-edition {
+  --panel: var(--retouch-panel);
+  --line: var(--retouch-line);
+}
+.hockey-site.hockey-interior .roster-edition :is(.roster-counts, .position-scene, .roster-letters) {
+  border-color: var(--retouch-rule);
+}
+.hockey-site.hockey-interior .roster-edition .roster-player:focus-within,
+.hockey-site.hockey-interior .roster-edition .roster-player:hover {
+  background: #131c1e;
+}
+.hockey-site.hockey-interior .roster-edition .player-scouting summary,
+.hockey-site.hockey-interior .roster-edition .scene-replay {
+  color: var(--retouch-lilac);
+}
+.hockey-site.hockey-interior .roster-edition .roster-leadership {
+  --accent: var(--retouch-paper);
+  --muted: #d6e7e7;
+  --line: #ffffff40;
+  background: var(--retouch-teal);
+  border-color: var(--retouch-rule);
+}
+.hockey-site.hockey-interior .roster-edition .roster-closing {
+  background: var(--retouch-black);
+}
+
+/* Stats: touch the editorial shell, NOT comparison charts or generic classes. */
+.hockey-site.hockey-interior .stats-edition .stats-hero {
+  background: var(--retouch-black);
+}
+.hockey-site.hockey-interior .stats-edition :is(.stats-standings, .stats-leader, .stats-profile-grid) {
+  background: var(--retouch-panel);
+  border-color: var(--retouch-rule);
+}
+.hockey-site.hockey-interior .stats-edition .stats-season-bar {
+  border-color: var(--retouch-rule);
+}
+.hockey-site.hockey-interior .stats-edition .stats-season-bar button[aria-pressed="true"] {
+  background: var(--retouch-accent);
+  color: var(--retouch-black);
+  border-color: var(--retouch-accent);
+}
+.hockey-site.hockey-interior .stats-edition .stats-profile summary {
+  color: var(--retouch-lilac);
+}
+.hockey-site.hockey-interior .stats-edition .stats-end {
+  --stat-gold: var(--retouch-paper);
+  background: var(--retouch-teal);
+}
+
+/* Records: keep the vault's explorer, chronology, monuments and dialogs. */
+.hockey-site.hockey-interior .records-redesign {
+  --panel: var(--retouch-panel);
+  --line: var(--retouch-line);
+}
+.hockey-site.hockey-interior .records-redesign .hero,
+.hockey-site.hockey-interior .records-redesign .monument::before {
+  background: var(--retouch-black);
+}
+.hockey-site.hockey-interior .records-redesign :is(.spotlights button, .monument) {
+  background: var(--retouch-panel);
+  border-color: var(--retouch-rule);
+  box-shadow: none;
+}
+.hockey-site.hockey-interior .records-redesign .pm-grid button {
+  border-top-color: var(--retouch-rule);
+}
+.hockey-site.hockey-interior .records-redesign :is(input, select) {
+  border-radius: 2px;
+  border-color: var(--retouch-rule);
+  color-scheme: dark;
+}
+.hockey-site.hockey-interior .records-redesign #categories button[aria-pressed="true"] {
+  background: var(--retouch-accent);
+  color: var(--retouch-black);
+  border-color: var(--retouch-accent);
+}
+.hockey-site.hockey-interior .records-redesign dialog {
+  border-color: var(--retouch-lilac);
+  box-shadow: 0 12px 48px #0006;
+}
+.hockey-site.hockey-interior .records-redesign .roadmap {
+  background: var(--retouch-panel);
+  border-color: var(--retouch-rule);
+}
+
+/* Gallery: semantic hooks only; bento spans, original color and lightboxes stay.
+ * !important is limited to existing inline decorative paint, never geometry. */
+.hockey-site.hockey-interior .hockey-gallery-heading > div > div {
+  background: var(--retouch-rule) !important;
+}
+.hockey-site.hockey-interior .hockey-gallery-heading > div > span {
+  font-family: HockeyDisplay, Impact, "Arial Narrow", sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: .035em;
+  color: var(--retouch-paper) !important;
+}
+.hockey-site.hockey-interior .hockey-gallery-heading > p {
+  color: #a5babc !important;
+}
+.hockey-site.hockey-interior .hockey-gallery-photos > .group,
+.hockey-site.hockey-interior .hockey-gallery-videos > .group {
+  border-color: var(--retouch-rule) !important;
+  background-color: var(--retouch-panel) !important;
+  box-shadow: none;
+}
+.hockey-site.hockey-interior .hockey-gallery-photos > .group:hover,
+.hockey-site.hockey-interior .hockey-gallery-videos > .group:hover {
+  border-color: var(--retouch-accent) !important;
+}
+.hockey-site.hockey-interior .hockey-gallery-photos img,
+.hockey-site.hockey-interior .hockey-gallery-photos > .group:hover img {
+  transition: none;
+  transform: none;
+  /* Keep this variable-valued: the CSS compiler otherwise lowers `scale:
+     none` to transform, leaving Tailwind's individual hover scale active. */
+  scale: var(--retouch-photo-scale, 1);
+}
+
+/* Film room: same horizontal rails, counts, arrows and playable media. */
+.hockey-site.hockey-interior .offseason-highlights .highlights-heading {
+  background: var(--retouch-black);
+}
+.hockey-site.hockey-interior .offseason-highlights :is(.highlight-player-section, .highlights-counts) {
+  border-color: var(--retouch-rule);
+}
+.hockey-site.hockey-interior .offseason-highlights .highlight-clip-card {
+  background: var(--retouch-panel);
+  border-color: var(--retouch-rule);
+  border-radius: 2px;
+  box-shadow: none;
+}
+.hockey-site.hockey-interior .offseason-highlights .highlight-clip-card:hover {
+  background: #182124;
+  border-color: var(--retouch-accent);
+}
+.hockey-site.hockey-interior .offseason-highlights .highlight-clip-caption b {
+  color: var(--retouch-lilac);
+}
+
+/* Journal: preserve the lead, dispatch, feed order, category and search UI. */
+.hockey-site.hockey-interior .news-edition {
+  --journal-panel: var(--retouch-panel);
+  --journal-line: var(--retouch-line);
+}
+.hockey-site.hockey-interior .news-edition :is(.news-masthead, .news-media-fallback) {
+  background: var(--retouch-black);
+}
+.hockey-site.hockey-interior .news-edition :is(.news-search, .news-filterbar, .news-dispatch, .news-story-layout, .news-end) {
+  border-color: var(--retouch-rule);
+}
+.hockey-site.hockey-interior .news-edition :is(.news-lead, .news-story .news-media) {
+  border-radius: 2px;
+  box-shadow: none;
+}
+.hockey-site.hockey-interior .news-edition .news-filterbar button[aria-pressed="true"] {
+  color: var(--retouch-lilac);
+  border-color: var(--retouch-lilac);
+}
+.hockey-site.hockey-interior .news-edition :is(.news-read, .news-dispatch > a, .news-load) {
+  color: var(--retouch-accent);
+}
+
+/* Honors: dark award cards; a single existing closing block becomes paper. */
+.hockey-site.hockey-interior .awards-page .awards-hero {
+  background: var(--retouch-black);
+  border-color: var(--retouch-rule);
+}
+.hockey-site.hockey-interior .awards-page .awards-archive-grid article {
+  background: var(--retouch-panel);
+  border-color: var(--retouch-rule);
+  box-shadow: none;
+}
+.hockey-site.hockey-interior .awards-page .awards-archive-grid summary {
+  color: var(--retouch-lilac);
+}
+.hockey-site.hockey-interior .awards-page .new-section-panel {
+  --foreground: var(--retouch-black);
+  --muted: #435255;
+  --hockey-accent: #006775;
+  background: var(--retouch-paper);
+  color: var(--retouch-black);
+  border-color: var(--retouch-rule);
+}
+
+/* Editorial stills only. No gallery filters, video filters, or moving photos. */
+.hockey-site.hockey-interior .match-archive .archive-photo img,
+.hockey-site.hockey-interior .roster-edition .roster-hero figure > img,
+.hockey-site.hockey-interior .stats-edition .stats-hero img,
+.hockey-site.hockey-interior .records-redesign .records-hero-photo img,
+.hockey-site.hockey-interior .news-edition .news-media img {
+  filter: grayscale(1);
+  transition: none;
+  animation: none;
+  transform: none;
+}
+
+/* Keep controls visibly keyboard-accessible without altering their behavior. */
+.hockey-site.hockey-interior :is(.match-archive, .roster-edition, .records-redesign, .offseason-highlights, .news-edition, .awards-page) :is(a, button, input, select, summary):focus-visible {
+  outline: 2px solid var(--retouch-lilac);
+  outline-offset: 4px;
+}
+.hockey-site.hockey-interior .awards-page .new-section-panel a:focus-visible {
+  outline-color: #006775;
+}

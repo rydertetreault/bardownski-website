@@ -1,21 +1,24 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useHockeyMotionPaused } from "@/components/layout/hockey-motion-preference";
 import type { SaveEntry } from "@/lib/discord";
 import { getNickname } from "@/lib/nicknames";
 import { TrendArrow } from "./LeaderCard";
 
 export function SavesLeaderCard({ entries }: { entries: SaveEntry[] }) {
+  const motionPaused = useHockeyMotionPaused();
   const top5 = entries.slice(0, 5);
   if (top5.length === 0) return null;
   const hasGgp = top5.some((e) => e.ggp !== undefined);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={false}
+      animate={motionPaused ? { opacity: 1, y: 0 } : undefined}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0 }}
-      transition={{ duration: 0.35 }}
+      transition={motionPaused ? { duration: 0 } : { duration: 0.35 }}
       className="bg-navy border border-border rounded-xl overflow-hidden h-full"
     >
       <div className="relative">

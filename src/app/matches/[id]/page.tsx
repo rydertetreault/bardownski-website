@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { fetchChelstatsData } from "@/lib/chelstats";
-import { getMatchHistory } from "@/lib/match-history";
+import { FROZEN_CHELSTATS } from "@/lib/chelstats-frozen";
+import { getHockeySeason, HOCKEY_SEASON, HOCKEY_ARCHIVE_SEASON } from "@/lib/hockey-season";
+import { getAllMatchesForRecords } from "@/lib/match-history";
 import { generateMatchDescription } from "@/lib/match-description";
 import { isChampionshipClincher, CHAMPIONSHIP_DESCRIPTION } from "@/lib/championship";
 import ChampionshipDescription from "../components/ChampionshipDescription";
@@ -146,47 +147,35 @@ function PlayerRow({ player }: { player: MatchPlayerStat }) {
 
 export default async function MatchDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams?: Promise<{ season?: string | string[] }>;
 }) {
-  const { id } = await params;
-  const chelstats = await fetchChelstatsData();
-  if (!chelstats) notFound();
-
-  // Search accumulated Redis history so older matches are still accessible
-  const allMatches = await getMatchHistory(chelstats);
-  const raw = allMatches.find((m) => m.id === id);
-  if (!raw) notFound();
-
-  const match: Match = {
-    id: raw.id,
-    timestamp: raw.timestamp,
-    date: raw.date,
-    opponent: raw.opponent,
-    homeAway: raw.homeAway,
-    scoreUs: raw.scoreUs,
-    scoreThem: raw.scoreThem,
-    status: "final",
-    matchType: raw.matchType,
-    shotsUs: raw.shotsUs,
-    shotsThem: raw.shotsThem,
-    toaUs: raw.toaUs,
-    toaThem: raw.toaThem,
-    passCompUs: raw.passCompUs,
-    passCompThem: raw.passCompThem,
-    players: raw.players,
-    threeStars: raw.threeStars,
-  };
+  const [{ id }, query] = await Promise.all([params, searchParams ?? Promise.resolve({ season: undefined })]);
+  const requestedSeason = query.season;
+  // Explicit season tags never cross-fallback on a colliding ID. Preserve the
+  // existing current-first, then archive resolution only for untagged URLs.
+  if (requestedSeason !== undefined && requestedSeason !== "2026-2027" && requestedSeason !== "2025-2026") notFound();
+  const season = requestedSeason === "2025-2026" ? null : await getHockeySeason();
+  const currentMatch = season?.matches.find(m => m.id === id);
+  // Detail lookup includes the full read-only archive, not its old visibility window.
+  const archivedMatches = requestedSeason === "2026-2027" || currentMatch ? [] : await getAllMatchesForRecords(FROZEN_CHELSTATS);
+  const archivedMatch = archivedMatches.find(m => m.id === id);
+  const match: Match | undefined = currentMatch ?? (archivedMatch ? { ...archivedMatch, status: "final" } : undefined);
+  if (!match) notFound();
+  const seasonLabel = currentMatch ? HOCKEY_SEASON : HOCKEY_ARCHIVE_SEASON;
 
   const result = getResult(match);
   const isWin = result === "W";
   const hasStats = match.shotsUs !== undefined && match.shotsThem !== undefined;
-  const isClincher = isChampionshipClincher(match);
+  const isClincher = !currentMatch && isChampionshipClincher(match);
 
   return (
     <div className="min-h-screen relative">
       <MatchesBackground />
 
+      <p className="hockey-page-container pt-8 text-xs tracking-widest text-gold">{seasonLabel} / {currentMatch ? "SEASON MATCH" : "ARCHIVED RESULT"}</p>
       {/* Rivalry header */}
       <div className="relative pt-16">
         <div className="relative h-48 md:h-56 overflow-hidden">
@@ -198,8 +187,8 @@ export default async function MatchDetailPage({
                 background: isWin
                   ? isClincher
                     ? "linear-gradient(135deg, rgba(244,211,94,0.20) 0%, rgba(244,211,94,0.07) 40%, transparent 50%, rgba(255,255,255,0.02) 60%, rgba(255,255,255,0.04) 100%)"
-                    : "linear-gradient(135deg, rgba(212, 183, 123,0.18) 0%, rgba(212, 183, 123,0.06) 40%, transparent 50%, rgba(255,255,255,0.02) 60%, rgba(255,255,255,0.04) 100%)"
-                  : "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 40%, transparent 50%, rgba(212, 183, 123,0.06) 60%, rgba(212, 183, 123,0.12) 100%)",
+                    : "linear-gradient(135deg, rgba(104, 200, 206,0.18) 0%, rgba(104, 200, 206,0.06) 40%, transparent 50%, rgba(255,255,255,0.02) 60%, rgba(255,255,255,0.04) 100%)"
+                  : "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 40%, transparent 50%, rgba(104, 200, 206,0.06) 60%, rgba(104, 200, 206,0.12) 100%)",
               }}
             />
             <div
@@ -269,18 +258,20 @@ export default async function MatchDetailPage({
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back link */}
         <Link
-          href="/matches"
+          href={currentMatch ? "/matches#results" : "/matches#archive"}
           className="inline-flex items-center gap-2 text-muted hover:text-white text-xs uppercase tracking-widest mb-6 transition-colors"
         >
           <span>←</span> Back to Scores
         </Link>
 
         {/* Description — gold callout with custom recap for the championship clincher */}
-        {isChampionshipClincher(match) ? (
+        {isClincher ? (
           <ChampionshipDescription description={CHAMPIONSHIP_DESCRIPTION} />
         ) : (
           <p className="text-sm text-muted leading-relaxed mb-6">
-            {generateMatchDescription(match)}
+            {currentMatch && isChampionshipClincher(match)
+              ? `Bardownski ${match.scoreUs}–${match.scoreThem} ${match.opponent}. Final result · ${match.date}.`
+              : generateMatchDescription(match)}
           </p>
         )}
 

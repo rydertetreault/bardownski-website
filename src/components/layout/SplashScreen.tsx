@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 const left = "BARDO".split("");
 const right = "WNSKI".split("");
 
 export default function SplashScreen() {
+  const pathname = usePathname();
   const [visible, setVisible] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -21,12 +23,13 @@ export default function SplashScreen() {
 
   return (
     <AnimatePresence>
-      {visible && (
+      {/* Hockey opens directly, like the homepage: no autoplay download or no-JS overlay. */}
+      {visible && (pathname === "/fc" || pathname.startsWith("/fc/")) && (
         <motion.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25, ease: "easeOut" }}
-          className="fixed inset-0 z-[200] flex items-center justify-center"
+          className="hockey-splash fixed inset-0 z-[200] flex items-center justify-center"
           style={{ backgroundColor: "#06080e" }}
         >
           <video
@@ -49,7 +52,7 @@ export default function SplashScreen() {
               initial={{ scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="h-[2px] w-8 sm:w-14 bg-[#d4b77b] rounded-full origin-right mr-3 sm:mr-4"
+              className="h-[2px] w-8 sm:w-14 bg-gold rounded-full origin-right mr-3 sm:mr-4"
             />
 
             {/* Left half — slides in from left */}
@@ -95,7 +98,7 @@ export default function SplashScreen() {
               initial={{ scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="h-[2px] w-8 sm:w-14 bg-[#d4b77b] rounded-full origin-left ml-3 sm:ml-4"
+              className="h-[2px] w-8 sm:w-14 bg-gold rounded-full origin-left ml-3 sm:ml-4"
             />
           </div>
         </motion.div>

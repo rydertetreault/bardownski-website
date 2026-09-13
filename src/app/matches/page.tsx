@@ -1,18 +1,25 @@
 import "./matches-archive.css";
 import MatchesClient from "./MatchesClient";
-import { fetchChelstatsData } from "@/lib/chelstats";
-import { getMatchHistory } from "@/lib/match-history";
+import type { Metadata } from "next";
+import { FROZEN_CHELSTATS } from "@/lib/chelstats-frozen";
+import { getHockeySeason } from "@/lib/hockey-season";
+import { getAllMatchesForRecords } from "@/lib/match-history";
 import type { Match, ClubRecord } from "@/types";
 
-export const revalidate = 300; // cache page for 5 min (matches Redis/chelstats TTL)
+// The preserved Redis archive is read at request time, never accumulated here.
+export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "2026–2027 Match Centre | Bardownski Hockey",
+  description: "Follow the next Bardownski season: match results and tracking, with saved 2025–2026 results kept in a separate archive.",
+};
 
 export default async function MatchesPage() {
-  const chelstats = await fetchChelstatsData();
+  const chelstats = FROZEN_CHELSTATS;
+  const season = await getHockeySeason();
 
-  // Load accumulated match history from Redis (populated by sync cron)
-  const allMatches = chelstats
-    ? await getMatchHistory(chelstats)
-    : [];
+  // Read the preserved 2025–2026 history; never mix it into season.matches.
+  const allMatches = await getAllMatchesForRecords(chelstats);
 
   // Strip per-player stats (only used on /matches/[id] detail page) to keep
   // the RSC payload small. With 100+ matches the players arrays dominate size.
@@ -36,13 +43,11 @@ export default async function MatchesPage() {
     forfeit: m.forfeit,
   }));
 
-  const clubRecord: ClubRecord | null = chelstats
-    ? {
-        wins: chelstats.clubStats.wins,
-        losses: chelstats.clubStats.losses,
-        otl: chelstats.clubStats.otl,
-      }
-    : null;
+  const clubRecord: ClubRecord = {
+    wins: chelstats.clubStats.wins,
+    losses: chelstats.clubStats.losses,
+    otl: chelstats.clubStats.otl,
+  };
 
-  return <MatchesClient matches={matches} clubRecord={clubRecord} />;
+  return <MatchesClient season={season} archivedMatches={matches} archivedRecord={clubRecord} />;
 }

@@ -2,7 +2,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useHockeyMotionPaused } from "@/components/layout/hockey-motion-preference";
 
 type NewsItem = {id:string; title:string; summary:string; date:string; image?:string; video?:string; category:string};
 const CATEGORIES = ["All", "Highlights", "Results", "Club News", "Stats", "Announcements"];
@@ -13,13 +14,13 @@ function StoryMedia({item, priority = false}: {item:NewsItem; priority?:boolean}
 }
 export default function NewsClient({items}: {items:NewsItem[]}) {
   const [active,setActive] = useState("All");
-  const reduce = useReducedMotion();
+  const reduce = useHockeyMotionPaused();
   const [query, setQuery] = useState("");
   const [limit, setLimit] = useState(8);
   const categories = [...new Set([...CATEGORIES, ...items.map(item => item.category)])];
   const filtered = items.filter(item => (active === "All" || item.category === active) && `${item.title} ${item.summary}`.toLowerCase().includes(query.trim().toLowerCase()));
   const [featured,...rest] = filtered;
-  const reveal = {initial:reduce ? false as const : {opacity:0,y:25}, whileInView:{opacity:1,y:0}, viewport:{once:true,amount:.1}, transition:{duration:.55}};
+  const reveal = {initial:false as const, animate:reduce ? {opacity:1,y:0} : undefined, whileInView:{opacity:1,y:0}, viewport:{once:true,amount:.1}, transition:{duration:reduce ? 0 : .55}};
   return <section className="news-stories" id="stories" aria-label="Club stories">
     <div className="news-search"><label htmlFor="story-search">Find a story</label><input id="story-search" type="search" placeholder="Search the journal…" value={query} onChange={e => { setQuery(e.target.value); setLimit(8); }} /></div>
     <div className="news-filterbar"><div role="group" aria-label="Filter stories by category">{categories.map(cat => <button key={cat} type="button" aria-pressed={active === cat} onClick={() => { setActive(cat); setLimit(8); }}>{cat}</button>)}</div><p aria-live="polite">{filtered.length} {filtered.length === 1 ? "story" : "stories"}</p></div>
