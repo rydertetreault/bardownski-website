@@ -6,6 +6,7 @@
  */
 
 import { FROZEN_CHELSTATS, FROZEN_SEASON_LABEL } from "./chelstats-frozen";
+import { parseClubCrest, type ClubCrest } from "./club-crest";
 import type {
   SeasonData,
   ParsedStats,
@@ -50,7 +51,7 @@ interface RawClubEntry {
   ppg: string;
   ppo: string;
   result: string;
-  details: { name: string; clubId: number };
+  details: { name: string; clubId: number; customKit?: unknown };
   goals: string;
   goalsAgainst: string;
   memberString: string;
@@ -257,6 +258,8 @@ export interface ClubMatch {
   timestamp: number;
   date: string;
   opponent: string;
+  opponentClubId?: string;
+  opponentCrest?: ClubCrest;
   homeAway: "home" | "away";
   scoreUs: number;
   scoreThem: number;
@@ -350,6 +353,8 @@ function transformGame(
 
   const opponentId = ourClub.opponentClubId;
   const opponentClub = game.clubs[opponentId];
+  const opponentClubId = typeof opponentId === "string" && !/\D/.test(opponentId) && /[1-9]/.test(opponentId) ? opponentId : undefined;
+  const opponentCrest = parseClubCrest(opponentClub?.details?.customKit);
 
   // Extract per-match player stats for our club
   const rawPlayers = game.players?.[CLUB_ID] ?? {};
@@ -449,6 +454,8 @@ function transformGame(
     timestamp: game.timestamp,
     date: formatTimestamp(game.timestamp),
     opponent: opponentClub?.details?.name ?? `Club #${opponentId}`,
+    ...(opponentClubId ? { opponentClubId } : {}),
+    ...(opponentCrest ? { opponentCrest } : {}),
     homeAway: ourClub.teamSide === "0" ? "home" : "away",
     scoreUs: num(ourClub.score),
     scoreThem: num(ourClub.opponentScore),
@@ -651,14 +658,16 @@ export function chelstatsToSeasonData(
         value: m.goalieSaves,
         secondary: svPct,
         ggp: m.goalieGP,
+        gaa: m.gaa,
       };
     });
 
+  // Zero shutouts is a reported total, not missing data. Keep every goalie
+  // with appearances so tables can distinguish zero from an absent snapshot.
   const shutouts = makeLeaderboard(
-    members,
+    members.filter((m) => m.goalieGP > 0),
     (m) => m.shutouts,
     (m) => m.shutoutPeriods,
-    (m) => m.goalieGP > 0
   );
 
   const shots = makeLeaderboard(

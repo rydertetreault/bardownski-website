@@ -1,359 +1,121 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { getMonochromePoster } from "@/lib/photo-posters";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-import { useHockeyMotionPaused } from "@/components/layout/hockey-motion-preference";
-import type { PlayerHighlights, PlayerClip } from "./page";
+import type { PlayerHighlights, PlayerClip } from "./highlights-data";
 
 function getYouTubeId(src: string): string | null {
-  const m = src.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([^?&]+)/);
-  return m ? m[1] : null;
+  const match = src.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([\w-]{11})(?:[?&#/]|$)/);
+  return match?.[1] ?? null;
 }
 
-// ─── Thumbnail video (lazy-loads metadata only when in view) ─────────────────
-function ThumbnailVideo({
-  src,
-  className,
-  playing,
-}: {
-  src: string;
-  className?: string;
-  playing: boolean;
-}) {
-  const motionPaused = useHockeyMotionPaused();
-  const ref = useRef<HTMLVideoElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const video = ref.current;
-    if (!video) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setVisible(entry.isIntersecting),
-      { rootMargin: "200px" }
-    );
-    observer.observe(video);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const video = ref.current;
-    if (!video) return;
-    if (visible) {
-      if (!video.getAttribute("src")) video.src = src;
-    } else {
-      video.pause();
-      video.removeAttribute("src");
-      video.load();
-    }
-  }, [visible, src]);
-
-  useEffect(() => {
-    const video = ref.current;
-    if (!video || !visible) return;
-    if (playing && !motionPaused) {
-      video.play().catch(() => {});
-    } else {
-      video.pause();
-    }
-  }, [playing, visible, motionPaused]);
-
-  return (
-    <video
-      ref={ref}
-      loop
-      muted
-      playsInline
-      preload="metadata"
-      className={className}
-    />
-  );
-}
-
-// ─── Full-screen video modal ──────────────────────────────────────────────────
+/** Native top-layer modal with inert background, Escape and explicit focus wrapping. */
 function VideoModal({ clip, onClose }: { clip: PlayerClip; onClose: () => void }) {
-  const motionPaused = useHockeyMotionPaused();
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [onClose]);
-
-  return (
-    <motion.div
-      initial={false}
-      transition={{ duration: motionPaused ? 0 : 0.2 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] flex items-center justify-center p-6"
-      style={{ backgroundColor: "rgba(0,0,0,0.92)" }}
-      onClick={onClose}
-    >
-      <button
-        className="absolute top-4 right-4 p-2 transition-colors"
-        style={{ color: "rgba(255,255,255,0.5)" }}
-        onClick={onClose}
-        aria-label="Close video"
-      >
-        <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-
-      <motion.div
-        initial={false}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: motionPaused ? 0 : 0.25 }}
-        className="relative max-w-5xl w-full"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {getYouTubeId(clip.src) ? (
-          <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
-            <iframe
-              title={clip.title}
-              src={`https://www.youtube.com/embed/${getYouTubeId(clip.src)}?autoplay=1`}
-              allow="autoplay; fullscreen"
-              allowFullScreen
-              className="absolute inset-0 w-full h-full rounded bg-black"
-              style={{ borderRadius: "4px" }}
-            />
-          </div>
-        ) : (
-          <video
-            src={clip.src}
-            controls
-            autoPlay
-            className="w-full max-h-[82vh] rounded bg-black"
-            style={{ borderRadius: "4px" }}
-          />
-        )}
-        <p
-          className="text-center text-xs mt-3 uppercase tracking-widest"
-          style={{ color: "rgba(255,255,255,0.3)" }}
-        >
-          {clip.title}
-        </p>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-// ─── Scroll with arrows ──────────────────────────────────────────────────────
-function useScrollArrows() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
-
-  const update = () => {
-    const el = ref.current;
-    if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 4);
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
-  };
+  const dialog = useRef<HTMLDialogElement>(null);
+  const [failed, setFailed] = useState(false);
+  const youtubeId = getYouTubeId(clip.src);
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    update();
-    el.addEventListener("scroll", update, { passive: true });
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    return () => { el.removeEventListener("scroll", update); ro.disconnect(); };
+    const node = dialog.current;
+    if (!node) return;
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const previousOverflow = document.body.style.overflow;
+    node.showModal();
+    document.body.style.overflow = "hidden";
+    return () => {
+      node.close();
+      document.body.style.overflow = previousOverflow;
+      if (opener?.isConnected) opener.focus({ preventScroll: true });
+    };
   }, []);
 
-  const scroll = (direction: "left" | "right") => {
-    const el = ref.current;
-    if (!el) return;
-    const amount = el.clientWidth * 0.75;
-    el.scrollBy({ left: direction === "right" ? amount : -amount, behavior: "smooth" });
-  };
-
-  return { ref, canScrollLeft, canScrollRight, scroll };
-}
-
-function ScrollArrow({ direction, onClick }: { direction: "left" | "right"; onClick: () => void }) {
   return (
-    <button
-      onClick={onClick}
-      aria-label={`Scroll clips ${direction}`}
-      className="absolute top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
-      style={{
-        [direction === "right" ? "right" : "left"]: "6px",
-        backgroundColor: "rgba(104, 200, 206,0.85)",
-        boxShadow: "0 2px 12px rgba(0,0,0,0.5)",
-      }}
-    >
-      <svg className="w-4 h-4 text-[#0b0c0d]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d={direction === "right" ? "M9 5l7 7-7 7" : "M15 19l-7-7 7-7"} />
-      </svg>
-    </button>
-  );
-}
-
-// ─── Clip card (CSS only, no Framer Motion) ──────────────────────────────────
-function ClipCard({ clip, onClick }: { clip: PlayerClip; onClick: () => void }) {
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <button
-      type="button"
-      aria-label={`Play ${clip.title}`}
-      className="highlight-clip-card"
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      <div
-        className="rounded overflow-hidden aspect-video relative transition-colors duration-200"
-        style={{
-          backgroundColor: "#101b1e",
-          border: `1px solid ${hovered ? "rgba(104, 200, 206,0.5)" : "rgba(104,200,206,0.12)"}`,
-        }}
-      >
-        {getYouTubeId(clip.src) ? (
-          <Image
-            src={`https://img.youtube.com/vi/${getYouTubeId(clip.src)}/hqdefault.jpg`}
-            alt={clip.title}
-            fill
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+    <dialog ref={dialog} className="film-dialog" aria-labelledby="film-dialog-title" onCancel={onClose} onKeyDown={event => {
+      if (event.key !== "Tab") return;
+      const stops = event.currentTarget.querySelectorAll<HTMLElement>("button, a[href], video[controls], iframe");
+      const first = stops[0];
+      const last = stops[stops.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    }} onClick={event => {
+      if (event.target !== event.currentTarget) return;
+      const rect = event.currentTarget.getBoundingClientRect();
+      if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) onClose();
+    }}>
+      <div className="film-dialog-heading"><p className="film-eyebrow">Now playing / Bardownski</p><button type="button" className="film-dialog-close" onClick={onClose} aria-label="Close video">Close <span aria-hidden="true">×</span></button></div>
+      <div className="film-dialog-media">
+        {youtubeId ? (
+          <iframe title={clip.title} src={`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1`} allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" />
+        ) : failed ? (
+          <div className="film-video-error" role="status"><p>This clip could not be loaded.</p><p>You can open the original file below, or try again.</p><button type="button" onClick={() => setFailed(false)}>Try again ↗</button></div>
         ) : (
-          <ThumbnailVideo
-            src={clip.src}
-            playing={hovered}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+          <video src={clip.src} poster={getMonochromePoster(clip.poster)} controls autoPlay playsInline aria-label={clip.title} onError={() => setFailed(true)} />
         )}
-
-        {/* Scrim */}
-        <div className="absolute inset-0" style={{ backgroundColor: "rgba(11,15,26,0.4)" }} />
-
-        {/* Play button */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-transform duration-200 hover:scale-110"
-            style={{ backgroundColor: "rgba(104,200,206,0.95)" }}
-          >
-            <svg className="w-4 h-4 text-[#0b0c0d]" style={{ marginLeft: "2px" }} fill="currentColor" viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </div>
-        </div>
-
-        {/* Powder blue corner bracket */}
-        <div
-          className="absolute top-0 left-0 w-5 h-5 pointer-events-none"
-          style={{
-            borderTop: "2px solid rgba(104,200,206,0.35)",
-            borderLeft: "2px solid rgba(104,200,206,0.35)",
-          }}
-        />
       </div>
-      <span className="highlight-clip-caption"><span>{clip.title}</span><b aria-hidden="true">↗</b></span>
-    </button>
+      <div className="film-dialog-footer"><h2 id="film-dialog-title">{clip.title}</h2><a href={clip.src} target="_blank" rel="noopener noreferrer">{youtubeId ? "Watch on YouTube" : "Open video file"} <span aria-hidden="true">↗</span></a></div>
+    </dialog>
   );
 }
 
-// ─── Player section (CSS fade-in, no Framer Motion) ──────────────────────────
-function PlayerSection({ player }: { player: PlayerHighlights }) {
-  const [activeClip, setActiveClip] = useState<PlayerClip | null>(null);
-  const { ref: scrollRef, canScrollLeft, canScrollRight, scroll } = useScrollArrows();
-
+function PlayerSection({ player, index, onPlay }: { player: PlayerHighlights; index: number; onPlay: (clip: PlayerClip) => void }) {
+  const [selectedId, setSelectedId] = useState(player.clips[0]?.id);
+  const selected = player.clips.find(clip => clip.id === selectedId) ?? player.clips[0];
+  if (!selected) return null;
 
   return (
-    <>
-      <div id={`highlights-${player.id}`} className="highlight-player-section">
-        {/* Player header */}
-        <div className="flex items-center gap-5 mb-5">
-          <div
-            className="w-1 self-stretch rounded-full flex-shrink-0"
-            style={{ backgroundColor: "#68c8ce", minHeight: "48px" }}
-          />
-
-          <div className="flex-1 min-w-0">
-            <div className="flex items-baseline gap-3 flex-wrap">
-              {player.number && (
-                <span
-                  className="text-xs font-black uppercase tracking-widest"
-                  style={{ color: "#68c8ce" }}
-                >
-                  {player.number}
-                </span>
-              )}
-              <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight leading-none">
-                {player.name}
-              </h2>
-              {player.position && (
-                <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.35)" }}>
-                  {player.position}
-                </span>
-              )}
-            </div>
+    <section id={`highlights-${player.id}`} className={`film-player film-player--${player.theme}`} aria-labelledby={`film-player-${player.id}`}>
+      <div className="film-inner">
+        <div className="film-chapter-meta"><p className="film-eyebrow">{String(index + 1).padStart(2, "0")} / {player.role}</p><span>{String(player.clips.length).padStart(2, "0")} {player.clips.length === 1 ? "clip" : "clips"}</span></div>
+        <div className="film-player-heading"><h2 id={`film-player-${player.id}`}>{player.name}</h2><p>{player.statement}</p></div>
+        <div className="film-player-layout">
+          <div className="film-feature">
+            <a className="film-screen" href={selected.src} aria-label={`Play ${selected.title}`} onClick={event => {
+              if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+              event.preventDefault();
+              onPlay(selected);
+            }}>
+              <Image src={selected.poster} alt="" fill sizes="(max-width: 800px) 88vw, 58vw" />
+              <span className="film-screen-label">{getYouTubeId(selected.src) ? "YouTube / Player edit" : "From the collection"}</span>
+              <span className="film-play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg></span>
+              <span className="film-screen-action" aria-hidden="true">Play film <span>↗</span></span>
+            </a>
+            <div className="film-feature-caption" aria-live="polite"><h3>{selected.title}</h3><span>{String(player.clips.indexOf(selected) + 1).padStart(2, "0")} / {String(player.clips.length).padStart(2, "0")}</span></div>
           </div>
-
-          <div
-            className="flex-shrink-0 px-3 py-1 rounded text-xs font-black uppercase tracking-wider"
-            style={{
-              backgroundColor: "rgba(104, 200, 206,0.12)",
-              border: "1px solid rgba(104, 200, 206,0.25)",
-              color: "#68c8ce",
-            }}
-          >
-            {player.clips.length} {player.clips.length === 1 ? "clip" : "clips"}
-          </div>
-        </div>
-
-        {/* Divider */}
-        <div
-          className="mb-5 h-px"
-          style={{ background: "linear-gradient(to right, rgba(255,255,255,0.08), transparent)" }}
-        />
-
-        {/* Scrollable clip row */}
-        <div className="relative">
-          {canScrollLeft && (
-            <div
-              className="pointer-events-none absolute left-0 top-0 h-full w-16 z-10"
-              style={{ background: "linear-gradient(to right, #0b0c0d, transparent)" }}
-            />
-          )}
-          {canScrollRight && (
-            <div
-              className="pointer-events-none absolute right-0 top-0 h-full w-16 z-10"
-              style={{ background: "linear-gradient(to left, #0b0c0d, transparent)" }}
-            />
-          )}
-
-          {canScrollLeft && <ScrollArrow direction="left" onClick={() => scroll("left")} />}
-          {canScrollRight && <ScrollArrow direction="right" onClick={() => scroll("right")} />}
-
-          <div
-            ref={scrollRef}
-            className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide select-none"
-          >
-            {player.clips.map((clip) => (
-              <ClipCard key={clip.id} clip={clip} onClick={() => setActiveClip(clip)} />
-            ))}
+          <div className="film-playlist">
+            <p className="film-playlist-label">{player.clips.length > 1 ? "The collection / Choose a clip" : "The collection / Player edit"}</p>
+            <ol>
+              {player.clips.map((clip, clipIndex) => <li key={clip.id}>
+                <a href={clip.src} className="film-clip" aria-current={clip.id === selected.id ? "true" : undefined} aria-label={`Select ${clip.title}`} onClick={event => {
+                  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                  event.preventDefault();
+                  setSelectedId(clip.id);
+                }}>
+                  <span className="film-clip-index">{String(clipIndex + 1).padStart(2, "0")}</span>
+                  <span className="film-clip-copy"><span>{clip.title}</span><small>{getYouTubeId(clip.src) ? "YouTube film" : "Club clip"}</small></span>
+                  <span className="film-clip-arrow" aria-hidden="true">{clip.id === selected.id ? "↖" : "↗"}</span>
+                </a>
+              </li>)}
+            </ol>
+            <p className="film-playlist-note">Select a clip. Press play.<br />The rest of the room can wait.</p>
           </div>
         </div>
       </div>
-
-      <AnimatePresence>
-        {activeClip && (
-          <VideoModal clip={activeClip} onClose={() => setActiveClip(null)} />
-        )}
-      </AnimatePresence>
-    </>
+    </section>
   );
 }
 
-// ─── Root export ──────────────────────────────────────────────────────────────
 export default function HighlightsClient({ players }: { players: PlayerHighlights[] }) {
+  const [activeClip, setActiveClip] = useState<PlayerClip | null>(null);
   return (
-    <div>
-      {players.map((player) => (
-        <PlayerSection key={player.id} player={player} />
-      ))}
+    <div className="film-collections">
+      {players.filter(player => player.clips.length > 0).map((player, index) => <PlayerSection key={player.id} player={player} index={index} onPlay={setActiveClip} />)}
+      {activeClip && <VideoModal key={activeClip.id} clip={activeClip} onClose={() => setActiveClip(null)} />}
     </div>
   );
 }

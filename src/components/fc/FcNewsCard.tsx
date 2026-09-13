@@ -1,3 +1,4 @@
+import { getNicknameText } from "@/lib/nicknames";
 import Link from "next/link";
 import Image from "next/image";
 import type { FcNewsItem } from "@/lib/fcstats";
@@ -15,7 +16,7 @@ export default function FcNewsCard({ item }: { item: FcNewsItem }) {
       <div className="relative h-44 overflow-hidden">
         <Image
           src={item.image}
-          alt={item.title}
+          alt={getNicknameText(item.title)}
           fill
           sizes="(max-width: 640px) 100vw, 33vw"
           className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
@@ -36,9 +37,9 @@ export default function FcNewsCard({ item }: { item: FcNewsItem }) {
       <div className="p-5 flex flex-col gap-2 flex-1">
         <span className="text-[10px] uppercase tracking-[0.2em] text-white/35">{item.date}</span>
         <h3 className="font-bold text-white leading-snug group-hover:underline decoration-[var(--fc-gold)] underline-offset-4">
-          {item.title}
+          {getNicknameText(item.title)}
         </h3>
-        <p className="text-sm text-white/45 line-clamp-2">{item.excerpt}</p>
+        <p className="text-sm text-white/45 line-clamp-2">{getNicknameText(item.excerpt)}</p>
       </div>
     </Link>
   );

@@ -13,6 +13,7 @@ import { homeArchive } from "../src/components/homepage/home-data";
 import { initHomeInteractions } from "../src/components/homepage/interactions";
 import { renderHome, seasonContent } from "../src/components/homepage/views";
 import type { Article } from "../src/lib/news";
+import { getDisplayName } from "../src/lib/nicknames";
 
 // Reuse Next's bundled HTML parser: no network, browser, Redis, or new dependency.
 // This is markup/interaction coverage, not a substitute for the browser handoff.
@@ -178,63 +179,79 @@ test("production route mounts the approved port, not SeasonRecap or a demo entry
   assert.equal(returned.tagName.getText(page), "HomepageClient");
 });
 
-test("server markup preserves the Variation 4 section order and no-JS content", () => {
+test("home hero comes first and preserves the section order and no-JS content", () => {
   const root = home();
   assert.ok(one(root, ".bd-home.demo-10.hybrid [data-home-content]"));
   assert.deepEqual(root.querySelectorAll("section").map(section => section.id || "hero"), [
     "hero", "results", "weekly", "standings", "highlights", "news", "history", "awards", "scrapbook",
   ]);
+  assert.equal(text(root, ".cinema-hero h1"), "HOME ICE.THE NEXT SHIFT.");
+  assert.equal(one(root, ".cinema-backdrop img").getAttribute("src"), "/images/homepage/history-2022.webp");
+  assert.equal(root.querySelectorAll("#season-reveal, .home-reveal").length, 0, "No standalone reveal above the home hero");
   assert.equal(root.querySelectorAll("h1").length, 1);
   assert.equal(root.querySelectorAll("main, header, .lab-toolbar, .chooser, video, source").length, 0, "No duplicate shell, demo controls, or eagerly loaded movie");
-  assert.equal(root.querySelectorAll("footer").length, 1);
+  assert.equal(root.querySelectorAll("footer").length, 0, "Shared layout owns the footer, not homepage markup");
   assert.equal(one(root, "dialog").getAttribute("aria-labelledby"), "dialog-title");
   assert.ok(one(root, ".motion-toggle").hasAttribute("hidden"), "Hide JS-only control before enhancement");
-  assert.equal(root.querySelectorAll("#standings details").length, 3, "Native disclosures remain available without JS");
+  assert.equal(root.querySelectorAll("#standings details").length, 0, "No fabricated ranking disclosures without current data");
   assert.equal(one(root, ".skip-link").getAttribute("href"), "#home-content");
 });
 
-test("recent results contain exactly the four approved saved games, in order", () => {
-  const rows = home().querySelectorAll("#results button[data-match]");
-  assert.deepEqual(rows.map(row => ({
-    index: row.getAttribute("data-match"), opponent: text(row, ".result-team b"),
-    date: text(row, ".result-team small"), score: text(row, "strong"), result: text(row, ".result-letter"),
-  })), [
-    { index: "0", opponent: "The Buffalo Wings", date: "July 22, 2026", score: "10–4", result: "W" },
-    { index: "1", opponent: "Thrasherz", date: "July 22, 2026", score: "6–5", result: "W" },
-    { index: "2", opponent: "BILLS 717", date: "July 16, 2026", score: "9–8", result: "W" },
-    { index: "3", opponent: "Tkachuk You", date: "June 19, 2026", score: "1–5", result: "L" },
-  ]);
-  const ui = interactions();
-  for (const row of rows) {
-    ui.click(row);
-    assert.match(text(ui.body(), ".data-stamp"), /2025–2026.*ARCHIVE/i);
-    assert.ok(text(ui.body(), "#dialog-title").includes(text(row, ".result-team b")));
-    assert.match(text(ui.body(), ".fineprint"), /partial saved skater coverage.*not a complete match box score/i);
-  }
-  ui.click("[data-games]");
-  assert.equal(ui.body().querySelectorAll("[data-match]").length, 8);
-  assert.match(ui.body().textContent, /archive is incomplete/i);
+test("awards transition diagonally into Club photos and the footer", () => {
+  const root = home();
+  assert.equal(root.querySelectorAll(".section-cut").length, 4);
+  const cut = one(root, "#awards + .section-cut.to-scrapbook");
+  assert.equal(cut.getAttribute("aria-hidden"), "true");
+  assert.equal(one(cut, "polygon").getAttribute("points"), "0,64 1000,0 1000,64");
+  assert.ok(one(root, ".to-scrapbook + #scrapbook + .home-signoff"));
+  assert.equal(text(root, ".home-signoff .footer-wordmark"), "BARDOWNSKI®");
+  assert.equal(root.querySelectorAll(".home-signoff .footer-bottom nav a").length, 3);
+  assert.equal(root.querySelectorAll("#scrapbook .album-controls button").length, 2);
 });
 
-test("performance, weekly, awards and video copy distinguish archives from pending tracking", () => {
+test("default homepage has empty current results, weekly and MVP sections, not archived fallbacks", () => {
   const root = home();
-  assert.ok(text(root, ".season-status").includes("2026–2027"));
-  assert.match(text(root, ".season-status"), /current-season tracking is being prepared/i);
-  for (const id of ["results", "weekly", "standings", "awards", "highlights"]) {
-    const section = one(root, `#${id}`);
-    assert.ok(section.textContent.includes("2025–2026"), `${id}: label historical data locally`);
-    assert.ok(!section.textContent.includes("2026–2027"), `${id}: do not relabel archived numbers as current`);
+  assert.equal(root.querySelectorAll(".season-status, [data-match], [data-games], [data-weekly], [data-standings], [data-player]").length, 0);
+  assert.equal(root.querySelectorAll("#results .result-row, #weekly .mini-stats strong, #standings details").length, 0);
+  assert.match(text(root, "#results"), /no results yet this season/i);
+  assert.match(text(root, "#weekly h2"), /the week is open/i);
+  assert.match(text(root, "#weekly p:not(.eyebrow)"), /temporarily unavailable/i);
+  assert.match(text(root, "#standings"), /no eligible rankings yet this season/i);
+  for (const id of ["results", "weekly", "standings"]) {
+    assert.ok(text(root, `#${id} .eyebrow`).includes("2026–2027"));
+    assert.ok(!text(root, `#${id}`).includes("2025–2026"), `${id}: no previous-season data presented as current`);
   }
-  assert.match(text(root, "#weekly .fine"), /archived weekly selection/i);
-  assert.match(text(root, "#weekly .eyebrow"), /APR 22, 2026/);
-  assert.match(one(root, "#weekly img").getAttribute("alt")!, /not a verified portrait/i);
-  assert.match(text(root, "#standings .fine"), /not votes or odds/i);
-  assert.match(text(root, "#awards .awards-note"), /until this season’s awards are presented/i);
+  assert.equal(one(root, '#results a.text-link').getAttribute("href"), "/matches");
+  assert.equal(one(root, '#weekly a.text-link').getAttribute("href"), "/stats#weekly-tracker");
+  assert.equal(one(root, '#standings .rank-footer a').getAttribute("href"), "/stats#standings");
+  assert.match(one(root, "#weekly img").getAttribute("alt")!, /not a portrait/i);
+  assert.match(text(root, "#standings .rank-footer .fine"), /not votes or odds/i);
+});
+
+test("previous awards and highlights keep their local archive labels and award dialogs", () => {
   const ui = interactions();
-  for (const selector of ["[data-weekly]", "[data-standings]", "[data-awards]", "[data-player]"]) {
-    ui.click(selector);
-    assert.match(text(ui.body(), ".data-stamp"), /2025–2026.*ARCHIVE/i);
+  for (const id of ["awards", "highlights"]) {
+    assert.ok(text(ui.root, `#${id}`).includes("2025–2026"), `${id}: label historical content locally`);
+    assert.ok(!text(ui.root, `#${id}`).includes("2026–2027"));
   }
+  assert.match(text(ui.root, "#awards .awards-note"), /until this season’s awards are presented/i);
+  const tiles = ui.root.querySelectorAll("#awards [data-award]");
+  assert.deepEqual(tiles.map(tile => tile.getAttribute("data-award")), ["mvp", "defense", "goalie", "unsung"]);
+  for (const tile of tiles) {
+    const honor = homeArchive.honors.find(honor => honor.id === tile.getAttribute("data-award"))!;
+    ui.click(tile);
+    assert.equal(ui.modal.open, true);
+    assert.match(text(ui.body(), ".data-stamp"), /2025–2026.*ARCHIVE/i);
+    assert.equal(text(ui.body(), ".award-detail h3"), honor.title);
+    assert.equal(text(ui.body(), ".award-detail .fineprint"), honor.criteria);
+    assert.equal(text(ui.body(), ".award-detail .data-stamp"), honor.selection === "editorial" ? "TEAM / EDITORIAL HONOR" : "STATISTICAL HONOR");
+    ui.click(".close-modal");
+    assert.equal(ui.modal.open, false);
+    assert.equal(ui.focused(), tile);
+  }
+  ui.click("[data-awards]");
+  assert.match(text(ui.body(), ".data-stamp"), /2025–2026.*ARCHIVE/i);
+  assert.deepEqual(ui.body().querySelectorAll(".award-detail h3").map(heading => heading.textContent), homeArchive.honors.map(honor => honor.title));
 });
 
 test("past seasons preserve the historical captain register without inventing a 2026–2027 captain", () => {
@@ -242,7 +259,7 @@ test("past seasons preserve the historical captain register without inventing a 
     ["2025", "2025–2026", "Rob"], ["2024", "2024–2025", "JRT IV"],
     ["2023", "2023–2024", "Jimmy"], ["2022", "2022–2023", "Matt"],
     ["2021", "2021–2022", "Matt"], ["2020", "2020–2021", "Xavier Laflamme"],
-  ];
+  ].map(([year, label, captain]) => [year, label, getDisplayName(captain)]);
   assert.deepEqual(homeArchive.seasons.map(s => [s.year, s.label, s.captain]), expected);
   const ui = interactions();
   const buttons = ui.root.querySelectorAll("#history [data-season]");
@@ -256,6 +273,18 @@ test("past seasons preserve the historical captain register without inventing a 
     assert.equal(text(ui.root, "#season-panel .captain-line strong"), captain);
     assert.ok(!text(ui.root, "#history").includes("2026–2027"));
   }
+});
+
+test("2020 past-season panel uses the replacement club photo instead of the old highlight still", () => {
+  const root = parse(seasonContent("2020"));
+  const image = one(root, ".history-image img");
+  assert.equal(image.getAttribute("src"), "/images/homepage/history-2020.webp");
+  assert.equal(image.getAttribute("style"), "object-position:50% 0%");
+  assert.equal(text(root, ".history-image figcaption"), "TOGETHER ON THE ICE / CLUB ARCHIVE");
+  assert.equal(text(root, ".season-year"), "2020–2021");
+  assert.equal(text(root, ".captain-line strong"), "Xavier Laflamme");
+  assert.ok(!root.innerHTML.includes("captain-xavier.webp"));
+  assertLocalAsset(image.getAttribute("src")!, "/images/homepage/");
 });
 
 test("homepage and real Navbar section links resolve to unique rendered targets", () => {
@@ -346,7 +375,7 @@ test("generated images, history portraits, album, font/license, and lazy videos 
   assertLocalAsset("/images/homepage/barlow-condensed.ttf", "/images/homepage/");
   assertLocalAsset("/images/homepage/licenses/barlowcondensed.txt", "/images/homepage/");
   const clips = [...new Set(home().querySelectorAll("[data-video]").map(button => button.getAttribute("data-video")))];
-  assert.deepEqual(clips, ["reveal", "finish", "crease"]);
+  assert.deepEqual(clips, ["finish", "crease"]);
   assert.equal(ui.root.querySelectorAll("video, source").length, 0, "Poster only before explicit play intent");
   for (const clip of clips) {
     ui.click(`[data-video="${clip}"]`);
@@ -354,9 +383,9 @@ test("generated images, history portraits, album, font/license, and lazy videos 
     assert.ok(video.hasAttribute("controls") && video.hasAttribute("playsinline"));
     assert.ok(!video.hasAttribute("autoplay"));
     assert.equal(video.getAttribute("preload"), "metadata");
-    assertLocalAsset(video.getAttribute("poster")!, clip === "reveal" ? "/images/announcements/" : "/images/homepage/");
-    assertLocalAsset(one(video, "source").getAttribute("src")!, clip === "reveal" ? "/videos/announcements/" : "/videos/homepage/");
-    assert.match(text(ui.body(), ".fineprint"), clip === "reveal" ? /official jersey and leadership announcement/i : /archived club gameplay/i);
+    assertLocalAsset(video.getAttribute("poster")!, "/images/monochrome/posters/");
+    assertLocalAsset(one(video, "source").getAttribute("src")!, "/videos/homepage/");
+    assert.match(text(ui.body(), ".fineprint"), /archived club gameplay/i);
   }
 });
 

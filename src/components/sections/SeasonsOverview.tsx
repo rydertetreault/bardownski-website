@@ -16,42 +16,42 @@ const seasons: SeasonSummary[] = [
   {
     year: "2025",
     rosterSize: 10,
-    captain: "Rob",
+    captain: "Slobby Robby",
     summary:
       "The current season. Bardownski entered Div 1 Club Finals for the first time and made a deep run against top-tier competition.",
   },
   {
     year: "2024",
     rosterSize: 10,
-    captain: "Ryder",
+    captain: "JRT IV",
     summary:
-      "A breakout year for the club. Ryder became the first goaltender named captain in club history. The roster solidified and the team started climbing the ranks in competitive play.",
+      "A breakout year for the club. JRT IV became the first goaltender named captain in club history. The roster solidified and the team started climbing the ranks in competitive play.",
   },
   {
     year: "2023",
     rosterSize: 8,
-    captain: "Jimmy",
+    captain: "Jimmy Lemons",
     summary:
-      "The roster expanded with key additions like Logan on the wing, elevating the team's competitiveness. The pieces were finally coming together. Bardownski also debuted the iconic Miami Vice jerseys for the first time.",
+      "The roster expanded with key additions like Top G on the wing, elevating the team's competitiveness. The pieces were finally coming together. Bardownski also debuted the iconic Miami Vice jerseys for the first time.",
   },
   {
     year: "2022",
     rosterSize: 6,
-    captain: "Matt",
+    captain: "Matt Hut",
     summary:
-      "Matt continued leading the club into year three. The roster grew to six and the team continued to build chemistry, finding its identity as a competitive unit.",
+      "Matt Hut continued leading the club into year three. The roster grew to six and the team continued to build chemistry, finding its identity as a competitive unit.",
   },
   {
     year: "2021",
     rosterSize: 5,
-    captain: "Matt",
+    captain: "Matt Hut",
     summary:
       "Bardownski kept grinding through another season, developing a core group of players.",
   },
   {
     year: "2020",
     rosterSize: 3,
-    captain: "Dylan",
+    captain: "Xavier Laflamme",
     summary:
       "Where it all began. Bardownski was founded and hit the ice for the first time, laying the foundation for everything to come.",
   },

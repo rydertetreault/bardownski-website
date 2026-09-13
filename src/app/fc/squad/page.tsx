@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getDisplayName } from "@/lib/nicknames";
 import {
   fetchFcStatsData,
   positionLabel,
@@ -40,8 +41,9 @@ export default async function FcSquadPage() {
       const agg = aggs.get(m.gamertag);
       return {
         gamertag: m.gamertag,
-        name: m.name,
-        proName: m.proName,
+        // Display labels only; gamertag links and kit-number lookups stay raw.
+        name: getDisplayName(m.name),
+        proName: getDisplayName(m.proName),
         posGroup: positionLabel(m.position),
         position: m.position || "—",
         height: formatHeight(m.proHeight),

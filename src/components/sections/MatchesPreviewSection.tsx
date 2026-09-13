@@ -102,7 +102,7 @@ function FeaturedMatch({ match }: { match: Match }) {
             </div>
             <div className="relative w-12 h-12 md:w-16 md:h-16 shrink-0">
               <Image
-                src="/images/logo/BD - logo.png"
+                data-brand-mark src="/images/logo/BD - logo.png"
                 alt="Bardownski"
                 fill
                 className="object-contain"
@@ -230,7 +230,7 @@ function PreviousMatch({ match, index }: { match: Match; index: number }) {
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <div className="relative w-5 h-5 shrink-0">
               <Image
-                src="/images/logo/BD - logo.png"
+                data-brand-mark src="/images/logo/BD - logo.png"
                 alt=""
                 fill
                 className="object-contain"

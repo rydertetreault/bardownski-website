@@ -1,5 +1,6 @@
 "use client";
 
+import { getMonochromePoster } from "@/lib/photo-posters";
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -43,7 +44,7 @@ function VideoPlayer({ video }: { video: FcHighlightVideo }) {
           <video
             ref={ref}
             src={video.src}
-            poster={video.poster}
+            poster={getMonochromePoster(video.poster)}
             className="absolute inset-0 w-full h-full object-cover"
             playsInline
             controls={started}

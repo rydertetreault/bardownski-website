@@ -1,86 +1,53 @@
-import "./highlights.css";
+import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
 import HighlightsClient from "./HighlightsClient";
+import { players } from "./highlights-data";
+import "./highlights.css";
 
-export interface PlayerClip {
-  id: string;
-  title: string;
-  src: string;
-}
-
-export interface PlayerHighlights {
-  id: string;
-  name: string;
-  number?: string;
-  position?: string;
-  clips: PlayerClip[];
-}
-
-const players: PlayerHighlights[] = [
-  {
-    id: "ryder",
-    name: "JRT IV",
-    clips: [
-      { id: "r1", title: "JRT IV — 2026", src: "https://youtu.be/aGrVfM6HsO0" },
-      { id: "r2", title: "JRT IV — Clip 1", src: "/videos/Ryder1.mp4" },
-      { id: "r3", title: "JRT IV — Clip 2", src: "/videos/Ryder2.mp4" },
-      { id: "r4", title: "JRT IV — Clip 3", src: "/videos/ryder3.mp4" },
-    ],
-  },
-  {
-    id: "dylan",
-    name: "Xavier Laflamme",
-    clips: [
-      { id: "d1", title: "Xavier Laflamme — Clip 1", src: "/videos/Dylan1.mp4" },
-      { id: "d2", title: "Xavier Laflamme — Clip 2", src: "/videos/Dylan2.mp4" },
-      { id: "d3", title: "Xavier Laflamme — 2026", src: "/videos/dylan - 2026.mp4" },
-    ],
-  },
-  {
-    id: "kaden",
-    name: "Gotta Be",
-    clips: [
-      { id: "k1", title: "Gotta Be — Trap Edition", src: "/videos/GottaBe - Trap Edition.mp4" },
-      { id: "k2", title: "Gotta Be — Clip 1", src: "/videos/Kaden1.mp4" },
-    ],
-  },
-  {
-    id: "slobby-robby",
-    name: "Slobby Robby",
-    clips: [
-      { id: "sr1", title: "Slobby Robby 2026", src: "/videos/Slobby Robby 2026.mp4" },
-    ],
-  },
-  {
-    id: "matt",
-    name: "Matt",
-    clips: [
-      { id: "m1", title: "Matt — Clip 1", src: "/videos/matt1.mp4" },
-      { id: "m2", title: "Matt — Clip 2", src: "/videos/matt2.mp4" },
-      { id: "m3", title: "Matt — Clip 3", src: "/videos/matt3.mp4" },
-      { id: "m4", title: "Matt — Clip 4", src: "/videos/matt4.mp4" },
-      { id: "m5", title: "Matt — Clip 5", src: "/videos/matt5.mp4" },
-      { id: "m6", title: "Matt — Clip 6", src: "/videos/matt6.mp4" },
-      { id: "m7", title: "Matt — Clip 7", src: "/videos/matt7.mp4" },
-    ],
-  },
-];
+export const metadata: Metadata = {
+  title: "Highlights | Bardownski Hockey",
+  description: "The goals, the saves, and the plays worth another look. Explore Bardownski’s highlight collection, player by player.",
+};
 
 export default function HighlightsPage() {
-  const totalClips = players.reduce((sum, p) => sum + p.clips.length, 0);
-
+  const totalClips = players.reduce((sum, player) => sum + player.clips.length, 0);
   return (
-    <div className="offseason-highlights">
-      <section className="highlights-heading">
-        <div>
-          <p className="highlights-eyebrow">BARDOWNSKI / THE FILM ROOM</p>
-          <h1>THE HIGHLIGHT<br /><em>COLLECTION.</em></h1>
-          <p className="highlights-intro">The goals. The saves. The plays worth watching again.<br />Explore the club’s highlights, player by player.</p>
+    <div className="highlights-edition">
+      <header className="film-hero" aria-labelledby="film-title">
+        <div className="film-hero-image">
+          <Image src="/images/homepage/bench-wide.webp" alt="Bardownski players together on the bench" fill priority sizes="100vw" />
         </div>
-        <div className="highlights-counts"><div><strong>{players.length.toString().padStart(2, "0")}</strong><span>PLAYERS</span></div><div><strong>{totalClips}</strong><span>CLIPS</span></div></div>
+        <div className="film-hero-copy film-inner">
+          <p className="film-eyebrow">Bardownski hockey / The film room</p>
+          <h1 id="film-title">Worth<br /><em>another look.</em></h1>
+          <p className="film-hero-intro">The goals. The saves. The plays we keep coming back to. This is Bardownski, on tape.</p>
+          <a className="film-text-link" href="#collection">Explore the collection <span aria-hidden="true">↓</span></a>
+          <p className="film-library-note">{String(players.length).padStart(2, "0")} players <span aria-hidden="true">/</span> {totalClips} clips <span aria-hidden="true">/</span> One club</p>
+        </div>
+      </header>
+
+      <section id="collection" className="film-index" aria-labelledby="collection-title">
+        <div className="film-inner">
+          <div className="film-index-heading">
+            <div><p className="film-eyebrow">The player collection</p><h2 id="collection-title">Pick a name.<br /><em>Roll the tape.</em></h2></div>
+            <p>Individual plays and full edits from the club collection.<br />Choose a player, then press play.</p>
+          </div>
+          <nav className="film-player-nav" aria-label="Jump to player highlights">
+            {players.map((player, index) => <a key={player.id} href={`#highlights-${player.id}`}><span className="film-nav-index">{String(index + 1).padStart(2, "0")}</span><span>{player.name}</span><span aria-hidden="true">↘</span></a>)}
+          </nav>
+        </div>
       </section>
-      <div className="highlights-library">
-        <HighlightsClient players={players} />
-      </div>
+
+      <HighlightsClient players={players} />
+
+      <section className="film-outro club-mark-panel" aria-labelledby="film-outro-title">
+        <div className="film-inner">
+          <p className="film-eyebrow">Beyond the replay</p>
+          <h2 id="film-outro-title">The plays.<br /><em>The people.</em></h2>
+          <div className="film-outro-links"><Link className="film-text-link" href="/roster">Meet the roster <span aria-hidden="true">↗</span></Link><Link href="/matches">Follow the games <span aria-hidden="true">↗</span></Link></div>
+        </div>
+      </section>
     </div>
   );
 }

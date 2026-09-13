@@ -13,3 +13,8 @@
 .awards-links { display:flex; gap:30px; flex-wrap:wrap; }
 @media(max-width:1000px) { .awards-archive-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media(max-width:600px) { .awards-archive-grid { grid-template-columns:1fr; } }
+
+/* Preserve the honors' full-bleed surfaces; constrain only section content. */
+.awards-page > .new-section {
+  padding-inline:max(var(--site-gutter),calc((100% - var(--site-content-max))/2));
+}

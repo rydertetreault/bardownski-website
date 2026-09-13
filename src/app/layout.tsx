@@ -7,6 +7,9 @@ import SplashScreen from "@/components/layout/SplashScreen";
 import SiteTheme from "@/components/layout/SiteTheme";
 import "./globals.css";
 import "./hockey-theme.css";
+import "@/components/layout/site-widths.css";
+import "@/components/layout/club-marks.css";
+import "@/components/layout/shared-footer.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

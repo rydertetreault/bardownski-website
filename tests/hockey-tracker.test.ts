@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { COMMIT_SNAPSHOT, RELEASE_LEASE, refreshHockeyTracker, type TrackerStore, type StoredSnapshot } from "../src/lib/hockey-tracker";
 import { NHL27_IDENTITY, parseNhl27Snapshot } from "../src/lib/nhl27-api";
+import { getClubCrestUrl } from "../src/lib/club-crest";
 import { readFileSync } from "node:fs";
 
 // The fake models only this tiny storage boundary; a real Redis repeat-run and
@@ -25,7 +26,11 @@ class MemoryStore implements TrackerStore {
     const incoming=JSON.parse(String(args[1])) as StoredSnapshot;
     if(this.snapshot && incoming.fetchedAt<=this.snapshot.fetchedAt)return "older-fetch";
     if(this.snapshot && incoming.data.clubStats.totalGames<this.snapshot.data.clubStats.totalGames)return "record-decreased";
-    for(const match of incoming.data.matches)this.matches[match.id]=match;
+    const encodedGames=JSON.parse(String(args[3])) as Record<string, string>;
+    for(const match of incoming.data.matches) {
+      assert.deepEqual(JSON.parse(encodedGames[match.id]),match);
+      this.matches[match.id]=encodedGames[match.id];
+    }
     incoming.data.matches=[];this.snapshot=incoming;this.commits++;return "saved";
   }
 }
@@ -81,4 +86,55 @@ test("lease contention and identity mismatch cannot commit",async()=>{
   assert.equal((await refreshHockeyTracker({store,fetchSnapshot:async()=>invalid})).status,"unavailable");
   assert.equal(store.commits,0);
   assert.deepEqual(Object.keys(store.matches),[]);
+});
+
+test("whole-match JSON persistence retains optional crest metadata through save, cached read and window rotation",async()=>{
+  const store=new MemoryStore(), first=snapshot();
+  first.data.matches[1].opponentCrest={crestAssetId:"3",useBaseAsset:false};
+  delete first.data.matches[2].opponentCrest;
+  const before=JSON.stringify(first), now=Date.parse(first.fetchedAt);
+  const saved=await refreshHockeyTracker({store,fetchSnapshot:async()=>first,now:()=>now});
+  assert.equal(saved.status,"connected");assert.equal(saved.synced,true);
+  assert.deepEqual(saved.matches,first.data.matches);
+  assert.deepEqual(saved.snapshot?.data.matches,first.data.matches);
+  for(const match of first.data.matches) {
+    assert.equal(typeof store.matches[match.id],"string","exercise the exact encoded match sent to storage");
+    const persisted=JSON.parse(store.matches[match.id] as string);
+    assert.equal(persisted.opponentClubId,match.opponentClubId);
+    assert.deepEqual(persisted.opponentCrest,match.opponentCrest);
+  }
+  const noFetch=async()=>{throw Error("cached/history reads must not fetch or backfill crests")};
+  const cached=await refreshHockeyTracker({store,fetchSnapshot:noFetch,now:()=>now+1000});
+  assert.equal(cached.synced,false);assert.equal(store.commits,1);
+  assert.deepEqual(cached.matches,first.data.matches);
+  assert.equal(getClubCrestUrl(cached.matches[0].opponentCrest),"https://chelstats.app/api/crest/111?base=1");
+  assert.equal(getClubCrestUrl(cached.matches[1].opponentCrest),"https://chelstats.app/api/crest/3");
+  assert.equal(getClubCrestUrl(cached.matches[2].opponentCrest),null);
+  const next=snapshot(new Date(now+300000).toISOString());next.data.matches=[];
+  const rotated=await refreshHockeyTracker({store,force:true,fetchSnapshot:async()=>next,now:()=>now+300000});
+  assert.deepEqual(rotated.matches,first.data.matches);
+  assert.equal(JSON.stringify(first),before,"persistence must not mutate source metadata");
+});
+
+test("pre-crest stored matches remain readable in JSON and decoded forms without invented metadata",async()=>{
+  const store=new MemoryStore(), old=snapshot(), now=Date.parse(old.fetchedAt);
+  for(const match of old.data.matches) {
+    delete match.opponentCrest;
+    delete match.opponentClubId;
+  }
+  await refreshHockeyTracker({store,fetchSnapshot:async()=>old,now:()=>now});
+  const decodedId=old.data.matches[0].id;
+  store.matches[decodedId]=JSON.parse(store.matches[decodedId] as string);
+  const before=JSON.stringify(store.matches);
+  const result=await refreshHockeyTracker({store,fetchSnapshot:async()=>{throw Error("no backfill")},now:()=>now+1000});
+  assert.equal(result.status,"connected");assert.equal(result.synced,false);
+  assert.deepEqual(result.matches,old.data.matches);
+  assert.deepEqual(result.snapshot?.data.matches,old.data.matches);
+  for(const match of result.matches) {
+    assert.equal(Object.hasOwn(match,"opponentCrest"),false);
+    assert.equal(Object.hasOwn(match,"opponentClubId"),false);
+    assert.equal(getClubCrestUrl(match.opponentCrest),null);
+  }
+  assert.equal(store.commits,1);
+  assert.equal(JSON.stringify(store.matches),before);
 });

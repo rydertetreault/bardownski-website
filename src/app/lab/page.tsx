@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { fetchChannelMessages, parseAllSeasons } from "@/lib/discord";
 import { chelstatsToSeasonData } from "@/lib/chelstats";
 import { FROZEN_CHELSTATS } from "@/lib/chelstats-frozen";
 import { getHockeySeason, HOCKEY_SEASON, HOCKEY_ARCHIVE_SEASON } from "@/lib/hockey-season";
 import { buildComparisonSeasons } from "@/lib/player-comparison";
-import { HeadToHeadCard } from "./components/HeadToHeadCard";
+import LabTools from "./LabTools";
 import { getAllMatchesForRecords } from "@/lib/match-history";
 import { buildChemistryDataset } from "@/lib/line-chemistry";
+import { buildGoalieDataset } from "@/lib/goalie-lines";
 import { NHL27_IDENTITY } from "@/lib/nhl27-api";
 import { buildLinePlayers, type LineDataset } from "@/components/lines/line-datasets";
-import LineSeasonSelector from "@/components/lines/LineSeasonSelector";
-import { TrackingNotice } from "@/components/season/SeasonTracking";
 import "./lab.css";
 import "./comparison-lab.css";
 
@@ -21,10 +21,11 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Player Lab | Bardownski Hockey",
   description:
-    "Compare hockey players across seasons with radar, bars, scatter and trend charts. A dedicated workspace for player analysis and line planning.",
+    "Build your Bardownski line, compare goalie support, explore chemistry and player grades, and compare teammates across seasons in the Player Lab.",
 };
 
-export default async function LabPage() {
+export default async function LabPage({ searchParams }: { searchParams: Promise<{ tool?: string }> }) {
+  const { tool } = await searchParams;
   const [messages, season, archivedMatches] = await Promise.all([
     fetchChannelMessages(),
     getHockeySeason(),
@@ -59,6 +60,7 @@ export default async function LabPage() {
     totalGames: season.coverage.totalGames,
     games: currentChemistry.games,
     players: buildLinePlayers(members, currentChemistry.games, "current"),
+    goalies: buildGoalieDataset(members, season.data?.matches ?? []),
     sourceTotal: currentChemistry.total,
     excluded: currentChemistry.excluded,
   };
@@ -69,36 +71,27 @@ export default async function LabPage() {
     totalGames: FROZEN_CHELSTATS.clubStats.totalGames,
     games: archiveChemistry.games,
     players: buildLinePlayers(FROZEN_CHELSTATS.members, archiveChemistry.games, "archive"),
+    goalies: buildGoalieDataset(FROZEN_CHELSTATS.members, archivedMatches),
     sourceTotal: archiveChemistry.total,
     excluded: archiveChemistry.excluded,
   };
 
   return (
     <div className="player-lab">
-      <header className="player-lab-header">
-        <div>
-          <p className="player-lab-eyebrow">BARDOWNSKI HOCKEY / ANALYSIS</p>
-          <h1>Player lab</h1>
-          <p className="player-lab-intro">
-            Study the player. Compare the seasons. Find the fit.
-          </p>
+      <header className="player-lab-header" aria-labelledby="player-lab-title">
+        <div className="player-lab-hero-image">
+          <Image src="/images/homepage/bench-wide.webp" alt="Bardownski teammates celebrating together at the bench" fill priority sizes="100vw" />
         </div>
-        <p className="player-lab-context">
-          The final 2025–2026 snapshot and older Discord seasons stay in the
-          archive. Current-season numbers use the verified feed or its last saved
-          snapshot, with freshness shown below.
-        </p>
+        <div className="player-lab-hero-copy">
+          <p className="player-lab-eyebrow">BARDOWNSKI HOCKEY / THE PLAYER LAB</p>
+          <h1 id="player-lab-title">GOOD PLAYERS.<br /><em>BETTER TOGETHER.</em></h1>
+          <p className="player-lab-intro">Build your line. Find the chemistry.<br />Choose a tool. Make your next move.</p>
+          <a className="player-lab-hero-link" href="#lab-tools">Choose your tool <span aria-hidden="true">↘</span></a>
+        </div>
+        <span className="player-lab-hero-caption">THE RIGHT PLAYERS. THE RIGHT FIT.</span>
       </header>
-      <nav className="player-lab-nav" aria-label="Player lab sections">
-        <a href="#comparison">01 / Player comparison</a>
-        <a href="#lines">02 / Lines &amp; chemistry</a>
-      </nav>
-      <TrackingNotice state={season} />
-      <HeadToHeadCard
-        seasons={comparisonSeasons}
-        pendingSeason={pendingSeason}
-      />
-      <LineSeasonSelector current={currentLines} archive={archiveLines} />
+      <LabTools current={currentLines} archive={archiveLines} seasons={comparisonSeasons}
+        pendingSeason={pendingSeason} initialTool={tool === "comparison" ? "comparison" : "lines"} />
     </div>
   );
 }

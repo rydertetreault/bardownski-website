@@ -29,7 +29,7 @@ function TeamRow({
       {isBardownski ? (
         <div className="relative w-7 h-7 shrink-0">
           <Image
-            src="/images/logo/BD - logo.png"
+            data-brand-mark src="/images/logo/BD - logo.png"
             alt="BD"
             fill
             className="object-contain"

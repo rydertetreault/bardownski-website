@@ -3,8 +3,12 @@ import type { Match } from "@/types";
 export function getResult(match: Match): "W" | "L" | null {
   if (
     match.status !== "final" ||
-    match.scoreUs === null ||
-    match.scoreThem === null
+    typeof match.scoreUs !== "number" ||
+    typeof match.scoreThem !== "number" ||
+    !Number.isFinite(match.scoreUs) ||
+    !Number.isFinite(match.scoreThem) ||
+    match.scoreUs < 0 ||
+    match.scoreThem < 0
   )
     return null;
   return match.scoreUs > match.scoreThem ? "W" : "L";

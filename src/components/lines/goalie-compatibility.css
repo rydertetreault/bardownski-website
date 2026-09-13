@@ -1,0 +1,72 @@
+/* A small companion to the goalie slot; placement belongs to the planner. */
+.goalie-connection {
+  --gc-paper: var(--line-paper, #f0efeb);
+  --gc-muted: #b9b3c1;
+  --gc-accent: var(--line-lilac, #c4a1dc);
+  --gc-teal: var(--line-light, #68c8ce);
+  --gc-rule: #c4a1dc38;
+  width: 290px;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 12px 0 0 18px;
+  border-top: 2px solid var(--gc-accent);
+  border-left: 1px solid var(--gc-rule);
+  background: transparent;
+  color: var(--gc-paper);
+  font: 400 13px/1.5 Arial, Helvetica, sans-serif;
+  scroll-margin-top: calc(var(--site-header-height, 126px) + 16px);
+  color-scheme: dark;
+}
+.goalie-connection *, .goalie-connection *::before, .goalie-connection *::after { box-sizing: border-box; }
+.goalie-connection { box-sizing: border-box; }
+.goalie-connection :is(button, summary, a, [tabindex]):focus-visible { outline: 2px solid var(--gc-teal); outline-offset: -2px; }
+.goalie-connection .gc-heading { margin: 0 0 12px; }
+.goalie-connection .gc-eyebrow { margin: 0 0 5px; color: var(--gc-accent); font: 700 12px/1.4 Arial, sans-serif; letter-spacing: 1px; }
+.goalie-connection .gc-heading h3 { margin: 0; color: var(--gc-paper); font: 800 32px/1 LabBarlow, 'Arial Narrow', Impact, sans-serif; letter-spacing: -.02em; text-transform: none; }
+.goalie-connection .gc-scopes { display: inline-flex; flex-wrap: wrap; max-width: 100%; gap: 3px; padding: 3px; border: 1px solid var(--gc-rule); border-radius: 24px; }
+.goalie-connection .gc-scopes button { min-height: 32px; padding: 5px 12px; border: 0; border-radius: 20px; background: transparent; color: var(--gc-muted); font: 700 12px/1.4 Arial, sans-serif; cursor: pointer; }
+.goalie-connection .gc-scopes button[aria-pressed="true"] { background: var(--gc-accent); color: #251332; }
+.goalie-connection .gc-scopes button:hover:not([aria-pressed="true"]) { background: #c4a1dc18; color: var(--gc-paper); }
+.goalie-connection .gc-context { margin: 10px 0 8px; color: var(--gc-muted); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.goalie-connection .gc-context strong { color: var(--gc-paper); font-weight: 700; }
+.goalie-connection .gc-context > span { display: block; }
+/* One keyboard-focusable scroll region for rows AND all disclosed evidence. */
+.goalie-connection .gc-scroll { max-height: 186px; overflow-y: auto; overscroll-behavior-y: contain; scrollbar-width: thin; scrollbar-color: var(--gc-accent) transparent; }
+.goalie-connection .gc-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--gc-rule); }
+.goalie-connection .gc-row { margin: 0; padding: 0; border-bottom: 1px solid var(--gc-rule); }
+.goalie-connection .gc-pair-toggle { display: flex; align-items: center; gap: 6px; width: 100%; min-height: 61px; padding: 9px 3px 9px 0; border: 0; border-radius: 3px; background: none; color: var(--gc-paper); text-align: left; font: 400 13px/1.4 Arial, sans-serif; cursor: pointer; }
+.goalie-connection .gc-pair-toggle:hover { background: #c4a1dc0c; }
+.goalie-connection .gc-pair { flex: 1; min-width: 0; }
+.goalie-connection .gc-player { display: block; overflow-wrap: anywhere; }
+.goalie-connection .gc-player strong { font-weight: 700; }
+.goalie-connection .gc-number { color: var(--gc-accent); font-size: 12px; }
+.goalie-connection .gc-sample { display: block; margin-top: 3px; color: var(--gc-muted); font-size: 12px; line-height: 1.4; }
+.goalie-connection .gc-sample > span { color: var(--gc-accent); }
+.goalie-connection .gc-rating { flex: 0 0 auto; color: var(--gc-teal); font: 800 25px/1 LabBarlow, 'Arial Narrow', Impact, sans-serif; font-variant-numeric: tabular-nums; }
+.goalie-connection .gc-rating.is-unrated { color: var(--gc-muted); }
+.goalie-connection .gc-chevron { flex: 0 0 12px; color: var(--gc-accent); font-size: 16px; text-align: center; }
+.goalie-connection .gc-detail { padding: 0 4px 10px 0; }
+.goalie-connection .gc-detail[hidden] { display: none; }
+.goalie-connection .gc-unrated { margin: 0 0 8px; color: var(--gc-muted); font-size: 12px; }
+.goalie-connection .gc-stats { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin: 0; font-variant-numeric: tabular-nums; }
+.goalie-connection .gc-stats dt { color: var(--gc-muted); font: 400 12px/1.5 Arial, sans-serif; }
+.goalie-connection .gc-stats abbr { text-decoration: underline dotted; text-underline-offset: 3px; }
+.goalie-connection .gc-stats dd { margin: 3px 0 0; color: var(--gc-paper); font: 700 16px/1.3 Arial, sans-serif; }
+.goalie-connection .gc-evidence { margin: 8px 0 0; padding: 0; border: 0; }
+.goalie-connection .gc-evidence summary { min-height: 32px; padding: 6px 0; color: var(--gc-accent); font: 400 12px/1.5 Arial, sans-serif; cursor: pointer; }
+.goalie-connection .gc-totals { margin: 2px 0 6px; color: var(--gc-muted); font-size: 12px; }
+.goalie-connection .gc-evidence ul { list-style: none; margin: 0; padding: 0; }
+.goalie-connection .gc-evidence li { display: flex; flex-direction: column; gap: 3px; padding: 8px 0; border-top: 1px solid var(--gc-rule); color: var(--gc-muted); font-size: 12px; overflow-wrap: anywhere; }
+.goalie-connection .gc-game-result { color: var(--gc-teal); }
+.goalie-connection .gc-empty { margin: 12px 0 0; padding: 12px 0; border-top: 1px solid var(--gc-rule); color: var(--gc-muted); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.goalie-connection .gc-more { margin: 5px 0 0; color: var(--gc-muted); font-size: 12px; }
+.goalie-connection .gc-stats-link { display: inline-flex; align-items: center; min-height: 36px; max-width: 100%; margin-top: 8px; color: var(--gc-accent); font: 700 12px/1.5 Arial, sans-serif; text-decoration: underline; text-underline-offset: 4px; overflow-wrap: anywhere; }
+.goalie-connection .gc-stats-link:hover { color: var(--gc-teal); }
+@media (max-width: 850px) {
+  .goalie-connection { width: 100%; padding: 14px 0 0; border-left: 0; }
+}
+@media (forced-colors: active) {
+  .goalie-connection .gc-scopes button[aria-pressed="true"] { outline: 2px solid Highlight; outline-offset: -3px; }
+  .goalie-connection .gc-pair-toggle { border: 1px solid ButtonText; }
+}

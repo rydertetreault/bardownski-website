@@ -22,6 +22,8 @@ export interface StatEntry {
 
 export interface SaveEntry extends StatEntry {
   ggp?: number;
+  /** Available from member snapshots; absent from older Discord ledgers. */
+  gaa?: number;
 }
 
 export interface RosterEntry {
@@ -1047,6 +1049,7 @@ export function getEnrichedPlayers(stats: ParsedStats): EnrichedPlayer[] {
       saves: sv?.value,
       savePercentage: sv?.secondary,
       goalieGamesPlayed: sv?.ggp,
+      gaa: sv?.gaa,
       shutouts: so?.value,
       shutoutPeriods: so?.secondary,
       shots: sh?.value,

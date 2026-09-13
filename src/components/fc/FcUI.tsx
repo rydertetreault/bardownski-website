@@ -33,7 +33,7 @@ export function FcPageShell({ children }: { children: ReactNode }) {
         />
       </div>
       <div
-        className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+        className="fc-page-content site-content-container relative"
         style={{ zIndex: 1 }}
       >
         {children}

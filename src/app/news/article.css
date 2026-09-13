@@ -11,3 +11,17 @@
 .hockey-site.hockey-interior .reveal-article h1{font-family:HockeyDisplay,Impact,sans-serif;font-size:clamp(36px,5vw,58px);line-height:1.05;letter-spacing:0}
 .hockey-article .reveal-transcript summary{cursor:pointer;color:#c4a1dc;font-weight:700;padding:12px 0}
 .hockey-article .reveal-transcript h3{font-size:14px;font-weight:700;color:#f0efeb;margin:18px 0 8px}
+
+/* The existing article wrapper is the media rail. Its text remains a narrower
+   reading column; only the hero image/video spans the full content width. */
+.hockey-article > .relative.max-w-3xl {
+  width:calc(100% - 2 * var(--site-gutter));
+  max-width:var(--site-content-max);
+  margin-inline:auto;
+  padding-inline:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,var(--site-reading-max)) minmax(0,1fr);
+}
+.hockey-article > .relative.max-w-3xl > * { grid-column:2; min-width:0; }
+.hockey-article > .relative.max-w-3xl > a { justify-self:start; }
+.hockey-article > .relative.max-w-3xl > .relative.w-full { grid-column:1 / -1; }

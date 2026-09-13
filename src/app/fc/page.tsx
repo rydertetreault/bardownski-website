@@ -1,3 +1,4 @@
+import { getNickname } from "@/lib/nicknames";
 import Link from "next/link";
 import type { Metadata } from "next";
 import {
@@ -47,7 +48,7 @@ export default async function FcHomePage() {
         className="relative border-y"
         style={{ backgroundColor: FC.bgDark, borderColor: "var(--fc-border)" }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="fc-result-content site-content-container py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
           {latest ? (
             <Link href="/fc/fixtures" className="flex items-center gap-4 group">
               <span className="text-[10px] uppercase tracking-[0.25em] text-white/40 hidden md:block">
@@ -81,7 +82,7 @@ export default async function FcHomePage() {
         </div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="fc-home-content site-content-container relative py-16">
         {!data ? (
           <FcDataUnavailable />
         ) : (
@@ -149,10 +150,10 @@ export default async function FcHomePage() {
                         {i + 1}
                       </span>
                       <div className="flex-1 min-w-0">
-                        <div className="font-bold text-white">{m.name}</div>
+                        <div className="font-bold text-white">{getNickname(m.name)}</div>
                         <div className="text-[10px] uppercase tracking-wider text-white/35">
                           {positionLabel(m.position)}
-                          {m.proName ? ` · "${m.proName}"` : ""} · {m.gamesPlayed} apps
+                          {m.proName ? ` · "${getNickname(m.proName)}"` : ""} · {m.gamesPlayed} apps
                         </div>
                       </div>
                       <div className="flex items-center gap-5 shrink-0 tabular-nums">

@@ -90,65 +90,11 @@
   background: var(--retouch-black);
 }
 
-/* Stats: touch the editorial shell, NOT comparison charts or generic classes. */
-.hockey-site.hockey-interior .stats-edition .stats-hero {
-  background: var(--retouch-black);
-}
-.hockey-site.hockey-interior .stats-edition :is(.stats-standings, .stats-leader, .stats-profile-grid) {
-  background: var(--retouch-panel);
-  border-color: var(--retouch-rule);
-}
-.hockey-site.hockey-interior .stats-edition .stats-season-bar {
-  border-color: var(--retouch-rule);
-}
-.hockey-site.hockey-interior .stats-edition .stats-season-bar button[aria-pressed="true"] {
-  background: var(--retouch-accent);
-  color: var(--retouch-black);
-  border-color: var(--retouch-accent);
-}
-.hockey-site.hockey-interior .stats-edition .stats-profile summary {
-  color: var(--retouch-lilac);
-}
-.hockey-site.hockey-interior .stats-edition .stats-end {
-  --stat-gold: var(--retouch-paper);
-  background: var(--retouch-teal);
-}
+/* Stats owns its paper, teal and purple surfaces in stats.css. Keep only the
+ * shared display face above; dark interior overrides would obscure its tables. */
 
-/* Records: keep the vault's explorer, chronology, monuments and dialogs. */
-.hockey-site.hockey-interior .records-redesign {
-  --panel: var(--retouch-panel);
-  --line: var(--retouch-line);
-}
-.hockey-site.hockey-interior .records-redesign .hero,
-.hockey-site.hockey-interior .records-redesign .monument::before {
-  background: var(--retouch-black);
-}
-.hockey-site.hockey-interior .records-redesign :is(.spotlights button, .monument) {
-  background: var(--retouch-panel);
-  border-color: var(--retouch-rule);
-  box-shadow: none;
-}
-.hockey-site.hockey-interior .records-redesign .pm-grid button {
-  border-top-color: var(--retouch-rule);
-}
-.hockey-site.hockey-interior .records-redesign :is(input, select) {
-  border-radius: 2px;
-  border-color: var(--retouch-rule);
-  color-scheme: dark;
-}
-.hockey-site.hockey-interior .records-redesign #categories button[aria-pressed="true"] {
-  background: var(--retouch-accent);
-  color: var(--retouch-black);
-  border-color: var(--retouch-accent);
-}
-.hockey-site.hockey-interior .records-redesign dialog {
-  border-color: var(--retouch-lilac);
-  box-shadow: 0 12px 48px #0006;
-}
-.hockey-site.hockey-interior .records-redesign .roadmap {
-  background: var(--retouch-panel);
-  border-color: var(--retouch-rule);
-}
+/* Records owns its section palette in records.css; keep only the shared
+ * display face and editorial photo treatment here. */
 
 /* Gallery: semantic hooks only; bento spans, original color and lightboxes stay.
  * !important is limited to existing inline decorative paint, never geometry. */
@@ -250,7 +196,7 @@
   border-color: var(--retouch-rule);
 }
 
-/* Editorial stills only. No gallery filters, video filters, or moving photos. */
+/* Interior editorial framing. The shared photo rule also covers gallery stills. */
 .hockey-site.hockey-interior .match-archive .archive-photo img,
 .hockey-site.hockey-interior .roster-edition .roster-hero figure > img,
 .hockey-site.hockey-interior .stats-edition .stats-hero img,
@@ -263,7 +209,7 @@
 }
 
 /* Keep controls visibly keyboard-accessible without altering their behavior. */
-.hockey-site.hockey-interior :is(.match-archive, .roster-edition, .records-redesign, .offseason-highlights, .news-edition, .awards-page) :is(a, button, input, select, summary):focus-visible {
+.hockey-site.hockey-interior :is(.match-archive, .roster-edition, .offseason-highlights, .news-edition, .awards-page) :is(a, button, input, select, summary):focus-visible {
   outline: 2px solid var(--retouch-lilac);
   outline-offset: 4px;
 }

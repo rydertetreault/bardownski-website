@@ -1,3 +1,4 @@
+import { getNicknameText } from "@/lib/nicknames";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -15,8 +16,8 @@ export async function generateMetadata({
   const data = await fetchFcStatsData();
   const article = data ? buildFcNews(data).find((n) => n.id === id) : null;
   return {
-    title: article ? `${article.title} | Bardownski FC` : "News | Bardownski FC",
-    description: article?.excerpt ?? "Bardownski FC news.",
+    title: article ? `${getNicknameText(article.title)} | Bardownski FC` : "News | Bardownski FC",
+    description: getNicknameText(article?.excerpt ?? "Bardownski FC news."),
   };
 }
 
@@ -37,7 +38,7 @@ export default async function FcNewsArticlePage({
 
   return (
     <FcPageShell>
-      <div className="max-w-3xl mx-auto">
+      <article className="fc-news-article">
         <Link
           href="/fc/news"
           className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/50 hover:text-white transition-colors mb-8"
@@ -59,7 +60,7 @@ export default async function FcNewsArticlePage({
         </div>
 
         <h1 className="text-3xl sm:text-5xl font-black tracking-tighter text-white leading-tight mb-8">
-          {article.title}
+          {getNicknameText(article.title)}
         </h1>
 
         <div
@@ -68,18 +69,19 @@ export default async function FcNewsArticlePage({
         >
           <Image
             src={article.image}
-            alt={article.title}
+            alt={getNicknameText(article.title)}
             fill
-            sizes="(max-width: 768px) 100vw, 768px"
+            sizes="(max-width: 600px) calc(100vw - 40px), (max-width: 1024px) calc(100vw - 48px), (max-width: 1344px) calc(100vw - 64px), 1280px"
             className="object-cover object-top"
             priority
           />
         </div>
 
-        <div className="flex flex-col gap-5 mb-16">
+        {/* FcPageShell supplies the gutters; only the prose gets the reading cap. */}
+        <div className="fc-article-body mx-auto w-full max-w-[var(--site-reading-max)] flex flex-col gap-5 mb-16">
           {article.body.map((para, i) => (
             <p key={i} className="text-white/70 leading-relaxed text-lg">
-              {para}
+              {getNicknameText(para)}
             </p>
           ))}
         </div>
@@ -100,7 +102,7 @@ export default async function FcNewsArticlePage({
             </div>
           </div>
         )}
-      </div>
+      </article>
     </FcPageShell>
   );
 }

@@ -47,21 +47,21 @@ const seasons: SeasonSummary[] = [
   {
     year: "2021",
     rosterSize: 5,
-    captain: "Matt",
+    captain: "Matt Hut",
     summary:
       "Bardownski kept grinding through another season, developing a core group of players.",
   },
   {
     year: "2022",
     rosterSize: 6,
-    captain: "Matt",
+    captain: "Matt Hut",
     summary:
-      "Matt continued leading the club into year three. The roster grew and the team continued to build chemistry, finding its identity as a competitive unit.",
+      "Matt Hut continued leading the club into year three. The roster grew and the team continued to build chemistry, finding its identity as a competitive unit.",
   },
   {
     year: "2023",
     rosterSize: 8,
-    captain: "Jimmy",
+    captain: "Jimmy Lemons",
     summary:
       "Key additions elevated the team's competitiveness. The pieces were finally coming together. Bardownski also debuted the iconic Miami Vice jerseys.",
   },
@@ -75,7 +75,7 @@ const seasons: SeasonSummary[] = [
   {
     year: "2025",
     rosterSize: 10,
-    captain: "Rob",
+    captain: "Slobby Robby",
     summary:
       "The breakthrough year. After seven years of building, Bardownski captured its first championship.",
   },

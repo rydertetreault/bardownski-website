@@ -16,13 +16,8 @@ export const revalidate = 300;
 
 export default async function Home() {
   const [news, season] = await Promise.all([getAllArticles(), getHockeySeason()]);
-  const trackingNotice = season.status === "connected"
-    ? "2026–2027 tracking is connected. Open Season tracking for current totals and matches; MVP and weekly rankings below use current-season data; saved old results and past honors are labeled as archives."
-    : season.status === "stale"
-      ? "Current-season tracking is showing its last saved data. Open Season tracking for details; MVP and weekly rankings below use current-season data; saved old results and past honors are labeled as archives."
-      : "Current-season tracking is temporarily unavailable. The homepage performances below remain the preserved 2025–2026 archive.";
   // The existing article layer supplies real published stories, not demo copy.
   const featuredNews = featureArticles(news);
   const articles = [...featuredNews, ...homeArchive.news.filter(item => !news.some(article => article.id === item.id))];
-  return <HomepageClient markup={renderHome(featuredNews.slice(0, 3), trackingNotice, season.awards ?? null, season.status !== "connected")} articles={articles} />;
+  return <HomepageClient markup={renderHome(featuredNews.slice(0, 3), season)} articles={articles} />;
 }

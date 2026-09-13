@@ -63,7 +63,7 @@ export default function FcHero({
       </div>
 
       {/* Content */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 flex flex-col items-center md:items-start text-center md:text-left">
+      <div className="fc-hero-content site-content-container relative z-10 flex flex-col items-center md:items-start text-center md:text-left">
         <motion.div {...fadeUp(0.1)} className="flex items-center gap-3 mb-6">
           <div className="w-0.5 h-5" style={{ backgroundColor: "#d4b77b" }} />
           <span

@@ -20,7 +20,7 @@ export function TopPerformers({ members }: { members: ClubMember[] }) {
       <div className="tracking-card-label"><span>{label}</span><span>0{index + 1}</span></div>
       <strong>{best === null ? "—" : best.toLocaleString("en-US")} <small>{unit}</small></strong>
       <h3>{leaders.length ? leaders.map(m => getDisplayNameFromGamertag(m.username)).join(" / ") : "A new name to earn it."}</h3>
-      <p>{leaders.length ? `${HOCKEY_SEASON} · ${leaders.length > 1 ? "Joint leaders" : "Season leader"}` : "Leaders appear once season stats are connected and games are recorded."}</p>
+      <p>{leaders.length ? `${HOCKEY_SEASON} · ${leaders.length > 1 ? "Joint leaders" : "Season leader"}` : "Leaders appear as games are played."}</p>
     </article>;
   })}</div>;
 }
@@ -52,14 +52,14 @@ function TrackingTime({ value }: { value: string }) {
 /** Optional state preserves existing pending-only callers. Never substitute archive data. */
 export function TrackingNotice({ state }: { state?: HockeySeasonState } = {}) {
   const status = state?.status ?? "awaiting-setup";
+  // A healthy feed is plumbing, not a public announcement.
+  if (status === "connected") return null;
   const titles = {
-    connected: "tracking is connected.",
     stale: "tracking is stale — showing the last saved snapshot.",
     unavailable: "tracking is currently unavailable.",
     "awaiting-setup": "tracking is being prepared.",
   };
   const descriptions = {
-    connected: "Current-season totals and accumulated results are shown below. Feed-check time is retrieval time, not a guarantee of source freshness. The stored match history may not cover every season game.",
     stale: "The latest refresh could not be confirmed. Saved current-season totals and results remain available; these are not live numbers.",
     unavailable: "No verified current-season stats snapshot is available. Missing numbers are not zero, and previous-season totals are not used as a substitute.",
     "awaiting-setup": "Match results, player totals and rankings will appear once the new-season feed is connected. Previous-season numbers stay in the archive.",
@@ -73,7 +73,6 @@ export function TrackingNotice({ state }: { state?: HockeySeasonState } = {}) {
         <span>Last stored sync: {state.syncedAt ? <TrackingTime value={state.syncedAt} /> : "Not confirmed"}.</span>{" "}
         <span>Stored matches: {state.coverage.storedMatches.toLocaleString("en-US")} / {state.coverage.totalGames === null ? "unknown season total" : `${state.coverage.totalGames.toLocaleString("en-US")} season games`}.</span>
       </p>}
-      {state?.error && status === "connected" && <p>A tracking issue was reported. A connected feed does not guarantee that the latest results were stored.</p>}
     </div>
   </div>;
 }

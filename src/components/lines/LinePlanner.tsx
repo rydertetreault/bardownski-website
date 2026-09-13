@@ -2,47 +2,71 @@
 
 import { useMemo, useState } from "react";
 import {
-  evaluateChemistrySelection,
-  recommendChemistryLines,
   type ChemistrySize,
-  type ChemistrySort,
   type ChemistryEvaluation,
 } from "@/lib/line-chemistry";
+import { LINE_RATING_DESCRIPTION, PLAYER_RATING_DESCRIPTION, PROJECTED_LINE_RATING_DESCRIPTION } from "@/lib/line-ratings";
+import LabSelect from "@/components/ui/LabSelect";
+import { evaluateGoalieLine, GOALIE_METHOD_DESCRIPTION, GOALIE_PAIR_METHOD_DESCRIPTION, type GoalieDataset } from "@/lib/goalie-lines";
+import GoalieImpact, { GOALIE_STATS_NOTES, type GoalieImpactViewState } from "./GoalieImpact";
+import GoalieCompatibility, { type GoalieCompatibilityViewState } from "./GoalieCompatibility";
+import LineIdeas from "./LineIdeas";
+import { getPlayerNumber } from "@/lib/player-numbers";
 import { lineDraftKey, type LineDataset } from "./line-datasets";
+import { evaluateBuilderLine, recommendBuilderLines, type BuilderSort } from "./line-builder";
 import "./line-planner.css";
 
 export type { LinePlayer } from "./line-datasets";
 type Props = { dataset: LineDataset };
-const positions: Record<ChemistrySize, string[]> = { 2: ["Left", "Right"], 3: ["Left wing", "Center", "Right wing"], 5: ["Left wing", "Center", "Right wing", "Left defense", "Right defense"] };
-const shortPositions: Record<ChemistrySize, string[]> = { 2: ["A", "B"], 3: ["LW", "C", "RW"], 5: ["LW", "C", "RW", "LD", "RD"] };
-const formats: { size: ChemistrySize; label: string }[] = [{ size: 2, label: "Pair" }, { size: 3, label: "Trio" }, { size: 5, label: "Five skaters" }];
-const number = (n: number | null, digits = 2) => n === null ? "—" : n.toLocaleString("en-US", { maximumFractionDigits: digits });
-const evidence = (games: number) => games === 0 ? "No shared sample" : games < 5 ? "Very small sample" : "Limited recorded evidence";
+const EMPTY_GOALIES: GoalieDataset = { players: [], games: [] };
+const positions: Record<ChemistrySize, string[]> = {
+  2: ["Player one", "Player two"],
+  3: ["Center", "Wing", "Defense"],
+  5: ["Left wing", "Center", "Right wing", "Left defense", "Right defense"],
+};
+const shortPositions: Record<ChemistrySize, string[]> = { 2: ["01", "02"], 3: ["C", "W", "D"], 5: ["LW", "C", "RW", "LD", "RD"] };
+const formats: { size: ChemistrySize; label: string }[] = [{ size: 2, label: "Pair" }, { size: 3, label: "3s line" }, { size: 5, label: "Full unit" }];
+const number = (n: number | null, digits = 1) => n === null ? "—" : n.toLocaleString("en-US", { maximumFractionDigits: digits });
 
 export default function LinePlanner({ dataset }: Props) {
-  const { games, players, sourceTotal, excluded, season, kind, totalGames } = dataset;
+  const { games, players, season } = dataset;
   const draftKey = lineDraftKey(dataset);
+  const goalieDataset = dataset.goalies ?? EMPTY_GOALIES;
+  const [goalieId, setGoalieId] = useState("");
   const [size, setSize] = useState<ChemistrySize>(3);
   const [slots, setSlots] = useState<string[]>(["", "", ""]);
   const [available, setAvailable] = useState(() => players.map(player => player.id));
-  const [minGames, setMinGames] = useState(3);
-  const [sort, setSort] = useState<ChemistrySort>("reliable");
+  const [minGames, setMinGames] = useState(0);
+  const [sort, setSort] = useState<BuilderSort>("chemistry");
   const [message, setMessage] = useState("");
   const [showAll, setShowAll] = useState(false);
-  const complete = slots.every(Boolean);
-  const selected = useMemo(() => evaluateChemistrySelection(games, complete ? slots : []), [games, slots, complete]);
-  const recommendations = useMemo(() => recommendChemistryLines(games, size, { availablePlayers: available, minGames, sort }), [games, size, available, minGames, sort]);
-  const counts = useMemo(() => new Map(players.map(player => [player.id, games.filter(game => game.skaters.includes(player.id)).length])), [games, players]);
+  // Keep companion filters and lower-view choices alongside the draft.
+  const [pairingView, setPairingView] = useState<GoalieCompatibilityViewState>({ scope: "line", sort: "compatibility", expandedGames: [] });
+  const [goalieView, setGoalieView] = useState<GoalieImpactViewState>({ mode: "line", sort: "savePct" });
+  const [availabilityOpen, setAvailabilityOpen] = useState(false);
+  const [pairsOpen, setPairsOpen] = useState(false);
+  const filled = slots.filter(Boolean).length;
+  const complete = filled === size;
+  const selected = useMemo(() => evaluateBuilderLine(games, complete ? slots : [], players), [games, slots, complete, players]);
+  const selectedGoalie = goalieDataset.players.find(goalie => goalie.id === goalieId);
+  const goalieLine = useMemo(() => evaluateGoalieLine(goalieDataset, complete ? slots : [], goalieId), [goalieDataset, slots, complete, goalieId]);
+  const rating = goalieId ? goalieLine?.rating ?? { percentage: null, grade: null } : selected.rating;
+  const evaluatedStats = goalieId ? goalieLine?.stats : selected.stats;
+  const supportingGames = goalieId ? goalieLine?.matchingGames ?? [] : selected.matchingGames;
+  const projected = !goalieId && selected.ratingSource === "projected";
+  const recommendations = useMemo(() => recommendBuilderLines(games, players, size, { available, minGames, sort }), [games, players, size, available, minGames, sort]);
   const display = (id: string) => players.find(player => player.id === id)?.name ?? id;
-  const pairs = useMemo(() => slots.flatMap((player, i) => player ? slots.slice(i + 1).filter(Boolean).map(other => evaluateChemistrySelection(games, [player, other])) : []), [slots, games]);
+  const pairs = useMemo(() => slots.flatMap((player, i) => player ? slots.slice(i + 1).filter(Boolean).map(other => evaluateBuilderLine(games, [player, other], players)) : []), [slots, games, players]);
 
   function changeSize(next: ChemistrySize) {
+    if (next === size) return;
     setSize(next);
-    setSlots(Array(next).fill(""));
+    setSlots(current => Array.from({ length: next }, (_, index) => current[index] ?? ""));
     setShowAll(false);
-    setMessage("Line cleared for the new formation.");
+    setMessage("");
   }
   function choose(index: number, id: string) {
+    if (id && id === goalieId) setGoalieId("");
     setSlots(current => {
       const next = [...current];
       const duplicate = id ? next.indexOf(id) : -1;
@@ -52,6 +76,12 @@ export default function LinePlanner({ dataset }: Props) {
     });
     setMessage("");
   }
+  function chooseGoalie(id: string) {
+    if (id && !goalieDataset.players.some(goalie => goalie.id === id)) return;
+    setGoalieId(id);
+    if (id) setSlots(current => current.map(player => player === id ? "" : player));
+    setMessage("");
+  }
   function availability(id: string) {
     const removing = available.includes(id);
     setAvailable(current => removing ? current.filter(value => value !== id) : [...current, id]);
@@ -59,19 +89,21 @@ export default function LinePlanner({ dataset }: Props) {
     setShowAll(false);
   }
   function apply(line: ChemistryEvaluation) {
+    if (line.players.includes(goalieId)) setGoalieId("");
     setSlots([...line.players]);
-    setMessage("Combination loaded. Slot order is a draft—reassign positions to suit your team.");
+    setMessage("Line loaded. Switch any player to try a different fit.");
+    document.getElementById("line-board")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" });
   }
   function save() {
     try {
-      localStorage.setItem(draftKey, JSON.stringify({ datasetId: dataset.id, season, size, slots, available }));
-      setMessage(`Draft saved for ${season} in this browser only. No team lineup was published.`);
-    } catch { setMessage("This browser could not save the draft. You can keep working here."); }
+      localStorage.setItem(draftKey, JSON.stringify({ datasetId: dataset.id, season, size, slots, available, goalieId }));
+      setMessage(`${season} draft saved on this device.`);
+    } catch { setMessage("Your browser couldn’t save this draft. You can keep building here."); }
   }
   function restore() {
     try {
       const stored = localStorage.getItem(draftKey);
-      if (!stored) { setMessage(`No saved ${season} draft in this browser yet.`); return; }
+      if (!stored) { setMessage(`No saved ${season} draft yet.`); return; }
       const draft = JSON.parse(stored);
       if (draft.datasetId !== dataset.id || draft.season !== season || ![2, 3, 5].includes(draft.size) || !Array.isArray(draft.slots) || !Array.isArray(draft.available)) throw new Error("Invalid draft");
       const ids = new Set(players.map(player => player.id));
@@ -82,48 +114,121 @@ export default function LinePlanner({ dataset }: Props) {
         if (typeof id !== "string" || !pool.includes(id) || used.has(id)) return "";
         used.add(id); return id;
       });
-      setSize(draft.size); setSlots(restored); setAvailable(pool); setShowAll(false);
-      setMessage(`Saved ${season} draft restored. Results use this dataset’s currently available games.`);
-    } catch { setMessage("That saved draft could not be restored. Choose your players to start again."); }
+      const restoredGoalie = typeof draft.goalieId === "string" && goalieDataset.players.some(goalie => goalie.id === draft.goalieId) && !used.has(draft.goalieId) ? draft.goalieId : "";
+      setSize(draft.size); setSlots(restored); setAvailable(pool); setGoalieId(restoredGoalie); setShowAll(false);
+      setMessage(`${season} draft restored.`);
+    } catch { setMessage("That draft couldn’t be restored. Pick your players to start again."); }
   }
 
-  return <section className="line-planner" aria-labelledby="line-title">
-    <header className="line-heading"><div><p className="line-eyebrow">02 / THE LINE BUILDER</p><h2 id="line-title">Find your<br /><em>combination.</em></h2></div><p>Pick who’s available. Try a line.<br />See what the saved games can tell you.</p></header>
-    <div className="line-archive-note"><strong>{season} {kind === "archive" ? "ARCHIVE" : "CURRENT SEASON"}</strong><p>{games.length} usable games from {sourceTotal} available records ({excluded} excluded). {totalGames === null ? "The full season game total is unavailable." : `Season total: ${totalGames} games.`} Player coverage may be incomplete; shared-game counts are not full-season totals. {kind === "archive" ? "This dataset uses the preserved previous season only." : "Only current-season data is used. No bundled archive fills missing games or players."}</p></div>
-    {!games.some(game => game.skaters.length > 0) && <div className="line-empty"><h3>No recorded skater evidence yet.</h3><p>{kind === "current" ? "Current-season chemistry is not available from the recorded games. An empty sample is not zero chemistry. Choose the archive explicitly to explore last season." : "The available archive does not contain usable skater appearances."}</p></div>}
-    <div className="line-workspace">
-      <aside className="line-availability">
-        <h3>Who’s available?</h3><p>Choose a pool for recommendations. Uncheck a player to remove them from your draft.</p>
-        {!players.length && <p>No eligible skaters are available in this dataset.</p>}
-        <fieldset><legend className="line-sr-only">Available skaters</legend>{players.map(player => <label key={player.id}><input type="checkbox" checked={available.includes(player.id)} onChange={() => availability(player.id)} /><span><strong>{player.name}</strong><small>{counts.get(player.id) || 0} recorded skater appearances</small></span></label>)}</fieldset>
-        <div className="line-pool-actions"><button type="button" onClick={() => setAvailable(players.map(player => player.id))}>Select all</button><button type="button" onClick={() => { setAvailable([]); setSlots(Array(size).fill("")); }}>Clear pool</button></div>
-      </aside>
+  return <div className="line-planner">
+    <div className="line-workspace" id="line-board">
       <div className="line-draft">
-        <div className="line-draft-heading"><h3>Your line</h3><div className="line-formats" role="group" aria-label="Combination size">{formats.map(format => <button type="button" key={format.size} aria-pressed={size === format.size} onClick={() => changeSize(format.size)}>{format.label}</button>)}</div></div>
-        <p className="line-slot-note">Positions are your assignments, not verified historical positions. Selecting someone twice swaps their slots. Skaters only; goalies are outside this model.</p>
-        <div className={`line-ice line-ice-${size}`}>
-          <div className="line-ice-mark" aria-hidden="true">B</div>
-          {positions[size].map((position, index) => <div className="line-slot" key={position}><span aria-hidden="true">{shortPositions[size][index]}</span><label htmlFor={`line-slot-${index}`}>{position}</label><select id={`line-slot-${index}`} value={slots[index]} onChange={event => choose(index, event.target.value)} disabled={!available.length}><option value="">Choose a skater</option>{players.filter(player => available.includes(player.id)).map(player => <option key={player.id} value={player.id}>{player.name}</option>)}</select></div>)}
+        <div className="line-draft-heading"><div><span className="line-micro">MAKE THE CONNECTION</span><h3>Build your <em>line.</em></h3></div><div className="line-formats" role="group" aria-label="Combination size">{formats.map(format => <button type="button" key={format.size} aria-pressed={size === format.size} onClick={() => changeSize(format.size)}>{format.label}</button>)}</div></div>
+        <div className={`line-formation line-formation-${size}`}>
+          <div className="line-connections" aria-hidden="true">
+            <svg viewBox="0 0 600 410" preserveAspectRatio="none"><path className="line-triangle" d={size === 3 ? "M150 50 450 50 300 255Z" : "M300 50 150 255 450 255Z"} /><path className="line-pair-link" d="M150 50H450" /></svg>
+          </div>
+          <div className="line-slots">
+            {positions[size].map((position, index) => {
+              const player = players.find(player => player.id === slots[index]);
+              const playerNumber = player ? getPlayerNumber(player.name) : null;
+              return <div className={`line-slot ${player ? "is-selected" : ""}`} key={position} data-position={shortPositions[size][index]}>
+                <LabSelect id={`line-slot-${index}`} label={position} compact variant="player" playerNumber={playerNumber} value={slots[index]} onChange={id => choose(index, id)} disabled={!available.length} placeholder="Pick a player" searchable triggerContent={<>
+                  <span className="line-player-node" aria-hidden="true">{player ? playerNumber ?? "—" : "+"}<span className="line-position">{shortPositions[size][index]}</span></span>
+                  <span className="line-player-name">{player?.name ?? "Add player"}</span>
+                  <span className="line-player-edit">{player ? "Change player" : "Choose your player"}<span aria-hidden="true">↗</span></span>
+                </>} options={[
+                  { value: "", label: "Empty slot", description: "Remove this player" },
+                  ...players.filter(player => available.includes(player.id)).map(player => ({ value: player.id, label: player.name, number: getPlayerNumber(player.name), description: `${player.position}${slots.includes(player.id) ? " · In your line" : ""}`, badge: player.grade ? `${player.grade} grade` : undefined })),
+                ]} />
+                <p className="line-player-grade">{player && <>{player.gradeSource === "lab-performance" ? "Lab grade" : "Grade"} <strong>{player.grade ?? "—"}</strong>{player.overallRating !== null && <span> · {number(player.overallRating)} OVR</span>}</>}</p>
+              </div>;
+            })}
+          </div>
+          <p className="line-formation-caption"><span>{filled} / {size} skaters selected</span><span>{season}</span></p>
         </div>
-        <div className="line-draft-actions"><button type="button" onClick={save}>Save draft</button><button type="button" onClick={restore}>Restore draft</button><button type="button" onClick={() => { setSlots(Array(size).fill("")); setMessage("Draft cleared. Your available-player pool is unchanged."); }}>Reset line</button><span>Saved only on this device.</span></div>
+        {!players.length && <p className="line-inline-empty">No skaters in this season yet. Try the archive to build a line.</p>}
+      </div>
+      <aside className="line-evaluation player-connection" aria-label="Player connection" aria-live="polite" aria-atomic="true">
+        <div className="line-evaluation-top"><span className="line-micro">THE PLAYER CONNECTION</span><span className="line-live-dot" aria-hidden="true" /></div>
+        <h3>{goalieId ? "Unit chemistry" : "Line chemistry"}</h3>
+        <div className={`line-chemistry-dial ${rating.percentage !== null ? "has-rating" : ""}`}>
+          <svg viewBox="0 0 180 180" aria-hidden="true"><circle cx="90" cy="90" r="78" /><circle cx="90" cy="90" r="78" pathLength="100" strokeDasharray={`${rating.percentage ?? 0} 100`} /></svg>
+          <div><strong>{rating.percentage ?? "—"}{rating.percentage !== null && <small>%</small>}</strong><span>{projected ? "PROJECTED FIT" : "CHEMISTRY INDEX"}</span></div>
+        </div>
+        <div className="line-overall-grade"><span>{projected ? "Projected grade" : goalieId ? "Unit grade" : "Line grade"}</span><strong>{rating.grade ?? "—"}</strong></div>
+        <p className="line-score-caption">{!complete ? `Choose ${size - filled} more ${size - filled === 1 ? "skater" : "skaters"} to see how your line stacks up.` : goalieId ? goalieLine?.stats.games ? `${goalieLine.stats.games} games with ${selectedGoalie?.name}.` : "No full-unit games yet. Individual goalie–skater pairings are shown below." : selected.stats.games ? `Based on ${selected.stats.games} shared ${selected.stats.games === 1 ? "game" : "games"}${selected.stats.games < 5 ? " · Early chemistry" : ""}.` : projected ? "Projected from player season stats. No shared games yet." : "Not enough player stats to rate this combination yet."}</p>
+        <div className="line-stat-grid">
+          <div><strong>{complete ? evaluatedStats?.games ?? 0 : "—"}</strong><span>Games together</span></div>
+          <div><strong>{evaluatedStats?.games ? `${evaluatedStats.wins}–${evaluatedStats.losses}${evaluatedStats.draws ? `–${evaluatedStats.draws}` : ""}` : "—"}</strong><span>Team record</span></div>
+          <div><strong>{goalieId ? `${number(goalieLine?.stats.savePct ?? null)}${goalieLine?.stats.savePct != null ? "%" : ""}` : number(selected.stats.gfPerGame)}</strong><span>{goalieId ? "Goalie save %" : "Goals for / game"}</span></div>
+          <div><strong>{number(goalieId ? goalieLine?.stats.goalsAgainstPerGame ?? null : selected.stats.gaPerGame)}</strong><span>{goalieId ? "Goalie GA / game" : "Against / game"}</span></div>
+        </div>
+        <a className="line-score-link" href="#chemistry-method" onClick={() => { const method = document.getElementById("chemistry-method"); if (method instanceof HTMLDetailsElement) method.open = true; }}>How chemistry &amp; grades work <span aria-hidden="true">↗</span></a>
+        <p className="line-score-source">Bardownski index · not a win prediction</p>
+      </aside>
+      <div className="line-goalie-slot">
+        <div className="line-goalie-intro"><span className="line-micro">COMPLETE THE UNIT</span><h4>In the <em>crease.</em></h4><p>Pick a goalie. See who they click with.</p><a href="#goalie-compatibility">Player compatibility <span aria-hidden="true">↘</span></a></div>
+        <div className={`line-slot line-netminder ${selectedGoalie ? "is-selected" : ""}`} data-position="G">
+          <LabSelect id="line-goalie" label="Goalie" compact variant="player" playerNumber={selectedGoalie ? getPlayerNumber(selectedGoalie.name) : null} value={goalieId} onChange={chooseGoalie} disabled={!goalieDataset.players.length} placeholder="Add goalie" triggerContent={<>
+            <span className="line-player-node" aria-hidden="true">{selectedGoalie ? getPlayerNumber(selectedGoalie.name) ?? "—" : "+"}<span className="line-position">G</span></span>
+            <span className="line-player-name">{selectedGoalie?.name ?? "Add goalie"}</span>
+            <span className="line-player-edit">{selectedGoalie ? "Change goalie" : "Optional"}<span aria-hidden="true">↗</span></span>
+          </>} options={[
+            { value: "", label: "No goalie", description: "Compare skaters only" },
+            ...goalieDataset.players.map(goalie => ({ value: goalie.id, label: goalie.name, number: getPlayerNumber(goalie.name), description: `${goalie.games} goalie games${slots.includes(goalie.id) ? " · Move from skater slot" : ""}`, badge: goalie.savePct === null ? undefined : `${number(goalie.savePct)}% SV` })),
+          ]} />
+          <p className="line-player-grade">{selectedGoalie ? `${number(selectedGoalie.savePct)}${selectedGoalie.savePct === null ? "" : "%"} SV · ${number(selectedGoalie.gaa, 2)} GAA · Season` : goalieDataset.players.length ? "Pick your last line of defense" : "No goalies in this season yet"}</p>
+        </div>
+      </div>
+      <GoalieCompatibility compact dataset={goalieDataset} players={players} skaters={slots} selectedGoalie={goalieId} season={season} onChooseGoalie={chooseGoalie} viewState={pairingView} onViewStateChange={setPairingView} />
+      <div className="line-workspace-actions">
+        <div className="line-draft-actions"><button type="button" onClick={save} disabled={!filled && !goalieId}>Save line <span aria-hidden="true">↗</span></button><button type="button" onClick={restore}>Load saved</button><button type="button" onClick={() => { setSlots(Array(size).fill("")); setGoalieId(""); setMessage("Line cleared."); }} disabled={!filled && !goalieId}>Clear line</button><span>YOUR LINE. YOUR CALL.</span></div>
         <p className="line-message" role="status">{message}</p>
-        <div className="line-evaluation" aria-live="polite" aria-atomic="true">
-          <div className="line-evaluation-heading"><h3>{complete ? `Together in ${season}` : "Build a line to see its record"}</h3><span>{complete ? evidence(selected.stats.games) : `${slots.filter(Boolean).length} / ${size} slots filled`}</span></div>
-          {!complete ? <p>Choose all {size} skaters. We won’t turn a partial draft into a full-line score.</p> : <>
-            <div className="line-stat-grid"><div><strong>{selected.stats.games}</strong><span>Shared games</span></div><div><strong>{selected.stats.games ? `${selected.stats.wins}–${selected.stats.losses}${selected.stats.draws ? `–${selected.stats.draws}` : ""}` : "—"}</strong><span>Club W–L{selected.stats.draws ? "–D" : ""}</span></div><div><strong>{number(selected.stats.winPct, 1)}{selected.stats.winPct !== null && "%"}</strong><span>Observed win rate</span></div><div><strong>{number(selected.stats.gdPerGame)}</strong><span>Club GD / game</span></div></div>
-            <p>{selected.stats.games ? `Club goals for/game: ${number(selected.stats.gfPerGame)} · against/game: ${number(selected.stats.gaPerGame)}. These are team results in games where all selected players are listed, not on-ice line totals.` : "No usable games list this entire combination. That means missing evidence—not zero chemistry or a bad line."}</p>
-          </>}
-        </div>
-        {pairs.length > 0 && <details className="line-pair-details"><summary>Pair evidence within your draft <span>{pairs.filter(pair => pair.stats.games).length} / {pairs.length} pairs observed</span></summary><ul>{pairs.map(pair => <li key={pair.players.join("|")}><span>{pair.players.map(display).join(" + ")}</span><strong>{pair.stats.games} shared {pair.stats.games === 1 ? "game" : "games"}</strong></li>)}</ul><p>Pair counts overlap. They are never added together or presented as full-line games.</p></details>}
       </div>
     </div>
-    <section className="line-recommendations" aria-labelledby="recommendations-title">
-      <div className="line-section-head"><div><p className="line-eyebrow">EXPLORE YOUR AVAILABLE POOL</p><h3 id="recommendations-title">Combinations to try.</h3></div><div className="line-rank-filters"><label htmlFor="line-rank-sort">Rank by<select id="line-rank-sort" value={sort} onChange={event => { setSort(event.target.value as ChemistrySort); setShowAll(false); }}><option value="reliable">Sample-adjusted wins</option><option value="win-rate">Observed win rate</option><option value="goal-difference">Club goal difference / game</option><option value="attack">Club goals for / game</option></select></label><label htmlFor="line-min-games">Minimum shared games<select id="line-min-games" value={minGames} onChange={event => { setMinGames(Number(event.target.value)); setShowAll(false); }}><option value={1}>1 game</option><option value={3}>3 games</option><option value={5}>5 games</option><option value={10}>10 games</option></select></label></div></div>
-      <p className="line-rank-note">Ranked only among your available players. These are historical coappearances, not a prediction, positional recommendation, or confirmed 3s/6s formation.</p>
-      <p className="line-result-count" role="status">{recommendations.length} {recommendations.length === 1 ? "combination meets" : "combinations meet"} this sample minimum.</p>
-      {recommendations.length ? <><div className="line-table-wrap" role="region" aria-label="Ranked combinations" tabIndex={0}><table><caption className="line-sr-only">{season} {size}-skater combinations and club outcomes</caption><thead><tr><th scope="col">Combination</th><th scope="col">Games</th><th scope="col">Win %</th><th scope="col">GF / game</th><th scope="col">GA / game</th><th scope="col">Try line</th></tr></thead><tbody>{recommendations.slice(0, showAll ? undefined : 8).map((line, index) => <tr key={line.players.join("|")}><th scope="row"><span className="line-rank">{String(index + 1).padStart(2, "0")}</span><span>{line.players.map(display).join(" / ")}<small>{evidence(line.stats.games)}</small></span></th><td>{line.stats.games}</td><td>{number(line.stats.winPct, 1)}%</td><td>{number(line.stats.gfPerGame)}</td><td>{number(line.stats.gaPerGame)}</td><td><button type="button" onClick={() => apply(line)} aria-label={`Use combination ${line.players.map(display).join(", ")}`}>Use line ↗</button></td></tr>)}</tbody></table></div>{recommendations.length > 8 && <button className="line-more" type="button" onClick={() => setShowAll(!showAll)}>{showAll ? "Show top eight" : `Show all ${recommendations.length}`}</button>}</> : <div className="line-empty"><h4>No qualifying combinations.</h4><p>{available.length < size ? `Select at least ${size} available skaters to explore this format.` : "Try a smaller group or a lower sample minimum. We won’t fill the gaps with projected chemistry."}</p></div>}
-    </section>
-    {complete && selected.matchingGames.length > 0 && <details className="line-evidence"><summary>See the {selected.stats.games} supporting games</summary><ul>{selected.matchingGames.map(game => <li key={game.id}><span>{game.date}<small>{game.opponent}</small></span><strong>{game.goalsFor}–{game.goalsAgainst}</strong><span>{game.coverage === "partial-scoresheet" ? "Partial scoresheet" : "Recorded players"}</span></li>)}</ul></details>}
-    <details className="line-method" id="chemistry-method"><summary>How this tool works <span>Evidence, not a promise ↗</span></summary><div><p>Every selected skater must be listed in the same saved game. Additional teammates may also have played. Missing names are unknown—not proof a player was absent. Role labels in this draft do not change the shared-game evidence.</p><p>Only usable regular/finals games from the selected season count. Duplicates, private games, forfeits, missing scores and detected score inconsistencies are excluded. {kind === "archive" ? "Full saved player lists are preferred over the bundled partial archive when available." : "Current-season player lists come only from recorded current matches; the bundled archive is never used."} No records are written or repaired by this page.</p><p>“Sample-adjusted wins” ranks the Wilson lower bound (95% interval) of the observed win rate, so a one-game streak does not automatically outrank a larger sample. Other modes sort the displayed team rate. Equal values prefer more shared games, then alphabetical order. This is descriptive sorting, not a calibrated win prediction or a chemistry percentage.</p><p>Samples under five games are very small. Larger samples are still limited by recording gaps, opponents, other teammates and unknown ice time. The saved season ratings and unrecovered playstyle fields are not used to manufacture forecasts.</p></div></details>
-  </section>;
+
+    <LineIdeas season={season} panels={{
+      stats: <GoalieImpact compact dataset={goalieDataset} skaters={slots} selectedGoalie={goalieId} season={season} onChoose={chooseGoalie} viewState={goalieView} onViewStateChange={setGoalieView} />,
+      ideas: <section className="line-recommendations" id="recommendations-title" aria-label="Line ideas">
+      <div className="line-section-head"><p className="line-ideas-intro">Try a skater combination, then add your goalie to test the full unit.</p><div className="line-rank-filters">
+        <LabSelect id="line-rank-sort" searchable={false} label="Sort combinations" value={sort} onChange={value => { setSort(value as typeof sort); setShowAll(false); }} options={[{ value: "chemistry", label: "Chemistry" }, { value: "reliable", label: "Sample-adjusted wins" }, { value: "win-rate", label: "Win percentage" }, { value: "goal-difference", label: "Goal difference" }, { value: "attack", label: "Goals per game" }]} />
+        <LabSelect id="line-min-games" searchable={false} label="Games together" value={String(minGames)} onChange={value => { setMinGames(Number(value)); setShowAll(false); }} options={[{ value: "0", label: "Any / new lines" }, ...[1, 3, 5, 10].map(value => ({ value: String(value), label: `${value}+ ${value === 1 ? "game" : "games"}` }))]} />
+      </div></div>
+      <details className="line-availability" open={availabilityOpen} onToggle={event => setAvailabilityOpen(event.currentTarget.open)}><summary>Who’s playing? <span>{available.length} / {players.length} available</span></summary><div className="line-pool"><fieldset><legend className="line-sr-only">Available skaters</legend>{players.map(player => <label key={player.id}><input type="checkbox" checked={available.includes(player.id)} onChange={() => availability(player.id)} /><span>{player.name}</span><b>{player.grade ?? "—"}</b></label>)}</fieldset><div className="line-pool-actions"><button type="button" onClick={() => setAvailable(players.map(player => player.id))}>Select all</button><button type="button" onClick={() => { setAvailable([]); setSlots(Array(size).fill("")); setShowAll(false); }}>Clear pool</button></div></div></details>
+      {recommendations.length ? <><div className="line-combination-grid">{recommendations.slice(0, showAll ? undefined : 3).map((line, index) => {
+        const lineRating = line.rating;
+        const active = complete && line.players.every(id => slots.includes(id));
+        return <article className={`line-combination ${active ? "is-active" : ""}`} key={line.players.join("|")}>
+          <div className="line-combination-top"><span>{String(index + 1).padStart(2, "0")}</span><strong aria-label={`Line grade ${lineRating.grade}`}>{lineRating.grade}</strong></div>
+          <p className="line-combination-score">{lineRating.percentage}<span>%</span><small>{line.ratingSource === "projected" ? "PROJECTED FIT" : "CHEMISTRY"}</small></p>
+          <ul>{line.players.map(id => <li key={id}><span className="line-combination-number">{getPlayerNumber(display(id)) ?? "—"}</span>{display(id)}<span className="line-combination-player-grade">{players.find(player => player.id === id)?.grade ?? "—"}</span></li>)}</ul>
+          <p className="line-combination-record">{line.ratingSource === "projected" ? "New combination · Season-stat projection" : <>{line.stats.games} together <span>·</span> {line.stats.wins}W – {line.stats.losses}L{line.stats.draws ? ` – ${line.stats.draws}D` : ""}</>}</p>
+          <button type="button" onClick={() => apply(line)} aria-label={`Use combination ${line.players.map(display).join(", ")}`}>{active ? "In your lineup" : "Try this line"}<span aria-hidden="true">{active ? "✓" : "↗"}</span></button>
+        </article>;
+      })}</div>{recommendations.length > 3 && <button className="line-more" type="button" onClick={() => setShowAll(!showAll)}>{showAll ? "Show top three" : `Explore all ${recommendations.length} combinations`} <span aria-hidden="true">{showAll ? "−" : "+"}</span></button>}</> : <div className="line-empty"><h4>No lines here. Yet.</h4><p>{available.length < size ? `Choose at least ${size} available players for this formation.` : "Try fewer games together or a smaller formation to find a combination."}</p></div>}
+      {pairs.length > 0 && <details className="line-pair-details" id="line-pair-title" open={pairsOpen} onToggle={event => setPairsOpen(event.currentTarget.open)}><summary>Skater pair details <span>{pairs.length} pairings</span></summary><div className="line-pairs">{pairs.map(pair => {
+        const pairRating = pair.rating;
+        return <div key={pair.players.join("|")}><span>{pair.players.map(display).join(" + ")}</span><strong>{pairRating.percentage === null ? "—" : `${pairRating.percentage}%`}</strong><small>{pair.ratingSource === "projected" ? "Projected fit · no shared games" : `${pair.stats.games} shared ${pair.stats.games === 1 ? "game" : "games"}`}</small></div>;
+      })}</div></details>}
+    </section>,
+    }} method={<details className="line-method line-ideas-method" id="chemistry-method"><summary>How ratings work</summary><div>
+        <details className="line-method-topic"><summary>Skater chemistry &amp; projected fit</summary><div>
+          <p>{LINE_RATING_DESCRIPTION}</p>
+          <p>{PROJECTED_LINE_RATING_DESCRIPTION}</p>
+          <p>Only games with every selected skater count toward a line. Results are team outcomes, not isolated on-ice stats. Position slots are your assignments; swapping the same players between positions does not change their chemistry. Pair samples overlap and are not added together. Small samples can change quickly.</p>
+          <p>Each season stands on its own. Your saved line stays on this device and never publishes a team lineup.</p>
+        </div></details>
+        <details className="line-method-topic"><summary>Individual player grades</summary><div><p>{PLAYER_RATING_DESCRIPTION}</p></div></details>
+        <details className="line-method-topic"><summary>Goalie–skater compatibility</summary><div>
+          <p>{GOALIE_PAIR_METHOD_DESCRIPTION}</p>
+          <p>Every row is one goalie + one skater. Early pairings have fewer than five shared games. Open a pairing’s details beside the goalie for its source results.</p>
+        </div></details>
+        <details className="line-method-topic"><summary>Goalie stats &amp; shared-unit results</summary><div>
+          <p>{GOALIE_METHOD_DESCRIPTION}</p>
+          {GOALIE_STATS_NOTES.map(note => <p key={note}>{note}</p>)}
+        </div></details>
+        {complete && supportingGames.length > 0 && <details className="line-evidence"><summary>Games behind this line <span>{supportingGames.length} games</span></summary><ul>{supportingGames.map(game => <li key={game.id}><span>{game.opponent}<small>{game.date}</small></span><strong>{game.goalsFor}–{game.goalsAgainst}</strong><span>{game.goalsFor > game.goalsAgainst ? "WIN" : game.goalsFor < game.goalsAgainst ? "LOSS" : "DRAW"}</span></li>)}</ul></details>}
+      </div></details>} />
+  </div>;
 }

@@ -83,3 +83,10 @@ Its environment options are `SITE_URL` (defaults to `http://localhost:3000`), `P
 - The reference demo, current-season tracking gates, frozen archive totals and unrelated site edits were preserved. **Nothing was deployed or committed.**
 
 To regenerate the scoped stylesheet after a deliberate approved-demo CSS update, run `node scripts/import-homepage-css.mjs`, then rerun the tests and browser suite. This command is deterministic; don't manually patch generated `homepage.css`.
+
+### Homepage closing palette and crease-photo follow-up
+
+- The home introduction now uses `/images/homepage/history-2022.webp`, the same overhead-crease club photo as the **2022–2023** Past seasons tab. It is displayed in black and white with the existing dark readability overlay and an eager image request. Reveal artwork remains only in News.
+- A fourth existing-style SVG cut (`to-scrapbook`) sits immediately after Previous award winners and before Club photos. The diagonal transitions from the awards' black background to lavender paper.
+- Club photos and the footer reuse the Matches **02 / Worth another look** palette: background `#e7ddec`, text `#321d3c`, accent `#633477`, muted text `#65526c`, and borders `#c8b8cf`. Gallery controls, focus/hover states, footer wordmark, and footer links inherit the closing palette. Other sections and Matches itself are unchanged by this styling.
+- The existing cut observer/reduced-motion behavior and album interactions are reused; no new graphics, media, or animation system were added.

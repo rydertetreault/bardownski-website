@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
+import { getClubCrestUrl } from "../src/lib/club-crest";
 import {
   fetchNhl27Snapshot, NHL27_IDENTITY, NHL27_STATS_URL, parseNhl27Snapshot, resolveNhl27Name,
   type Nhl27MatchPlayerStat,
@@ -308,4 +309,87 @@ test("rejects contradictory nested club identities", () => {
     (p: ReturnType<typeof fixture>) => {p.recentGames.RegularSeason[0].clubs["29202"].details.clubId=149602;},
     (p: ReturnType<typeof fixture>) => {p.recentGames.RegularSeason[0].clubs["16793"].opponentClubId="149602";},
   ]) {const value=fixture();mutate(value);assert.throws(()=>parseNhl27Snapshot(value,at));}
+});
+
+test("observed fixture crests belong to opponents, not our club's crest 102", () => {
+  const payload = fixture();
+  const before = JSON.stringify(payload);
+  freeze(payload);
+  const matches = parseNhl27Snapshot(payload, at).data.matches;
+  assert.deepEqual(matches.map(m => [m.opponentClubId, m.opponentCrest]), [
+    ["16793", { crestAssetId: "111", useBaseAsset: true }],
+    ["196", { crestAssetId: "3", useBaseAsset: true }],
+    ["11158", { crestAssetId: "1081", useBaseAsset: true }],
+    ["26958", { crestAssetId: "206", useBaseAsset: true }],
+    ["10131", { crestAssetId: "58", useBaseAsset: true }],
+  ]);
+  assert.deepEqual(matches.map(m => m.homeAway), ["away", "away", "home", "home", "home"]);
+  assert.equal(getClubCrestUrl(matches[0].opponentCrest), "https://chelstats.app/api/crest/111?base=1");
+  assert.equal(JSON.stringify(payload), before);
+});
+
+test("opponent selection follows the validated ID regardless of side, club ordering or own kit", () => {
+  for (const teamSide of ["0", "1"]) {
+    for (const useBaseAsset of ["0", "1"]) {
+      const p = fixture(), g = p.recentGames.RegularSeason[0];
+      const ours = g.clubs["29202"], opponent = g.clubs[ours.opponentClubId];
+      const opponentPlayers = g.players[ours.opponentClubId];
+      delete g.players[ours.opponentClubId];
+      ours.opponentClubId = 98765;
+      ours.teamSide = teamSide;
+      ours.details.customKit = { crestAssetId: "999", useBaseAsset: "1" };
+      opponent.details.clubId = 98765;
+      opponent.details.customKit = { crestAssetId: "00111", useBaseAsset };
+      g.clubs = { "29202": ours, "98765": opponent, "1": { details: { customKit: { crestAssetId: "222" } } } };
+      g.players["98765"] = opponentPlayers;
+      const match = parseNhl27Snapshot(p, at).data.matches[0];
+      assert.equal(match.opponentClubId, "98765");
+      assert.deepEqual(match.opponentCrest, { crestAssetId: "111", useBaseAsset: useBaseAsset === "1" });
+      assert.equal(getClubCrestUrl(match.opponentCrest), `https://chelstats.app/api/crest/111${useBaseAsset === "1" ? "?base=1" : ""}`);
+    }
+  }
+});
+
+test("missing or malformed cosmetics drop only the crest, never valid matches or season stats", () => {
+  const expected = parseNhl27Snapshot(fixture(), at);
+  delete expected.data.matches[0].opponentCrest;
+  for (const customKit of [
+    undefined, null, false, "111", [], {}, { useBaseAsset: "1" },
+    ...[undefined, null, "", "../111", "111?base=1", "111\n", -1, 1.5, Infinity, NaN, Number.MAX_SAFE_INTEGER + 1, "9007199254740992", true, {}, []]
+      .map(crestAssetId => ({ crestAssetId, useBaseAsset: "1" })),
+    ...[null, "true", "false", "", "00", "01", 2, {}, []]
+      .map(useBaseAsset => ({ crestAssetId: "111", useBaseAsset })),
+  ]) {
+    const p = fixture(), g = p.recentGames.RegularSeason[0];
+    g.clubs[g.clubs["29202"].opponentClubId].details.customKit = customKit;
+    const before = JSON.stringify(p);
+    freeze(p);
+    const result = parseNhl27Snapshot(p, at);
+    assert.deepEqual(result, expected);
+    assert.equal(Object.hasOwn(result.data.matches[0], "opponentCrest"), false);
+    assert.equal(JSON.stringify(p), before);
+  }
+  const p = fixture();
+  p.recentGames.RegularSeason[0].clubs["29202"].details.customKit = { crestAssetId: "invalid" };
+  assert.equal(parseNhl27Snapshot(p, at).data.matches[0].opponentCrest?.crestAssetId, "111");
+  delete p.recentGames.RegularSeason[0].clubs["16793"].details;
+  const match = parseNhl27Snapshot(p, at).data.matches[0];
+  assert.equal(match.opponent, "Club #16793");
+  assert.equal(match.opponentClubId, "16793");
+  assert.equal(match.opponentCrest, undefined);
+});
+
+test("crest tolerance does not relax strict opponent identity or core score validation", () => {
+  for (const opponentClubId of [undefined, null, "", "0", "29202", "../16793", -1, true]) {
+    const p = fixture();
+    p.recentGames.RegularSeason[0].clubs["29202"].opponentClubId = opponentClubId;
+    assert.throws(() => parseNhl27Snapshot(p, at), /opponentClubId/);
+  }
+  const p = fixture();
+  p.recentGames.RegularSeason[0].clubs["16793"].details.customKit = { crestAssetId: "bad" };
+  p.recentGames.RegularSeason[0].clubs["29202"].score = null;
+  assert.throws(() => parseNhl27Snapshot(p, at), /score/);
+  p.recentGames.RegularSeason[0].clubs["29202"].score = "7";
+  p.recentGames.RegularSeason[0].clubs["16793"].details.clubId = "999";
+  assert.throws(() => parseNhl27Snapshot(p, at), /details.clubId/);
 });

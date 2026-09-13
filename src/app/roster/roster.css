@@ -1,113 +1,162 @@
-/* Roster extension of the homepage's Legacy Edition. Keep all rules scoped. */
-.roster-edition { overflow: clip; }
-.roster-edition section[id] { scroll-margin-top: 90px; }
-.roster-edition .roster-hero { min-height: 560px; }
-.roster-edition .roster-hero .hero-copy { padding-left: 10%; }
-.roster-edition .roster-counts { grid-template-columns: repeat(3, 1fr); }
-.roster-edition .roster-counts strong { color: var(--accent); }
-.roster-edition .roster-squad { padding-bottom: 75px; }
-.roster-edition .roster-groups { display: grid; gap: 55px; margin-top: 40px; }
-.roster-edition .roster-player { background: var(--panel); border: 1px solid var(--line); padding: 25px; position: relative; transition: border-color .25s, transform .25s; }
-.roster-edition .roster-player:hover, .roster-edition .roster-player:focus-within { border-color: var(--accent); transform: translateY(-3px); }
-.roster-edition .player-topline { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 8px; letter-spacing: 1.5px; color: var(--muted); }
-.roster-edition .player-position { color: var(--accent); border: 1px solid var(--line); padding: 5px 8px; font-weight: 700; }
-.roster-edition .player-identity { display: flex; align-items: center; gap: 18px; min-height: 130px; }
-.roster-edition .player-identity > div { min-width: 0; }
-.roster-edition .player-number { font-size: clamp(62px, 6vw, 86px); font-weight: 900; letter-spacing: -6px; line-height: 1; color: var(--accent); flex-shrink: 0; }
-.roster-edition .player-identity h3 { font-size: 23px; font-weight: 900; letter-spacing: -1px; overflow-wrap: anywhere; }
-.roster-edition .player-nickname { font-size: 11px; color: var(--muted); margin-top: 5px; }
-.roster-edition .player-role { color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; font-size: 9px; padding-bottom: 20px; }
-.roster-edition .player-scouting { border-top: 1px solid var(--line); }
-.roster-edition .player-scouting summary { cursor: pointer; list-style: none; padding-top: 17px; font-size: 11px; font-weight: 700; display: flex; justify-content: space-between; gap: 15px; }
-.roster-edition .player-scouting summary::-webkit-details-marker { display: none; }
-.roster-edition .player-scouting summary span { color: var(--accent); transition: transform .2s; }
-.roster-edition .player-scouting[open] summary span { transform: rotate(90deg); }
-.roster-edition .player-scouting p { color: var(--muted); font-size: 13px; padding-top: 16px; }
-.roster-edition .player-no-report { border-top: 1px solid var(--line); padding-top: 17px; color: var(--muted); font-size: 11px; }
-.roster-edition .roster-leadership { background: #0a171b; border-block: 1px solid var(--line); }
-.roster-edition .roster-letters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 40px; border: 1px solid var(--line); }
-.roster-edition .roster-letters article { padding: 30px; }
-.roster-edition .roster-letters article + article { border-left: 1px solid var(--line); }
-.roster-edition .letter-index { display: block; text-transform: uppercase; color: var(--muted); font-size: 9px; letter-spacing: 1.5px; }
-.roster-edition .roster-letters b { display: block; font-size: clamp(95px, 12vw, 160px); line-height: 1.3; font-weight: 900; color: transparent; -webkit-text-stroke: 1px var(--accent); opacity: .65; }
-.roster-edition .roster-letters h3 { font-size: 22px; font-weight: 800; }
-.roster-edition .roster-letters p { color: var(--muted); font-size: 13px; margin: 15px 0 25px; }
-.roster-edition .roster-tag { color: var(--accent); font-size: 8px; letter-spacing: 1.5px; border: 1px solid #68c8ce55; padding: 7px 9px; display: inline-block; }
-.roster-edition .roster-fine { color: var(--muted); font-size: 11px; margin-top: 25px; }
-.roster-edition .roster-closing { text-align: center; padding: 100px 5%; background: radial-gradient(ellipse at center, #68c8ce09, transparent 65%); }
-.roster-edition .roster-closing h2 { font-size: clamp(46px, 7vw, 90px); font-weight: 900; letter-spacing: -3px; }
-.roster-edition .roster-closing em { color: var(--accent); font-style: normal; }
-.roster-edition .roster-closing .button { margin-top: 35px; font-size: 12px; font-weight: 700; }
-.roster-edition .roster-empty { border: 1px solid var(--line); padding: 40px; margin-top: 30px; }
-.roster-edition .roster-empty p { color: var(--muted); margin-top: 12px; }
-@media (max-width: 1100px) {
-}
-@media (max-width: 850px) {
-  .roster-edition .roster-hero .hero-copy { padding-left: 6%; }
-  .roster-edition .roster-letters article { padding: 22px; }
-}
-@media (max-width: 600px) {
-  .roster-edition .roster-letters article + article { border-left: 0; border-top: 1px solid var(--line); }
-  .roster-edition .roster-letters b { font-size: 100px; }
-  .roster-edition .player-identity { min-height: 120px; }
-  .roster-edition .player-number { font-size: 80px; }
-  .roster-edition .roster-counts { gap: 10px; }
-  .roster-edition .roster-counts > div:first-child { grid-column: auto; }
-  .roster-edition .roster-counts > div { padding-left: 0; border: 0; }
-  .roster-edition .roster-counts strong { font-size: 34px; }
-  .roster-edition .roster-counts small { font-size: 8px; letter-spacing: 1px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .roster-edition .roster-player, .roster-edition .player-scouting summary span { transition: none; transform: none; }
-}
+/* Mid-season roster. Full-bleed editorial sections; no homepage/FC overrides. */
+.roster-edition,
+.roster-edition *,
+.roster-edition *::before,
+.roster-edition *::after { box-sizing: border-box; }
 
-/* Position chapters: animated rink introductions, followed by a full-width lineup. */
-.roster-edition .roster-groups { gap: 90px; }
-.roster-edition .roster-player-list { display: flex; flex-direction: column; }
-.roster-edition .roster-player { display: grid; grid-template-columns: 90px minmax(0, 1fr) minmax(120px, .5fr) minmax(140px, .55fr); align-items: center; gap: 24px; padding: 22px 16px; background: transparent; border: 0; border-bottom: 1px solid var(--line); }
-.roster-edition .roster-player:hover, .roster-edition .roster-player:focus-within { transform: none; background: #68c8ce06; }
-.roster-edition .player-topline { flex-direction: column; align-items: start; gap: 7px; }
-.roster-edition .player-topline > span:first-child { font-size: 7px; letter-spacing: 1px; }
-.roster-edition .player-identity { min-height: 76px; }
-.roster-edition .player-number { font-size: 58px; letter-spacing: -4px; min-width: 72px; }
-.roster-edition .player-role { padding: 0; line-height: 1.7; }
-.roster-edition .player-scouting, .roster-edition .player-no-report { border: 0; padding: 0; }
-.roster-edition .player-scouting summary { padding: 12px 0; }
-.roster-edition .player-scouting p { padding-top: 8px; }
-@media (max-width: 850px) {
- .roster-edition .roster-player { grid-template-columns: minmax(0, 1fr) minmax(130px, .5fr); gap: 12px 24px; }
- .roster-edition .player-topline { display: none; }
- .roster-edition .player-role { grid-column: 1; }
- .roster-edition .player-scouting, .roster-edition .player-no-report { grid-column: 2; grid-row: 1 / span 2; }
+.roster-edition {
+  --bg: #0b0c0d;
+  --text: #f0efeb;
+  --muted: #a5babc;
+  --accent: #68c8ce;
+  --line: #ffffff30;
+  --display: HockeyDisplay, Impact, "Arial Narrow", sans-serif;
+  overflow: clip;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
-@media (max-width: 600px) {
- .roster-edition .roster-player { display: flex; flex-wrap: wrap; gap: 10px; padding: 22px 0; }
- .roster-edition .player-identity { width: 100%; min-height: 65px; }
- .roster-edition .player-number { font-size: 54px; }
- .roster-edition .player-role { width: 100%; padding-left: 90px; }
- .roster-edition .player-scouting, .roster-edition .player-no-report { width: 100%; margin-left: 90px; }
- .roster-edition .roster-letters { grid-template-columns: 1fr; }
-}
-@media (prefers-reduced-motion: reduce) {
-}
+.roster-edition :is(h1, h2, h3, h4, p, figure) { margin: 0; }
+.roster-edition :is(h1, h2, h3) { font-family: var(--display); font-weight: 800; line-height: .98; text-transform: uppercase; }
+.roster-edition p { line-height: 1.65; }
+.roster-edition em { font-style: normal; color: var(--accent); }
+.roster-edition a { color: inherit; text-decoration: none; text-underline-offset: 6px; }
+.roster-edition a:hover { text-decoration: underline; }
+.roster-edition [id] { scroll-margin-top: 24px; }
+.roster-edition .roster-inner { width: calc(100% - 2 * var(--site-gutter)); max-width: var(--site-content-max); margin-inline: auto; }
+.roster-edition .roster-eyebrow { color: var(--accent); font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+.roster-edition .roster-text-link { display: inline-flex; align-items: center; gap: 36px; padding-block: 13px; border-bottom: 1px solid var(--accent); font-size: 12px; font-weight: 700; }
+.roster-edition .roster-text-link > span { color: var(--accent); font-size: 19px; }
 
-/* Editorial chapter transitions. Typography is the visual, not an illustration. */
-.roster-edition .position-scene { position: relative; padding: 28px 0 22px; border-top: 1px solid #68c8ce60; border-bottom: 1px solid var(--line); overflow: hidden; }
-.roster-edition .chapter-meta, .roster-edition .chapter-bottom { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-.roster-edition .chapter-meta { font-size: 10px; font-weight: 600; letter-spacing: 1.8px; color: var(--accent); }
-.roster-edition .chapter-meta > span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
-.roster-edition .chapter-body { display: flex; justify-content: space-between; align-items: center; gap: 48px; padding: 46px 0 42px; }
+/* One continuous photograph, with open typography instead of split panels. */
+.roster-edition .roster-hero { position: relative; isolation: isolate; min-height: 740px; display: flex; align-items: center; justify-content: flex-start; text-align: left; background: var(--bg); }
+.roster-edition .roster-hero-image { position: absolute; inset: 0; z-index: -2; }
+.roster-edition .roster-hero-image img { object-fit: cover; object-position: 65% 44%; }
+.roster-edition .roster-hero::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(90deg, #0b0c0df5 0%, #0b0c0dd9 28%, #0b0c0d50 67%, #0b0c0d1a), linear-gradient(0deg, #0b0c0d 0%, #0b0c0d33 40%, #0b0c0d33);
+}
+/* The copy shares the content rails; the photograph remains edge to edge. */
+.roster-edition .roster-hero-content { margin-inline: auto; padding-block: 65px 42px; text-align: left; }
+.roster-edition .roster-hero .roster-eyebrow { margin-bottom: 30px; }
+.roster-edition .roster-season-marker { display: flex; align-items: center; gap: 9px; font-size: 10px; text-transform: uppercase; letter-spacing: 1.6px; color: #d2dddd; margin-bottom: 18px; }
+.roster-edition .roster-season-marker > span { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+.roster-edition .roster-hero h1 { font-size: clamp(88px, 10.7vw, 160px); letter-spacing: -.025em; line-height: .85; }
+.roster-edition .roster-hero h1 em { display: inline-block; margin-top: 8px; }
+.roster-edition .roster-hero-description { max-width: 355px; font-size: 14px; color: #c3d0d0; margin-top: 30px; }
+.roster-edition .roster-hero-actions { display: flex; justify-content: flex-start; align-items: center; flex-wrap: wrap; gap: 12px 30px; margin-top: 16px; }
+.roster-edition .roster-hero-actions > a:not(.roster-text-link) { padding-block: 14px; color: #d2dddd; font-size: 11px; }
+.roster-edition .roster-hero-actions > a > span { margin-left: 8px; }
+.roster-edition .roster-position-nav { display: flex; justify-content: flex-start; flex-wrap: wrap; gap: 8px 36px; margin-top: 48px; }
+.roster-edition .roster-position-nav a { display: inline-flex; gap: 10px; align-items: baseline; padding-block: 10px; font-size: 11px; }
+.roster-edition .roster-nav-count { font-size: 9px; color: var(--accent); font-variant-numeric: tabular-nums; }
+.roster-edition .roster-position-nav a > span:last-child { color: var(--accent); }
+.roster-edition .roster-hero-caption { margin-top: 20px; text-align: left; color: #a5babc; font-size: 8px; letter-spacing: 1.8px; text-transform: uppercase; }
+
+.roster-edition .roster-squad-heading { padding-block: 72px 50px; display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; }
+.roster-edition .roster-squad-heading h2 { font-size: clamp(36px, 4.5vw, 62px); max-width: 600px; }
+.roster-edition .roster-squad-heading > p { color: var(--muted); font-size: 12px; padding-bottom: 2px; }
+.roster-edition .roster-groups { display: block; }
+
+/* The preceding color cuts into each full-width section, like home’s handoffs.
+   Only decorative pseudo-elements are clipped; text/focus rings remain intact. */
+.roster-edition .roster-position,
+.roster-edition .roster-leaders,
+.roster-edition .roster-outro { position: relative; isolation: isolate; padding-block: 126px 90px; background: var(--section-bg); color: var(--text); }
+.roster-edition .roster-position::before,
+.roster-edition .roster-leaders::before,
+.roster-edition .roster-outro::before { content: ""; position: absolute; inset: -1px 0 auto; height: 66px; background: var(--section-before); clip-path: polygon(0 0, 100% 0, 100% 15%, 0 100%); pointer-events: none; z-index: -1; }
+.roster-edition .roster-position--forwards { --section-before: #0b0c0d; --section-bg: #006775; --text: #f0efeb; --accent: #f0efeb; --muted: #d0e5e6; --line: #ffffff40; --hover: #ffffff0d; }
+.roster-edition .roster-position--defense { --section-before: #006775; --section-bg: #f0efeb; --text: #0b0c0d; --accent: #006775; --muted: #43565a; --line: #0b0c0d33; --hover: #00677509; }
+.roster-edition .roster-position--goalies { --section-before: #f0efeb; --section-bg: #320d48; --text: #f0efeb; --accent: #dbc0ed; --muted: #d3c6dc; --line: #ffffff38; --hover: #ffffff08; }
+/* Empty groups are omitted; keep the seam true to the previous visible section. */
+.roster-edition .roster-position:first-child { --section-before: #0b0c0d; }
+.roster-edition .roster-position--forwards + .roster-position--goalies { --section-before: #006775; }
+
+.roster-edition .position-scene { padding: 0 0 26px; border: 0; }
+.roster-edition .chapter-meta,
+.roster-edition .chapter-bottom { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.roster-edition .chapter-meta { font-size: 10px; font-weight: 700; letter-spacing: 1.8px; color: var(--accent); }
+.roster-edition .chapter-meta > span:last-child { font-size: 9px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.roster-edition .chapter-body { display: flex; justify-content: space-between; align-items: center; gap: 48px; padding-block: 36px; }
 .roster-edition .roster-chapter-heading { min-width: 0; }
-.roster-edition .roster-chapter-heading h3 { font-size: clamp(42px, 5.4vw, 76px); font-weight: 700; line-height: 1; letter-spacing: -3px; }
-.roster-edition .roster-chapter-heading p { margin-top: 18px; font-size: 13px; color: var(--muted); }
-.roster-edition .chapter-statement { display: flex; flex-direction: column; align-items: flex-start; width: 32%; color: var(--text); font-size: clamp(28px, 3.3vw, 44px); font-weight: 500; letter-spacing: -1.5px; line-height: 1.12; }
+.roster-edition .roster-chapter-heading h3 { font-size: clamp(64px, 8vw, 112px); }
+.roster-edition .roster-chapter-heading p { margin-top: 12px; font-size: 13px; color: var(--muted); }
+.roster-edition .chapter-statement { display: flex; flex-direction: column; align-items: flex-start; width: 30%; color: var(--text); font-size: clamp(28px, 3.1vw, 42px); font-weight: 500; letter-spacing: -1.5px; line-height: 1.1; }
 .roster-edition .chapter-word-mask { display: block; overflow: hidden; padding-bottom: 3px; }
 .roster-edition .chapter-word { display: block; }
 .roster-edition .chapter-word-mask:last-child { color: var(--accent); }
-.roster-edition .chapter-bottom { font-size: 8px; letter-spacing: 1.5px; color: #a5babc80; }
-.roster-edition .scene-replay { display: inline-flex; align-items: center; gap: 14px; background: none; border: 0; padding: 10px 0 10px 14px; color: var(--muted); font: inherit; font-size: 10px; letter-spacing: .4px; cursor: pointer; transition: color .2s; }
-.roster-edition .scene-replay:hover { color: var(--text); }
-.roster-edition .scene-replay:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.roster-edition .chapter-bottom { font-size: 8px; letter-spacing: 1.5px; color: var(--muted); }
+.roster-edition .scene-replay { display: inline-flex; align-items: center; gap: 14px; background: none; border: 0; padding: 12px 0 12px 14px; color: var(--muted); font: inherit; font-size: 10px; letter-spacing: .4px; cursor: pointer; }
+.roster-edition .scene-replay:hover { text-decoration: underline; text-underline-offset: 5px; }
+
+/* Generous card gutters; the whole header is a native scouting disclosure. */
+.roster-edition .roster-player-list { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.roster-edition .roster-player { --card-gutter: clamp(24px, 3vw, 44px); border-bottom: 1px solid var(--line); padding-inline: var(--card-gutter); }
+.roster-edition .player-scouting { min-width: 0; }
+.roster-edition .player-scouting summary { display: grid; grid-template-columns: 74px minmax(0, 1fr) minmax(100px, .32fr) 204px; align-items: center; gap: 24px; margin-inline: calc(-1 * var(--card-gutter)); padding: 32px var(--card-gutter); list-style: none; cursor: pointer; }
+.roster-edition .player-scouting summary::-webkit-details-marker { display: none; }
+.roster-edition .player-topline { display: flex; flex-direction: column; align-items: flex-start; gap: 9px; color: var(--muted); }
+.roster-edition .player-topline > span:first-child { font-size: 7px; letter-spacing: 1px; line-height: 1.6; }
+.roster-edition .player-position { font-size: 11px; font-weight: 700; color: var(--accent); }
+.roster-edition .player-identity { display: flex; align-items: center; gap: 22px; min-height: 65px; min-width: 0; }
+.roster-edition .player-number { font-family: var(--display); font-weight: 800; font-size: 68px; line-height: 1; letter-spacing: -.035em; color: var(--accent); min-width: 64px; flex-shrink: 0; }
+.roster-edition .player-name-line { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; min-width: 0; }
+.roster-edition .player-name { font-size: clamp(19px, 1.8vw, 26px); font-weight: 800; line-height: 1.25; letter-spacing: -.5px; overflow-wrap: anywhere; }
+.roster-edition .player-letter { display: inline-flex; justify-content: center; align-items: center; width: 24px; height: 27px; color: var(--accent); border: 1px solid currentColor; font-size: 12px; font-weight: 700; }
+.roster-edition .player-role { color: var(--accent); text-transform: uppercase; letter-spacing: 1.2px; font-size: 9px; line-height: 1.7; }
+.roster-edition .player-report-toggle { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 48px; padding: 12px 14px; border: 1px solid currentColor; color: var(--accent); font-size: 11px; font-weight: 700; }
+.roster-edition .report-toggle-icon { font-size: 22px; line-height: 1; min-width: 16px; text-align: center; }
+.roster-edition .report-label-close { display: none; }
+.roster-edition .player-scouting[open] .report-label-open { display: none; }
+.roster-edition .player-scouting[open] .report-label-close { display: inline; }
+.roster-edition .player-summary:hover .player-report-toggle { background: var(--hover); }
+.roster-edition .player-report { border-top: 1px solid var(--line); padding-block: 30px 34px; }
+.roster-edition .player-report-season { color: var(--accent); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.4px; }
+.roster-edition .player-report-season > span { margin-inline: 8px; }
+.roster-edition .player-report-body { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 40px; margin-top: 26px; }
+.roster-edition .player-report-body h4 { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+.roster-edition .player-report-body p { color: var(--muted); font-size: 14px; line-height: 1.85; max-width: 72ch; }
+.roster-edition .player-report-focus { border-left: 1px solid var(--line); padding-left: 28px; }
+.roster-edition .player-report-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; margin: 30px 0 20px; padding-top: 24px; border-top: 1px solid var(--line); }
+.roster-edition .player-report-stats > div { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.roster-edition .player-report-stats dt { font-size: 9px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); }
+.roster-edition .player-report-stats dd { margin: 0; font-family: var(--display); font-size: clamp(32px, 3.8vw, 52px); font-weight: 800; line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
+.roster-edition .player-report-source, .roster-edition .player-report-sample { color: var(--muted); font-size: 10px; line-height: 1.7; }
+.roster-edition .player-report-sample { margin-top: 8px; }
+/* Local overrides keep text readable on teal, paper and purple. */
+.hockey-site.hockey-interior .roster-edition .roster-position .roster-player:hover,
+.hockey-site.hockey-interior .roster-edition .roster-position .roster-player:focus-within { background: var(--hover); }
+.hockey-site.hockey-interior .roster-edition .roster-position .player-scouting summary { color: var(--text); }
+.hockey-site.hockey-interior .roster-edition .roster-position .scene-replay { color: var(--accent); }
+.hockey-site.hockey-interior .roster-edition :is(a, button, summary):focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
+.hockey-site.hockey-interior .roster-edition .player-summary:focus-visible { outline-offset: -3px; }
+
+/* Established leadership: two unboxed, type-led profiles. */
+.roster-edition .roster-leaders { --section-before: #320d48; --section-bg: #0b0c0d; padding-bottom: 110px; }
+.roster-edition:has(.roster-position--defense:last-child) .roster-leaders { --section-before: #f0efeb; }
+.roster-edition:has(.roster-position--forwards:last-child) .roster-leaders { --section-before: #006775; }
+.roster-edition:not(:has(.roster-position)) .roster-leaders { --section-before: #0b0c0d; }
+.roster-edition .roster-leaders-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 30px; margin-bottom: 60px; }
+.roster-edition .roster-leaders h2 { font-size: clamp(60px, 7.8vw, 108px); }
+.roster-edition .roster-leaders-heading > p { max-width: 330px; color: var(--muted); font-size: 13px; }
+.roster-edition .roster-leader { display: flex; align-items: center; gap: 40px; border-top: 1px solid var(--line); padding-block: 32px; }
+.roster-edition .roster-leader:last-child { border-bottom: 1px solid var(--line); }
+.roster-edition .roster-leader-letter { font: 800 clamp(95px, 10vw, 144px)/1 var(--display); color: var(--accent); min-width: 100px; }
+.roster-edition .roster-leader-name { flex: 1; min-width: 0; }
+.roster-edition .roster-leader-name .roster-eyebrow { font-size: 9px; margin-bottom: 12px; }
+.roster-edition .roster-leader h3 { font-size: clamp(34px, 4vw, 58px); }
+.roster-edition .roster-leader-description { width: 31%; color: var(--muted); font-size: 13px; }
+
+.roster-edition .roster-outro { --section-before: #0b0c0d; --section-bg: #006775; --accent: #f0efeb; text-align: center; padding-bottom: 110px; }
+.roster-edition .roster-outro h2 { font-size: clamp(66px, 8.5vw, 120px); }
+.roster-edition .roster-outro h2 em { color: #c5e3e5; }
+.roster-edition .roster-outro-links { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 20px 36px; margin-top: 28px; font-size: 12px; }
+.roster-edition .roster-outro-links > a:not(.roster-text-link) { padding-block: 13px; }
+.roster-edition .roster-empty { padding-block: 40px 70px; }
+.roster-edition .roster-empty p { margin-top: 16px; color: var(--muted); }
+
 .roster-edition .scene-playing .roster-chapter-heading { animation: roster-chapter-heading .75s cubic-bezier(.22,1,.36,1) both; }
 .roster-edition .scene-playing.scene-forwards .chapter-word { animation: chapter-rise .85s cubic-bezier(.22,1,.36,1) both; }
 .roster-edition .scene-playing.scene-defense .chapter-word-mask:first-child .chapter-word { animation: chapter-lock-left .9s cubic-bezier(.22,1,.36,1) both; }
@@ -118,15 +167,74 @@
 @keyframes chapter-lock-left { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes chapter-lock-right { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes chapter-focus { from { opacity: 0; filter: blur(7px); transform: translateY(6px); } to { opacity: 1; filter: blur(0); transform: translateY(0); } }
-@media (max-width: 600px) {
- .roster-edition .chapter-body { gap: 26px; padding: 38px 0; align-items: flex-start; flex-direction: column; }
- .roster-edition .roster-chapter-heading h3 { font-size: 48px; letter-spacing: -2px; }
- .roster-edition .roster-chapter-heading p { margin-top: 12px; }
- .roster-edition .chapter-statement { width: 100%; flex-flow: row wrap; gap: 0 8px; font-size: 27px; letter-spacing: -.8px; }
- .roster-edition .chapter-meta { font-size: 8px; letter-spacing: 1.2px; }
- .roster-edition .chapter-bottom { font-size: 7px; }
+
+@media (max-width: 1000px) {
+  .roster-edition .roster-hero-caption { display: none; }
+  .roster-edition .player-scouting summary { grid-template-columns: minmax(0, 1fr) 204px; gap: 12px 28px; }
+  .roster-edition .player-topline { display: none; }
+  .roster-edition .player-role { grid-column: 1; padding-left: 86px; }
+  .roster-edition .player-report-toggle { grid-column: 2; grid-row: 1 / span 2; }
+  .roster-edition .player-report-body { gap: 28px; }
+  .roster-edition .roster-leader { gap: 25px; }
+  .roster-edition .roster-leader-letter { min-width: 70px; }
+  .roster-edition .roster-leader-description { width: 34%; }
+}
+@media (max-width: 650px) {
+  .roster-edition .roster-hero { min-height: 750px; align-items: flex-end; }
+  .roster-edition .roster-hero-image { bottom: 26%; mask-image: linear-gradient(#000 55%, transparent); }
+  .roster-edition .roster-hero-image img { object-position: 58% top; }
+  .roster-edition .roster-hero::before { background: linear-gradient(0deg, #0b0c0d 12%, #0b0c0de8 40%, #0b0c0d40 90%), linear-gradient(90deg, #0b0c0d55, transparent); }
+  .roster-edition .roster-hero-content { padding-block: 170px 32px; }
+  .roster-edition .roster-hero .roster-eyebrow { font-size: 9px; letter-spacing: 1.4px; margin-bottom: 24px; }
+  .roster-edition .roster-season-marker { font-size: 9px; }
+  .roster-edition .roster-hero h1 { font-size: clamp(82px, 20vw, 130px); }
+  .roster-edition .roster-hero-description { font-size: 13px; max-width: 310px; margin-top: 24px; }
+  .roster-edition .roster-hero-actions { gap: 10px 24px; }
+  .roster-edition .roster-position-nav { gap: 8px 22px; margin-top: 28px; }
+  .roster-edition .roster-position-nav a { font-size: 10px; gap: 7px; }
+  .roster-edition .roster-squad-heading { flex-direction: column; align-items: flex-start; padding-block: 52px 40px; gap: 20px; }
+  .roster-edition .roster-squad-heading h2 { max-width: 330px; font-size: 42px; }
+  .roster-edition .roster-squad-heading .roster-eyebrow { font-size: 9px; }
+  .roster-edition .roster-position,
+  .roster-edition .roster-leaders,
+  .roster-edition .roster-outro { padding-block: 88px 62px; }
+  .roster-edition .roster-position::before,
+  .roster-edition .roster-leaders::before,
+  .roster-edition .roster-outro::before { height: 38px; }
+  .roster-edition .chapter-meta { font-size: 8px; letter-spacing: 1.3px; }
+  .roster-edition .chapter-meta > span:last-child { font-size: 8px; }
+  .roster-edition .chapter-body { flex-direction: column; align-items: flex-start; gap: 25px; padding-block: 26px; }
+  .roster-edition .roster-chapter-heading h3 { font-size: 72px; }
+  .roster-edition .roster-chapter-heading p { font-size: 12px; margin-top: 10px; }
+  .roster-edition .chapter-statement { width: 100%; flex-flow: row wrap; gap: 0 8px; font-size: 24px; letter-spacing: -.8px; }
+  .roster-edition .chapter-bottom { font-size: 7px; letter-spacing: 1px; }
+  .roster-edition .scene-replay { font-size: 9px; gap: 8px; }
+  .roster-edition .roster-player { --card-gutter: 20px; }
+  .roster-edition .player-scouting summary { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; padding-block: 26px; }
+  .roster-edition .player-identity { width: 100%; gap: 16px; min-height: 58px; }
+  .roster-edition .player-number { font-size: 58px; min-width: 48px; }
+  .roster-edition .player-name { font-size: 20px; }
+  .roster-edition .player-role { grid-column: auto; padding-left: 64px; font-size: 8px; }
+  .roster-edition .player-report-toggle { grid-column: auto; grid-row: auto; width: 100%; margin-top: 4px; }
+  .roster-edition .player-report { padding-block: 24px 28px; }
+  .roster-edition .player-report-season { font-size: 8px; letter-spacing: 1px; }
+  .roster-edition .player-report-season > span { margin-inline: 4px; }
+  .roster-edition .player-report-body { grid-template-columns: minmax(0, 1fr); gap: 24px; margin-top: 20px; }
+  .roster-edition .player-report-body p { font-size: 13px; line-height: 1.8; }
+  .roster-edition .player-report-focus { border-left: 0; border-top: 1px solid var(--line); padding: 22px 0 0; }
+  .roster-edition .player-report-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 18px; }
+  .roster-edition .player-report-stats dt { font-size: 8px; }
+  .roster-edition .roster-leaders-heading { align-items: flex-start; flex-direction: column; margin-bottom: 36px; gap: 25px; }
+  .roster-edition .roster-leaders h2 { font-size: 66px; }
+  .roster-edition .roster-leader { flex-wrap: wrap; gap: 16px 22px; padding-block: 26px; }
+  .roster-edition .roster-leader-letter { font-size: 92px; min-width: 52px; }
+  .roster-edition .roster-leader h3 { font-size: 36px; }
+  .roster-edition .roster-leader-name .roster-eyebrow { font-size: 8px; letter-spacing: 1.2px; }
+  .roster-edition .roster-leader-description { width: 100%; padding-left: 74px; font-size: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
- .roster-edition .position-scene * { animation: none !important; transition: none !important; }
- .roster-edition .scene-replay { display: none; }
+  .roster-edition *, .roster-edition *::before, .roster-edition *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  .roster-edition .scene-replay { display: none; }
 }
+.hockey-motion-off .roster-edition .position-scene * { animation: none !important; }
+.hockey-motion-off .roster-edition .scene-replay { display: none; }

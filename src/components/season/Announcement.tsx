@@ -1,5 +1,6 @@
 "use client";
 
+import { getMonochromePoster } from "@/lib/photo-posters";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -18,7 +19,7 @@ export default function Announcement({ announcement }: { announcement: HockeyAnn
             controls
             playsInline
             preload="none"
-            poster={announcement.poster}
+            poster={getMonochromePoster(announcement.poster)}
             aria-label={announcement.title}
             onError={() => setFailed(true)}
           >

@@ -220,9 +220,9 @@ function supportedSize(size: number): size is ChemistrySize {
   return size === 2 || size === 3 || size === 5;
 }
 
-function evaluate(games: readonly ChemistryGame[], players: string[]): ChemistryEvaluation {
+function evaluate(games: readonly ChemistryGame[], players: string[], allowSingle = false): ChemistryEvaluation {
   // Empty/unsupported selections must not match every archived game vacuously.
-  const matchingGames = supportedSize(players.length)
+  const matchingGames = (supportedSize(players.length) || (allowSingle && players.length === 1))
     ? games.filter(game => players.every(player => game.skaters.includes(player))) : [];
   const stats: ChemistryStats = {
     games: matchingGames.length, wins: 0, losses: 0, draws: 0, goalsFor: 0, goalsAgainst: 0,
@@ -253,6 +253,14 @@ export function evaluateChemistrySelection(
   games: readonly ChemistryGame[], selectedPlayers: readonly string[],
 ): ChemistryEvaluation {
   return evaluate(canonicalGames(games), uniqueNames(selectedPlayers));
+}
+
+/** Single-skater coappearances for goalie-to-skater analysis. This deliberately
+ * does not relax the full-line evaluator's 2/3/5-player selection contract. */
+export function evaluateSkaterAppearances(
+  games: readonly ChemistryGame[], playerId: string,
+): ChemistryEvaluation {
+  return evaluate(canonicalGames(games), uniqueNames([playerId]), true);
 }
 
 /** Exhaustive unique combinations of exactly 2, 3 or 5 available observed skaters.

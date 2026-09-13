@@ -1,14 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
-import "@/components/season/season-recap.css";
 import "./roster.css";
 import { FROZEN_CHELSTATS } from "@/lib/chelstats-frozen";
 import { SEASON_REVEAL } from "@/lib/season-reveal";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "2026–2027 Roster | Bardownski Hockey", description: "Meet Bardownski captain Xavier Laflamme and assistant captain Matt Hut for 2026–2027. Returning player profiles with archived 2025–2026 totals." };
-import { getNickname, getDisplayName } from "@/lib/nicknames";
+export const metadata: Metadata = { title: "2026–2027 Roster | Bardownski Hockey", description: "Meet the 2026–2027 Bardownski roster: forwards, defense, goalies, captain Xavier Laflamme and assistant captain Matt Hut. One room. All in." };
+import { getNickname } from "@/lib/nicknames";
 import RosterClient from "./RosterClient";
+import { getScoutingReport, type ScoutingReport } from "./scouting";
 
 // Gamertag → real name (for looking up nicknames, jersey numbers, etc.)
 // Fill in the empty ones with the player's real name
@@ -44,55 +44,11 @@ const JERSEY_NUMBERS: Record<string, number> = {
   LOGAN: 6,
 };
 
-// Only the letters announced in the approved film apply to current profiles.
-const ANNOUNCED_LEADERS = [
+// Keep the established captain and assistant consistent with the club’s shared leadership data.
+const ROSTER_LEADERS = [
   SEASON_REVEAL.leadership.captain,
   ...SEASON_REVEAL.leadership.assistants,
 ];
-
-// Scouting reports / play style descriptions
-const PLAYER_SCOUTING: Record<string, { role: string; description: string }> = {
-  DYLAN: {
-    role: "Playmaker",
-    description:
-      "Precise facilitator with elite skill moves. Creates space and finds teammates with surgical passing — a true playmaker who makes everyone around him better.",
-  },
-  MATT: {
-    role: "Sniper",
-    description:
-      "Pure goal scorer with an elite bag of tricks. When he has the puck in the offensive zone, defenders are on notice. Lethal release from anywhere.",
-  },
-  KADEN: {
-    role: "Offensive Defenseman",
-    description:
-      "End-to-end playmaking defenseman with a pass-first mentality. Quarterbacks the breakout and isn't afraid to jump into the rush. Sees the ice like a forward.",
-  },
-  JIMMY: {
-    role: "Two-Way Winger",
-    description:
-      "Two-way winger who plays both ends of the ice. Backchecks hard, breaks up plays through the neutral zone, then turns defense into offense with a sniper's release. Also doubles as the team's backup goaltender when called upon.",
-  },
-  ROB: {
-    role: "Shutdown Defenseman",
-    description:
-      "A brick wall on the blue line. Extremely conservative and positional, never out of place. Locks down the defensive zone with calm authority and nothing gets through.",
-  },
-  RYDER: {
-    role: "Goaltender",
-    description:
-      "Post-to-post netminder who covers every angle. Quick lateral movement and textbook positioning make him a wall. Reads the play before the shot even comes.",
-  },
-  LOGAN: {
-    role: "Big Game Player",
-    description:
-      "Lives for the moment. When the lights are brightest and the pressure is on, that's when he shows up. A big-time play guy who can flip a game on its head when it matters most.",
-  },
-  COLIN: {
-    role: "Utility",
-    description:
-      "The ultimate utility player. Can plug in anywhere the team needs him and hold his own. Versatile, reliable, and always ready when his number is called.",
-  },
-};
 
 function getPositionGroup(
   position: string
@@ -106,57 +62,31 @@ function getPositionGroup(
 export type RosterPlayer = {
   name: string;
   position: string;
-  number: number;
+  number: number | null;
   leadership: "C" | "A" | null;
   positionGroup: "forward" | "defense" | "goalie";
   nickname: string;
-  displayName: string;
-  scouting?: { role: string; description: string };
-  gamesPlayed?: number;
-  points?: number;
-  goals?: number;
-  assists?: number;
-  plusMinus?: number;
-  hits?: number;
-  saves?: number;
-  savePercentage?: number;
-  goalieGamesPlayed?: number;
-  shutouts?: number;
-  overallRating?: number;
+  scouting: ScoutingReport;
 };
 
 export default async function RosterPage() {
-  // Returning profiles only; this does not declare the new-season lineup final.
+  // Identities and scouting evidence come from the saved 2025–2026 directory.
+  // Performance appears only in explicitly labeled last-season reports.
   const chelstats = FROZEN_CHELSTATS;
   const members = chelstats?.members ?? [];
 
   const players: RosterPlayer[] = members.map((m) => {
     const name = resolveName(m.username);
     const position = POSITION_OVERRIDES[name] ?? m.position;
-    const svPct =
-      m.savePct > 1 ? m.savePct : m.savePct * 100;
 
     return {
       name,
       position,
-      number: JERSEY_NUMBERS[name] ?? 0,
-      // Current letters only; all performance totals below remain archived.
-      leadership: ANNOUNCED_LEADERS.find((leader) => leader.profileName === name)?.letter ?? null,
+      number: JERSEY_NUMBERS[name] ?? null,
+      leadership: ROSTER_LEADERS.find((leader) => leader.profileName === name)?.letter ?? null,
       positionGroup: getPositionGroup(position),
       nickname: getNickname(name),
-      displayName: getDisplayName(name),
-      scouting: PLAYER_SCOUTING[name],
-      gamesPlayed: m.gamesPlayed,
-      points: m.points,
-      goals: m.goals,
-      assists: m.assists,
-      plusMinus: m.plusMinus,
-      hits: m.hits,
-      saves: m.goalieGP > 0 ? m.goalieSaves : undefined,
-      savePercentage: m.goalieGP > 0 ? svPct : undefined,
-      goalieGamesPlayed: m.goalieGP > 0 ? m.goalieGP : undefined,
-      shutouts: m.goalieGP > 0 ? m.shutouts : undefined,
-      overallRating: m.overallRating,
+      scouting: getScoutingReport(m, name),
     };
   });
 
@@ -165,76 +95,84 @@ export default async function RosterPage() {
   const goalies = players.filter((p) => p.positionGroup === "goalie");
 
   return (
-    <div className="legacy-home concept-1 roster-edition">
-      <section className="hero roster-hero">
-        <div className="hero-copy">
-          <p className="eyebrow">2026–2027 / OUR PEOPLE</p>
-          <h1>ONE CLUB.<br /><em>EVERY SHIFT.</em></h1>
-          <p className="hero-description">
-            The room behind the next chapter. Newfoundland roots, a new set of
-            sweaters, and the same Bardownski spirit.
-          </p>
-          <div className="actions">
-            <a className="button" href="#squad">Meet the squad ↗</a>
-            <a href="#leadership">Meet the leadership ↓</a>
-          </div>
-          <span className="season-label">2026–2027 <span>/</span> THE NEXT CHAPTER</span>
+    <div className="roster-edition">
+      <header className="roster-hero" aria-labelledby="roster-title">
+        <div className="roster-hero-image">
+          <Image src="/images/homepage/team-teal.webp" alt="Bardownski players together in a post-game huddle" fill priority sizes="100vw" />
         </div>
-        <figure>
-          <Image src="/images/team pic.png" alt="Bardownski players gathering in a post-game huddle" fill priority sizes="(max-width: 850px) 100vw, 50vw" />
-          <figcaption>NEWFOUNDLAND ROOTS. BARDOWNSKI FOREVER.</figcaption>
-          <div className="photo-stamp">THE<br /><b>ROOM.</b><small>ONE CLUB / EVERY NAME</small></div>
-        </figure>
-      </section>
+        <div className="roster-hero-content roster-inner">
+          <p className="roster-eyebrow">Bardownski hockey / 2026–2027</p>
+          <p className="roster-season-marker"><span aria-hidden="true" /> Mid-season. All in.</p>
+          <h1 id="roster-title">One room.<br /><em>All in.</em></h1>
+          <p className="roster-hero-description">
+            The players behind every goal, every stop, and every hard-earned point.
+            This is Bardownski, night after night.
+          </p>
+          <div className="roster-hero-actions">
+            <a className="roster-text-link" href="#squad">Meet the roster <span aria-hidden="true">↓</span></a>
+            <a href="#leadership">Our leadership <span aria-hidden="true">↗</span></a>
+          </div>
+          <nav className="roster-position-nav" aria-label="Jump to roster position">
+            {[
+              { id: "forwards", label: "Forwards", count: forwards.length },
+              { id: "defense", label: "Defense", count: defense.length },
+              { id: "goalies", label: "Goalies", count: goalies.length },
+            ].filter(group => group.count > 0).map(group => (
+              <a href={`#${group.id}`} key={group.id}>
+                <span>{group.label}</span><span className="roster-nav-count">{String(group.count).padStart(2, "0")}</span><span aria-hidden="true">↘</span>
+              </a>
+            ))}
+          </nav>
+          <p className="roster-hero-caption">Newfoundland roots. Bardownski forever.</p>
+        </div>
+      </header>
 
-      <div className="stats roster-counts" aria-label="Roster by position">
-        <div><strong>{String(forwards.length).padStart(2, "0")}</strong><small>FORWARDS</small></div>
-        <div><strong>{String(defense.length).padStart(2, "0")}</strong><small>DEFENSEMEN</small></div>
-        <div><strong>{String(goalies.length).padStart(2, "0")}</strong><small>GOALTENDERS</small></div>
-      </div>
-
-      <section id="squad" className="section roster-squad" aria-labelledby="squad-title">
-        <div className="section-head">
-          <div><p className="eyebrow">01 / THE SQUAD</p><h2 id="squad-title">The names on the sweaters.</h2></div>
-          <p>Returning profiles from the 2025–2026 squad.<br />The 2026–2027 lineup and jersey numbers are not yet final.</p>
+      <section id="squad" className="roster-squad" aria-labelledby="squad-title">
+        <div className="roster-squad-heading roster-inner">
+          <div><p className="roster-eyebrow">The 2026–2027 roster</p><h2 id="squad-title">The names on the sweaters.</h2></div>
+          <p>Different roles. One room.<br />Every shift takes all of us.</p>
         </div>
         {players.length === 0 ? (
-          <div className="roster-empty"><h3>The room is loading.</h3><p>Roster data is unavailable right now. Please check back soon.</p></div>
+          <div className="roster-empty roster-inner"><h3>The room is loading.</h3><p>Roster data is unavailable right now. Please check back soon.</p></div>
         ) : (
           <RosterClient forwards={forwards} defense={defense} goalies={goalies} />
         )}
       </section>
 
-      <section id="leadership" className="section roster-leadership" aria-labelledby="leadership-title">
-        <div className="section-head">
-          <div><p className="eyebrow">02 / THE NEXT CHAPTER</p><h2 id="leadership-title">The letters. The leaders.</h2></div>
-          <p>Same club. New era.<br />Our captain and assistant for 2026–2027.</p>
+      <section id="leadership" className="roster-leaders" aria-labelledby="leadership-title">
+        <div className="roster-inner">
+          <div className="roster-leaders-heading">
+            <div><p className="roster-eyebrow">04 / Leadership</p><h2 id="leadership-title">The standard.<br /><em>Every night.</em></h2></div>
+            <p>Leading the room. Setting the tone.<br />Our captain and assistant, on the ice and behind the crest.</p>
+          </div>
+          <div className="roster-leader-list">
+            {ROSTER_LEADERS.map(({ name, letter, role }) => (
+              <article className="roster-leader" key={letter}>
+                <span className="roster-leader-letter" aria-hidden="true">{letter}</span>
+                <div className="roster-leader-name">
+                  <p className="roster-eyebrow">{role} / 2026–2027</p>
+                  <h3>{name}</h3>
+                </div>
+                <p className="roster-leader-description">
+                  {letter === "C"
+                    ? "Xavier Laflamme captains Bardownski. The playmaker at the heart of the attack, wearing the C and setting the standard every shift."
+                    : "Matt Hut wears the A. A scorer with a lethal release, helping lead the room and keeping the pressure on in the offensive zone."}
+                </p>
+              </article>
+            ))}
+          </div>
         </div>
-        <div className="roster-letters">
-          {ANNOUNCED_LEADERS.map(({ name, letter, role }, index) => (
-            <article key={letter}>
-              <span className="letter-index">0{index + 1} / {role}</span>
-              <b aria-hidden="true">{letter}</b>
-              <h3>{name}</h3>
-              <p>{name} will wear the {letter} as Bardownski’s {role.toLowerCase()} for 2026–2027.</p>
-              <span className="roster-tag">LEADERSHIP · ANNOUNCED</span>
-            </article>
-          ))}
-          <article>
-            <span className="letter-index">03 / The reveal film</span>
-            <b aria-hidden="true">↗</b>
-            <h3>New jerseys. Same club.</h3>
-            <p>See the leadership introductions and the home, away and alternate looks in the full {SEASON_REVEAL.durationLabel} film.</p>
-            <Link className="roster-tag" href={`/news/${SEASON_REVEAL.articleId}`}>WATCH THE REVEAL ↗</Link>
-          </article>
-        </div>
-        <p className="roster-fine">The film confirms Xavier Laflamme as captain and Matt Hut as assistant captain. Returning profiles retain their archived 2025–2026 totals; the 2026–2027 lineup and jersey numbers are not yet final.</p>
       </section>
 
-      <section className="roster-closing">
-        <p className="eyebrow">NEW COLORS. SAME BARDOWNSKI.</p>
-        <h2>Same club.<br /><em>Next chapter.</em></h2>
-        <Link className="button" href="/">Visit the new-season hub ↗</Link>
+      <section className="roster-outro club-mark-panel" aria-labelledby="roster-outro-title">
+        <div className="roster-inner">
+          <p className="roster-eyebrow">The season keeps moving.</p>
+          <h2 id="roster-outro-title">Same room.<br /><em>Back to work.</em></h2>
+          <div className="roster-outro-links">
+            <Link className="roster-text-link" href="/matches">Follow the games <span aria-hidden="true">↗</span></Link>
+            <Link href="/stats">Player stats <span aria-hidden="true">↗</span></Link>
+          </div>
+        </div>
       </section>
     </div>
   );

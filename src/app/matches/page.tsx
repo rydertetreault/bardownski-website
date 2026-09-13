@@ -1,4 +1,6 @@
-import "./matches-archive.css";
+import "./matches-hub.css";
+import "./match-report.css";
+import "./opponent-crest.css";
 import MatchesClient from "./MatchesClient";
 import type { Metadata } from "next";
 import { FROZEN_CHELSTATS } from "@/lib/chelstats-frozen";
@@ -11,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "2026–2027 Match Centre | Bardownski Hockey",
-  description: "Follow the next Bardownski season: match results and tracking, with saved 2025–2026 results kept in a separate archive.",
+  description: "Explore recent Bardownski results, win streaks and in-depth match reports, plus the 2025–2026 match archive.",
 };
 
 export default async function MatchesPage() {
@@ -28,6 +30,8 @@ export default async function MatchesPage() {
     timestamp: m.timestamp,
     date: m.date,
     opponent: m.opponent,
+    opponentClubId: m.opponentClubId,
+    opponentCrest: m.opponentCrest,
     homeAway: m.homeAway,
     scoreUs: m.scoreUs,
     scoreThem: m.scoreThem,

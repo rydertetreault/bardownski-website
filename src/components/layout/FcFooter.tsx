@@ -3,13 +3,15 @@ import Link from "next/link";
 
 export default function FcFooter() {
   return (
-    <footer
+    <div
+      className="fc-page-signoff"
+      aria-label="Bardownski FC club information"
       style={{
         backgroundColor: "var(--fc-bg-dark)",
         borderTop: "1px solid var(--fc-border)",
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="site-content-container py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <h3 className="text-xl font-black tracking-tighter mb-4 text-white">
@@ -83,6 +85,6 @@ export default function FcFooter() {
           &copy; {new Date().getFullYear()} Bardownski FC. All rights reserved.
         </div>
       </div>
-    </footer>
+    </div>
   );
 }

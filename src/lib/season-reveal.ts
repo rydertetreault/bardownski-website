@@ -8,8 +8,9 @@ export const SEASON_REVEAL = {
   title: "Bardownski 2027: New Jerseys, New Leadership, Same Club",
   date: "2026-09-13",
   videoSrc: "/videos/announcements/bardownski-2027.mp4",
-  poster: "/images/announcements/bardownski-2027.webp",
-  posterAlt: "Bardownski 2027 home, away and alternate uniforms in teal, off-white and purple, shown together in the reveal film",
+  // Use the requested 0:05 title-card still, never the retired uniform lineup artwork.
+  poster: "/images/announcements/bardownski-2027-00-05.webp",
+  posterAlt: "White Bardownski logo above Bardownski Hockey Club and NHL 27 lettering on a dark background",
   captionsSrc: "/videos/announcements/bardownski-2027.en.vtt",
   durationSeconds: 155.066667,
   durationLabel: "2:35",

@@ -50,7 +50,7 @@ function FeaturedCard({ match }: { match: Match }) {
         <div className="flex flex-col items-center gap-1.5">
           <div className="relative w-11 h-11 shrink-0">
             <Image
-              src="/images/logo/BD - logo.png"
+              data-brand-mark src="/images/logo/BD - logo.png"
               alt="BD"
               fill
               className="object-contain"
@@ -240,7 +240,7 @@ function CompactMatch({ match }: { match: Match }) {
         <div className="flex items-center gap-2">
           <div className="relative w-4 h-4 shrink-0">
             <Image
-              src="/images/logo/BD - logo.png"
+              data-brand-mark src="/images/logo/BD - logo.png"
               alt=""
               fill
               className="object-contain"

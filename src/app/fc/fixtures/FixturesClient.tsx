@@ -1,5 +1,7 @@
 "use client";
 
+import { getNickname } from "@/lib/nicknames";
+
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { FcClubMatch, FcMatchPlayer } from "@/lib/fcstats";
@@ -33,7 +35,7 @@ function PlayerRow({ p }: { p: FcMatchPlayer }) {
         {p.position.slice(0, 3)}
       </span>
       <span className="flex-1 min-w-0 font-semibold text-white truncate">
-        {p.name}
+        {getNickname(p.name)}
         {p.mom && (
           <span
             className="ml-2 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider align-middle"

@@ -2333,7 +2333,7 @@
   max-width: 480px;
 }
 :where(.bd-home) .film-weekly .weekly-image:after {
-  content: "PLAYER OF THE WEEK / CLUB ARCHIVE";
+  content: "PLAYER OF THE WEEK / 2026–2027";
   position: absolute;
   top: 30px;
   left: 0;
@@ -4490,7 +4490,7 @@
   object-position: center 25%;
 }
 :where(.bd-home).hybrid .cut-weekly .weekly-image:after {
-  content: "PLAYER OF THE WEEK / CLUB ARCHIVE";
+  content: "PLAYER OF THE WEEK / 2026–2027";
   position: absolute;
   top: 25px;
   left: 25px;

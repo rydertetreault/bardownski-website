@@ -221,7 +221,12 @@ export function initRefinedMotion(runtime, refreshBase = () => {}) {
       height = main.scrollHeight;
     set(thread, "viewBox", `0 0 ${width} ${height}`);
     thread.style.height = height + "px";
-    const gutter = Math.max(11, width * 0.028),
+    // Keep the decorative side rule beside the readable content rail, not
+    // stranded at the edge of an ultrawide screen. No change to section paint.
+    const pageStyle = getComputedStyle(root);
+    const contentMax = parseFloat(pageStyle.getPropertyValue("--site-content-max")) || 1280;
+    const edgeGap = parseFloat(pageStyle.getPropertyValue("--site-gutter")) || 20;
+    const gutter = Math.max(11, Math.max(edgeGap, (width - contentMax) / 2) - 22),
       far = width - gutter;
     sections.forEach((el, i) => {
       const b = el.getBoundingClientRect(),
@@ -232,7 +237,7 @@ export function initRefinedMotion(runtime, refreshBase = () => {}) {
       const right = el.matches(".cut-interlude,.cut-highlights,.awards-shelf"),
         x = right ? far : gutter,
         turn = el.matches(".awards-shelf");
-      const lengthX = width < 700 ? width * 0.09 : width * 0.17;
+      const lengthX = width < 700 ? width * 0.09 : Math.min(width, contentMax) * 0.17;
       const end = top + height - 18,
         start = top + 18;
       const d = turn

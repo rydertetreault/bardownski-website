@@ -1,13 +1,14 @@
-/* Comparison-only controls and charts, owned by the standalone /lab route. */
+/* Comparison-only controls and charts. Shared select styling is self-contained. */
 .comparison-lab {
   --lab-a: #68c8ce;
   --lab-b: #d2aceb;
-  --lab-gutter: clamp(16px, 2.5vw, 64px);
+  --lab-matchup-bg: #12383e;
+  --lab-display-bg: #0b0c0d;
+  --lab-gutter: clamp(20px, 4vw, 72px);
   width: 100%;
-  max-width: none;
   background: #0b0c0d;
   color: #f0efeb;
-  border-top: 1px solid #68c8ce66;
+  border-top: 1px solid #ffffff26;
   scroll-margin-top: calc(var(--site-header-height, 126px) + 16px);
 }
 .comparison-lab .lab-sr-only {
@@ -21,21 +22,20 @@
   white-space: nowrap;
   border: 0;
 }
-.comparison-lab button,
-.comparison-lab select {
-  font: inherit;
-}
 .comparison-lab button {
+  font: inherit;
   cursor: pointer;
 }
-.comparison-lab button:disabled,
-.comparison-lab select:disabled {
+.comparison-lab button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-.comparison-lab :is(button, select, summary, [tabindex]):focus-visible {
+.comparison-lab :is(button, summary, [tabindex]):focus-visible {
   outline: 3px solid #f0efeb;
   outline-offset: 4px;
+}
+.comparison-lab .lab-select :is(button, input):focus-visible {
+  outline: none; /* The shared control draws a complete focus-within ring. */
 }
 .comparison-lab .lab-side-a {
   --side: var(--lab-a);
@@ -45,243 +45,372 @@
   --side: var(--lab-b);
   color: var(--lab-b);
 }
+.comparison-lab .lab-selection .lab-select {
+  --lab-select-accent: var(--side);
+}
 .comparison-lab .lab-kicker {
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 1.8px;
   line-height: 1.5;
-  color: #a6c8cf;
+  color: #68c8ce;
 }
 .comparison-lab .lab-header {
-  background: #006775;
-  padding: 32px var(--lab-gutter);
-  border-bottom: 4px solid #320d48;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 40px;
+  align-items: center;
+  background: #f0efeb;
+  color: #0b0c0d;
+  padding: clamp(36px, 5vw, 76px) var(--lab-gutter);
+  border-bottom: 6px solid #006775;
 }
-.comparison-lab .lab-header .lab-kicker,
-.comparison-lab .lab-header-meta {
-  color: #f0efeb;
+.comparison-lab .lab-header .lab-kicker {
+  color: #006775;
 }
 .comparison-lab .lab-header-copy {
   max-width: 1000px;
 }
 .comparison-lab .lab-header h2 {
-  font-size: clamp(36px, 4vw, 56px);
-  font-weight: 950;
-  letter-spacing: -1px;
-  line-height: 1.05;
-  margin: 12px 0;
+  font-size: clamp(56px, 7vw, 112px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+  margin: 20px 0 22px;
 }
 .comparison-lab .lab-header h2 em {
-  color: var(--lab-a);
+  color: #006775;
 }
 .comparison-lab .lab-header-copy > p:not(.lab-kicker) {
-  color: #f0efeb;
-  font-size: 14px;
-  line-height: 1.8;
+  max-width: 46ch;
+  color: #425053;
+  font-size: 15px;
+  line-height: 1.7;
+  text-wrap: pretty;
 }
 .comparison-lab .lab-header-meta {
   display: flex;
-  gap: 25px;
+  gap: 12px 24px;
   flex-wrap: wrap;
-  margin-top: 28px;
-  color: #f0efeb;
-  font-size: 8px;
-  letter-spacing: 1.5px;
+  margin-top: 30px;
+  color: #320d48;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+  line-height: 1.5;
+}
+.comparison-lab .lab-header-meta span + span {
+  border-left: 1px solid #320d4840;
+  padding-left: 24px;
+}
+.comparison-lab .lab-header-mark {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: baseline;
+  gap: 10px;
+  padding-left: clamp(30px, 5vw, 80px);
+  border-left: 1px solid #0b0c0d26;
+  font-family: LabBarlow, "Arial Narrow", Impact, sans-serif;
+  font-size: clamp(90px, 12vw, 190px);
+  font-weight: 800;
+  line-height: 0.85;
+}
+.comparison-lab .lab-header-mark > span:first-child {
+  color: #006775;
+}
+.comparison-lab .lab-header-mark > span:nth-child(3) {
+  color: #320d48;
+}
+.comparison-lab .lab-header-mark i {
+  font-size: 0.2em;
+  font-style: normal;
+  text-transform: uppercase;
+}
+.comparison-lab .lab-header-mark small {
+  grid-column: 1 / -1;
+  margin-top: 18px;
+  font: 700 9px/1.5 Arial, Helvetica, sans-serif;
+  letter-spacing: 1.2px;
+  text-align: center;
 }
 .comparison-lab .lab-console {
   width: 100%;
-  max-width: none;
-  padding: 32px var(--lab-gutter) 38px;
+}
+/* Full-width colour chapters separate choosing the matchup from reading it.
+   Keep the player identities and charts open, without bringing back cards. */
+.comparison-lab .lab-matchup-setup {
+  background: var(--lab-matchup-bg);
+  padding: clamp(28px, 4vw, 56px) var(--lab-gutter);
+  border-bottom: 1px solid #68c8ce40;
+}
+.comparison-lab .lab-analysis-display {
+  background: var(--lab-display-bg);
+  padding: 20px var(--lab-gutter) 40px;
 }
 .comparison-lab .lab-topline {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 24px;
-  margin-bottom: 23px;
+  margin-bottom: clamp(28px, 4vw, 56px);
 }
-.comparison-lab .lab-topline > div > p + p {
-  color: #b3c0c9;
-  font-size: 12px;
-  line-height: 1.8;
-  margin-top: 8px;
+.comparison-lab .lab-matchup-title {
+  margin: 0;
+  color: #a5babc;
+  font: 700 11px/1.5 Arial, Helvetica, sans-serif;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
 }
 .comparison-lab .lab-toggle {
   display: flex;
   flex-shrink: 0;
-  border: 1px solid #ffffff29;
-  padding: 4px;
+  flex-wrap: wrap;
   gap: 4px;
-  background: #0b0c0d;
 }
 .comparison-lab .lab-toggle button {
-  border: 0;
-  color: #b8c7d0;
+  min-height: 44px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 10px 18px;
+  color: #a5babc;
   background: transparent;
-  padding: 11px 16px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  min-height: 40px;
 }
 .comparison-lab .lab-toggle button[aria-pressed="true"] {
-  background: #006775;
-  color: #edf9fa;
+  border-color: #ffffff38;
+  background: #f0efeb;
+  color: #0b0c0d;
 }
-.comparison-lab .lab-toggle button:hover {
-  background: #1c333e;
-  color: #fff;
+.comparison-lab .lab-toggle button:hover:not([aria-pressed="true"]) {
+  color: #f0efeb;
+  border-color: #ffffff38;
 }
 .comparison-lab .lab-selections {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 56px minmax(0, 1fr);
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr) 96px minmax(0, 1fr);
+  align-items: stretch;
+  gap: clamp(8px, 1.5vw, 24px);
 }
 .comparison-lab .lab-selection {
   display: flex;
-  align-items: center;
-  gap: 22px;
+  flex-direction: column;
   min-width: 0;
   margin: 0;
-  padding: 22px;
-  border: 1px solid #68c8ce44;
-  border-left: 3px solid var(--side);
-  background: #101b1e;
+  padding: 0;
+  border: 0;
 }
-.comparison-lab .lab-selection.lab-side-b {
-  border-color: #d2aceb44;
-  border-left-color: var(--lab-b);
-  background: #320d48;
+.comparison-lab .lab-side-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  color: #a5babc;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
 }
-.comparison-lab .lab-side-badge {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 60px;
-  border: 1px solid currentColor;
-  font-size: 34px;
-  font-weight: 900;
-  flex-shrink: 0;
+.comparison-lab .lab-side-label > span {
+  color: var(--side);
+  border-bottom: 2px solid var(--side);
+  padding-bottom: 3px;
 }
-.comparison-lab .lab-selection-fields {
+.comparison-lab .lab-player-picker {
   flex: 1;
   min-width: 0;
-  display: grid;
-  grid-template-columns: minmax(110px, 0.65fr) minmax(0, 1.5fr);
-  gap: 10px 16px;
 }
-.comparison-lab .lab-selection-fields label,
-.comparison-lab .lab-metric-select label {
-  display: block;
-  font-size: 10px;
-  color: #bac7d0;
-  margin-bottom: 8px;
+.comparison-lab .lab-player-picker .lab-select-control {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
-.comparison-lab .lab-selection-fields select,
-.comparison-lab .lab-metric-select select {
+.comparison-lab .lab-player-picker .lab-select-trigger {
+  padding: 0;
+  min-height: 100px;
+  color: var(--side);
+  border-radius: 0;
+}
+.comparison-lab .lab-player-picker .lab-select-trigger > span:first-child {
+  white-space: normal;
+  overflow: visible;
+}
+.comparison-lab .lab-player-picker .lab-select-chevron {
+  display: none;
+}
+.comparison-lab .lab-player-identity {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(16px, 2vw, 30px);
   width: 100%;
   min-width: 0;
-  border: 1px solid #ffffff30;
-  border-radius: 0;
-  background: #0b0c0d;
-  color: #eff2f3;
-  padding: 12px 8px;
-  font-size: 12px;
-  cursor: pointer;
+  white-space: normal;
 }
-.comparison-lab .lab-selection-fields select:hover {
+.comparison-lab .lab-player-number {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--side);
+}
+.comparison-lab .lab-player-number small {
+  font: 700 9px/1.5 Arial, Helvetica, sans-serif;
+  letter-spacing: 1.1px;
+}
+.comparison-lab .lab-player-number strong {
+  font: 800 clamp(64px, 7vw, 108px)/0.85 LabBarlow, "Arial Narrow", Impact, sans-serif;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+.comparison-lab .lab-player-copy {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+.comparison-lab .lab-player-name {
+  color: #f0efeb;
+  font: 800 clamp(38px, 4.2vw, 68px)/0.98 LabBarlow, "Arial Narrow", Impact, sans-serif;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+.comparison-lab .lab-player-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #ffffff38;
+  color: var(--side);
+  font: 600 12px/1.5 Arial, Helvetica, sans-serif;
+}
+.comparison-lab .lab-player-picker .lab-select-control:is(:hover, :focus-within) .lab-player-name {
+  color: var(--side);
+}
+.comparison-lab .lab-player-picker .lab-select-control:is(:hover, :focus-within) .lab-player-change {
   border-color: var(--side);
 }
-.comparison-lab .lab-snapshot {
-  grid-column: 1/-1;
+.comparison-lab .lab-player-meta {
   display: flex;
-  justify-content: space-between;
-  gap: 14px;
-  font-size: 9px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin-top: 28px;
+}
+.comparison-lab .lab-season-picker {
+  width: 170px;
+  max-width: 100%;
+}
+.comparison-lab .lab-season-picker .lab-select-control {
+  border: 1px solid #ffffff38;
+  border-radius: 999px;
+  background: transparent;
+}
+.comparison-lab .lab-season-picker .lab-select-trigger {
+  padding-left: 16px;
+  font-size: 12px;
+  border-radius: 999px;
+}
+.comparison-lab .lab-player-context {
+  color: #a5babc;
+  font-size: 11px;
   line-height: 1.6;
 }
-.comparison-lab .lab-snapshot span:last-child {
-  color: #aebdc8;
-  text-align: right;
+.comparison-lab .lab-player-context strong {
+  color: #f0efeb;
+  font-weight: 700;
 }
 .comparison-lab .lab-swap {
-  width: 40px;
-  height: 44px;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  align-self: center;
   justify-self: center;
-  border: 1px solid #ffffff30;
-  color: #dce7ed;
-  background: #0b0c0d;
-  font-size: 24px !important;
+  border: 1px solid #ffffff38;
+  border-radius: 50%;
+  color: #f0efeb;
+  background: transparent;
 }
-.comparison-lab .lab-swap:hover {
+.comparison-lab .lab-swap:hover:not(:disabled) {
   border-color: var(--lab-a);
+  color: var(--lab-a);
+  background: #68c8ce0d;
 }
 .comparison-lab .lab-availability {
-  color: #aabac7;
-  font-size: 10px;
+  margin: 20px 0 0;
+  padding: 12px 16px;
+  border-left: 2px solid var(--lab-b);
+  color: #d9c6e8;
+  background: #320d4830;
+  font-size: 12px;
   line-height: 1.8;
-  margin: 14px 0 0;
 }
 .comparison-lab .lab-view-bar {
   display: flex;
   gap: 24px;
   justify-content: space-between;
   align-items: center;
-  margin-top: 30px;
-  border-block: 1px solid #ffffff24;
-  padding: 14px 0;
+  margin-top: 0;
+  border-bottom: 1px solid #ffffff26;
 }
 .comparison-lab .lab-views {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: clamp(12px, 2vw, 32px);
 }
 .comparison-lab .lab-views button {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  color: #b5c4d0;
-  padding: 18px;
-  border: 1px solid transparent;
+  gap: 10px;
+  min-height: 68px;
+  padding: 18px 0;
+  border: 0;
+  border-bottom: 3px solid transparent;
   background: transparent;
+  color: #a5babc;
   font-size: 12px;
   font-weight: 700;
-  min-height: 58px;
 }
 .comparison-lab .lab-views button[aria-pressed="true"] {
-  border-color: #68c8ce80;
-  background: #68c8ce14;
+  border-bottom-color: var(--lab-a);
   color: var(--lab-a);
 }
 .comparison-lab .lab-views button:hover {
-  background: #ffffff09;
-  color: #fff;
+  color: #f0efeb;
 }
 .comparison-lab .lab-view-number {
-  font-size: 8px;
-  opacity: 0.75;
+  font-size: 9px;
   align-self: start;
+  font-variant-numeric: tabular-nums;
 }
 .comparison-lab .lab-chart-controls {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 16px;
-  min-height: 64px;
-  padding: 15px 0;
+  gap: 20px;
+  min-height: 70px;
+  padding: 20px 0;
 }
 .comparison-lab .lab-chart-controls > p {
-  font-size: 11px;
-  color: #aebdca;
+  color: #a5babc;
+  font-size: 12px;
   line-height: 1.8;
 }
 .comparison-lab .lab-chart-controls > div:not(.lab-metric-select) {
   display: flex;
-  gap: 14px;
+  gap: 16px;
 }
 .comparison-lab .lab-metric-select {
-  min-width: 155px;
+  min-width: 180px;
 }
 .comparison-lab .lab-notice {
   border-left: 2px solid var(--lab-b);
@@ -293,9 +422,7 @@
   margin: 0 0 18px;
 }
 .comparison-lab .lab-results {
-  background: #101b1e;
-  border: 1px solid #ffffff1c;
-  padding: 28px;
+  padding: clamp(24px, 3vw, 44px) 0 0;
 }
 .comparison-lab .lab-result-heading {
   display: flex;
@@ -304,49 +431,53 @@
   align-items: center;
 }
 .comparison-lab .lab-result-heading .lab-kicker {
-  font-size: 8px;
-  color: #9db4c7;
+  color: #a5babc;
+  font-size: 10px;
 }
 .comparison-lab .lab-result-heading h3 {
-  font-size: clamp(24px, 2.2vw, 34px);
+  margin-top: 12px;
+  font-size: clamp(30px, 3vw, 44px);
   font-weight: 800;
-  letter-spacing: -0.8px;
-  margin-top: 8px;
-  line-height: 1.2;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  text-transform: uppercase;
 }
 .comparison-lab .lab-chart-index {
-  font-size: 15px;
-  font-weight: 700;
-  color: #91a9bd;
+  color: #68c8ce;
+  font-family: LabBarlow, "Arial Narrow", Impact, sans-serif;
+  font-size: 32px;
+  font-weight: 800;
   white-space: nowrap;
 }
 .comparison-lab .lab-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 30px;
-  margin: 22px 0;
-  border-bottom: 1px solid #ffffff20;
-  padding-bottom: 22px;
+  gap: 20px 40px;
+  margin: 28px 0;
+  border-bottom: 1px solid #ffffff26;
+  padding-bottom: 26px;
 }
 .comparison-lab .lab-legend > p {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 11px;
+  gap: 12px;
+  font-size: 14px;
   font-weight: 700;
   line-height: 1.5;
 }
 .comparison-lab .lab-legend small {
   display: block;
-  color: #a9bbc9;
+  margin-top: 2px;
+  color: #a5babc;
   font-weight: 400;
-  font-size: 10px;
+  font-size: 11px;
 }
 .comparison-lab .lab-legend b {
   border-right: 1px solid #ffffff33;
-  padding-right: 10px;
+  padding-right: 12px;
 }
 .comparison-lab .lab-legend-symbol {
+  flex-shrink: 0;
   width: 9px;
   height: 9px;
   background: var(--side);
@@ -362,18 +493,16 @@
 }
 .comparison-lab .lab-plot {
   min-width: 0;
-  background: #0b0c0d;
-  border: 1px solid #ffffff0d;
-  padding: 18px 20px;
+  padding: 18px 0;
 }
 .comparison-lab .lab-plot-caption {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 10px;
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 1.3px;
-  color: #93aebf;
+  color: #a5babc;
 }
 .comparison-lab .lab-radar-svg {
   display: block;
@@ -433,8 +562,8 @@
   stroke-width: 2px;
 }
 .comparison-lab .lab-chart-note {
-  color: #9fb3c4;
-  font-size: 11px;
+  color: #a5babc;
+  font-size: 12px;
   line-height: 1.85;
   margin-top: 18px;
 }
@@ -453,14 +582,13 @@
   color: var(--lab-a);
 }
 .comparison-lab .lab-aside-copy {
-  color: #b2c2cf;
+  color: #a5babc;
   font-size: 12px;
   line-height: 1.9;
 }
 .comparison-lab .lab-inspector {
-  padding: 20px;
+  padding: 6px 0 6px 20px;
   border-left: 2px solid var(--lab-a);
-  background: #68c8ce09;
   margin: 25px 0;
 }
 .comparison-lab .lab-inspector > span {
@@ -470,7 +598,7 @@
   line-height: 1.6;
 }
 .comparison-lab .lab-inspector small {
-  color: #aabfcd;
+  color: #a5babc;
   font-size: 10px;
 }
 .comparison-lab .lab-inspector > div {
@@ -495,7 +623,7 @@
 }
 .comparison-lab .lab-inspector dt {
   font-size: 11px;
-  color: #adc0cf;
+  color: #a5babc;
 }
 .comparison-lab .lab-inspector dd {
   font-size: 17px;
@@ -524,7 +652,7 @@
   padding-left: 0;
 }
 .comparison-lab .lab-axis-table thead th {
-  color: #9bb4c7;
+  color: #a5babc;
   font-size: 9px;
   font-weight: 700;
   text-transform: uppercase;
@@ -541,9 +669,8 @@
 }
 .comparison-lab .lab-bar-chart {
   min-width: 0;
-  background: #0b0c0d;
-  border: 1px solid #ffffff18;
-  padding: 20px 14px 10px;
+  border-top: 1px solid #ffffff26;
+  padding: 20px 0 10px;
 }
 .comparison-lab .lab-bar-chart figcaption {
   display: flex;
@@ -556,7 +683,7 @@
 }
 .comparison-lab .lab-bar-chart figcaption span {
   font-size: 10px;
-  color: #a7bdce;
+  color: #a5babc;
 }
 .comparison-lab .lab-bar-chart svg {
   width: 100%;
@@ -570,8 +697,8 @@
 .comparison-lab .lab-data summary {
   cursor: pointer;
   padding: 20px 0 0;
-  font-size: 11px;
-  color: #b7cbd8;
+  font-size: 13px;
+  color: #f0efeb;
 }
 .comparison-lab .lab-data summary > span {
   float: right;
@@ -586,17 +713,17 @@
   justify-content: space-between;
   gap: 40px;
   margin-top: 26px;
-  color: #96aebf;
+  color: #a5babc;
 }
 .comparison-lab .lab-footnote > span {
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 1.6px;
   flex-shrink: 0;
   line-height: 1.8;
 }
 .comparison-lab .lab-footnote p {
   max-width: 850px;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.8;
 }
 .comparison-lab .lab-empty {
@@ -607,7 +734,7 @@
   font-size: 24px;
 }
 .comparison-lab .lab-empty p {
-  color: #b3c3d0;
+  color: #a5babc;
   font-size: 13px;
   margin-top: 18px;
 }
@@ -623,15 +750,13 @@
   }
 }
 @media (max-width: 1100px) {
-  .comparison-lab .lab-side-badge {
-    display: none;
-  }
-  .comparison-lab .lab-selection {
-    padding: 18px;
+  .comparison-lab .lab-header-mark {
+    padding-left: 30px;
+    font-size: 100px;
   }
   .comparison-lab .lab-views button {
     gap: 8px;
-    padding: 14px 12px;
+    padding: 14px 0;
   }
   .comparison-lab .lab-view-number {
     display: none;
@@ -640,17 +765,21 @@
     gap: 24px;
     grid-template-columns: minmax(0, 1.5fr) minmax(250px, 1fr);
   }
-  .comparison-lab .lab-results {
-    padding: 22px;
-  }
   .comparison-lab .lab-grouped-bars {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 @media (max-width: 850px) {
+  .comparison-lab .lab-header {
+    grid-template-columns: 1fr;
+  }
+  .comparison-lab .lab-header-mark {
+    display: none;
+  }
   .comparison-lab .lab-view-bar {
     flex-wrap: wrap;
-    gap: 14px;
+    gap: 18px;
+    padding-bottom: 18px;
   }
   .comparison-lab .lab-views {
     width: 100%;
@@ -674,74 +803,46 @@
     flex-direction: column;
     gap: 12px;
   }
-  .comparison-lab .lab-selection-fields {
-    grid-template-columns: 1fr;
-  }
-  .comparison-lab .lab-snapshot {
-    flex-direction: column;
-    gap: 2px;
-  }
-  .comparison-lab .lab-snapshot span:last-child {
-    text-align: left;
-  }
 }
 @media (max-width: 600px) {
   .comparison-lab .lab-header {
     padding: 32px var(--lab-gutter);
   }
   .comparison-lab .lab-header h2 {
-    font-size: clamp(37px, 10vw, 58px);
-    letter-spacing: -2px;
+    font-size: clamp(48px, 12vw, 72px);
+    letter-spacing: -0.035em;
   }
   .comparison-lab .lab-header-copy > p:not(.lab-kicker) {
-    font-size: 12px;
-    max-width: 280px;
+    font-size: 14px;
+    max-width: 34ch;
   }
   .comparison-lab .lab-header-meta {
     gap: 12px;
-    font-size: 7px;
+    font-size: 9px;
+  }
+  .comparison-lab .lab-header-meta span + span {
+    padding-left: 12px;
   }
   .comparison-lab .lab-console {
     padding-top: 24px;
   }
   .comparison-lab .lab-topline {
-    flex-direction: column;
-    align-items: start;
-    gap: 18px;
+    gap: 12px;
   }
-  .comparison-lab .lab-topline > div > p + p {
+  .comparison-lab .lab-matchup-title {
+    font-size: 9px;
+    letter-spacing: 1px;
+  }
+  .comparison-lab .lab-toggle button {
+    padding-inline: 13px;
     font-size: 11px;
-  }
-  .comparison-lab .lab-selections {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-  .comparison-lab .lab-selection-fields {
-    grid-template-columns: minmax(95px, 0.65fr) minmax(0, 1.4fr);
-    gap: 10px;
-  }
-  .comparison-lab .lab-selection {
-    padding: 16px;
-  }
-  .comparison-lab .lab-selection-fields select {
-    font-size: 11px;
-    padding-inline: 5px;
-  }
-  .comparison-lab .lab-swap {
-    height: 36px;
-  }
-  .comparison-lab .lab-snapshot {
-    flex-direction: row;
-  }
-  .comparison-lab .lab-snapshot span:last-child {
-    text-align: right;
   }
   .comparison-lab .lab-views {
     gap: 4px;
   }
   .comparison-lab .lab-views button {
-    font-size: 9px;
-    padding: 13px 3px;
+    font-size: 11px;
+    padding: 16px 3px;
   }
   .comparison-lab .lab-chart-controls {
     align-items: start;
@@ -758,33 +859,33 @@
     flex-basis: 100%;
   }
   .comparison-lab .lab-results {
-    padding: 20px 12px;
+    padding-top: 24px;
   }
   .comparison-lab .lab-result-heading {
     gap: 12px;
   }
   .comparison-lab .lab-chart-index {
-    font-size: 11px;
+    font-size: 24px;
   }
   .comparison-lab .lab-result-heading .lab-kicker {
-    font-size: 7px;
+    font-size: 9px;
     letter-spacing: 1px;
   }
   .comparison-lab .lab-result-heading h3 {
-    font-size: 23px;
+    font-size: 29px;
   }
   .comparison-lab .lab-legend {
     gap: 18px;
     flex-direction: column;
   }
   .comparison-lab .lab-legend > p {
-    font-size: 10px;
+    font-size: 13px;
   }
   .comparison-lab .lab-plot {
-    padding: 14px 4px;
+    padding: 14px 0;
   }
   .comparison-lab .lab-plot-caption {
-    font-size: 7px;
+    font-size: 9px;
     letter-spacing: 0.5px;
     padding: 0 8px;
   }
@@ -807,7 +908,7 @@
     gap: 14px;
   }
   .comparison-lab .lab-bar-chart {
-    padding: 18px 12px 8px;
+    padding: 18px 0 8px;
   }
   .comparison-lab .lab-axis-table {
     font-size: 11px;
@@ -822,16 +923,7 @@
     font-size: 19px;
   }
 }
-@media (max-width: 360px) {
-  .comparison-lab .lab-selection-fields {
-    grid-template-columns: 1fr;
-  }
-  .comparison-lab .lab-snapshot {
-    flex-direction: column;
-  }
-  .comparison-lab .lab-snapshot span:last-child {
-    text-align: left;
-  }
+@media (max-width: 400px) {
   .comparison-lab .lab-result-heading {
     align-items: start;
   }
@@ -877,3 +969,49 @@
     font-size: 18px;
   }
 }
+
+@media (max-width: 1100px) and (min-width: 701px) {
+  .comparison-lab .lab-selections {
+    grid-template-columns: minmax(0, 1fr) 56px minmax(0, 1fr);
+  }
+  .comparison-lab .lab-player-identity {
+    gap: 16px;
+  }
+  .comparison-lab .lab-player-name {
+    font-size: clamp(34px, 4.4vw, 48px);
+  }
+  .comparison-lab .lab-player-number strong {
+    font-size: 64px;
+  }
+}
+@media (max-width: 700px) {
+  .comparison-lab .lab-selections {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
+  }
+  .comparison-lab .lab-player-name {
+    font-size: clamp(38px, 8vw, 56px);
+  }
+  .comparison-lab .lab-player-number strong {
+    font-size: clamp(72px, 14vw, 100px);
+  }
+  .comparison-lab .lab-player-identity {
+    gap: 24px;
+  }
+  .comparison-lab .lab-player-meta {
+    margin-top: 20px;
+  }
+  .comparison-lab .lab-swap {
+    width: 48px;
+    height: 48px;
+  }
+  .comparison-lab .lab-swap svg {
+    transform: rotate(90deg);
+  }
+  .comparison-lab .lab-analysis-display {
+    padding-top: 12px;
+  }
+}
+
+/* Keep selection controls and comparison charts on the shared site rail. */
+.player-lab .comparison-lab { --lab-gutter: max(var(--site-gutter), calc((100cqw - var(--site-content-max)) / 2)); }

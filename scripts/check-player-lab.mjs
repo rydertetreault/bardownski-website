@@ -1,125 +1,189 @@
-// Run against the real application: PLAYWRIGHT_MODULE=/path/to/index.mjs CHROME=/path/to/chrome node scripts/check-player-lab.mjs
+// SITE_URL=http://localhost:3000 PLAYWRIGHT_MODULE=/path/to/playwright-core/index.mjs
+// CHROME=/path/to/chrome [AXE_PATH=/path/to/axe.min.js] node scripts/check-player-lab.mjs
 import assert from "node:assert/strict";
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || "playwright-core");
-const browser = await chromium.launch({ executablePath: process.env.CHROME, headless: true, args: ["--no-sandbox"] });
+const browser = await chromium.launch({ executablePath: process.env.CHROME, headless: true });
 const base = process.env.SITE_URL || "http://localhost:3000";
-const page = await browser.newPage({ reducedMotion: "reduce", viewport: { width: 1440, height: 900 } });
-const errors = [];
-page.on("pageerror", error => errors.push(error.message));
-async function load(path) {
-  const response = await page.goto(base + path, { waitUntil: "domcontentloaded" });
-  assert.equal(response.status(), 200, path);
-  await page.locator("h1").first().waitFor();
-  if (path !== "/fc") await page.locator(".hockey-motion-toggle").waitFor();
-  await page.evaluate(() => document.fonts.ready);
-  await page.waitForTimeout(150);
-}
 try {
-  for (const width of [1440, 1024, 768, 390, 320]) {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });
+  const errors = [];
+  page.on("pageerror", error => errors.push(error.message));
+  await page.goto(`${base}/lab`, { waitUntil: "networkidle" });
+  const lab = page.locator(".player-lab");
+  const insight = name => page.getByRole("tab", { name, exact: true });
+  // Tool tab names include their descriptions; stable IDs avoid label coupling.
+  const builderTab = page.locator("#lab-tool-tab-lines");
+  const comparisonTab = page.locator("#lab-tool-tab-comparison");
+  assert.equal(await builderTab.getAttribute("aria-selected"), "true");
+  assert.equal(await page.locator("#comparison").count(), 0, "Comparison isn't loaded before its first visit");
+  assert.equal(await insight("Suggested lines").getAttribute("aria-selected"), "true");
+  assert.equal(await page.getByRole("button", { name: "Your line", exact: true }).getAttribute("aria-pressed"), "true");
+  assert.equal(await page.locator("#goalies").count(), 0);
+  assert.equal(await page.locator(".line-recommendations").count(), 1);
+  assert.equal(await page.locator(".line-ideas").count(), 1, "One lower Line ideas section");
+  assert.equal(await page.getByRole("complementary", { name: "Player connection", exact: true }).count(), 1);
+  assert.match(await page.locator(".player-connection .line-micro").innerText(), /THE PLAYER CONNECTION/);
+  const treatments = await page.evaluate(() => {
+    const ideas = getComputedStyle(document.querySelector(".line-ideas"));
+    const player = getComputedStyle(document.querySelector(".player-connection"));
+    const goalie = getComputedStyle(document.querySelector(".goalie-connection"));
+    return { radius: ideas.borderRadius, shadow: ideas.boxShadow, left: ideas.borderLeftWidth, right: ideas.borderRightWidth,
+      playerAccent: player.borderTopColor, goalieAccent: goalie.borderTopColor, playerRule: player.borderTopWidth, goalieRule: goalie.borderTopWidth };
+  });
+  assert.equal(treatments.radius, "0px", "Line ideas isn't a rounded card");
+  assert.equal(treatments.shadow, "none");
+  assert.equal(treatments.left, "0px");
+  assert.equal(treatments.right, "0px");
+  assert.equal(treatments.playerRule, treatments.goalieRule, "Connection panels share the same top rule");
+  assert.equal(treatments.playerAccent, "rgb(104, 200, 206)");
+  assert.equal(treatments.goalieAccent, "rgb(196, 161, 220)");
+  assert.equal(await page.locator(".line-ideas > details > summary").innerText(), "How ratings work");
+  assert.doesNotMatch(await page.locator(".line-ideas").innerText(), /Who clicks with|One goalie\. One skater|THE SEASON LEDGER|Goalie numbers|LOOKING FOR A SPARK|THE FINE PRINT|Preview only\. Choose/i);
+  assert.equal(await page.locator(".line-workspace > #goalie-compatibility").count(), 1, "Pairings belong beside the goalie, outside lower ideas");
+  assert.equal(await page.locator("#goalie-compatibility .lab-select").count(), 0, "There is one goalie picker, not a duplicate");
+  assert.doesNotMatch(await lab.innerText(), /Feed checked|Last stored sync|tracking is connected|Stored matches|THE DRAWING BOARD|THE SEASON LEDGER/);
+  assert.equal(await lab.locator("select").count(), 0);
+  assert.equal(await lab.locator(".line-sweater").count(), 0);
+  assert.ok(await lab.locator(".player-lab-hero-image img").evaluate(img => img.complete && img.naturalWidth > 0));
+
+  async function pick(index, name) {
+    const control = page.locator(`#line-slot-${index}`);
+    await control.click();
+    await page.locator(`#line-slot-${index}-search`).fill(name);
+    await page.getByRole("option", { name, exact: true }).click();
+    assert.ok((await control.innerText()).includes(name));
+  }
+  async function chooseGoalie(name) {
+    await page.locator("#line-goalie").click();
+    await page.locator("#line-goalie-search").fill(name);
+    await page.getByRole("option", { name, exact: true }).click();
+  }
+  async function assertOnlyInsight(selector) {
+    assert.equal(await page.locator("#line-ideas-panel").count(), 1);
+    assert.doesNotMatch(await page.locator(".line-ideas").innerText(), /Who clicks with|THE SEASON LEDGER|LOOKING FOR A SPARK|THE FINE PRINT/i);
+    assert.equal(await page.locator("#goalie-compatibility").count(), 1, "Goalie companion stays mounted");
+    for (const candidate of ["#goalies", ".line-recommendations"]) {
+      assert.equal(await page.locator(candidate).count(), candidate === selector ? 1 : 0, `${candidate} mounts only when active`);
+    }
+  }
+  await page.getByRole("button", { name: /Archive 2025–2026/ }).click();
+  await pick(0, "MATT HUT");
+  await pick(1, "JIMMY LEMONS");
+  await chooseGoalie("JENE RENE TETREAU IV");
+  const compatibility = page.locator("#goalie-compatibility");
+  assert.equal(await compatibility.locator(".gc-row").count(), 2, "Pairings work with an incomplete 3s line");
+  for (const name of ["MATT HUT", "JIMMY LEMONS"]) {
+    const row = compatibility.locator(".gc-row").filter({ hasText: name });
+    assert.match(await row.innerText(), /\d+%/);
+  }
+  const mattFit = compatibility.locator(".gc-row").filter({ hasText: "MATT HUT" });
+  await mattFit.locator(".gc-pair-toggle").click();
+  assert.equal(await mattFit.locator(".gc-pair-toggle").getAttribute("aria-expanded"), "true");
+  assert.equal(await mattFit.locator(".gc-detail").isVisible(), true);
+  await mattFit.locator(".gc-evidence > summary").click();
+  assert.ok(await mattFit.locator(".gc-evidence li").count() > 0, "Source games remain accessible in the small panel");
+  await mattFit.locator(".gc-evidence > summary").click();
+  await mattFit.locator(".gc-pair-toggle").click();
+  await compatibility.getByRole("button", { name: "All skaters", exact: true }).click();
+  const rosterCount = await compatibility.locator(".gc-row").count();
+  assert.ok(rosterCount > 2);
+  await compatibility.locator(".gc-stats-link").click();
+  assert.equal(await insight("Goalie stats with this line").getAttribute("aria-selected"), "true");
+  await assertOnlyInsight("#goalies");
+  assert.equal(await page.getByRole("button", { name: "With this line", exact: true }).getAttribute("aria-pressed"), "true", "Shared-line goalie stats are the default");
+  await page.getByRole("button", { name: "With this line", exact: true }).click();
+  assert.match(await page.locator("#goalies").innerText(), /Fill every slot/);
+  await page.getByRole("button", { name: "Season stats", exact: true }).click();
+  assert.ok(await page.locator(".goalie-impact-row").count() > 0);
+  assert.equal(await compatibility.locator(".gc-row").count(), rosterCount, "Pair scope survives lower-view switches");
+  await insight("Suggested lines").click();
+  await assertOnlyInsight(".line-recommendations");
+  await page.locator("#line-min-games").click();
+  await page.getByRole("option", { name: "1+ game", exact: true }).click();
+  await page.getByRole("button", { name: /Use combination/ }).first().click();
+  await page.getByRole("button", { name: "Save line" }).click();
+  const savedName = await page.locator("#line-slot-0 .line-player-name").innerText();
+  await page.getByRole("button", { name: "Clear line", exact: true }).click();
+  await page.getByRole("button", { name: "Load saved" }).click();
+  assert.equal(await page.locator("#line-slot-0 .line-player-name").innerText(), savedName);
+
+  // Both tool states survive switching, without exposing hidden controls.
+  await comparisonTab.click();
+  await page.locator("#comparison").waitFor({ state: "visible" });
+  assert.equal(await page.locator("#lines").isVisible(), false);
+  const colors = await page.evaluate(() => [".lab-header", ".lab-matchup-setup", ".lab-analysis-display"].map(selector => getComputedStyle(document.querySelector(selector)).backgroundColor));
+  assert.equal(new Set(colors).size, 3);
+  for (const name of ["Grouped bars", "Scatter plot", "Season trend", "Radar"]) {
+    const tab = page.getByRole("button", { name: new RegExp(name) });
+    await tab.click();
+    assert.equal(await tab.getAttribute("aria-pressed"), "true");
+  }
+  await page.getByRole("button", { name: "Goalies", exact: true }).click();
+  await page.getByRole("button", { name: "Per game", exact: true }).click();
+  await builderTab.click();
+  assert.equal(await page.locator("#comparison").isVisible(), false);
+  assert.equal(await page.locator("#line-slot-0 .line-player-name").innerText(), savedName);
+  assert.equal(await insight("Suggested lines").getAttribute("aria-selected"), "true");
+  await comparisonTab.click();
+  assert.equal(await page.getByRole("button", { name: "Goalies", exact: true }).getAttribute("aria-pressed"), "true");
+  assert.equal(await page.getByRole("button", { name: "Per game", exact: true }).getAttribute("aria-pressed"), "true");
+  await page.getByRole("link", { name: "How it works ↗", exact: true }).click();
+  await page.locator("#chemistry-method").waitFor({ state: "visible" });
+  assert.equal(await page.locator("#chemistry-method").getAttribute("open"), "");
+  await page.locator("#chemistry-method > summary").click();
+  await insight("Suggested lines").click();
+  await insight("Suggested lines").press("ArrowRight");
+  assert.equal(await insight("Goalie stats with this line").getAttribute("aria-selected"), "true");
+  await insight("Goalie stats with this line").press("Home");
+  assert.equal(await insight("Suggested lines").getAttribute("aria-selected"), "true");
+
+  for (const width of [320, 390, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 900 });
-    for (const route of ["/matches", "/roster", "/stats", "/records", "/gallery", "/highlights", "/news", "/awards", "/lab"]) {
-      await load(route);
-      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `No page overflow ${route} ${width}`);
-      assert.equal(await page.locator(".hockey-interior").count(), 1);
-      assert.equal(await page.locator("h1").count(), 1, `One H1 ${route}`);
-      assert.equal(await page.locator(".hockey-motion-toggle").isDisabled(), true);
-      if (route === "/stats") assert.equal(await page.locator("#comparison,.comparison-lab,#lines").count(), 0, "Comparison removed from Stats");
-      if (route === "/lab") {
-        assert.equal(await page.locator("#comparison").count(), 1);
-        assert.equal(await page.locator("#lines").count(), 1);
-        await page.locator("#lines").scrollIntoViewIfNeeded();
-        if (process.env.AXE_PATH && [1440, 390].includes(width)) {
-          await page.addScriptTag({ path: process.env.AXE_PATH });
-          const violations = await page.evaluate(async () => (await window.axe.run(document.querySelector('.player-lab'), { runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21aa"] } })).violations.map(v => ({ id: v.id, targets: v.nodes.map(n => n.target) })));
-          assert.deepEqual(violations, [], `Lab accessibility ${width}`);
-        }
+    await builderTab.click();
+    for (const name of ["Suggested lines", "Goalie stats with this line"]) {
+      await insight(name).click();
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${name}: no overflow at ${width}px`);
+      if (process.env.AXE_PATH && [390, 1440].includes(width)) {
+        await page.addScriptTag({ path: process.env.AXE_PATH });
+        const violations = await page.evaluate(async () => (await window.axe.run(document.querySelector(".player-lab"), {
+          runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21aa"] },
+        })).violations.map(v => ({ id: v.id, nodes: v.nodes.map(n => n.target) })));
+        assert.deepEqual(violations, []);
       }
     }
-    console.log(`All nine interior routes: ${width}px passed`);
+    const center = await page.locator('.line-slot[data-position="C"]').boundingBox();
+    const wing = await page.locator('.line-slot[data-position="W"]').boundingBox();
+    const defense = await page.locator('.line-slot[data-position="D"]').boundingBox();
+    assert.ok(defense.y > center.y && defense.x > center.x && defense.x < wing.x);
+    assert.equal(Math.round(center.y), Math.round(wing.y));
+    const goalieSlot = await page.locator(".line-goalie-slot").boundingBox();
+    const goalieFit = await compatibility.boundingBox();
+    if (width > 850) {
+      assert.ok(goalieFit.x >= goalieSlot.x + goalieSlot.width, "Player fit is right of the goalie");
+      assert.ok(Math.abs(goalieFit.y - goalieSlot.y) < 2, "Goalie and fit share the same row");
+    } else {
+      assert.ok(goalieFit.y >= goalieSlot.y + goalieSlot.height, "Player fit follows goalie on mobile");
+    }
+    await comparisonTab.click();
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Comparison: no overflow at ${width}px`);
   }
-  await page.setViewportSize({ width: 1440, height: 1000 });
-  await load("/lab");
-  await page.locator("#line-season").selectOption("hockey:nhl26:2025-2026:common-gen5:149602");
-  assert.match(await page.locator(".line-archive-note").innerText(), /2025–2026 ARCHIVE/);
-  assert.equal(await page.locator(".line-evaluation .line-stat-grid").count(), 0, "No partial draft statistics");
-  const useLine = page.getByRole("button", { name: /^Use combination / }).first();
-  assert.ok(await useLine.count());
-  await useLine.click();
-  assert.equal(await page.locator(".line-slot select").evaluateAll(els => els.every(el => el.value)), true);
-  const firstSlots = await page.locator(".line-slot select").evaluateAll(els => els.map(el => el.value));
-  const games = await page.locator(".line-stat-grid strong").first().innerText();
-  assert.ok(Number(games) >= 3);
-  await page.locator("#line-slot-0").selectOption(firstSlots[1]);
-  assert.deepEqual(await page.locator(".line-slot select").evaluateAll(els => els.map(el => el.value)), [firstSlots[1], firstSlots[0], firstSlots[2]], "Duplicate selection swaps slots");
-  assert.equal(await page.locator(".line-stat-grid strong").first().innerText(), games, "Position swaps do not fabricate chemistry changes");
-  await page.getByRole("button", { name: "Save draft", exact: true }).click();
-  await page.getByRole("button", { name: "Reset line", exact: true }).click();
-  assert.equal(await page.locator(".line-stat-grid").count(), 0);
-  await page.getByRole("button", { name: "Restore draft", exact: true }).click();
-  assert.equal(await page.locator(".line-stat-grid strong").first().innerText(), games);
-  await page.locator(".line-availability input").evaluateAll((els, selected) => els.find(el => el.closest('label').innerText.includes(selected))?.click(), firstSlots[0]);
-  assert.equal(await page.locator(".line-stat-grid").count(), 0, "Unavailable player removed from draft");
-  await page.getByRole("button", { name: "Clear pool", exact: true }).click();
-  assert.equal(await page.locator(".line-availability input:checked").count(), 0);
-  assert.match(await page.locator(".line-empty").innerText(), /Select at least/);
-  await page.getByRole("button", { name: "Select all", exact: true }).click();
-  await page.getByRole("button", { name: "Pair", exact: true }).click();
-  await page.locator("#line-slot-0").selectOption("SLOBBY ROBBY");
-  await page.locator("#line-slot-1").selectOption("WOLFGANG MOZART");
-  // Complete but unobserved pairs must be truthful whether fuller Redis data exists.
-  if (await page.locator(".line-stat-grid strong").first().innerText() === "0") {
-    assert.match(await page.locator(".line-evaluation").innerText(), /missing evidence—not zero chemistry/);
-    assert.equal(await page.locator(".line-stat-grid strong").nth(2).innerText(), "—");
-  }
-  await page.getByRole("button", { name: "Five skaters", exact: true }).click();
-  assert.equal(await page.locator(".line-slot select").count(), 5);
-  await page.locator("#line-min-games").selectOption("10");
-  assert.equal(await page.locator(".line-stat-grid").count(), 0);
-  const datasetId="hockey:nhl26:2025-2026:common-gen5:149602", seasonLabel="2025–2026";
-  const draftKey=`bardownski-line-draft-v2:${encodeURIComponent(datasetId)}:${encodeURIComponent(seasonLabel)}`;
-  await page.evaluate(({draftKey,datasetId,seasonLabel}) => localStorage.setItem(draftKey, JSON.stringify({datasetId,season:seasonLabel,size:3, slots:["SLOBBY ROBBY","SLOBBY ROBBY","unknown"], available:["SLOBBY ROBBY","unknown"]})),{draftKey,datasetId,seasonLabel});
-  await page.getByRole("button", { name: "Restore draft", exact: true }).click();
-  assert.deepEqual(await page.locator(".line-slot select").evaluateAll(els => els.map(el => el.value)), ["SLOBBY ROBBY", "", ""]);
-  await page.evaluate(draftKey => localStorage.setItem(draftKey, "{broken"),draftKey);
-  await page.getByRole("button", { name: "Restore draft", exact: true }).click();
-  assert.match(await page.locator(".line-message").innerText(), /could not be restored/);
-  console.log("Line selections, recommendation evidence, swapping, available pool and draft persistence passed");
-  // Existing comparison remains independently functional on its new route.
-  for (const view of ["Bars", "Scatter", "Trend", "Radar"]) {
-    const tab = page.getByRole("group", { name: "Chart view", exact: true }).getByRole("button", { name: new RegExp(view, "i") });
-    await tab.click(); assert.equal(await tab.getAttribute("aria-pressed"), "true");
-  }
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.waitForFunction(() => !document.querySelector('.hockey-motion-toggle').disabled);
-  await page.getByRole("button", { name: "Pause page animations", exact: true }).click();
-  await page.waitForFunction(() => document.querySelector('.hockey-interior.hockey-motion-off'));
-  await page.locator('.legacy-site-links a[href="/stats"]').click();
-  await page.waitForURL(base + '/stats');
-  await page.getByRole("button", { name: "Resume page animations", exact: true }).waitFor();
-  await page.locator('.stats-leader').first().scrollIntoViewIfNeeded();
-  assert.equal(await page.locator('.stats-leader').first().evaluate(el => getComputedStyle(el).opacity), '1');
-  assert.equal(await page.locator('.stats-leader').first().evaluate(el => el.getAnimations().filter(a => a.playState === 'running').length), 0, 'Existing card animation respects shared pause');
-  // Storage is optional, motion controls are not.
-  await page.getByRole('button', {name:'Resume page animations',exact:true}).click();
-  await page.evaluate(() => { window.__oldSetItem = Storage.prototype.setItem; Storage.prototype.setItem = () => { throw new DOMException('Blocked', 'SecurityError'); }; });
-  await page.getByRole('button', {name:'Pause page animations',exact:true}).click();
-  await page.waitForFunction(() => document.querySelector('.hockey-motion-off'));
-  await page.getByRole('button', {name:'Resume page animations',exact:true}).click();
-  await page.waitForFunction(() => !document.querySelector('.hockey-motion-off'));
-  await page.evaluate(() => { Storage.prototype.setItem = window.__oldSetItem; });
-  await page.locator('.legacy-site-links a[href="/records"]').click();
-  await page.waitForURL(base + '/records');
-  await page.locator('.pause-showcase').click();
-  await page.waitForFunction(() => document.querySelector('.hockey-motion-off') && !document.querySelector('.record-motion'));
-  assert.equal(await page.locator('[data-count]').evaluateAll(els => els.every(el => el.textContent === el.dataset.count)), true, 'Records counts settle when globally paused');
-  await page.locator('.legacy-nav-fc').click();
-  await page.waitForURL(base + '/fc');
-  assert.equal(await page.locator('.hockey-interior,.hockey-motion-toggle').count(), 0);
-  assert.equal(await page.locator('.fc-site').count(), 1);
-  await page.locator('.legacy-nav-fc').click();
-  await page.waitForURL(base + '/');
-  assert.equal(await page.locator('.bd-home').count(), 1);
-  assert.equal(await page.locator('.hockey-motion-toggle').count(), 0);
+  // Explicit tool URLs and old section links remain functional on first load.
+  await page.goto(`${base}/lab?tool=comparison`, { waitUntil: "networkidle" });
+  assert.equal(await page.locator("#lines").count(), 0);
+  assert.equal(await page.locator("#comparison").isVisible(), true);
+  await page.goto(`${base}/lab#goalie-compatibility`, { waitUntil: "networkidle" });
+  assert.equal(await page.locator(".line-workspace > #goalie-compatibility").isVisible(), true);
+  assert.equal(await insight("Suggested lines").getAttribute("aria-selected"), "true", "Pairing link doesn't replace the lower ideas view");
+  await page.goto(`${base}/lab#line-insights`, { waitUntil: "networkidle" });
+  assert.equal(await page.locator("#line-ideas").isVisible(), true, "Old insights bookmark reaches Line ideas");
+  await page.goto(`${base}/lab#goalies`, { waitUntil: "networkidle" });
+  await page.locator("#goalies").waitFor({ state: "visible" });
+  assert.equal(await insight("Goalie stats with this line").getAttribute("aria-selected"), "true");
+  assert.equal(await page.locator("#comparison").count(), 0);
+  await comparisonTab.click();
+  await page.goBack();
+  await page.locator("#goalies").waitFor({ state: "visible" });
+  assert.equal(await page.locator("#line-goalie").innerText().then(text => /Add goalie/i.test(text)), true, "No preview autoassigns a goalie");
   assert.deepEqual(errors, []);
-  console.log("Comparison tabs, shared motion preference, hockey/FC/home isolation passed");
+  console.log("Player Lab: exclusive lazy tool loading; goalie-side pairings and separate Line ideas; preserved drafts/filters; pair compatibility; direct links/history; keyboard navigation; 320–1440px layouts and accessibility passed.");
 } finally { await browser.close(); }

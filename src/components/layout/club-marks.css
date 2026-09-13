@@ -1,0 +1,49 @@
+/* Official B silhouette, used as a quiet signature away from page heroes.
+   The mask preserves the supplied logo; no redrawn glyph or generated artwork.
+   Decorative marks never intercept links or add repeated screen-reader labels. */
+.club-mark {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  background-color: currentColor;
+  -webkit-mask: url('/images/logo/B-logo.png') center / contain no-repeat;
+  mask: url('/images/logo/B-logo.png') center / contain no-repeat;
+  pointer-events: none;
+  user-select: none;
+}
+.club-mark-panel {
+  position: relative;
+  isolation: isolate;
+}
+.club-mark-panel::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  right: max(var(--site-gutter, 20px), calc((100% - var(--site-content-max, 1280px)) / 2));
+  bottom: 28px;
+  width: clamp(130px, 18vw, 260px);
+  height: min(260px, 76%);
+  background-color: currentColor;
+  -webkit-mask: url('/images/logo/B-logo.png') center / contain no-repeat;
+  mask: url('/images/logo/B-logo.png') center / contain no-repeat;
+  opacity: .075;
+  pointer-events: none;
+  user-select: none;
+}
+/* Smaller footnote signature reaches gallery/article/lab and FC pages without
+   placing another large watermark below an already-branded closing section. */
+.club-footer-signature {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+.club-footer-signature .club-mark { width: 22px; height: 22px; color: var(--hockey-lilac, var(--fc-gold, currentColor)); }
+@media (max-width: 700px) {
+  .club-mark-panel::after { width: 112px; height: 112px; bottom: 22px; opacity: .05; }
+}
+@media (forced-colors: active) {
+  .club-mark, .club-mark-panel::after { display: none; }
+}

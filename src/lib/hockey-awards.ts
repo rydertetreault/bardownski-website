@@ -43,6 +43,21 @@ export interface HockeyAwards {
   asOf: string; seasonMvp: SeasonMvpEntry[];
   currentWeek: WeeklyAwards; lastCompletedWeek: WeeklyAwards;
 }
+export interface WeeklyAwardHistoryEntry {
+  playerId: string; name: string; wins: number; rank: number;
+  /** UTC Monday start of the latest completed week won, not a match timestamp. */
+  lastWin: string;
+}
+export interface WeeklyAwardHistory {
+  asOf: string;
+  /** Latest first; only observed completed weeks with at least one accepted game. */
+  weeks: WeeklyAwards[];
+  rankings: WeeklyAwardHistoryEntry[];
+  /** Completed weeks with at least one eligible winner. */
+  awardedWeeks: number;
+  /** Sum of ranking wins; shared awards can make this exceed awardedWeeks. */
+  totalAwards: number;
+}
 
 const WEEK = 7 * 24 * 60 * 60 * 1000;
 const quantize = (n: number) => Math.round(n * 10) / 10 || 0;
@@ -250,4 +265,55 @@ export function calculateHockeyAwards(data: ChelstatsData, asOf: string): Hockey
   const monday = day.getTime();
   return { asOf: new Date(now).toISOString(), seasonMvp: calculateSeasonMvp(data.members),
     currentWeek: weekly(data.matches, monday, now), lastCompletedWeek: weekly(data.matches, monday - WEEK, now) };
+}
+
+/** Pure history over current NHL27 tracker matches supplied by the caller (no archive fallback).
+ * Candidate weeks come only from representable source timestamps, never a calendar-range loop.
+ * Every calculation receives ALL input rows so cross-week/invalid conflicts still fail closed.
+ * Empty/rejected-only weeks are omitted; accepted weeks without eligible winners remain visible.
+ * Identity is weekly()'s playerId, including its within-week unambiguous name aliases. We do not
+ * infer aliases across weeks: unresolved ID-less winners keep their normalized name: key, separate
+ * from source IDs even if names match. Names alone cannot distinguish two ID-less people.
+ * The display name is the lexically smallest winning name for that identity, independent of order.
+ */
+export function calculateWeeklyAwardHistory(matches: ClubMatch[], asOf: string): WeeklyAwardHistory {
+  const now = Date.parse(asOf);
+  if (!/T.*(?:Z|[+-]\d{2}:\d{2})$/i.test(asOf) || !finite(now)) throw new RangeError("Awards asOf must be an ISO timestamp with timezone");
+  const starts = new Set<number>();
+  for (const m of matches) {
+    if (!m || !finite(m.timestamp)) continue;
+    const day = new Date(m.timestamp * 1000);
+    if (!finite(day.getTime())) continue;
+    day.setUTCHours(0, 0, 0, 0);
+    day.setUTCDate(day.getUTCDate() - (day.getUTCDay() + 6) % 7);
+    const start = day.getTime(), end = start + WEEK;
+    // Date's finite representable range is narrower than Number's finite range.
+    if (finite(start) && finite(new Date(end).getTime()) && end <= now) starts.add(start);
+  }
+  const weeks = [...starts].sort((a, b) => b - a)
+    .map(start => weekly(matches, start, now)).filter(week => week.games > 0);
+  const winners = new Map<string, WeeklyAwardHistoryEntry>();
+  let awardedWeeks = 0, totalAwards = 0;
+  for (const week of weeks) {
+    const seen = new Set<string>();
+    for (const winner of week.winners) {
+      const previous = winners.get(winner.playerId);
+      if (previous && compare(winner.name, previous.name) < 0) previous.name = winner.name;
+      if (seen.has(winner.playerId)) continue;
+      seen.add(winner.playerId);
+      if (previous) previous.wins++;
+      else winners.set(winner.playerId, { playerId: winner.playerId, name: winner.name,
+        wins: 1, rank: 0, lastWin: week.start });
+    }
+    if (seen.size) awardedWeeks++;
+    totalAwards += seen.size;
+  }
+  const rankings = [...winners.values()].sort((a, b) => b.wins - a.wins
+    || compare(a.name, b.name) || compare(a.playerId, b.playerId));
+  let rank = 0;
+  rankings.forEach((entry, i) => {
+    if (i === 0 || entry.wins !== rankings[i - 1].wins) rank = i + 1;
+    entry.rank = rank;
+  });
+  return { asOf: new Date(now).toISOString(), weeks, rankings, awardedWeeks, totalAwards };
 }

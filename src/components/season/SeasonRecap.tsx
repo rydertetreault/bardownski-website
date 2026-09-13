@@ -208,7 +208,7 @@ export default function SeasonRecap() {
             <h3>{SEASON_MVP.winners.join(" & ")}</h3>
             <p>{SEASON_MVP.result}</p>
             <p className="mvp-description">
-              The engine of Bardownski’s offense. Xavier delivered 920 goals and
+              The engine of Bardownski’s offense. Xavier Laflamme delivered 920 goals and
               490 assists for 1,410 points across 290 games, finishing at +483.
               With 43 game-winning goals and 2,189 hits, his impact went beyond
               the scoresheet—a season of production and physical presence that

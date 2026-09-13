@@ -1,3 +1,4 @@
+import { getNickname } from "@/lib/nicknames";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import {
@@ -29,9 +30,9 @@ export default async function FcStatsPage() {
       const agg = aggs.get(m.gamertag);
       return {
         gamertag: m.gamertag,
-        name: m.name,
+        name: getNickname(m.name),
         posGroup: positionLabel(m.position),
-        proName: m.proName,
+        proName: getNickname(m.proName),
         overall: m.proOverall,
         gamesPlayed: m.gamesPlayed,
         winRate: m.winRate,

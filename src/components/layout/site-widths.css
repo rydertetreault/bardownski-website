@@ -1,0 +1,25 @@
+/* Shared reading rails. The cap measures CONTENT; padding is additional.
+   Full-bleed sections keep their backgrounds and use the same inset formula. */
+:root {
+  --site-content-max: 1280px;
+  --site-reading-max: 700px;
+  --site-gutter: 32px;
+}
+@media (max-width: 1024px) { :root { --site-gutter: 24px; } }
+@media (max-width: 600px) { :root { --site-gutter: 20px; } }
+.site-content-container,
+.hockey-page-container {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: calc(var(--site-content-max) + 2 * var(--site-gutter));
+  margin-inline: auto;
+  padding-inline: var(--site-gutter);
+}
+.site-reading-container {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: calc(var(--site-reading-max) + 2 * var(--site-gutter));
+  margin-inline: auto;
+  padding-inline: var(--site-gutter);
+}
+

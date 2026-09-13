@@ -1,3 +1,5 @@
+import type { ClubCrest } from "@/lib/club-crest";
+
 export interface Player {
   id: string;
   name: string;
@@ -51,6 +53,8 @@ export interface Match {
   timestamp: number;
   date: string;
   opponent: string;
+  opponentClubId?: string;
+  opponentCrest?: ClubCrest;
   homeAway: "home" | "away";
   scoreUs: number | null;
   scoreThem: number | null;

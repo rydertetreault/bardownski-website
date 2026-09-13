@@ -1,3 +1,5 @@
+import { getMonochromePoster } from "@/lib/photo-posters";
+import { getNickname, getNicknameText } from "@/lib/nicknames";
 import { SEASON_REVEAL } from "@/lib/season-reveal";
 import { homeArchive as a } from "./home-data";
 import { num, photo, mvpRows, seasonContent, resultRow, escape } from "./views";
@@ -54,7 +56,7 @@ function profile(id, b) {
   const p = a.players.find((p) => p.short === id);
   if (!p) return;
   show(
-    `${stamp}<h2 id="dialog-title">${p.name}</h2><p>${p.role === "G" ? "Goaltender" : p.role === "D" ? "Defense" : "Forward"} / ${p.games} games in scored role</p><div class="profile-numbers">${(p.role ===
+    `${stamp}<h2 id="dialog-title">${escape(getNickname(p.name))}</h2><p>${p.role === "G" ? "Goaltender" : p.role === "D" ? "Defense" : "Forward"} / ${p.games} games in scored role</p><div class="profile-numbers">${(p.role ===
     "G"
       ? [
           ["Saves", p.saves],
@@ -78,7 +80,7 @@ function match(index, b) {
   const m = a.matches[index];
   if (!m) return;
   show(
-    `${stamp}<h2 id="dialog-title">Bardownski ${m.scoreUs}–${m.scoreThem}<br>${m.opponent}</h2><p>${m.date} / FINAL</p><table><caption>Saved Bardownski skater scoresheet</caption><thead><tr><th>Player</th><th>G</th><th>A</th><th>PTS</th></tr></thead><tbody>${m.players.map((p) => `<tr><th scope="row">${p.name}</th><td>${p.goals}</td><td>${p.assists}</td><td>${p.goals + p.assists}</td></tr>`).join("")}</tbody></table><p class="fineprint">Partial saved skater coverage, not a complete match box score.</p>`,
+    `${stamp}<h2 id="dialog-title">Bardownski ${m.scoreUs}–${m.scoreThem}<br>${m.opponent}</h2><p>${m.date} / FINAL</p><table><caption>Saved Bardownski skater scoresheet</caption><thead><tr><th>Player</th><th>G</th><th>A</th><th>PTS</th></tr></thead><tbody>${m.players.map((p) => `<tr><th scope="row">${escape(getNickname(p.name))}</th><td>${p.goals}</td><td>${p.assists}</td><td>${p.goals + p.assists}</td></tr>`).join("")}</tbody></table><p class="fineprint">Partial saved skater coverage, not a complete match box score.</p>`,
     b,
   );
 }
@@ -90,12 +92,12 @@ const films = {
     captions: SEASON_REVEAL.captionsSrc,
   },
   finish: {
-    title: "Matt / Archived hockey highlight",
+    title: "Matt Hut / Archived hockey highlight",
     src: "/videos/homepage/finish.mp4",
     poster: "/images/homepage/player-teal.webp",
   },
   crease: {
-    title: "Ryder / Archived hockey highlight",
+    title: "JRT IV / Archived hockey highlight",
     src: "/videos/homepage/crease.mp4",
     poster: "/images/homepage/goalie-purple.webp",
   },
@@ -104,7 +106,7 @@ function video(id, b) {
   const f = films[id];
   if (!f) return;
   show(
-    `<span class="data-stamp">${id === "reveal" ? "2027 SEASON REVEAL" : "CLUB HIGHLIGHTS ARCHIVE"}</span><h2 id="dialog-title">${f.title}</h2><video controls playsinline preload="metadata" poster="${f.poster}" aria-label="${f.title}"><source src="${f.src}" type="video/mp4">${f.captions ? `<track kind="captions" src="${f.captions}" srclang="en" label="English" default>` : ""}</video><p class="fineprint">${id === "reveal" ? `The official jersey and leadership announcement. <a href="/news/${SEASON_REVEAL.articleId}">Read the full story and film transcript ↗</a>` : "Archived club gameplay. Use the player controls to start playback. Upload dates are not recorded."}</p>`,
+    `<span class="data-stamp">${id === "reveal" ? "2027 SEASON REVEAL" : "CLUB HIGHLIGHTS ARCHIVE"}</span><h2 id="dialog-title">${f.title}</h2><video controls playsinline preload="metadata" poster="${getMonochromePoster(f.poster)}" aria-label="${f.title}"><source src="${f.src}" type="video/mp4">${f.captions ? `<track kind="captions" src="${f.captions}" srclang="en" label="English" default>` : ""}</video><p class="fineprint">${id === "reveal" ? `The official jersey and leadership announcement. <a href="/news/${SEASON_REVEAL.articleId}">Read the full story and film transcript ↗</a>` : "Archived club gameplay. Use the player controls to start playback. Upload dates are not recorded."}</p>`,
     b,
   );
   const v = modal.querySelector("video");
@@ -123,7 +125,7 @@ function video(id, b) {
 const paragraphs = (text) =>
   text
     .split("\n\n")
-    .map((p) => `<p>${escape(p)}</p>`)
+    .map((p) => `<p>${escape(getNicknameText(p))}</p>`)
     .join("");
 function awardDetail(h) {
   return `<article class="award-detail"><span class="data-stamp">${h.selection === "editorial" ? "TEAM / EDITORIAL HONOR" : "STATISTICAL HONOR"}</span><h3>${escape(h.title)}</h3><strong>${h.winners.map(escape).join(" & ")}</strong><p>${escape(h.result)}</p><p class="fineprint">${escape(h.criteria)}</p></article>`;
@@ -170,7 +172,7 @@ document.addEventListener("click", (e) => {
     if (article) {
       e.preventDefault();
       show(
-        `<span class="data-stamp">PUBLISHED CLUB NEWS</span><h2 id="dialog-title">${escape(article.title)}</h2><p>${escape(article.date)} · ${escape(article.category)}</p>${paragraphs(article.summary)}`,
+        `<span class="data-stamp">PUBLISHED CLUB NEWS</span><h2 id="dialog-title">${escape(getNicknameText(article.title))}</h2><p>${escape(article.date)} · ${escape(article.category)}</p>${paragraphs(article.summary)}`,
         b,
       );
     }

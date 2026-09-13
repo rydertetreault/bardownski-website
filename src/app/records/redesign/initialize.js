@@ -1,3 +1,5 @@
+import { searchRecords } from "./search";
+
 // Preserved Records redesign, scoped to its own React-owned host.
 // Datasets are frozen copies of the Stats tables and recorded team achievements.
 export function initializeRecords(root) {
@@ -90,19 +92,69 @@ const sv=records.find(r=>r.id==='sv');sv.description+=' The 2023 saves table has
 const redundant=records.findIndex(r=>r.id==='all-so');if(redundant>=0)records.splice(redundant,1);
 const career=records.find(r=>r.id==='career-pm');career.rule='The 2023 and 2024 Stats tables do not report plus/minus. Career plus/minus cannot be calculated by treating those seasons as zero.';
 
+// Position search uses the roster from the entry's own season, not today's
+// lineup. A goalie leaderboard itself supplies the goalie role; missing older
+// skater positions remain unknown rather than being guessed.
+for (const record of records) {
+  for (const entry of record.ranking) {
+    entry.position = record.category === 'Goaltending' ? 'G' :
+      seasons.find(season => season.season === entry.season)?.stats.roster
+        .find(player => player.name === entry.name)?.position || '';
+  }
+}
+let searchMatches = new Map();
+let activeSearchMatch;
 const categories=['All','Scoring','Defense','Goaltending','Physical','Efficiency','Durability'];let category='All';
 const $=s=>document.querySelector(s), esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 $('#categories').innerHTML=categories.map(c=>`<button data-category="${c}" aria-pressed="${c==='All'}">${c}<span>${c==='All'?records.length:records.filter(r=>r.category===c).length}</span></button>`).join('');
 $('.spotlights').innerHTML=['points','pm','saves'].map((id,i)=>{const r=records.find(r=>r.id===id);return `<button data-record="${id}"><span class="eyebrow">0${i+1} / ${r.title}</span><strong>${r.value}</strong><b>${r.winners.join(' & ')}</b><small>BEST SINGLE SEASON / AVAILABLE HISTORY <span>↗</span></small></button>`}).join('');
-function render(){const query=$('#search').value.toLowerCase().trim().replace(/\+\s*\/\s*[−-]/g,'plus minus');const scope=$('#scope').value,status=$('#availability').value;const selectedSeason=$('#season').value;const viewRecords=records.map(r=>{if(selectedSeason==='all'||r.status!=='verified')return r;if(r.team)return {...r,status:'unavailable'};const ranking=r.ranking.filter(e=>e.season===selectedSeason);if(!ranking.length)return {...r,status:'unavailable'};const best=ranking[0].number;return {...r,ranking,value:format(best,r.unit),winners:ranking.filter(e=>e.number===best).map(e=>`${e.name} · ${e.season}`),covered:[selectedSeason]};});let filtered=viewRecords.filter(r=>r.status!=='unavailable'&&(selectedSeason==='all'||r.status==='verified')&&(category==='All'||r.category===category)&&(scope==='all'||r.scope===scope)&&(status==='all'||r.status===status)&&query.split(/\s+/).every(word=>`${r.title} ${r.category} ${r.tags} ${r.scope} ${r.winners.join(' ')} ${r.ranking.map(x=>x.tag).join(' ')}`.toLowerCase().includes(word)));
-if($('#sort').value==='az')filtered.sort((a,b)=>a.title.localeCompare(b.title));if($('#sort').value==='category')filtered.sort((a,b)=>a.category.localeCompare(b.category)||a.title.localeCompare(b.title));
-$('#result-count').textContent=`${filtered.length} of ${records.length} records${category!=='All'?' / '+category:''}`;
-$('#results').className=demo==='database'?'table-results':'card-results';
-$('#results').innerHTML=filtered.length?filtered.map(r=>`<button class="record ${r.status}" data-record="${r.id}"><span class="record-meta">${r.category} <i>${r.scope}</i></span><h3>${esc(r.title)}</h3><strong>${r.value}</strong><span class="holder">${r.winners.length?esc(r.winners.join(' & ')):'Verification needed'}</span><span class="record-bottom"><span>${r.status==='verified'?(r.team?'TEAM RECORD':r.covered.length===seasons.length?'ALL DISPLAYED SEASONS':'LIMITED HISTORICAL COVERAGE'):'NEEDS MORE DATA'}</span><b>Details ↗</b></span></button>`).join(''):`<div class="empty"><h3>No records match those filters.</h3><p>Try a player name, “plus minus,” or a broader category.</p><button id="empty-reset">Clear all filters</button></div>`;}
+function render() {
+  const query = $('#search').value.trim();
+  const scope = $('#scope').value, status = $('#availability').value;
+  const selectedSeason = $('#season').value;
+  const viewRecords = records.map(record => {
+    if (selectedSeason === 'all' || record.status !== 'verified') return record;
+    if (record.team) return { ...record, status: 'unavailable' };
+    const ranking = record.ranking.filter(entry => entry.season === selectedSeason);
+    if (!ranking.length) return { ...record, status: 'unavailable' };
+    const best = ranking[0].number;
+    return { ...record, ranking, value: format(best, record.unit),
+      winners: ranking.filter(entry => entry.number === best).map(entry => `${entry.name} · ${entry.season}`),
+      covered: [selectedSeason] };
+  }).filter(record => record.status !== 'unavailable' &&
+    (selectedSeason === 'all' || record.status === 'verified') &&
+    (category === 'All' || record.category === category) &&
+    (scope === 'all' || record.scope === scope) &&
+    (status === 'all' || record.status === status));
+  const found = searchRecords(viewRecords, query);
+  searchMatches = new Map(found.filter(result => result.match).map(result => [result.record.id, result.match]));
+  const filtered = found.map(result => result.record);
+  if ($('#sort').value === 'az') filtered.sort((a,b) => a.title.localeCompare(b.title));
+  if ($('#sort').value === 'category') filtered.sort((a,b) => a.category.localeCompare(b.category) || a.title.localeCompare(b.title));
+  $('#sort option[value="featured"]').textContent = query ? 'Best matches' : 'Featured first';
+  $('#search-clear').hidden = !$('#search').value;
+  $('#result-count').textContent = `${filtered.length} of ${records.length} records${query ? ` matching “${query}”` : ''}${category !== 'All' ? ' / '+category : ''}`;
+  $('#results').className = demo === 'database' ? 'table-results' : 'card-results';
+  $('#results').innerHTML = filtered.length ? filtered.map(record => {
+    const match = searchMatches.get(record.id);
+    const context = match ? `<span class="record-search-match"><b>${match.isHolder ? 'Matching record holder' : 'Related leaderboard entry'}</b><span>${esc(match.entry.name)}${match.entry.season ? ' · '+esc(match.entry.season) : ''}</span><span>#${match.rank} · ${format(match.entry.number, record.unit)}${match.isHolder ? '' : ' — open to see their ranking'}</span></span>` : '';
+    return `<button class="record ${record.status}" data-record="${record.id}"><span class="record-meta">${record.category} <i>${record.scope}</i></span><h3>${esc(record.title)}</h3><strong>${record.value}</strong><span class="holder">${record.winners.length ? esc(record.winners.join(' & ')) : 'Verification needed'}</span>${context}<span class="record-bottom"><span>${record.status === 'verified' ? (record.team ? 'TEAM RECORD' : record.covered.length === seasons.length ? 'ALL DISPLAYED SEASONS' : 'LIMITED HISTORICAL COVERAGE') : 'NEEDS MORE DATA'}</span><b>Details ↗</b></span></button>`;
+  }).join('') : `<div class="empty"><h3>No records match ${query ? '“'+esc(query)+'”' : 'those filters'}.</h3><p>Try a nickname, position, or stat — like “Slobby Robby”, “goalie”, or “blocks”.<br>Check the category and season filters, or start fresh.</p><button id="empty-reset">Clear all filters</button></div>`;
+}
 function reset(){category='All';$('#search').value='';$('#scope').value='all';$('#season').value='all';$('#availability').value='all';$('#sort').value='featured';document.querySelectorAll('[data-category]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.category==='All'));render()}
 ['#search','#scope','#availability','#sort','#season'].forEach(s=>$(s).addEventListener(s==='#search'?'input':'change',render));
-document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.category){category=b.dataset.category;document.querySelectorAll('[data-category]').forEach(x=>x.setAttribute('aria-pressed',x===b));render()}if(b.dataset.query){reset();$('#search').value=b.dataset.query;render()}if(b.id==='reset'||b.id==='empty-reset')reset();if(b.dataset.record)openRecord(b.dataset.record)});
-function openRecord(id){let r=records.find(r=>r.id===id);const selected=$('#season').value;if(selected!=='all'&&r.status==='verified'){const ranking=r.ranking.filter(e=>e.season===selected);const best=ranking[0].number;r={...r,ranking,value:format(best,r.unit),winners:ranking.filter(e=>e.number===best).map(e=>`${e.name} · ${e.season}`)};}$('#detail-content').innerHTML=`<p class="eyebrow">${r.category} / ${r.scope}</p><h2>${r.title}</h2><div class="detail-number">${r.value}</div><p class="detail-holder">${r.winners.join(' & ')||'No verified holder yet'}</p><div class="rule"><b>ELIGIBILITY & CALCULATION</b><p>${r.rule}</p></div>${r.ranking.length?`<h3>Player-season leaderboard</h3><ol class="rankings">${r.ranking.map((x,i)=>`<li><span>${i>0&&x.number===r.ranking[i-1].number?'=':i+1}</span><b>${esc(x.name)} <small>· ${x.season||""}</small></b><strong>${format(x.number,r.unit)}</strong></li>`).join('')}</ol>`:''}<p class="source">${r.description}</p>${r.status==='verified'?'<p class="source">Rate thresholds in this demo are proposed eligibility rules, not existing club policy. No voting or awards are inferred from these records.</p>':''}`;$('#detail').showModal();}
+$('.record-search').addEventListener('submit', event => event.preventDefault(), {signal: controller.signal});
+$('#search-clear').addEventListener('click', () => {
+  $('#search').value = ''; render(); $('#search').focus();
+}, {signal: controller.signal});
+document.addEventListener('click', event => {
+  const example = event.target.closest('[data-search-term]');
+  if (!example) return;
+  $('#search').value = example.dataset.searchTerm;
+  render(); $('#search').focus();
+});
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.category){category=b.dataset.category;document.querySelectorAll('[data-category]').forEach(x=>x.setAttribute('aria-pressed',x===b));render()}if(b.dataset.query){reset();$('#search').value=b.dataset.query;render()}if(b.id==='reset'||b.id==='empty-reset')reset();if(b.dataset.record){activeSearchMatch=b.closest('#results')?searchMatches.get(b.dataset.record):undefined;openRecord(b.dataset.record)}});
+function openRecord(id){let r=records.find(r=>r.id===id);const selected=$('#season').value;if(selected!=='all'&&r.status==='verified'){const ranking=r.ranking.filter(e=>e.season===selected);if(ranking.length){const best=ranking[0].number;r={...r,ranking,value:format(best,r.unit),winners:ranking.filter(e=>e.number===best).map(e=>`${e.name} · ${e.season}`)};}else{r={...r,ranking:[],value:'—',winners:[],status:'unavailable',description:`No eligible entries are published for ${selected}. Try Compare all seasons to see the available leaderboard. ${r.description}`};}}$('#detail-content').innerHTML=`<p class="eyebrow">${r.category} / ${r.scope}</p><h2>${r.title}</h2><div class="detail-number">${r.value}</div><p class="detail-holder">${r.winners.join(' & ')||'No verified holder yet'}</p><div class="rule"><b>ELIGIBILITY & CALCULATION</b><p>${r.rule}</p></div>${r.ranking.length?`<h3>Player-season leaderboard</h3><ol class="rankings">${r.ranking.map((x,i)=>`<li${activeSearchMatch&&x.name===activeSearchMatch.entry.name&&x.season===activeSearchMatch.entry.season?' class="ranking-search-match"':''}><span>${i>0&&x.number===r.ranking[i-1].number?'=':i+1}</span><b>${esc(x.name)} <small>· ${x.season||""}</small></b><strong>${format(x.number,r.unit)}</strong></li>`).join('')}</ol>`:''}<p class="source">${r.description}</p>${r.status==='verified'?'<p class="source">Rate thresholds in this demo are proposed eligibility rules, not existing club policy. No voting or awards are inferred from these records.</p>':''}`;$('#detail').showModal();}
 $('.close').addEventListener('click',()=>$('#detail').close());$('#detail').addEventListener('click',e=>{if(e.target===$('#detail')){const r=$('#detail').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)$('#detail').close()}});render();
 
 // Public, read-only snapshot from the records page's match-history source.
@@ -132,6 +184,34 @@ function seasonPanel(year){const s=seasons.find(x=>x.season===year);$('#season-p
 seasonPanel(currentSeason);
 document.addEventListener('click',e=>{const b=e.target.closest('[data-season-panel]');if(b){document.querySelectorAll('[data-season-panel]').forEach(x=>x.setAttribute('aria-pressed',x===b));seasonPanel(b.dataset.seasonPanel)}});
 const originalOpen=openRecord;openRecord=function(id){const r=records.find(x=>x.id===id);if(!r.team){originalOpen(id);return}$('#detail-content').innerHTML=`<p class="eyebrow">CLUB RECORD / ${r.title}</p><h2>${r.title}</h2><div class="detail-number">${r.value}</div><div class="rule"><b>RECORD SCOPE & EVIDENCE</b><p>${r.rule}</p></div><p class="source">${r.description}</p>${r.matches.map(m=>`<a class="match-link" href="https://bardownski-com.vercel.app/matches/${m.id}" target="_blank" rel="noopener noreferrer">${m.date} / ${esc(m.opponent)} / ${m.scoreUs}–${m.scoreThem} · Match details ↗</a>`).join('')}`;$('#detail').showModal()};
+// Full-width color chapters sit outside the existing reveal targets, so the
+// backgrounds and diagonal joins stay put when cards animate or filters change.
+function colorBand(tone, elements) {
+  const band = document.createElement('div');
+  band.className = `records-band records-band--${tone}`;
+  elements[0].before(band);
+  band.append(...elements);
+  return band;
+}
+const teamBand = colorBand('teal', [showcase]);
+const playerBand = colorBand('paper', [$('.individual-heading'), $('.spotlights'), $('.coverage'), pmSection]);
+const historyBand = colorBand('purple', [championship, seasonHall]);
+$('#explore').classList.add('records-band', 'records-band--paper');
+$('.roadmap').classList.add('records-band', 'records-band--teal', 'club-mark-panel');
+function sectionCut(name, target, after = false) {
+  const cut = document.createElement('div');
+  cut.className = `records-cut records-cut--${name}`;
+  cut.setAttribute('aria-hidden', 'true');
+  if (after) target.after(cut);
+  else target.before(cut);
+}
+sectionCut('team', teamBand);
+sectionCut('players', playerBand);
+sectionCut('history', historyBand);
+sectionCut('index', $('#explore'));
+sectionCut('sources', $('.roadmap'));
+sectionCut('end', $('.roadmap'), true);
+
 // Native intersection reveals: no scroll locking and safe static reduced-motion mode.
 const motionPreference=matchMedia('(prefers-reduced-motion: reduce)');let paused=false;let observer;const running=new Set();const animated=[...document.querySelectorAll('.monument,.honor-strip button,.championship,.season-hall')];
 function countUp(el){const n=el.querySelector('[data-count]');if(!n)return;const final=Number(n.dataset.count);const start=performance.now();function tick(time){const p=Math.min(1,(time-start)/1400);n.textContent=Math.round(final*(1-Math.pow(1-p,3)));if(p<1){const id=requestAnimationFrame(t=>{running.delete(id);tick(t)});running.add(id)}}tick(start)}

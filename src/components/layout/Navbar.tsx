@@ -35,13 +35,13 @@ export default function Navbar() {
   const pageStrips: Record<string, { title: string; links: string[][] }> = {
     "/": { title: "2026–2027 / BARDOWNSKI HOCKEY", links: [["/#results", "Recent matches"], ["/#standings", "MVP tracker"], ["/#history", "Past seasons"]] },
     "/matches": { title: "2026–2027 / THE MATCH CENTRE", links: [["/matches#results", "Season matches"], ["/matches#archive", "2025–2026 archive ↗"]] },
-    "/roster": { title: "2026–2027 / THE ROSTER", links: [["/roster#squad", "The squad"], ["/roster#leadership", "The next chapter ↗"]] },
-    "/stats": { title: "2026–2027 / THE STAT BOOK", links: [["/stats#numbers", "Season stats"], ["/stats#standings", "MVP tracker"], ["/stats#weekly-tracker", "Player of the Week"], ["/stats#archive", "Previous seasons"]] },
-    "/lab": { title: "BARDOWNSKI / THE PLAYER LAB", links: [["/lab#comparison", "Compare players"], ["/lab#lines", "Build lines"], ["/lab#chemistry-method", "How it works ↗"]] },
+    "/roster": { title: "2026–2027 / THE ROSTER", links: [["/roster#squad", "The squad"], ["/roster#leadership", "Leadership ↗"]] },
+    "/stats": { title: "2026–2027 / THE STAT BOOK", links: [["/stats#standings", "MVP race"], ["/stats#numbers", "Season stats"], ["/stats#weekly-honors", "Player of the Week"], ["/stats#archive", "Previous seasons"]] },
+    "/lab": { title: "BARDOWNSKI / THE PLAYER LAB", links: [["/lab#lines", "Build lines"], ["/lab#comparison", "Compare players"], ["/lab#chemistry-method", "How it works ↗"]] },
     "/awards": { title: "2025–2026 / AWARD WINNERS", links: [["/stats#archive", "Archived stats"], ["/stats#standings", "New-season MVP tracker ↗"]] },
     "/records": { title: "BARDOWNSKI / CLUB RECORDS", links: [["/stats", "Season stats"], ["/matches#archive", "Match archive ↗"]] },
     "/gallery": { title: "BARDOWNSKI / GALLERY", links: [["/highlights", "Watch highlights ↗"]] },
-    "/highlights": { title: "BARDOWNSKI / THE FILM ROOM", links: [["/highlights#highlights-ryder", "JRT IV"], ["/highlights#highlights-dylan", "Xavier Laflamme"], ["/highlights#highlights-kaden", "Gotta Be"], ["/highlights#highlights-slobby-robby", "Slobby Robby"], ["/highlights#highlights-matt", "Matt"]] },
+    "/highlights": { title: "BARDOWNSKI / THE FILM ROOM", links: [["/highlights#highlights-ryder", "JRT IV"], ["/highlights#highlights-dylan", "Xavier Laflamme"], ["/highlights#highlights-kaden", "Gotta Be"], ["/highlights#highlights-slobby-robby", "Slobby Robby"], ["/highlights#highlights-matt", "Matt Hut"]] },
     "/news": { title: "BARDOWNSKI / THE CLUB JOURNAL", links: [["/news#stories", "Explore the stories ↘"]] },
   };
   const section = "/" + pathname.split("/")[1];

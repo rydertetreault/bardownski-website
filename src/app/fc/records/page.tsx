@@ -1,3 +1,4 @@
+import { getNickname } from "@/lib/nicknames";
 import type { Metadata } from "next";
 import { fetchFcStatsData, computeFcRecords } from "@/lib/fcstats";
 import {
@@ -40,7 +41,7 @@ function RecordCard({ record, featured }: { record: FcRecordEntry; featured?: bo
       >
         {record.value}
       </span>
-      <span className="font-bold text-white">{record.holder}</span>
+      <span className="font-bold text-white">{getNickname(record.holder)}</span>
       {record.detail && <span className="text-xs text-white/40">{record.detail}</span>}
     </div>
   );

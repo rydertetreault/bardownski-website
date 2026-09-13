@@ -117,7 +117,7 @@ export function LatestMatchHero({ match }: { match: Match }) {
             </div>
             <div className="relative w-10 h-10 md:w-14 md:h-14 shrink-0">
               <Image
-                src="/images/logo/BD - logo.png"
+                data-brand-mark src="/images/logo/BD - logo.png"
                 alt="Bardownski"
                 fill
                 className="object-contain"

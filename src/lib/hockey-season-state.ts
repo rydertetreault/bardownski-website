@@ -37,5 +37,5 @@ export type HockeySeasonState = {
 );
 
 export function hockeyTrackingLabel(state: HockeySeasonState): string {
-  return state.status === "connected" ? "Tracking connected" : state.status === "stale" ? "Last saved data" : state.status === "unavailable" ? "Tracking temporarily unavailable" : "Tracking setup pending";
+  return state.status === "connected" ? "Season stats" : state.status === "stale" ? "Last saved data" : state.status === "unavailable" ? "Tracking temporarily unavailable" : "Tracking setup pending";
 }

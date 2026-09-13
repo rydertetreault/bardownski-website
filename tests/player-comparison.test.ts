@@ -226,26 +226,30 @@ assert.equal(JSON.stringify(FROZEN_CHELSTATS), archiveBefore);
 assert.equal(JSON.stringify(liveData), liveBefore);
 
 const page = readFileSync("src/app/lab/page.tsx", "utf8");
+const toolShell = readFileSync("src/app/lab/LabTools.tsx", "utf8");
 const statsPage = readFileSync("src/app/stats/page.tsx", "utf8");
 const display = readFileSync("src/app/stats/components/StatsDisplay.tsx", "utf8");
 const client = readFileSync("src/app/stats/StatsClient.tsx", "utf8");
-assert.equal((page.match(/<HeadToHeadCard\s/g) ?? []).length, 1);
+assert.equal((toolShell.match(/<HeadToHeadCard\s/g) ?? []).length, 1);
+assert.match(page, /<LabTools current=\{currentLines\}/);
 assert.doesNotMatch(statsPage, /HeadToHeadCard|ComparisonCharts|comparison-lab|buildComparisonSeasons/);
 assert.doesNotMatch(display, /HeadToHeadCard|stats-arena/);
 assert.doesNotMatch(client, /children|HeadToHeadCard/);
-assert.match(statsPage, /<StatsClient seasons=\{archives\}/);
-assert.match(page, /<h1>Player lab<\/h1>/);
-assert.match(page, /href="#comparison"/);
-assert.match(page, /href="#lines"/);
-const plannerStart = page.indexOf("<LineSeasonSelector");
-assert.ok(plannerStart > page.indexOf("<HeadToHeadCard"), "Planner belongs below comparison");
+assert.equal((statsPage.match(/<StatsClient\s/g) ?? []).length, 1, "One tabbed stat book combines current and archived seasons");
+assert.match(statsPage, /seasons=\{currentStats \? \[currentStats, \.\.\.archives\] : archives\}/);
+assert.match(statsPage, /currentAvailable=\{available\}/);
+assert.match(page, /<h1 id="player-lab-title">GOOD PLAYERS\./);
+assert.match(page, /<Image src="\/images\/homepage\/bench-wide\.webp"/);
+assert.doesNotMatch(page, /TrackingNotice|Feed checked|Last stored sync|player-lab-context/);
+assert.match(page, /href="#lab-tools"/);
+assert.match(toolShell, /initialTool = "lines"/);
+assert.match(toolShell, /hidden=\{selected !== tool.id\}/);
 assert.match(page, /fetchChannelMessages\(\)/);
 assert.match(page, /getHockeySeason\(\)/);
 assert.match(page, /parseAllSeasons\(messages\)\.filter\(\(s\) => s\.season !== "2025"\)/);
 assert.match(page, /chelstatsToSeasonData\(FROZEN_CHELSTATS\.members\)/);
 for (const consumer of [page, statsPage]) {
   assert.match(consumer, /season\.status === "connected" \|\| season\.status === "stale"/);
-  assert.match(consumer, /<TrackingNotice state=\{season\}/);
 }
 assert.match(page, /season\.status === "awaiting-setup" \? HOCKEY_SEASON : undefined/);
 assert.match(page, /\.\.\.\(currentStats \? \[currentStats\] : \[\]\),\s*\.\.\.archives/);
@@ -273,7 +277,7 @@ const labCss = readFileSync("src/app/lab/comparison-lab.css", "utf8");
 assert.doesNotMatch(labCss, /stats-edition|max-width:\s*1600px|gradient\(/);
 assert.match(
   labCss,
-  /\.lab-console\s*\{[^}]*width:\s*100%;[^}]*max-width:\s*none;/,
+  /\.lab-console\s*\{[^}]*width:\s*100%;/,
 );
 const pageCss = readFileSync("src/app/lab/lab.css", "utf8");
 for (const color of ["#006775", "#320d48", "#f0efeb", "#0b0c0d"])
@@ -282,8 +286,10 @@ assert.match(pageCss, /barlow-condensed\.ttf/);
 const lab = readFileSync("src/app/lab/components/HeadToHeadCard.tsx", "utf8");
 assert.match(lab, /id="comparison"/);
 assert.match(lab, /pendingSeason &&/);
-assert.match(lab, /tracking is pending/);
-assert.match(lab, /— means not recorded, never zero/);
+assert.match(lab, /player stats are not available yet/);
+assert.doesNotMatch(lab, /<select|tracking is pending|lab-snapshot/);
+assert.match(lab, /<LabSelect/);
+assert.match(lab, /— means unavailable, not zero/);
 assert.match(lab, /useState<ChartView>\("radar"\)/);
 for (const component of [
   "RadarChart",
@@ -293,7 +299,8 @@ for (const component of [
 ])
   assert.ok(lab.includes(`<${component}`));
 const tracking = readFileSync("src/components/season/SeasonTracking.tsx", "utf8");
-for (const status of ["connected", "stale", "unavailable", '"awaiting-setup"']) assert.ok(tracking.includes(`${status}:`));
+assert.match(tracking, /if \(status === "connected"\) return null;/);
+for (const status of ["stale", "unavailable", '"awaiting-setup"']) assert.ok(tracking.includes(`${status}:`));
 assert.match(tracking, /state\?: HockeySeasonState/);
 assert.match(tracking, /state\.updatedAt/);
 assert.match(tracking, /state\.syncedAt/);
@@ -301,11 +308,14 @@ assert.match(tracking, /state\.coverage\.storedMatches/);
 const matchesClient = readFileSync("src/app/matches/MatchesClient.tsx", "utf8");
 assert.match(matchesClient, /season="2026-2027"/);
 assert.match(matchesClient, /season="2025-2026"/);
-assert.match(matchesClient, /\?season=\$\{season\}/);
+assert.match(matchesClient, /matchDetailHref\(match, season\)/);
+assert.match(readFileSync("src/app/matches/hub-utils.ts", "utf8"), /\?season=\$\{season\}/);
 assert.doesNotMatch(matchesClient, /\/#next|matches\.slice\(/);
 const detail = readFileSync("src/app/matches/[id]/page.tsx", "utf8");
-assert.match(detail, /requestedSeason === "2025-2026" \? null : await getHockeySeason/);
-assert.match(detail, /requestedSeason === "2026-2027" \|\| currentMatch \? \[\] : await getAllMatchesForRecords/);
+assert.match(detail, /getMatchDetail\(id, requestedSeason\)/);
+const detailLookup = readFileSync("src/lib/match-detail.ts", "utf8");
+assert.match(detailLookup, /requestedSeason !== "2025-2026"/);
+assert.match(detailLookup, /if \(requestedSeason === "2026-2027"\) return null/);
 console.log(
   "Player comparison: independent seasons, rates, missing data, signed values and standalone /lab ownership and honest season boundaries passed.",
 );

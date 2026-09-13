@@ -50,3 +50,13 @@ html{scrollbar-gutter:stable;scroll-padding-top:calc(var(--site-header-height) +
  .hockey-site .legacy-site-links a{padding:13px 10px;border:1px solid #ffffff22}
  .hockey-site .legacy-site-links a[aria-current=page]{border-color:#68c8ce;background:#00677526}
 }
+
+/* One content rail across hockey and FC, without narrowing the header paint. */
+.legacy-nav-inner { padding-inline: max(var(--site-gutter), calc((100% - var(--site-content-max)) / 2)); }
+.legacy-subnav { padding-inline: max(var(--site-gutter), calc((100% - var(--site-content-max)) / 2)); }
+@media (max-width: 950px) {
+  .legacy-site-links { padding-inline: var(--site-gutter); }
+}
+@media (min-width: 951px) and (max-width: 1250px) {
+  .hockey-site .legacy-site-links { padding-inline: var(--site-gutter); }
+}

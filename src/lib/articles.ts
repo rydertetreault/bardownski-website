@@ -9,6 +9,12 @@
 import { Redis } from "@upstash/redis";
 import { articles as manualArticles, type Article } from "@/lib/news";
 import type { WeeklyPlayer } from "@/lib/discord";
+import { getNicknameText } from "@/lib/nicknames";
+
+// Public copy only: retain storage IDs, dates, media URLs and source records.
+function displayArticle(article: Article): Article {
+  return {...article, title:getNicknameText(article.title), summary:getNicknameText(article.summary)};
+}
 
 /* ── Redis client (lazy — only created when env vars exist) ─────────── */
 
@@ -44,7 +50,7 @@ export async function getAllArticles(): Promise<Article[]> {
 
   const all = [...deduped, ...manualArticles];
   all.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  return all;
+  return all.map(displayArticle);
 }
 
 /** Get a single article by ID. */
@@ -54,13 +60,15 @@ export async function getArticleById(id: string): Promise<Article | null> {
     try {
       const redis = getRedis();
       if (!redis) return null;
-      return (await redis.get<Article>(`article:${id}`)) ?? null;
+      const article = await redis.get<Article>(`article:${id}`);
+      return article ? displayArticle(article) : null;
     } catch {
       return null;
     }
   }
   // Manual articles
-  return manualArticles.find((a) => a.id === id) ?? null;
+  const article = manualArticles.find((a) => a.id === id);
+  return article ? displayArticle(article) : null;
 }
 
 /** Get the current Player of the Week from KV. */

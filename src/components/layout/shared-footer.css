@@ -1,0 +1,43 @@
+/* Shared footer typography/geometry never inherits a route's display fonts. */
+.shared-site-footer {
+  --footer-bg: #0a1417;
+  --footer-text: #f0efeb;
+  --footer-muted: #a5babc;
+  --footer-accent: #68c8ce;
+  --footer-line: #2b4146;
+  background: var(--footer-bg);
+  color: var(--footer-text);
+  border-top: 1px solid var(--footer-line);
+  font: 400 14px/1.6 Arial, Helvetica, sans-serif;
+}
+.shared-site-footer--lavender {
+  --footer-bg: #e7ddec;
+  --footer-text: #321d3c;
+  --footer-muted: #65526c;
+  --footer-accent: #633477;
+  --footer-line: #c8b8cf;
+}
+.shared-site-footer * { box-sizing: border-box; }
+.shared-site-footer > .site-content-container { padding-block: 48px; }
+.shared-site-footer .shared-footer-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 32px; }
+.shared-site-footer :is(h2,p,ul) { margin: 0; }
+.shared-site-footer ul { padding: 0; list-style: none; }
+.shared-site-footer li + li { margin-top: 8px; }
+.shared-site-footer h2 { margin-bottom: 16px; color: var(--footer-accent); font: 600 14px/1.6 Arial,Helvetica,sans-serif; letter-spacing: .05em; text-transform: uppercase; }
+.shared-site-footer a { color: var(--footer-muted); text-decoration: none; }
+.shared-site-footer a:hover { color: var(--footer-text); text-decoration: underline; text-underline-offset: 4px; }
+.shared-site-footer a:focus-visible { outline: 2px solid var(--footer-accent); outline-offset: 5px; }
+.shared-site-footer .shared-footer-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; color: var(--footer-text); text-decoration: none; }
+.shared-site-footer .shared-footer-brand span { font: 700 20px/1.4 Arial,Helvetica,sans-serif; }
+.shared-site-footer .shared-footer-brand img { flex: 0 0 32px; width: 32px; height: 32px; object-fit: contain; }
+.shared-site-footer--lavender .shared-footer-brand img { filter: brightness(0); opacity: .82; }
+.shared-site-footer .shared-footer-about p { color: var(--footer-muted); }
+.shared-site-footer .shared-footer-social { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; color: var(--footer-accent); }
+.shared-site-footer .shared-footer-social svg { width: 24px; height: 24px; }
+.shared-site-footer .shared-footer-bottom { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--footer-line); color: var(--footer-muted); text-align: center; }
+.shared-site-footer .shared-footer-bottom .club-mark { color: var(--footer-accent); }
+@media(max-width:767px){
+  .shared-site-footer .shared-footer-grid { grid-template-columns: minmax(0,1fr); }
+}
+/* Retain the original social mark without a broken placeholder navigation. */
+.shared-site-footer .shared-footer-social--unavailable { cursor: default; opacity: .65; }

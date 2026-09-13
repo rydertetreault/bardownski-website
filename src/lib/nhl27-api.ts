@@ -1,5 +1,6 @@
 /** Isolated NHL27 ingestion. No archive imports, persistence, or season overrides. */
 import type { ChelstatsData, ClubMatch, ClubMember, ClubStats, MatchPlayerStat } from "./chelstats";
+import { parseClubCrest } from "./club-crest";
 
 export const NHL27_IDENTITY = Object.freeze({
   gameTitle: "NHL27",
@@ -193,6 +194,7 @@ function game(value: unknown, matchType: ClubMatch["matchType"]): ClubMatch {
   }
   if (opponent.opponentClubId != null) equal(id(opponent.opponentClubId, `${p}.opponent.opponentClubId`), NHL27_IDENTITY.clubId, `${p}.opponent.opponentClubId`);
   const details = optionalRow(opponent.details, `${p}.opponent.details`);
+  const opponentCrest = parseClubCrest(details.customKit);
   const rawPlayers = optionalRow(r.players, `${p}.players`);
   const allPlayers: Nhl27MatchPlayerStat[] = [];
   for (const [clubId, values] of Object.entries(rawPlayers)) {
@@ -211,6 +213,8 @@ function game(value: unknown, matchType: ClubMatch["matchType"]): ClubMatch {
     id: id(r.matchId, `${p}.matchId`), timestamp,
     date: new Date(timestamp * 1000).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }),
     opponent: details.name == null ? `Club #${opponentId}` : text(details.name, `${p}.opponent.details.name`),
+    opponentClubId: opponentId,
+    ...(opponentCrest ? { opponentCrest } : {}),
     homeAway: side === 0 ? "home" : "away", matchType,
     // Never use recentScore strings, result codes, or the opponent's score to invent a score.
     scoreUs: count(ours, "score", `${p}.clubs.29202`), scoreThem: count(ours, "opponentScore", `${p}.clubs.29202`),
