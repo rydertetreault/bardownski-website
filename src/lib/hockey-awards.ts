@@ -3,6 +3,9 @@ import { computeMvpOddsFromMembers, type ChelstatsData, type ClubMember, type Cl
 
 export interface SeasonMvpEntry {
   name: string; position: string; isGoalie: boolean; score: number; rank: number; games: number;
+  /** Season totals for the scored role, straight from the source member row. */
+  goals: number; assists: number; points: number;
+  saves: number; savePct: number; gaa: number; shutouts: number;
 }
 export type AwardPosition = "F" | "D" | "G";
 export interface WeeklyAwardEntry {
@@ -65,6 +68,8 @@ const text = (v: unknown): string => typeof v === "string" ? v.trim().replace(/\
 const key = (v: unknown) => text(v).toLowerCase();
 const finite = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
 const count = (v: unknown): v is number => finite(v) && Number.isSafeInteger(v) && v >= 0;
+// Display totals only; the score never depends on these and an unreported total shows as 0.
+const total = (v: unknown): number => finite(v) && v >= 0 ? v : 0;
 const compare = (a: string, b: string) => a < b ? -1 : a > b ? 1 : 0;
 function ranked<T extends { score: number; rank: number; name: string; position: string }>(entries: T[]): T[] {
   entries.sort((a, b) => b.score - a.score || compare(a.name, b.name) || compare(a.position, b.position));
@@ -96,7 +101,11 @@ export function calculateSeasonMvp(members: ClubMember[]): SeasonMvpEntry[] {
     for (const result of computeMvpOddsFromMembers([safe])) {
       if (!finite(result.score)) continue;
       const entry: SeasonMvpEntry = { name: result.name, position: result.position, isGoalie: result.isGoalie,
-        score: result.score, rank: 0, games: result.isGoalie ? m.goalieGP : m.gamesPlayed };
+        score: result.score, rank: 0, games: result.isGoalie ? m.goalieGP : m.gamesPlayed,
+        goals: result.isGoalie ? 0 : total(m.goals), assists: result.isGoalie ? 0 : total(m.assists),
+        points: result.isGoalie ? 0 : total(m.goals) + total(m.assists),
+        saves: result.isGoalie ? total(m.goalieSaves) : 0, savePct: result.isGoalie ? total(m.savePct) : 0,
+        gaa: result.isGoalie ? total(m.gaa) : 0, shutouts: result.isGoalie ? total(m.shutouts) : 0 };
       const identity = key(m.username);
       const previous = best.get(identity);
       if (!previous || entry.score > previous.score || (entry.score === previous.score &&

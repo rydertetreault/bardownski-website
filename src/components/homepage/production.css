@@ -17,8 +17,7 @@
 /* The shared shell already supplies 142px of document scroll padding. Add
    only the in-page navigation clearance, not the fixed header a second time. */
 .bd-home.demo-10 [id] { scroll-margin-top:80px; }
-/* Native view transitions and motion preferences never affect other routes. */
-html:has(.bd-home) { view-transition-name:none; }
+/* Motion preferences never affect other routes. */
 html:has(.bd-home.motion-off) { scroll-behavior:auto; }
 @media(max-width:700px){
  .bd-home .motion-toggle { font-size:9px;padding:7px; }
@@ -89,3 +88,15 @@ html:has(.bd-home.motion-off) { scroll-behavior:auto; }
 .bd-home.demo-10 .home-signoff .footer-wordmark { color: var(--text); font-size: clamp(40px, 12vw, 154px); }
 .bd-home.demo-10 .home-signoff .footer-wordmark > span,
 .bd-home.demo-10 .home-signoff .footer-bottom a { color: var(--accent); }
+
+/* MVP tracker shows season role totals, never the internal model score. The
+   totals live only in the expanded panel, on one row above the note. */
+.bd-home .rank-details { flex-wrap: wrap; gap: 20px 35px; }
+.bd-home .rank-details dl.rank-stat-line { flex: 0 0 100%; flex-wrap: nowrap; gap: clamp(24px, 4vw, 56px); }
+.bd-home .rank-details dl.rank-stat-line > div { flex: 0 0 auto; min-width: 0; }
+.bd-home .rank-details dl.rank-stat-line dd { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bd-home .rank-details p { max-width: 300px; }
+@media (max-width: 700px) {
+  .bd-home .rank-details dl.rank-stat-line { gap: 18px; }
+  .bd-home .rank-details dd { font-size: 26px; }
+}

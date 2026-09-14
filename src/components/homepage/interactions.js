@@ -8,22 +8,13 @@ const {document, MutationObserver} = runtime;
 const modal = document.querySelector("dialog");
 let opener = null;
 
-// Progressive view transitions are restricted to Variation 4. Native buttons,
-// dialogs and content updates continue to work without API support or motion.
-let activeTransition = null;
+// Content swaps animate only the replaced element. document.startViewTransition
+// is deliberately not used: it snapshots the whole document, and Chrome repaints
+// the fixed, backdrop-filtered site header from that snapshot for a frame, which
+// made the navigation flash or vanish when changing club photos or seasons.
 function transitionUpdate(update, target) {
-  if (
-
-    document.body.classList.contains("motion-enabled") &&
-    document.startViewTransition
-  ) {
-    activeTransition?.skipTransition();
-    activeTransition = document.startViewTransition(update);
-    activeTransition.finished.catch(() => {});
-  } else {
-    update();
-    if (target) replayEntrance(target);
-  }
+  update();
+  if (target) replayEntrance(target);
 }
 function replayEntrance(element) {
   if (
@@ -266,10 +257,8 @@ if (document.querySelector(".album-stage")) {
   );
 }
 
-  runtime.onDispose(() => { activeTransition?.skipTransition(); });
   new MutationObserver(() => {
     if (!document.body.classList.contains("motion-off")) return;
-    activeTransition?.skipTransition();
     document.querySelectorAll(".modal-body,[data-season-panel],[data-album-image]").forEach(el => el.getAnimations().forEach(a => a.cancel()));
   }).observe(document.body,{attributes:true,attributeFilter:["class"]});
 }

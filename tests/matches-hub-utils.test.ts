@@ -5,6 +5,7 @@ import {
   PREVIOUS_SEASON_WIN_STREAK,
   currentWinRun,
   filterMatches,
+  hasMatchReportData,
   matchDetailHref,
   sortMatches,
   type MatchFilter,
@@ -101,13 +102,30 @@ describe("matchDetailHref", () => {
     assert.notEqual(links[0], links[1]);
   });
 
-  it("does not link live, upcoming, or forfeited games in either season", () => {
+  it("does not link live, upcoming, or data-less forfeits in either season", () => {
     const seasons: MatchSeason[] = ["2026-2027", "2025-2026"];
+    const zeroLine = { name: "MATT", position: "center", isGoalie: false, isOurPlayer: true, goals: 0, assists: 0, hits: 0, shots: 0,
+      plusMinus: 0, pim: 0, powerPlayGoals: 0, shortHandedGoals: 0, gameWinningGoal: 0, saves: 0, shotsAgainst: 0, goalsAgainst: 0, savePct: 0 };
     for (const season of seasons) {
       for (const status of ["live", "upcoming"] as const) {
         assert.equal(matchDetailHref(match(status, 1, { status }), season), null);
       }
       assert.equal(matchDetailHref(match("forfeit", 1, { forfeit: true }), season), null);
+      assert.equal(matchDetailHref(match("forfeit-empty", 1, { forfeit: true, shotsUs: 0, shotsThem: 0, toaUs: "0:00", toaThem: "0:00", passCompUs: 0, players: [zeroLine] }), season), null);
+    }
+  });
+
+  it("links forfeits that recorded play before the opponent quit", () => {
+    const zeroLine = { name: "MATT", position: "center", isGoalie: false, isOurPlayer: true, goals: 0, assists: 0, hits: 0, shots: 0,
+      plusMinus: 0, pim: 0, powerPlayGoals: 0, shortHandedGoals: 0, gameWinningGoal: 0, saves: 0, shotsAgainst: 0, goalsAgainst: 0, savePct: 0 };
+    const played = [
+      match("shots", 1, { forfeit: true, shotsUs: 7, shotsThem: 1 }),
+      match("toa", 1, { forfeit: true, shotsUs: 0, shotsThem: 0, toaUs: "0:04" }),
+      match("line", 1, { forfeit: true, shotsUs: 0, players: [{ ...zeroLine, hits: 0, plusMinus: 0, goals: 0, assists: 0, pim: 0, shots: 0, saves: 0, shotsAgainst: 0, goalsAgainst: 0, savePct: 0, powerPlayGoals: 0, shortHandedGoals: 0, gameWinningGoal: 0, ...({ giveaways: 2 } as object) }] }),
+    ];
+    for (const entry of played) {
+      assert.equal(hasMatchReportData(entry), true, entry.id);
+      assert.equal(matchDetailHref(entry, "2026-2027"), `/matches/${entry.id}?season=2026-2027`);
     }
   });
 

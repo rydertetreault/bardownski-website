@@ -6205,38 +6205,8 @@
     opacity: 1 !important;
   }
 }
-:where(.bd-home).demo-10 [data-season-panel] {
-  view-transition-name: home-club-season;
-}
-:where(.bd-home).demo-10 [data-album-image] {
-  view-transition-name: home-club-photos;
-}
-html:has(.bd-home)::view-transition-group(*) {
-  animation-duration: 0.4s;
-}
-html:has(.bd-home)::view-transition-old(home-club-season),
-html:has(.bd-home)::view-transition-old(home-club-photos) {
-  animation: home-variation-four-out 0.25s both;
-}
-html:has(.bd-home)::view-transition-new(home-club-season),
-html:has(.bd-home)::view-transition-new(home-club-photos) {
-  animation: home-variation-four-content 0.4s both;
-}
-@keyframes home-variation-four-out {
-  to {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-}
 :where(.bd-home).demo-10 .history-image {
   overflow: hidden;
-}
-@media (prefers-reduced-motion: reduce) {
-  html:has(.bd-home)::view-transition-group(*),
-html:has(.bd-home)::view-transition-old(*),
-html:has(.bd-home)::view-transition-new(*) {
-    animation: none !important;
-  }
 }
 
 

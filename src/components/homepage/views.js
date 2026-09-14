@@ -4,6 +4,8 @@ export const escape = (value) => String(value).replace(/[&<>"']/g, c => ({"&":"&
 import { getNickname, getDisplayNameFromGamertag, getNicknameText } from "@/lib/nicknames";
 import { HOCKEY_SEASON } from "@/lib/hockey-season-state";
 import { SEASON_REVEAL } from "@/lib/season-reveal";
+import { getPlayerPhoto, FALLBACK_PLAYER_PHOTOS } from "@/lib/player-photos";
+import { matchDetailHref } from "@/app/matches/hub-utils";
 import { homeArchive as a } from "./home-data";
 // Published articles use both ISO dates and long English calendar dates.
 export const articleDate = (value) => {
@@ -11,8 +13,8 @@ export const articleDate = (value) => {
   return Number.isNaN(date.getTime()) ? null : date.toISOString().slice(0, 10);
 };
 export const num = (n) => Number(n).toLocaleString("en-US");
-export const photo = (file, alt, cls = "", eager = false, position = "center") =>
-  `<img class="${cls}" src="/images/homepage/${file}.webp" alt="${escape(alt)}" style="object-position:${position}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`;
+export const photo = (file, alt, cls = "", eager = false, position = "center", src = `/images/homepage/${file}.webp`) =>
+  `<img class="${cls}" src="${escape(src)}" alt="${escape(alt)}" style="object-position:${position}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`;
 const name = (p) => (getNickname(p.name) === "JENE RENE TETREAU IV" ? "JRT IV" : getNickname(p.name));
 const role = (p) =>
   p.role === "G" ? "GOALTENDER" : p.role === "D" ? "DEFENSE" : "FORWARD";
@@ -49,7 +51,7 @@ function currentResults(season) {
     const scored = m.scoreUs !== null && m.scoreThem !== null;
     const result = scored ? m.scoreUs > m.scoreThem ? "W" : m.scoreUs < m.scoreThem ? "L" : "T" : "—";
     const content = `<span class="result-letter ${result === "W" ? "win" : "loss"}">${result}</span><span class="result-team"><b>${escape(m.opponent)}</b><small>${escape(m.date)}${m.forfeit ? " · Forfeit" : ""}</small></span><strong>${m.scoreUs ?? "—"}<i>–</i>${m.scoreThem ?? "—"}</strong><span class="result-arrow" aria-hidden="true">↗</span>`;
-    return `<a class="result-row" href="${m.forfeit ? "/matches#results" : `/matches/${encodeURIComponent(m.id)}?season=2026-2027`}">${content}</a>`;
+    return `<a class="result-row" href="${matchDetailHref(m, "2026-2027") ?? "/matches#results"}">${content}</a>`;
   }).join("");
   return `<section class="results-card module score-strip cut-results" id="results" data-module="matches" data-reveal>${head(`RECENT MATCHES / ${HOCKEY_SEASON}`, "Recent matches", '<a class="text-link" href="/matches">All matches ↗</a>')}<div class="result-rows">${rows || `<p class="fine">${season?.status === "unavailable" ? "Recent results are temporarily unavailable." : "No results yet this season."}</p>`}</div>${season?.status === "stale" ? '<small class="fine">Latest available results.</small>' : ""}</section>`;
 }
@@ -119,23 +121,36 @@ function cinemaHero(extraClass = "") {
   return `<section class="cinema-hero${extraClass ? ` ${extraClass}` : ""}" data-load><div class="cinema-backdrop">${photo("history-2022", "Overhead view of a Bardownski goaltender in the blue crease with a white-jersey teammate nearby", "", true, "50% 60%")}</div><div class="cinema-topline"><span><i aria-hidden="true">▶</i> BARDOWNSKI HOCKEY CLUB</span><span>TEAM UPDATES / SEASON 2026–2027</span></div><div class="hero-copy">${tag("WELCOME TO BARDOWNSKI HOCKEY")}<h1>HOME ICE.<br><em>THE NEXT SHIFT.</em></h1><p>Watch team highlights and catch up on results,<br>player performances and club news.</p><div class="actions"><a class="button" href="#results">VIEW RECENT MATCHES ↘</a><a href="#highlights" class="text-link">Browse highlights ↓</a></div></div><div class="cinema-bottom"><span>2026–2027 SEASON</span><span>NEWFOUNDLAND / EST. 2020</span><span>BARDOWNSKI HOCKEY</span></div></section>`;
 }
 
-/** @param {import("@/lib/hockey-awards").HockeyAwards|null} awards @param {boolean} stale */
+/** Announced Player of the Week only: the winner(s) of the last completed Monday-to-Monday
+ * week, published by the sync job. In-progress leaders and projections are never shown.
+ * @param {import("@/lib/hockey-awards").HockeyAwards|null} awards @param {boolean} stale */
 function currentWeekly(awards, stale) {
-  const week = awards?.currentWeek;
-  const leaders = week?.leaders ?? [];
+  const week = awards?.lastCompletedWeek;
+  const winners = week?.status === "complete" ? week.winners ?? [] : [];
   const playerName = p => escape(getNickname(getDisplayNameFromGamertag(p.name)));
-  const title = leaders.length ? leaders.map(playerName).join(" / ") : "The week is open.";
-  const player = leaders[0];
-  const qualifier = player?.eligible ? "PLAYER OF THE WEEK / CURRENT LEADER" : player ? "PLAYER OF THE WEEK / PROVISIONAL LEADER" : "PLAYER OF THE WEEK";
-  const stats = player ? [["GAMES",player.games],[player.isGoalie?"SAVES":"POINTS",player.isGoalie?player.saves:player.points],[player.isGoalie?"SHUTOUTS":"GOALS",player.isGoalie?player.shutouts:player.goals]] : [];
-  const weekDate = week ? new Date(week.start).toLocaleDateString("en-US", {month:"long",day:"numeric",year:"numeric",timeZone:"UTC"}) : null;
-  const previous = awards?.lastCompletedWeek;
-  return `<section class="weekly-story section film-weekly cut-weekly" id="weekly" data-module="weekly" data-scroll><div class="weekly-image" data-reveal>${photo(player?.isGoalie ? "goalie-purple" : "player-purple", "Bardownski club photo, not a portrait of the weekly leader")}<span class="image-caption">BARDOWNSKI HOCKEY</span><span class="weekly-seal" aria-hidden="true">PLAYER<br>OF THE<br>WEEK ★</span></div><article class="weekly-copy" data-reveal>${tag(`${qualifier} / ${HOCKEY_SEASON}`)}<h2>${title}</h2><p>${weekDate ? `Week of ${escape(weekDate)}. ${leaders.length ? "The race is still in progress." : "This week’s performances will appear here as games are played."}` : "This week’s standings are temporarily unavailable."}${stale ? " Showing the latest available performances." : ""}</p><div class="mini-stats">${stats.map(([label,value])=>`<div><strong>${num(value)}</strong><small>${label}</small></div>`).join("")}</div><a class="text-link" href="/stats#weekly-tracker">Weekly standings ↗</a><small class="fine">Minimum three games in a role to qualify. The week closes Monday at 00:00 UTC.</small>${previous?.winners.length ? `<p class="weekly-previous-winner">Last week: ${previous.winners.map(playerName).join(" / ")}</p>` : ""}</article></section>`;
+  const player = winners[0];
+  const title = player ? winners.map(playerName).join(" / ") : "Awaiting the first announcement.";
+  const stats = player ? (player.isGoalie
+    ? [["GAMES",num(player.games)],["SV%",`${(Number.isFinite(player.savePct)?player.savePct:0).toFixed(1)}%`],["SHUTOUTS",num(player.shutouts)]]
+    : [["GAMES",num(player.games)],["GOALS",num(player.goals)],["ASSISTS",num(player.assists)],["POINTS",num(player.points)]]) : [];
+  const fmt = iso => new Date(iso).toLocaleDateString("en-US", {month:"long",day:"numeric",timeZone:"UTC"});
+  // The stored end is the following Monday (exclusive); label the Sunday it covered.
+  const weekLabel = player ? `Week of ${escape(fmt(week.start))} – ${escape(fmt(new Date(Date.parse(week.end) - 1).toISOString()))}` : null;
+  const image = player ? getPlayerPhoto(player.name, player.isGoalie) : FALLBACK_PLAYER_PHOTOS.skater;
+  return `<section class="weekly-story section film-weekly cut-weekly" id="weekly" data-module="weekly" data-scroll><div class="weekly-image" data-reveal>${photo("", image.alt, "", false, "center", image.src)}<span class="image-caption">BARDOWNSKI HOCKEY</span><span class="weekly-seal" aria-hidden="true">PLAYER<br>OF THE<br>WEEK ★</span></div><article class="weekly-copy" data-reveal>${tag(`PLAYER OF THE WEEK / ${HOCKEY_SEASON}`)}<h2>${title}</h2><p>${player ? `${weekLabel}. ${winners.length > 1 ? "Shared honors for a tied week." : "Announced after the week closed Monday at 00:00 UTC."}` : "The first Player of the Week is announced once a full week of games is complete. No projections in the meantime."}${stale ? " Showing the latest saved announcement." : ""}</p><div class="mini-stats">${stats.map(([label,v])=>`<div><strong>${escape(v)}</strong><small>${label}</small></div>`).join("")}</div><a class="text-link" href="/stats#weekly-honors">All Player of the Week wins ↗</a><small class="fine">Minimum three games in a role to qualify. Winners are announced each Monday at 00:00 UTC.</small></article></section>`;
+}
+/** Season role totals shown instead of the internal model score. */
+export function mvpStatLine(p) {
+  const n = (v) => num(Number.isFinite(v) && v >= 0 ? v : 0);
+  return p.isGoalie
+    ? [["GP", n(p.games)], ["SV%", `${(Number.isFinite(p.savePct) && p.savePct >= 0 ? p.savePct : 0).toFixed(1)}%`], ["GAA", (Number.isFinite(p.gaa) && p.gaa >= 0 ? p.gaa : 0).toFixed(2)], ["SO", n(p.shutouts)]]
+    : [["GP", n(p.games)], ["G", n(p.goals)], ["A", n(p.assists)], ["PTS", n(p.points)]];
 }
 /** @param {import("@/lib/hockey-awards").HockeyAwards|null} awards @param {boolean} stale */
 function currentRankings(awards, stale) {
   const players = awards?.seasonMvp ?? [];
-  return `<div class="section cut-desk open-rank-section"><section class="mvp-card open-rankings" id="standings" data-module="mvp"><div class="rank-intro" data-reveal><div>${tag("MVP TRACKER / 2026–2027")}<h2>MVP tracker</h2><p>Current-season position-adjusted performance scores. Five games in a scored role unlock eligibility.${stale ? " Showing the last saved current-season totals." : ""}</p></div><div class="rank-leader-note"><span>CURRENT MODEL LEADER</span><strong>${players[0] ? escape(getNickname(getDisplayNameFromGamertag(players[0].name))) : "Awaiting eligible players"}</strong><small>Not a final season award</small></div></div><div class="rank-column-labels" aria-hidden="true"><span>RANK</span><span>PLAYER / ROLE</span><span>MODEL SCORE</span></div><div class="standings-preview rank-disclosures">${players.slice(0,3).map((p,i)=>`<details class="rank-entry" name="mvp-preview" ${i===0?"open":""}><summary class="standing-row"><span class="rank-number">${String(p.rank).padStart(2,"0")}</span><b>${escape(getNickname(getDisplayNameFromGamertag(p.name)))}<small>${escape(p.position)} · ${p.games} GP</small></b><strong>${Number(p.score).toFixed(2)}</strong><span class="rank-toggle-icon" aria-hidden="true">+</span><i class="rank-meter" style="--score:${players[0].score>0?Math.max(0,p.score)/players[0].score:0}" aria-hidden="true"></i></summary><div class="rank-details"><p>${p.isGoalie?"Goaltender":"Skater"} performance over ${p.games} games in the scored role. Each player appears once at their strongest eligible role.</p><a href="/stats#numbers" class="text-link">Current player statistics ↗</a></div></details>`).join("")}${players.length?"":'<p class="fine">No eligible rankings yet this season.</p>'}</div><div class="rank-footer"><a class="text-link" href="/stats#standings">Full MVP standings & scoring ↗</a><small class="fine">Current-season model scores. Not votes or odds.</small></div></section></div>`;
+  const role = (p) => (p.isGoalie ? "G" : escape(p.position));
+  return `<div class="section cut-desk open-rank-section"><section class="mvp-card open-rankings" id="standings" data-module="mvp"><div class="rank-intro" data-reveal><div>${tag("MVP TRACKER / 2026–2027")}<h2>MVP tracker</h2><p>Current-season position-adjusted performance rankings. Five games in a scored role unlock eligibility.${stale ? " Showing the last saved current-season totals." : ""}</p></div><div class="rank-leader-note"><span>CURRENT LEADER</span><strong>${players[0] ? escape(getNickname(getDisplayNameFromGamertag(players[0].name))) : "Awaiting eligible players"}</strong><small>Not a final season award</small></div></div><div class="rank-column-labels" aria-hidden="true"><span>RANK</span><span>PLAYER / ROLE</span><span>SEASON TOTALS</span></div><div class="standings-preview rank-disclosures">${players.slice(0,3).map((p,i)=>`<details class="rank-entry" name="mvp-preview" ${i===0?"open":""}><summary class="standing-row"><span class="rank-number">${String(p.rank).padStart(2,"0")}</span><b>${escape(getNickname(getDisplayNameFromGamertag(p.name)))}<small>${role(p)} · ${p.games} GP</small></b><span class="rank-toggle-icon" aria-hidden="true">+</span><i class="rank-meter" style="--score:${players[0].score>0?Math.max(0,p.score)/players[0].score:0}" aria-hidden="true"></i></summary><div class="rank-details"><dl class="rank-stat-line">${mvpStatLine(p).map(([label,value])=>`<div><dt>${label}</dt><dd>${value}</dd></div>`).join("")}</dl><p>${p.isGoalie?"Goalie":"Skater"} totals over ${p.games} games in the scored role. Each player appears once at their strongest eligible role.</p><a href="/stats#numbers" class="text-link">Current player statistics ↗</a></div></details>`).join("")}${players.length?"":'<p class="fine">No eligible rankings yet this season.</p>'}</div><div class="rank-footer"><a class="text-link" href="/stats#standings">Full MVP standings & scoring ↗</a><small class="fine">Current-season rankings. Not votes or odds.</small></div></section></div>`;
 }
 
 function pageThread() {
@@ -158,7 +173,7 @@ export function renderHome(items = a.news, season = null) {
   return `${cinemaHero("v4-film-hero")}${pageThread()}
   <nav class="mono-section-nav" aria-label="Homepage sections"><span class="mono-nav-label">ON THIS PAGE</span><div>${[["results","Matches"],["weekly","Weekly player"],["standings","MVP tracker"],["highlights","Highlights"],["news","News"],["history","Past seasons"]].map(([id,label])=>`<a href="#${id}" data-section-link="${id}">${label}</a>`).join("")}</div><button class="motion-toggle" aria-pressed="false" hidden>Pause animations</button><span class="mono-nav-progress" aria-hidden="true"></span></nav>
   ${currentResults(current)}
-  <div class="interlude cut-interlude" data-scroll>${logoReveal()}<span class="cut-label">2026–2027 / PLAYER OF THE WEEK</span><p>Every shift counts.</p><em>The race is on.</em><span class="interlude-line" aria-hidden="true"></span></div>
+  <div class="interlude cut-interlude" data-scroll>${logoReveal()}<span class="cut-label">2026–2027 / PLAYER OF THE WEEK</span><p>Every shift counts.</p><em>Announced every Monday.</em><span class="interlude-line" aria-hidden="true"></span></div>
   ${currentWeekly(awards, stale)}
   ${sectionCut("to-rankings")}${currentRankings(awards, stale)}${sectionCut("from-rankings")}
   ${highlightList()}${sectionCut("to-news")}${news("cut-news","Recent news",items)}

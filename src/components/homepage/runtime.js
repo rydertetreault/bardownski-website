@@ -25,9 +25,9 @@ export function createHomeRuntime(root) {
     get activeElement() { return document.activeElement; },
     get fonts() { return document.fonts; },
     addEventListener: (type, fn, options) => listen(root, type, fn, options),
-    startViewTransition: document.startViewTransition
-      ? callback => document.startViewTransition(() => { if (active) callback(); })
-      : undefined,
+    // Whole-document view transitions are intentionally unavailable: Chrome
+    // snapshots the fixed site header and flashes it during the swap.
+    startViewTransition: undefined,
   };
   function observerClass(Base) {
     return class extends Base {

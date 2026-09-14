@@ -5,7 +5,7 @@ import { renderHome } from "../src/components/homepage/views";
 import { initHomeInteractions } from "../src/components/homepage/interactions";
 import { homeArchive } from "../src/components/homepage/home-data";
 import type { ChelstatsData, ClubMatch } from "../src/lib/chelstats";
-import type { HockeyAwards, WeeklyAwardEntry, WeeklyAwards } from "../src/lib/hockey-awards";
+import type { HockeyAwards, SeasonMvpEntry, WeeklyAwardEntry, WeeklyAwards } from "../src/lib/hockey-awards";
 import { HOCKEY_SEASON, type HockeySeasonState } from "../src/lib/hockey-season-state";
 import { getDisplayName } from "../src/lib/nicknames";
 import { articles } from "../src/lib/news";
@@ -49,6 +49,9 @@ function weeklyPlayer(overrides: Partial<WeeklyAwardEntry> = {}): WeeklyAwardEnt
     games: 4, score: 175.4, rank: 1, eligible: true, goals: 7, assists: 6, points: 13,
     saves: 0, shotsAgainst: 0, savePct: 0, gaa: 0, shutouts: 0, wins: 3, ...overrides };
 }
+function mvp(overrides: Partial<SeasonMvpEntry> & Pick<SeasonMvpEntry, "name" | "position" | "score" | "rank" | "games">): SeasonMvpEntry {
+  return { isGoalie: false, goals: 0, assists: 0, points: 0, saves: 0, savePct: 0, gaa: 0, shutouts: 0, ...overrides };
+}
 function week(leaders: WeeklyAwardEntry[], complete = false): WeeklyAwards {
   return { start: complete ? "2026-09-07T00:00:00.000Z" : "2026-09-14T00:00:00.000Z",
     end: complete ? "2026-09-14T00:00:00.000Z" : "2026-09-21T00:00:00.000Z",
@@ -61,10 +64,10 @@ function awards(): HockeyAwards {
   return { asOf: AS_OF, currentWeek: week([weeklyPlayer()]),
     lastCompletedWeek: week([weeklyPlayer({ playerId: "previous-winner", name: "s1obbyrobby" })], true),
     seasonMvp: [
-      { name: "Julio 3026", position: "F", isGoalie: false, score: 91.234, rank: 1, games: 8 },
-      { name: "Rydayro", position: "G", isGoalie: true, score: 91.234, rank: 1, games: 6 },
-      { name: "oP wet", position: "D", isGoalie: false, score: 74, rank: 3, games: 9 },
-      { name: "Not in preview", position: "F", isGoalie: false, score: 10, rank: 4, games: 5 },
+      mvp({ name: "Julio 3026", position: "F", score: 91.234, rank: 1, games: 8, goals: 12, assists: 9, points: 21 }),
+      mvp({ name: "Rydayro", position: "G", isGoalie: true, score: 91.234, rank: 1, games: 6, saves: 120, savePct: 84.25, gaa: 2.5, shutouts: 2 }),
+      mvp({ name: "oP wet", position: "D", score: 74, rank: 3, games: 9, goals: 3, assists: 8, points: 11 }),
+      mvp({ name: "Not in preview", position: "F", score: 10, rank: 4, games: 5 }),
     ] };
 }
 type Connected = Extract<HockeySeasonState, { status: "connected" | "stale" }>;
@@ -187,7 +190,9 @@ for (const [label, season] of [
     assertCurrentOnly(root);
     assert.equal(root.querySelectorAll("#results .result-row, #weekly .mini-stats strong, #standings details, .weekly-previous-winner").length, 0);
     assert.match(text(root, "#results"), season?.status === "unavailable" ? /temporarily unavailable/i : /no results yet this season/i);
-    assert.equal(text(root, "#weekly h2"), "The week is open.");
+    assert.equal(text(root, "#weekly h2"), "Awaiting the first announcement.");
+    assert.doesNotMatch(text(root, "#weekly"), /leader|projected|provisional|in progress/i, "Never project a winner");
+    assert.equal(one(root, "#weekly img").getAttribute("src"), "/images/homepage/player-purple.webp");
     assert.equal(text(root, "#standings .rank-leader-note strong"), "Awaiting eligible players");
     assert.match(text(root, "#standings"), /no eligible rankings yet this season/i);
     assert.ok(!root.textContent.includes("Upstream test failure"), "Internal source error is not public copy");
@@ -204,10 +209,10 @@ test("stale state retains supplied current results and awards with local freshne
   assertCurrentOnly(root);
   assert.equal(text(root, "#results .result-team b"), "Current opponent saved-current");
   assert.match(text(root, "#results"), /latest available results/i);
-  assert.equal(text(root, "#weekly h2"), getDisplayName(season.awards!.currentWeek.leaders[0].name));
-  assert.match(text(root, "#weekly"), /latest available performances/i);
+  assert.equal(text(root, "#weekly h2"), getDisplayName(season.awards!.lastCompletedWeek.winners[0].name));
+  assert.match(text(root, "#weekly"), /latest saved announcement/i);
   assert.match(text(root, "#standings"), /last saved current-season totals/i);
-  assert.deepEqual(stats(root), [["GAMES", "4"], ["POINTS", "13"], ["GOALS", "7"]]);
+  assert.deepEqual(stats(root), [["GAMES", "4"], ["GOALS", "7"], ["ASSISTS", "6"], ["POINTS", "13"]]);
 });
 
 test("a wrong-season object cannot relabel archived results or awards as current", () => {
@@ -216,53 +221,65 @@ test("a wrong-season object cannot relabel archived results or awards as current
   const root = render(wrongSeason);
   assertCurrentOnly(root);
   assert.equal(root.querySelectorAll("#results .result-row, #standings details, #weekly .mini-stats strong, .weekly-previous-winner").length, 0);
-  assert.equal(text(root, "#weekly h2"), "The week is open.");
+  assert.equal(text(root, "#weekly h2"), "Awaiting the first announcement.");
   assert.ok(!root.textContent.includes("must-not-appear"));
 });
 
-test("weekly leaders, previous winners and MVP preview use supplied role stats, ranks and shared nickname resolution", () => {
+test("announced weekly winner and MVP preview use supplied role stats, ranks and shared nickname resolution", () => {
   const season = current();
   const before = structuredClone(season);
   const root = render(season);
   const supplied = season.awards!;
   assertCurrentOnly(root);
-  assert.equal(text(root, "#weekly h2"), getDisplayName(supplied.currentWeek.leaders[0].name));
-  assert.match(text(root, "#weekly .eyebrow"), /CURRENT LEADER/);
-  assert.match(text(root, "#weekly"), /Week of September 14, 2026/);
-  assert.match(text(root, "#weekly"), /race is still in progress/i);
-  assert.deepEqual(stats(root), [["GAMES", "4"], ["POINTS", "13"], ["GOALS", "7"]]);
-  assert.equal(text(root, ".weekly-previous-winner"), `Last week: ${getDisplayName(supplied.lastCompletedWeek.winners[0].name)}`);
-  assert.equal(one(root, "#weekly img").getAttribute("src"), "/images/homepage/player-purple.webp");
-  assert.match(one(root, "#weekly img").getAttribute("alt")!, /not a portrait/i);
-  assert.equal(one(root, "#weekly .text-link").getAttribute("href"), "/stats#weekly-tracker");
+  // The announced winner is last week's completed award, never the in-progress leader.
+  assert.equal(text(root, "#weekly h2"), getDisplayName(supplied.lastCompletedWeek.winners[0].name));
+  assert.ok(!text(root, "#weekly").includes(getDisplayName(supplied.currentWeek.leaders[0].name)));
+  assert.doesNotMatch(text(root, "#weekly"), /leader|projected|provisional|in progress/i);
+  assert.match(text(root, "#weekly .eyebrow"), /^PLAYER OF THE WEEK \/ 2026–2027$/);
+  assert.match(text(root, "#weekly"), /Week of September 7 – September 13/);
+  assert.deepEqual(stats(root), [["GAMES", "4"], ["GOALS", "7"], ["ASSISTS", "6"], ["POINTS", "13"]]);
+  assert.equal(root.querySelectorAll(".weekly-previous-winner").length, 0);
+  assert.equal(one(root, "#weekly img").getAttribute("src"), "/images/highlights/sr1.webp", "Announced winner gets their own photo");
+  assert.match(one(root, "#weekly img").getAttribute("alt")!, /Slobby Robby/);
+  assert.equal(one(root, "#weekly .text-link").getAttribute("href"), "/stats#weekly-honors");
   const rows = root.querySelectorAll("#standings details");
   assert.equal(rows.length, 3, "Only the supplied top three, not the archive top three");
   assert.deepEqual(rows.map(row => text(row, ".rank-number")), ["01", "01", "03"]);
-  assert.deepEqual(rows.map(row => text(row, "summary > strong")), ["91.23", "91.23", "74.00"]);
-  assert.deepEqual(rows.map(row => text(row, "summary b")), supplied.seasonMvp.slice(0, 3).map(p => `${getDisplayName(p.name)}${p.position} · ${p.games} GP`));
+  assert.ok(rows.every(row => !row.querySelector("summary > strong")), "Totals appear once, in the expanded panel, not repeated on the summary row");
+  assert.deepEqual(rows.map(row => row.querySelectorAll(".rank-stat-line dd").map(dd => dd.textContent.trim())), [["8", "12", "9", "21"], ["6", "84.3%", "2.50", "2"], ["9", "3", "8", "11"]]);
+  assert.ok(!root.querySelector("#standings")!.textContent.includes("91.23"), "Model scores are not shown");
+  assert.deepEqual(rows.map(row => text(row, "summary b")), [`${getDisplayName("Julio 3026")}F · 8 GP`, `${getDisplayName("Rydayro")}G · 6 GP`, `${getDisplayName("oP wet")}D · 9 GP`]);
+  assert.deepEqual(rows.map(row => row.querySelectorAll(".rank-stat-line dt").map(dt => dt.textContent.trim())), [["GP", "G", "A", "PTS"], ["GP", "SV%", "GAA", "SO"], ["GP", "G", "A", "PTS"]]);
   assert.deepEqual(rows.map(row => row.hasAttribute("open")), [true, false, false]);
   assert.ok(rows.every(row => row.getAttribute("name") === "mvp-preview"), "Native exclusive disclosures work without enhancement");
   assert.equal(text(root, "#standings .rank-leader-note strong"), getDisplayName(supplied.seasonMvp[0].name));
-  assert.match(text(rows[1], ".rank-details"), /Goaltender performance over 6 games/);
+  assert.match(text(rows[1], ".rank-details p"), /Goalie totals over 6 games/);
   assert.ok(rows.every(row => one(row, ".rank-details a").getAttribute("href") === "/stats#numbers"));
   assert.equal(one(root, "#standings .rank-footer a").getAttribute("href"), "/stats#standings");
   assert.match(text(root, "#standings .fine"), /not votes or odds/i);
   assert.deepEqual(season, before, "Nicknames are presentation-only; never rewrite source identities");
 });
 
-test("provisional goalie and tied weekly leaders are not replaced with a hard-coded skater winner", () => {
+test("in-progress leaders are never announced; tied goalie winners share the honor with goalie stats and photo", () => {
   const supplied = awards();
   const goalie = weeklyPlayer({ playerId: "current-goalie", name: "Rydayro", position: "G", isGoalie: true,
-    games: 2, eligible: false, goals: 0, assists: 0, points: 0, saves: 61, shotsAgainst: 64,
+    games: 3, eligible: true, goals: 0, assists: 0, points: 0, saves: 61, shotsAgainst: 64,
     savePct: 61 / 64 * 100, gaa: 1.5, shutouts: 1, wins: 1 });
-  const tie = weeklyPlayer({ playerId: "tied", name: "u4 Pablo", games: 2, eligible: false });
+  const tie = weeklyPlayer({ playerId: "tied", name: "u4 Pablo", games: 3, eligible: true });
   supplied.currentWeek = week([goalie, tie]);
   supplied.lastCompletedWeek = week([], true);
+  const open = render(current([], { awards: supplied }));
+  assert.equal(text(open, "#weekly h2"), "Awaiting the first announcement.");
+  assert.equal(open.querySelectorAll("#weekly .mini-stats strong").length, 0);
+  supplied.lastCompletedWeek = week([goalie, tie], true);
   const root = render(current([], { awards: supplied }));
   assert.equal(text(root, "#weekly h2"), [goalie, tie].map(p => getDisplayName(p.name)).join(" / "));
-  assert.match(text(root, "#weekly .eyebrow"), /PROVISIONAL LEADER/);
-  assert.deepEqual(stats(root), [["GAMES", "2"], ["SAVES", "61"], ["SHUTOUTS", "1"]]);
-  assert.equal(one(root, "#weekly img").getAttribute("src"), "/images/homepage/goalie-purple.webp");
+  assert.match(text(root, "#weekly"), /Shared honors/);
+  assert.deepEqual(stats(root), [["GAMES", "3"], ["SV%", "95.3%"], ["SHUTOUTS", "1"]]);
+  assert.equal(one(root, "#weekly img").getAttribute("src"), "/images/highlights/r2.webp");
+  const unknown = awards();
+  unknown.lastCompletedWeek = week([weeklyPlayer({ name: "New goalie", position: "G", isGoalie: true, games: 3 })], true);
+  assert.equal(one(render(current([], { awards: unknown })), "#weekly img").getAttribute("src"), "/images/homepage/goalie-purple.webp", "Unknown players never borrow another player's photo");
   assert.equal(root.querySelectorAll(".weekly-previous-winner").length, 0);
 });
 
@@ -274,7 +291,7 @@ test("unknown current weekly/MVP identities remain literal text, never executabl
   supplied.seasonMvp = [{ ...supplied.seasonMvp[0], name: payload, position: payload }];
   const root = render(current([], { awards: supplied }));
   assert.equal(text(root, "#weekly h2"), payload);
-  assert.equal(text(root, ".weekly-previous-winner"), `Last week: ${payload}`);
+  assert.equal(one(root, "#weekly img").getAttribute("src"), "/images/homepage/player-purple.webp");
   assert.equal(text(root, "#standings .rank-leader-note strong"), payload);
   assert.equal(text(root, "#standings summary b small"), `${payload} · 8 GP`);
   assert.equal(root.querySelectorAll("[data-injected], [onerror], script, iframe").length, 0);

@@ -17,8 +17,24 @@ export function sortMatches(matches: Match[]): Match[] {
     });
 }
 
+const positive = (value: unknown): boolean => typeof value === "number" && Number.isFinite(value) && value > 0;
+const clockRan = (value: unknown): boolean => typeof value === "string" && /[1-9]/.test(value);
+
+/** A forfeit still gets a report when the feed recorded any play: shots, time
+ * on attack, or a non-zero player line. A game abandoned before the puck
+ * dropped (all zeros) has nothing to report. Synthetic archive forfeits carry
+ * no data at all. */
+export function hasMatchReportData(match: Match): boolean {
+  if (positive(match.shotsUs) || positive(match.shotsThem)) return true;
+  if (clockRan(match.toaUs) || clockRan(match.toaThem)) return true;
+  if (positive(match.passCompUs) || positive(match.passCompThem)) return true;
+  return (match.players ?? []).some(player => Object.entries(player).some(([key, value]) =>
+    !["name", "position", "isGoalie", "isOurPlayer", "playerId"].includes(key) && positive(value)));
+}
+
 export function matchDetailHref(match: Match, season: MatchSeason): string | null {
-  if (match.status !== "final" || match.forfeit) return null;
+  if (match.status !== "final") return null;
+  if (match.forfeit && !hasMatchReportData(match)) return null;
   return `/matches/${encodeURIComponent(match.id)}?season=${season}`;
 }
 

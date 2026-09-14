@@ -29,7 +29,7 @@ function MatchRow({ match, season, onOpen }: { match: Match; season: MatchSeason
     <span className="hub-result" data-result={result ?? "pending"} aria-label={resultLabel(match)}>{result ?? "—"}</span>
     <span className="hub-match-teams"><strong>Bardownski <small>{match.homeAway === "home" ? "Home" : "Away"}</small></strong><span>{match.opponent}</span></span>
     <span className="hub-match-score"><strong>{match.scoreUs ?? "—"}</strong><span>{match.scoreThem ?? "—"}</span></span>
-    <span className="hub-match-cta">{href ? <>Match report <span aria-hidden="true">↗</span></> : match.forfeit ? "Forfeit result" : "Report pending"}</span>
+    <span className="hub-match-cta">{href ? <>Match report <span aria-hidden="true">↗</span></> : match.forfeit ? "Forfeit · no match data" : "Report pending"}</span>
   </>;
   return <li>{href ? <Link className="hub-match-row" href={href} prefetch={false} onClick={event => onOpen(event, match, season)} aria-haspopup="dialog" aria-label={`Match report: Bardownski ${match.scoreUs ?? "—"}–${match.scoreThem ?? "—"} ${match.opponent}, ${match.date}`}>{content}</Link> : <div className="hub-match-row hub-match-static">{content}</div>}</li>;
 }

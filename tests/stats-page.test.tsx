@@ -11,6 +11,7 @@ import { getEnrichedPlayers } from "../src/lib/discord";
 import { FROZEN_CHELSTATS } from "../src/lib/chelstats-frozen";
 import { calculateWeeklyAwardHistory, type WeeklyAwardHistory, type WeeklyAwardHistoryEntry } from "../src/lib/hockey-awards";
 import { HOCKEY_SEASON } from "../src/lib/hockey-season-state";
+import { getNickname } from "../src/lib/nicknames";
 
 const now = "2026-09-14T00:00:00.000Z";
 const emptyHistory = calculateWeeklyAwardHistory([], now);
@@ -75,6 +76,25 @@ test("MVP missing versus pending is explicit and tied leaders are both featured"
   assert.match(markup, /Tied A \/ Tied B/);
   assert.equal((markup.match(/data-leading="true"/g) ?? []).length, 2);
   assert.doesNotMatch(markup, /NaN|Infinity/);
+});
+
+test("MVP board shows role stats instead of model scores, with goalies labelled G", () => {
+  const skater = FROZEN_CHELSTATS.members.find(member => member.gamesPlayed >= 5 && member.goalieGP === 0)!;
+  const goalie = { ...FROZEN_CHELSTATS.members.find(member => member.goalieGP >= 5)!, username: "Net Minder", gamesPlayed: 0 };
+  const markup = renderToStaticMarkup(<MvpRace members={[skater, goalie]} available />);
+  const rows = markup.match(/<tr[^>]*data-leading[^>]*>[\s\S]*?<\/tr>/g) ?? [];
+  assert.equal(rows.length, 2);
+  const cells = (row: string) => [...row.matchAll(/<dd>([^<]*)<\/dd><dt>([^<]*)<\/dt>/g)].map(m => [m[2], m[1]]);
+  const skaterRow = rows.find(row => row.includes(getNickname(skater.username)))!;
+  const goalieRow = rows.find(row => row.includes("Net Minder"))!;
+  const n = (value: number) => value.toLocaleString("en-US");
+  assert.deepEqual(cells(skaterRow), [["GP", n(skater.gamesPlayed)], ["G", n(skater.goals)], ["A", n(skater.assists)], ["PTS", n(skater.goals + skater.assists)]]);
+  assert.deepEqual(cells(goalieRow), [["GP", n(goalie.goalieGP)], ["SV%", `${goalie.savePct.toFixed(1)}%`], ["GAA", goalie.gaa.toFixed(2)], ["SO", n(goalie.shutouts)]]);
+  assert.match(goalieRow, /<small>G<\/small>/);
+  assert.doesNotMatch(markup, /Goaltender|Performance score|stats-rank-score|stats-mvp-score|<th scope="col">Score<\/th>/);
+  assert.match(markup, /<th scope="col">Stats<\/th>/);
+  const feature = markup.match(/<dl class="stats-mvp-line"[\s\S]*?<\/dl>/)?.[0] ?? "";
+  assert.equal([...feature.matchAll(/<dt>([^<]*)<\/dt>/g)].length, 4, "Leader feature shows the same four role stats");
 });
 
 test("missing weekly history is unavailable and roster wins stay unknown, never zero", () => {

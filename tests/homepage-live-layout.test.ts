@@ -214,15 +214,15 @@ test("default homepage has empty current results, weekly and MVP sections, not a
   assert.equal(root.querySelectorAll(".season-status, [data-match], [data-games], [data-weekly], [data-standings], [data-player]").length, 0);
   assert.equal(root.querySelectorAll("#results .result-row, #weekly .mini-stats strong, #standings details").length, 0);
   assert.match(text(root, "#results"), /no results yet this season/i);
-  assert.match(text(root, "#weekly h2"), /the week is open/i);
-  assert.match(text(root, "#weekly p:not(.eyebrow)"), /temporarily unavailable/i);
+  assert.match(text(root, "#weekly h2"), /awaiting the first announcement/i);
+  assert.match(text(root, "#weekly p:not(.eyebrow)"), /no projections in the meantime/i);
   assert.match(text(root, "#standings"), /no eligible rankings yet this season/i);
   for (const id of ["results", "weekly", "standings"]) {
     assert.ok(text(root, `#${id} .eyebrow`).includes("2026–2027"));
     assert.ok(!text(root, `#${id}`).includes("2025–2026"), `${id}: no previous-season data presented as current`);
   }
   assert.equal(one(root, '#results a.text-link').getAttribute("href"), "/matches");
-  assert.equal(one(root, '#weekly a.text-link').getAttribute("href"), "/stats#weekly-tracker");
+  assert.equal(one(root, '#weekly a.text-link').getAttribute("href"), "/stats#weekly-honors");
   assert.equal(one(root, '#standings .rank-footer a').getAttribute("href"), "/stats#standings");
   assert.match(one(root, "#weekly img").getAttribute("alt")!, /not a portrait/i);
   assert.match(text(root, "#standings .rank-footer .fine"), /not votes or odds/i);
