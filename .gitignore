@@ -52,3 +52,10 @@ next-env.d.ts
 
 # Raw uploaded FC media (processed copies live in public/fc/)
 /public/bardownski-fc-media/
+
+# Source media library (raw b-roll, highlights, photos per player — see media/README.md).
+# Never deployed or committed; only the folder skeleton, README and .gitkeep files are tracked.
+/media/**
+!/media/**/
+!/media/README.md
+!/media/**/.gitkeep

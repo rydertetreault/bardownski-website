@@ -2,3 +2,5 @@
 public/videos/JRT IV - 2026.mp4
 # Raw uploaded FC media (processed copies live in public/fc/)
 public/bardownski-fc-media/
+# Source media library — raw footage, never deployed (web copies live in public/)
+media/
