@@ -93,6 +93,16 @@ test("MVP board shows role stats instead of model scores, with goalies labelled 
   assert.match(goalieRow, /<small>G<\/small>/);
   assert.doesNotMatch(markup, /Goaltender|Performance score|stats-rank-score|stats-mvp-score|<th scope="col">Score<\/th>/);
   assert.match(markup, /<th scope="col">Stats<\/th>/);
+  assert.match(markup, /<th scope="col" class="stats-rank-odds">Odds<\/th>/, "Board has an odds column");
+  const oddsCells = [...markup.matchAll(/<td class="stats-rank-odds"><strong>([^<]*)<\/strong><small>([^<]*)<\/small><\/td>/g)].map(m => [m[1], m[2]]);
+  assert.equal(oddsCells.length, 2, "Every row carries an American line and implied chance");
+  assert.ok(oddsCells.every(([line, chance]) => /^[+-]\d+$/.test(line) && /^\d+\.\d%$/.test(chance)));
+  assert.ok(Math.abs(oddsCells.reduce((sum, [, chance]) => sum + Number.parseFloat(chance), 0) - 100) < 0.2, "Chances sum to ~100%");
+  const leaderOdds = markup.match(/<p class="stats-mvp-odds"[^>]*><strong>([^<]*)<\/strong><span>([^<]*)<\/span><\/p>/);
+  assert.ok(leaderOdds, "Leader feature shows the favourite's line");
+  assert.equal(leaderOdds![1], oddsCells[0][0]);
+  assert.match(leaderOdds![2], new RegExp(`^${oddsCells[0][1].replace(".", "\\.")} implied chance`));
+  assert.match(markup, /not a sportsbook line/);
   const feature = markup.match(/<dl class="stats-mvp-line"[\s\S]*?<\/dl>/)?.[0] ?? "";
   assert.equal([...feature.matchAll(/<dt>([^<]*)<\/dt>/g)].length, 4, "Leader feature shows the same four role stats");
 });

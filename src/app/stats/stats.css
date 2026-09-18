@@ -57,6 +57,8 @@
 .stats-mvp-watermark::before { content: "MVP"; }
 .stats-mvp-feature h3 { margin-top: 60px; font: 800 clamp(40px,4.4vw,65px)/1 var(--stat-display); text-transform: uppercase; }
 .stats-mvp-feature > p:not(.stats-eyebrow) { margin-top: 18px; color: #e0d4e7; font-size: 14px; }
+.stats-mvp-feature > .stats-mvp-odds { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-top: 24px; font-size: 12px; letter-spacing: .4px; text-transform: uppercase; }
+.stats-mvp-odds strong { font: 800 clamp(30px,3.4vw,48px)/1 var(--stat-display); color: var(--stat-gold); font-variant-numeric: tabular-nums; }
 .stats-mvp-line { border-top: 1px solid #ac86bc66; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 28px; padding-top: 22px; }
 .stats-mvp-line div { display: flex; flex-direction: column-reverse; gap: 6px; min-width: 0; }
 .stats-mvp-line dd { font: 800 clamp(28px,3.2vw,44px)/1 var(--stat-display); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
@@ -76,6 +78,9 @@
 .stats-ranking .stats-rank-stats div { display: grid; gap: 4px; justify-items: end; }
 .stats-ranking .stats-rank-stats dd { font-weight: 700; font-size: 20px; line-height: 1; }
 .stats-ranking .stats-rank-stats dt { font-size: 10px; letter-spacing: .8px; text-transform: uppercase; color: var(--stat-muted); }
+.stats-ranking .stats-rank-odds { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.stats-ranking td.stats-rank-odds strong { display: block; font: 800 24px/1 var(--stat-display); color: #006775; }
+.stats-ranking td.stats-rank-odds small { margin-top: 5px; letter-spacing: .4px; }
 .stats-ranking tr[data-leading=true] { background: #fafff8; }
 .stats-ranking tbody tr:hover { background: #f1f7ed; }
 .stats-method { border-top: 1px solid var(--stat-line); margin-top: 22px; font-size: 13px; }
@@ -194,12 +199,15 @@
   .stats-edition .season-tracking-notice p { font-size: 12px; }
   .stats-edition .season-tracking-notice .tracking-freshness { font-size: 11px; }
   .stats-ranking { font-size: 14px; }
-  .stats-ranking :is(th,td) { padding: 15px 7px; }
-  .stats-ranking .stats-rank-stats dl { gap: 4px 10px; }
+  .stats-ranking :is(th,td) { padding: 15px 5px; }
+  .stats-ranking .stats-rank-stats dl { gap: 4px 8px; }
   .stats-ranking .stats-rank-stats dd { font-size: 16px; }
   .stats-ranking .stats-rank-stats dt { font-size: 9px; }
+  .stats-ranking td.stats-rank-odds strong { font-size: 17px; }
+  .stats-ranking td.stats-rank-odds small { font-size: 10px; margin-top: 4px; }
   .stats-ranking thead th { font-size: 10px; }
-  .stats-ranking th[scope=row] { overflow-wrap: anywhere; }
+  /* Size the name column to its longest word and wrap at spaces; only break mid-word as a last resort. */
+  .stats-ranking th[scope=row] { overflow-wrap: break-word; }
   .stats-season-tablist { gap: 6px; }
   .stats-season-tab { flex: 1 0 44%; padding: 12px; font-size: 13px; }
   .stats-subhead { align-items: start; flex-direction: column; gap: 10px; }
@@ -232,4 +240,15 @@
 @media (max-width: 760px) {
   .stats-hero .stats-hero-copy { padding-inline: var(--site-gutter); }
   .stats-hero figcaption { left: var(--site-gutter); }
+}
+/* Four-column MVP board on the narrowest phones: shave type and gutters so the
+   odds column stays on screen instead of relying on horizontal scroll. */
+@media (max-width: 380px) {
+  .stats-ranking :is(th,td) { padding: 14px 4px; }
+  .stats-ranking .stats-rank-number { font-size: 22px; }
+  .stats-ranking .stats-rank-stats dl { gap: 4px 6px; }
+  .stats-ranking .stats-rank-stats dd { font-size: 15px; }
+  .stats-ranking .stats-rank-stats dt { letter-spacing: .4px; }
+  .stats-ranking td.stats-rank-odds strong { font-size: 16px; }
+  .stats-ranking td.stats-rank-odds small { font-size: 9px; }
 }

@@ -818,6 +818,42 @@ export function computeTopPlayers(
   return top;
 }
 
+/* ── Shared MVP market conversion ──────────────────────────────────── */
+
+export interface MvpMarketLine {
+  /** Implied share of the field, 0–1. Entries with no positive score get 0. */
+  probability: number;
+  /** Sportsbook-style American odds ("+250", "-150"); "—" when there is no market. */
+  americanOdds: string;
+}
+
+/** Converts a probability to American odds. Probabilities of 0 or 1 have no
+ * meaningful line (a one-player field would otherwise print "-Infinity"). */
+export function americanOddsFromProbability(prob: number): string {
+  if (!Number.isFinite(prob) || prob <= 0 || prob >= 1) return "—";
+  const raw = prob >= 0.5
+    ? Math.round(-(prob / (1 - prob)) * 100)
+    : Math.round(((1 - prob) / prob) * 100);
+  return prob >= 0.5 ? `${raw}` : `+${raw}`;
+}
+
+/** Turns a field of model scores into implied MVP odds. Scores are normalized
+ * against the field's best, clamped at zero (a below-baseline D-man can go
+ * negative; pow(neg, 3) would corrupt the distribution), then raised to a power
+ * to concentrate probability toward the top — realistic sportsbook shape.
+ * Output is index-aligned with the input, so callers may pass any order. */
+export function mvpMarketFromScores(scores: number[]): MvpMarketLine[] {
+  if (scores.length === 0) return [];
+  const maxScore = Math.max(scores.reduce((best, s) => (s > best ? s : best), -Infinity), 1e-9);
+  const SHARPNESS = 3;
+  const weights = scores.map((s) => Math.pow(Math.max(s, 0) / maxScore, SHARPNESS));
+  const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+  return weights.map((w) => {
+    const probability = totalWeight > 0 ? w / totalWeight : 0;
+    return { probability, americanOdds: americanOddsFromProbability(probability) };
+  });
+}
+
 /* ── MVP Odds from live chelstats data ─────────────────────────────── */
 
 export function computeMvpOddsFromMembers(
@@ -904,31 +940,13 @@ export function computeMvpOddsFromMembers(
 
   entries.sort((a, b) => b.score - a.score);
 
-  // Raise normalized scores to a power to concentrate probability toward top
-  // players, producing realistic sportsbook-style odds.
-  // Clamp negative scores before the pow step. A D-man below baseline with
-  // negative +/- can produce a negative perGame; pow(neg, 3) would corrupt
-  // the odds distribution. Ordering above (entries.sort) is unaffected.
-  const maxScore = Math.max(entries[0].score, 1e-9);
-  const SHARPNESS = 3;
-  const weights = entries.map((e) =>
-    Math.pow(Math.max(e.score, 0) / maxScore, SHARPNESS)
-  );
-  const totalWeight = weights.reduce((s, w) => s + w, 0);
+  // Shared conversion (see mvpMarketFromScores) keeps this table, the season
+  // MVP race boards and the article generator on identical odds math.
+  const market = mvpMarketFromScores(entries.map((e) => e.score));
 
   return entries.map((entry, index) => {
     const m = entry.member;
-    const prob = totalWeight > 0 ? weights[index] / totalWeight : 0;
-
-    let odds: string;
-    if (prob > 0) {
-      const raw = prob >= 0.5
-        ? Math.round(-(prob / (1 - prob)) * 100)
-        : Math.round(((1 - prob) / prob) * 100);
-      odds = prob >= 0.5 ? `${raw}` : `+${raw}`;
-    } else {
-      odds = "—";
-    }
+    const { probability: prob, americanOdds: odds } = market[index];
 
     const svDisplay =
       m.savePct > 1

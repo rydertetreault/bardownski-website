@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { calculateHockeyAwards, calculateSeasonMvp } from "../src/lib/hockey-awards";
-import { computeMvpOddsFromMembers, type ChelstatsData, type ClubMatch, type ClubMember, type MatchPlayerStat } from "../src/lib/chelstats";
+import { americanOddsFromProbability, computeMvpOddsFromMembers, mvpMarketFromScores, type ChelstatsData, type ClubMatch, type ClubMember, type MatchPlayerStat } from "../src/lib/chelstats";
 import { parseNhl27Snapshot } from "../src/lib/nhl27-api";
 
 const MONDAY = "2026-09-14T00:00:00.000Z";
@@ -55,12 +55,36 @@ const q = (n: number) => Math.round(n * 10) / 10;
   assert.equal(actual.length, 3);
   assert.deepEqual(calculateSeasonMvp([...members, members[0]]), actual);
   assert.ok(actual.every(e => e.games >= 5));
-  assert.ok(actual.every(e => !Object.hasOwn(e, "probability") && !Object.hasOwn(e, "americanOdds")));
+  // Odds come from the final deduplicated field, not the per-member scoring pass.
+  const market = mvpMarketFromScores(actual.map(e => e.score));
+  assert.deepEqual(actual.map(e => [e.probability, e.americanOdds]), market.map(m => [m.probability, m.americanOdds]));
+  assert.ok(Math.abs(actual.reduce((sum, e) => sum + e.probability, 0) - 1) < 1e-9, "Implied chances sum to one across the field");
+  assert.ok(actual.every(e => e.probability > 0 && e.probability < 1 && /^[+-]\d+$/.test(e.americanOdds)));
+  assert.equal(actual[0].probability, Math.max(...actual.map(e => e.probability)), "The leader is the favourite");
   const close = calculateSeasonMvp([member("Low"), member("High", { ppg: 2.00001 })]);
   assert.equal(q(close[0].score), q(close[1].score));
   assert.deepEqual(close.map(e => [e.name, e.rank]), [["High", 1], ["Low", 2]], "MVP ranks must NOT quantize");
   const tied = calculateSeasonMvp([member("A"), member("B"), member("C", { ppg: 1 })]);
   assert.deepEqual(tied.map(e => e.rank), [1, 1, 3]);
+  assert.equal(tied[0].americanOdds, tied[1].americanOdds, "Exact ties share a line as they share a rank");
+  assert.equal(tied[0].probability, tied[1].probability);
+  assert.ok(tied[2].probability < tied[0].probability);
+});
+
+test("MVP market conversion is shared, index-aligned and safe at the edges", () => {
+  assert.deepEqual(mvpMarketFromScores([]), []);
+  assert.deepEqual(mvpMarketFromScores([50]), [{ probability: 1, americanOdds: "—" }], "A one-player field has no line, never -Infinity");
+  assert.deepEqual(mvpMarketFromScores([0, 0]), [{ probability: 0, americanOdds: "—" }, { probability: 0, americanOdds: "—" }]);
+  const unordered = mvpMarketFromScores([10, 20, 5]);
+  assert.deepEqual(unordered.map(m => m.probability).indexOf(Math.max(...unordered.map(m => m.probability))), 1, "Output follows input order");
+  assert.equal(mvpMarketFromScores([10, -40, 5])[1].probability, 0, "Negative scores are clamped, not cubed");
+  assert.equal(americanOddsFromProbability(0.5), "-100");
+  assert.equal(americanOddsFromProbability(0.75), "-300");
+  assert.equal(americanOddsFromProbability(0.2), "+400");
+  assert.equal(americanOddsFromProbability(NaN), "—");
+  const members = [member("A"), member("B", { position: "D" }), member("C", { ppg: 1.5 })];
+  const table = computeMvpOddsFromMembers(members);
+  assert.deepEqual(table.map(e => [e.probability, e.americanOdds]), mvpMarketFromScores(table.map(e => e.score)).map(m => [m.probability, m.americanOdds]), "The live odds table uses the same conversion");
 });
 
 test("MVP malformed roles cannot poison valid candidates, missing unused rates do not crash", () => {

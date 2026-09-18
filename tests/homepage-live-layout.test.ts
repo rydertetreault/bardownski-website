@@ -225,7 +225,7 @@ test("default homepage has empty current results, weekly and MVP sections, not a
   assert.equal(one(root, '#weekly a.text-link').getAttribute("href"), "/stats#weekly-honors");
   assert.equal(one(root, '#standings .rank-footer a').getAttribute("href"), "/stats#standings");
   assert.match(one(root, "#weekly img").getAttribute("alt")!, /not a portrait/i);
-  assert.match(text(root, "#standings .rank-footer .fine"), /not votes or odds/i);
+  assert.match(text(root, "#standings .rank-footer .fine"), /not a sportsbook line or a vote/i);
 });
 
 test("previous awards and highlights keep their local archive labels and award dialogs", () => {

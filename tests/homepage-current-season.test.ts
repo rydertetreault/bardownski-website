@@ -50,7 +50,7 @@ function weeklyPlayer(overrides: Partial<WeeklyAwardEntry> = {}): WeeklyAwardEnt
     saves: 0, shotsAgainst: 0, savePct: 0, gaa: 0, shutouts: 0, wins: 3, ...overrides };
 }
 function mvp(overrides: Partial<SeasonMvpEntry> & Pick<SeasonMvpEntry, "name" | "position" | "score" | "rank" | "games">): SeasonMvpEntry {
-  return { isGoalie: false, goals: 0, assists: 0, points: 0, saves: 0, savePct: 0, gaa: 0, shutouts: 0, ...overrides };
+  return { isGoalie: false, probability: 0, americanOdds: "—", goals: 0, assists: 0, points: 0, saves: 0, savePct: 0, gaa: 0, shutouts: 0, ...overrides };
 }
 function week(leaders: WeeklyAwardEntry[], complete = false): WeeklyAwards {
   return { start: complete ? "2026-09-07T00:00:00.000Z" : "2026-09-14T00:00:00.000Z",
@@ -64,10 +64,10 @@ function awards(): HockeyAwards {
   return { asOf: AS_OF, currentWeek: week([weeklyPlayer()]),
     lastCompletedWeek: week([weeklyPlayer({ playerId: "previous-winner", name: "s1obbyrobby" })], true),
     seasonMvp: [
-      mvp({ name: "Julio 3026", position: "F", score: 91.234, rank: 1, games: 8, goals: 12, assists: 9, points: 21 }),
-      mvp({ name: "Rydayro", position: "G", isGoalie: true, score: 91.234, rank: 1, games: 6, saves: 120, savePct: 84.25, gaa: 2.5, shutouts: 2 }),
-      mvp({ name: "oP wet", position: "D", score: 74, rank: 3, games: 9, goals: 3, assists: 8, points: 11 }),
-      mvp({ name: "Not in preview", position: "F", score: 10, rank: 4, games: 5 }),
+      mvp({ name: "Julio 3026", position: "F", score: 91.234, rank: 1, games: 8, probability: 0.4125, americanOdds: "+142", goals: 12, assists: 9, points: 21 }),
+      mvp({ name: "Rydayro", position: "G", isGoalie: true, score: 91.234, rank: 1, games: 6, probability: 0.4125, americanOdds: "+142", saves: 120, savePct: 84.25, gaa: 2.5, shutouts: 2 }),
+      mvp({ name: "oP wet", position: "D", score: 74, rank: 3, games: 9, probability: 0.1744, americanOdds: "+473", goals: 3, assists: 8, points: 11 }),
+      mvp({ name: "Not in preview", position: "F", score: 10, rank: 4, games: 5, probability: 0.0006, americanOdds: "+166567" }),
     ] };
 }
 type Connected = Extract<HockeySeasonState, { status: "connected" | "stale" }>;
@@ -245,7 +245,11 @@ test("announced weekly winner and MVP preview use supplied role stats, ranks and
   const rows = root.querySelectorAll("#standings details");
   assert.equal(rows.length, 3, "Only the supplied top three, not the archive top three");
   assert.deepEqual(rows.map(row => text(row, ".rank-number")), ["01", "01", "03"]);
-  assert.ok(rows.every(row => !row.querySelector("summary > strong")), "Totals appear once, in the expanded panel, not repeated on the summary row");
+  assert.ok(rows.every(row => !row.querySelector("summary dd, summary dl")), "Totals appear once, in the expanded panel, not repeated on the summary row");
+  assert.deepEqual(rows.map(row => text(row, "summary > strong.rank-odds")), ["+14241.3%", "+14241.3%", "+47317.4%"], "Each row shows its American line and implied chance; tied leaders share both");
+  assert.deepEqual(rows.map(row => text(row, "summary > strong.rank-odds > small")), ["41.3%", "41.3%", "17.4%"]);
+  assert.match(text(root, "#standings .rank-column-labels"), /odds \/ chance/i);
+  assert.ok(!text(root, "#standings").includes("+166567"), "Odds outside the top three are not rendered");
   assert.deepEqual(rows.map(row => row.querySelectorAll(".rank-stat-line dd").map(dd => dd.textContent.trim())), [["8", "12", "9", "21"], ["6", "84.3%", "2.50", "2"], ["9", "3", "8", "11"]]);
   assert.ok(!root.querySelector("#standings")!.textContent.includes("91.23"), "Model scores are not shown");
   assert.deepEqual(rows.map(row => text(row, "summary b")), [`${getDisplayName("Julio 3026")}F · 8 GP`, `${getDisplayName("Rydayro")}G · 6 GP`, `${getDisplayName("oP wet")}D · 9 GP`]);
@@ -256,7 +260,7 @@ test("announced weekly winner and MVP preview use supplied role stats, ranks and
   assert.match(text(rows[1], ".rank-details p"), /Goalie totals over 6 games/);
   assert.ok(rows.every(row => one(row, ".rank-details a").getAttribute("href") === "/stats#numbers"));
   assert.equal(one(root, "#standings .rank-footer a").getAttribute("href"), "/stats#standings");
-  assert.match(text(root, "#standings .fine"), /not votes or odds/i);
+  assert.match(text(root, "#standings .rank-footer .fine"), /implied from current-season performance scores, not a sportsbook line or a vote/i);
   assert.deepEqual(season, before, "Nicknames are presentation-only; never rewrite source identities");
 });
 

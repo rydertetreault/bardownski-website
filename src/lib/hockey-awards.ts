@@ -1,8 +1,13 @@
 /** Pure NHL27 awards over the supplied tracker data. No storage, clocks or archive fallback. */
-import { computeMvpOddsFromMembers, type ChelstatsData, type ClubMember, type ClubMatch, type MatchPlayerStat } from "./chelstats";
+import { computeMvpOddsFromMembers, mvpMarketFromScores, type ChelstatsData, type ClubMember, type ClubMatch, type MatchPlayerStat } from "./chelstats";
 
 export interface SeasonMvpEntry {
   name: string; position: string; isGoalie: boolean; score: number; rank: number; games: number;
+  /** Implied chance to finish first, 0–1, computed across the final ranked field (not per player).
+   * Shares the odds table's conversion: normalized scores cubed, then divided by the field total. */
+  probability: number;
+  /** American odds for `probability`; "—" when no market exists (zero score or a one-player field). */
+  americanOdds: string;
   /** Season totals for the scored role, straight from the source member row. */
   goals: number; assists: number; points: number;
   saves: number; savePct: number; gaa: number; shutouts: number;
@@ -80,9 +85,11 @@ function ranked<T extends { score: number; rank: number; name: string; position:
   });
 }
 
-/** Uses the unchanged legacy formula and its five-games-in-role gate, not odds.
+/** Uses the unchanged legacy formula and its five-games-in-role gate for scoring and order.
  * Each source member is scored separately so display-name aliases cannot join players.
  * Invalid scoring inputs disqualify only that role. Inputs are never repaired/rebased.
+ * Odds/probability are then derived once across the final deduplicated field — the
+ * per-member call below sees a field of one, so its own odds are discarded.
  */
 export function calculateSeasonMvp(members: ClubMember[]): SeasonMvpEntry[] {
   const best = new Map<string, SeasonMvpEntry>();
@@ -101,7 +108,7 @@ export function calculateSeasonMvp(members: ClubMember[]): SeasonMvpEntry[] {
     for (const result of computeMvpOddsFromMembers([safe])) {
       if (!finite(result.score)) continue;
       const entry: SeasonMvpEntry = { name: result.name, position: result.position, isGoalie: result.isGoalie,
-        score: result.score, rank: 0, games: result.isGoalie ? m.goalieGP : m.gamesPlayed,
+        score: result.score, rank: 0, probability: 0, americanOdds: "—", games: result.isGoalie ? m.goalieGP : m.gamesPlayed,
         goals: result.isGoalie ? 0 : total(m.goals), assists: result.isGoalie ? 0 : total(m.assists),
         points: result.isGoalie ? 0 : total(m.goals) + total(m.assists),
         saves: result.isGoalie ? total(m.goalieSaves) : 0, savePct: result.isGoalie ? total(m.savePct) : 0,
@@ -112,7 +119,10 @@ export function calculateSeasonMvp(members: ClubMember[]): SeasonMvpEntry[] {
         (entry.games > previous.games || (entry.games === previous.games && compare(entry.position, previous.position) < 0)))) best.set(identity, entry);
     }
   }
-  return ranked([...best.values()]);
+  // Market lines are index-aligned with the sorted board; exact score ties share odds as they share a rank.
+  const board = ranked([...best.values()]);
+  const market = mvpMarketFromScores(board.map(entry => entry.score));
+  return board.map((entry, i) => ({ ...entry, ...market[i] }));
 }
 
 type SourcePlayer = MatchPlayerStat & { playerId?: string };

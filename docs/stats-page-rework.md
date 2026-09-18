@@ -3,7 +3,7 @@
 ## Layout and data
 
 - `/stats` now uses the home page's Barlow display face, club photography, teal hero/closing, cream stat book and purple weekly feature rather than the black interior palette.
-- The current-season MVP race comes before the player stat book, with an explicit tied-leader feature, full standings and scoring explanation.
+- The current-season MVP race comes before the player stat book, with an explicit tied-leader feature, full standings (role stats plus implied American odds and percentage chance per row) and scoring explanation.
 - One accessible season tablist contains current and archived snapshots. Arrow keys, Home/End and roving focus are supported; changing seasons resets native player disclosures. Missing current data never selects archived data automatically.
 - Category cards, visible skater/goalie tables with sticky player columns, and full player disclosures retain missing values as dashes. `SaveEntry.gaa` now preserves member-snapshot GAA; reported zero shutouts are retained by the adapter.
 - Player of the Week is a single season award-wins list (Rank / Player / Wins). Current roster members without a recorded win appear with zero; unavailable history displays dashes instead. Winners no longer on the roster remain listed. The weekly race, featured winner, photograph, performance scores and total-award widgets were removed per feedback.
