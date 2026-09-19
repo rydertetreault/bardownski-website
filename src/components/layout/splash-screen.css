@@ -1,0 +1,19 @@
+/* Site opener — see SplashScreen.tsx. Background matches the clip's edge colour
+   so the letterbox on portrait screens blends into the loop. */
+.site-splash {
+  background-color: #05080a;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.site-splash__video {
+  display: block;
+  pointer-events: none;
+}
+
+/* Set before first paint by the inline gate in app/layout.tsx when the ident
+   has already played this session (or the user prefers reduced motion). The
+   component then unmounts itself on hydration. */
+html[data-splash="seen"] .site-splash {
+  display: none;
+}

@@ -4,12 +4,14 @@ import { Analytics } from "@vercel/analytics/next";
 import Navbar from "@/components/layout/Navbar";
 import SiteFooter from "@/components/layout/SiteFooter";
 import SplashScreen from "@/components/layout/SplashScreen";
+import { SPLASH_SESSION_KEY } from "@/components/layout/splash-config";
 import SiteTheme from "@/components/layout/SiteTheme";
 import "./globals.css";
 import "./hockey-theme.css";
 import "@/components/layout/site-widths.css";
 import "@/components/layout/club-marks.css";
 import "@/components/layout/shared-footer.css";
+import "@/components/layout/splash-screen.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,6 +22,11 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+/* Runs during HTML parse, before hydration: if the opener already played this
+ * session (or the user prefers reduced motion) hide it before first paint so
+ * reloads don't flash a black frame. SplashScreen then unmounts on hydration. */
+const splashGate = `try{if(sessionStorage.getItem(${JSON.stringify(SPLASH_SESSION_KEY)})==="1"||matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.dataset.splash="seen"}catch(e){}`;
 
 export const metadata: Metadata = {
   title: "Bardownski | Hockey Club",
@@ -39,7 +46,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    // suppressHydrationWarning: the gate script may add data-splash to <html> before React hydrates.
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: splashGate }} />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

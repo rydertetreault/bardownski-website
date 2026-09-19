@@ -280,7 +280,7 @@ test("in-progress leaders are never announced; tied goalie winners share the hon
   assert.equal(text(root, "#weekly h2"), [goalie, tie].map(p => getDisplayName(p.name)).join(" / "));
   assert.match(text(root, "#weekly"), /Shared honors/);
   assert.deepEqual(stats(root), [["GAMES", "3"], ["SV%", "95.3%"], ["SHUTOUTS", "1"]]);
-  assert.equal(one(root, "#weekly img").getAttribute("src"), "/images/highlights/r2.webp");
+  assert.equal(one(root, "#weekly img").getAttribute("src"), "/images/players/ryder-crease.webp");
   const unknown = awards();
   unknown.lastCompletedWeek = week([weeklyPlayer({ name: "New goalie", position: "G", isGoalie: true, games: 3 })], true);
   assert.equal(one(render(current([], { awards: unknown })), "#weekly img").getAttribute("src"), "/images/homepage/goalie-purple.webp", "Unknown players never borrow another player's photo");

@@ -5,16 +5,17 @@ import { players } from "../src/app/highlights/highlights-data";
 
 const originalSources = [
   "https://youtu.be/aGrVfM6HsO0", "/videos/Ryder1.mp4", "/videos/Ryder2.mp4", "/videos/ryder3.mp4",
+  "/videos/ryder-save-away.mp4", "/videos/ryder-save-away2.mp4",
   "/videos/Dylan1.mp4", "/videos/Dylan2.mp4", "/videos/dylan - 2026.mp4",
   "/videos/GottaBe - Trap Edition.mp4", "/videos/Kaden1.mp4", "/videos/Slobby Robby 2026.mp4",
   ...Array.from({ length: 7 }, (_, index) => `/videos/matt${index + 1}.mp4`),
 ];
 
-test("the film room preserves all five player collections and 17 original clips", () => {
+test("the film room preserves all five player collections, 17 original clips and the two 2026–27 saves", () => {
   assert.deepEqual(players.map(player => player.id), ["ryder", "dylan", "kaden", "slobby-robby", "matt"]);
   const clips = players.flatMap(player => player.clips);
-  assert.equal(clips.length, 17);
-  assert.equal(new Set(clips.map(clip => clip.id)).size, 17);
+  assert.equal(clips.length, 19);
+  assert.equal(new Set(clips.map(clip => clip.id)).size, 19);
   assert.deepEqual(clips.map(clip => clip.src), originalSources);
   for (const player of players) {
     assert.ok(player.role && player.statement && player.theme);

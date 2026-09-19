@@ -37,7 +37,6 @@
 .hockey-site .legacy-site-header :is(a,button):focus-visible { outline-color: var(--hockey-accent); }
 .hockey-site .legacy-subnav { border-bottom: 2px solid var(--hockey-teal); }
 .hockey-site .legacy-subnav a { color: var(--foreground); }
-.hockey-site .hockey-splash { background-color: var(--background) !important; }
 .hockey-site ::selection { background: var(--hockey-purple); color: var(--foreground); }
 @media (max-width:950px) {
   .hockey-site .legacy-site-links { background: #0b0c0d; }

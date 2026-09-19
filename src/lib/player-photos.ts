@@ -7,9 +7,9 @@ import { getDisplayName } from "./nicknames";
 export interface PlayerPhoto { src: string; alt: string }
 
 const PLAYER_PHOTOS: Readonly<Record<string, PlayerPhoto>> = {
-  "JENE RENE TETREAU IV": { src: "/images/highlights/r2.webp", alt: "JRT IV set in the Bardownski crease, from the club film room" },
+  "JENE RENE TETREAU IV": { src: "/images/players/ryder-crease.webp", alt: "JRT IV sliding across the crease in the teal Bardownski home jersey, from the 2026–27 film room" },
   "XAVIER LAFLAMME": { src: "/images/highlights/d1.webp", alt: "Xavier Laflamme celebrating a goal, from the club film room" },
-  "MATT HUT": { src: "/images/highlights/m1.webp", alt: "Matt Hut celebrating at centre ice, from the club film room" },
+  "MATT HUT": { src: "/images/players/matt-alt.webp", alt: "Matt Hut, number 8, celebrating with JRT IV at the net in the purple Bardownski alternate jersey" },
   "GOTTA BE": { src: "/images/highlights/k1.webp", alt: "Gotta Be raising his stick, from the club film room" },
   "SLOBBY ROBBY": { src: "/images/highlights/sr1.webp", alt: "Slobby Robby play of the game card, from the club film room" },
 };

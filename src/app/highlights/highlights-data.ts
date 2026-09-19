@@ -27,6 +27,8 @@ export const players: PlayerHighlights[] = [
       { id: "r2", poster: "/images/highlights/r2.webp", title: "JRT IV — Clip 1", src: "/videos/Ryder1.mp4" },
       { id: "r3", poster: "/images/highlights/r3.webp", title: "JRT IV — Clip 2", src: "/videos/Ryder2.mp4" },
       { id: "r4", poster: "/images/highlights/r4.webp", title: "JRT IV — Clip 3", src: "/videos/ryder3.mp4" },
+      { id: "r5", poster: "/images/highlights/r5.webp", title: "JRT IV — Away save, 2026–27", src: "/videos/ryder-save-away.mp4" },
+      { id: "r6", poster: "/images/highlights/r6.webp", title: "JRT IV — Away save II, 2026–27", src: "/videos/ryder-save-away2.mp4" },
     ],
   },
   {

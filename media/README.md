@@ -82,6 +82,21 @@ carries a note of its source name so the original can be found again.
 - `scripts/media-inventory.mjs` (`npm run media`) lists what's here, with mp4/mov
   durations read from the file headers — no ffmpeg needed.
 
+## Clips in use on the site
+
+Stills are snapshots straight from the b-roll (no retouching; WebP q84–86 at
+source resolution). Photos render black and white site-wide by design, see
+`docs/monochrome-photography.md`.
+
+| Source (here)                                   | Web copy (`public/`)                        | Used by |
+|-------------------------------------------------|---------------------------------------------|---------|
+| `team/b-roll/loading-flash.mov`                 | `videos/splash/loading-flash.mp4`           | Site opener — `src/components/layout/SplashScreen.tsx`. Tail of the ident only (source 16.6 s → end, ≈2.4 s): streaks → flash → BARDOWNSKI; 720p30, silent, faststart, ≈0.6 MB. |
+| `team/b-roll/ryder-save-bRoll.mov` @ 2.60 s     | `images/players/ryder-crease.webp`          | JRT IV player photo (`src/lib/player-photos.ts`), gallery. |
+| `team/b-roll/ryder-matt-bRoll-alt.mov` @ 2.40 s | `images/players/matt-alt.webp`              | Matt Hut player photo, gallery. |
+| `players/matt/b-roll/matt-bRoll-image-alt.png`  | `images/gallery/screenshots/matt-alt-2027.webp` | Gallery. 1920×1080. |
+| `players/ryder/highlights/ryder-save-away.mov`  | `videos/ryder-save-away.mp4` + `images/highlights/r5.webp` | Highlights (JRT IV) and the gallery reel. Poster @ 3.0 s; monochrome copy via `scripts/generate-monochrome-posters.ts`. |
+| `players/ryder/highlights/ryder-save-away2.mov` | `videos/ryder-save-away2.mp4` + `images/highlights/r6.webp` | Highlights (JRT IV) and the gallery reel. Poster @ 3.2 s. |
+
 ## Already-published clips
 
 The clips that were live on `/highlights` before this library existed have been

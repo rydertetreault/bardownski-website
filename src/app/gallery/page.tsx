@@ -12,6 +12,9 @@ export interface GalleryVideo {
 }
 
 const photos: GalleryPhoto[] = [
+  { src: "/images/gallery/screenshots/matt-alt-2027.webp", alt: "Matt Hut carrying the puck in the purple alternate jersey, 2026–27" },
+  { src: "/images/players/matt-alt.webp", alt: "Matt Hut and JRT IV at the net in the purple alternate jerseys, 2026–27" },
+  { src: "/images/players/ryder-crease.webp", alt: "JRT IV making a save in the teal home jersey, 2026–27" },
   { src: "/images/gallery/screenshots/team.webp", alt: "Team" },
   { src: "/images/gallery/screenshots/team%20over.webp", alt: "Team Overhead" },
   { src: "/images/gallery/screenshots/team%20shot.webp", alt: "Team Celebration" },
@@ -38,6 +41,8 @@ const videos: GalleryVideo[] = [
   { src: "/videos/Ryder1.mp4", label: "" },
   { src: "/videos/Ryder2.mp4", label: "" },
   { src: "/videos/ryder3.mp4", label: "" },
+  { src: "/videos/ryder-save-away.mp4", label: "" },
+  { src: "/videos/ryder-save-away2.mp4", label: "" },
   { src: "/videos/Kaden1.mp4", label: "" },
   { src: "/videos/matt1.mp4", label: "" },
   { src: "/videos/matt2.mp4", label: "" },
