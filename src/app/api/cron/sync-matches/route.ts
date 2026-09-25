@@ -20,5 +20,6 @@ export async function GET(request: NextRequest) {
     weeklyRankings:result.snapshot?.awards?.currentWeek.standings.length ?? 0,
     updatedAt:result.snapshot?.fetchedAt ?? null, syncedAt:result.snapshot?.syncedAt ?? null,
     ...(result.error ? {error:result.error} : {}),
+    ...(result.reason ? {reason:result.reason} : {}),
   },{status:result.status === "connected" ? 200 : 503});
 }

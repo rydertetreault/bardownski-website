@@ -18,6 +18,8 @@ export type TrackerResult = {
   matches: ClubMatch[];
   synced: boolean;
   error?: string;
+  /** Operator diagnostic for failed syncs. Only internal fixed-string messages; never upstream bodies or credentials. */
+  reason?: string;
 };
 export interface TrackerStore {
   get<T>(key: string): Promise<T | null>;
@@ -86,6 +88,11 @@ async function readStored(store: TrackerStore): Promise<{snapshot: StoredSnapsho
     .sort((a,b) => b.timestamp - a.timestamp || a.id.localeCompare(b.id));
   return { snapshot: snapshot ? {...snapshot, data: {...snapshot.data, matches}} : null, matches };
 }
+const SAFE_REASON = /^(NHL27 |Source identity mismatch|Stored tracker shape)/;
+export function syncFailureReason(error: unknown): string {
+  if (error instanceof Error && SAFE_REASON.test(error.message)) return error.message.slice(0, 200);
+  return `Storage or unexpected failure (${error instanceof Error ? error.name : typeof error})`;
+}
 function state(snapshot: StoredSnapshot | null, matches: ClubMatch[], now: number, synced: boolean, error?: string): TrackerResult {
   const stale = !snapshot || now - Date.parse(snapshot.fetchedAt) > STALE_AFTER_MS;
   return {status: snapshot ? (error || stale ? "stale" : "connected") : "unavailable", snapshot, matches, synced, ...(error ? {error} : {})};
@@ -125,9 +132,9 @@ export async function refreshHockeyTracker(options: {
     const saved = await readStored(store);
     if (result === "saved" || result === "older-fetch") return state(saved.snapshot, saved.matches, now(), result === "saved");
     return state(saved.snapshot, saved.matches, now(), false, result === "record-decreased" ? "Upstream totals decreased; the last verified snapshot and saved games were preserved." : "Sync lease expired; the last saved data was preserved.");
-  } catch {
+  } catch (error) {
     // Never replace current data with frozen NHL26 totals or zero-filled errors.
-    return state(previous.snapshot, previous.matches, now(), false, "The latest sync could not be verified or saved. Showing the last successfully saved current-season data, if available.");
+    return {...state(previous.snapshot, previous.matches, now(), false, "The latest sync could not be verified or saved. Showing the last successfully saved current-season data, if available."), reason: syncFailureReason(error)};
   } finally {
     if (leased) { try { await store.eval(RELEASE_LEASE, [TRACKER_KEYS.lock], [owner]); } catch { /* Lease expires automatically. */ } }
   }

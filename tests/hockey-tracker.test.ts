@@ -138,3 +138,11 @@ test("pre-crest stored matches remain readable in JSON and decoded forms without
   assert.equal(store.commits,1);
   assert.equal(JSON.stringify(store.matches),before);
 });
+
+test("failed sync exposes a sanitized operator reason without leaking unexpected error text", async () => {
+  const fetchFail = await refreshHockeyTracker({force:true, store:new MemoryStore(), fetchSnapshot:async()=>{throw new Error("NHL27 fetch failed: HTTP 503");}});
+  assert.equal(fetchFail.reason, "NHL27 fetch failed: HTTP 503");
+  assert.match(fetchFail.error!, /could not be verified/);
+  const leaky = await refreshHockeyTracker({force:true, store:new MemoryStore(), fetchSnapshot:async()=>{throw new TypeError("token=secret https://x.upstash.io");}});
+  assert.equal(leaky.reason, "Storage or unexpected failure (TypeError)");
+});
