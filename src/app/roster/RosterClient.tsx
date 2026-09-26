@@ -24,15 +24,17 @@ function PlayerCard({ player }: { player: RosterPlayer }) {
           </span>
         </summary>
         <div className="player-report">
-          <p className="player-report-season">Scouting report <span>/</span> {player.scouting.season} season review</p>
+          <p className="player-report-season">Scouting report <span>/</span> {player.scouting.season} {player.scouting.source === "current" ? "season so far" : "season review"}</p>
           <div className="player-report-body">
             <div className="player-report-read"><h4>The read.</h4><p>{player.scouting.description}</p></div>
             <div className="player-report-focus"><h4>The next step.</h4><p>{player.scouting.focus}</p></div>
           </div>
-          <dl className="player-report-stats" aria-label={`${player.scouting.season} archived statistics for ${name}`}>
+          <dl className="player-report-stats" aria-label={`${player.scouting.season} ${player.scouting.source === "current" ? "current-season" : "archived"} statistics for ${name}`}>
             {player.scouting.stats.map(stat => <div key={stat.label}><dt>{stat.label}</dt><dd>{stat.value}</dd></div>)}
           </dl>
-          <p className="player-report-source">Last season’s performance · Saved {player.scouting.season} club statistics. Not current-season totals.</p>
+          <p className="player-report-source">{player.scouting.source === "current"
+            ? <>This season so far · Live {player.scouting.season} club statistics.</>
+            : <>Last season’s performance · Saved {player.scouting.season} club statistics. Not current-season totals.</>}</p>
           {player.scouting.sampleNote && <p className="player-report-sample">{player.scouting.sampleNote}</p>}
         </div>
       </details>

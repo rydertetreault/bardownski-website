@@ -7,6 +7,8 @@ export type ScoutingReport = {
   season: string;
   stats: { label: string; value: string }[];
   sampleNote?: string;
+  /** "archive" = saved 2025–2026 totals; "current" = this season's live totals (newcomers). */
+  source: "archive" | "current";
 };
 
 const SEASON = "2025–2026";
@@ -52,6 +54,7 @@ export function getScoutingReport(member: ClubMember, name: string): ScoutingRep
     description,
     focus,
     season: SEASON,
+    source: "archive",
     stats,
     ...(sampleNote ? { sampleNote } : {}),
   });
@@ -130,4 +133,39 @@ export function getScoutingReport(member: ClubMember, name: string): ScoutingRep
       );
     }
   }
+}
+
+const CURRENT_SEASON = "2026–2027";
+
+/** Newcomers have no archived season, so their card shows this season's live totals. */
+export function getCurrentSeasonScoutingReport(member: ClubMember, position: string): ScoutingReport {
+  const isGoalie = ["G", "GK"].includes(position.toUpperCase());
+  const isDefense = position.toUpperCase() === "D";
+  const sample = isGoalie ? member.goalieGP : member.gamesPlayed;
+  const stats = isGoalie
+    ? [
+      { label: "Goalie GP", value: number(member.goalieGP) },
+      { label: "Goalie wins", value: number(member.goalieWins) },
+      { label: "Saves", value: number(member.goalieSaves) },
+      { label: "Save %", value: percent(member.savePct) },
+    ]
+    : [
+      { label: "Skater GP", value: number(member.gamesPlayed) },
+      { label: "Goals", value: number(member.goals) },
+      { label: "Assists", value: number(member.assists) },
+      { label: "Points", value: number(member.points) },
+    ];
+  return {
+    role: isGoalie ? "Goaltender · New This Season" : isDefense ? "Defenseman · New This Season" : "Skater · New This Season",
+    description: isGoalie
+      ? `New to the room in ${CURRENT_SEASON}. So far: ${number(member.goalieGP)} goalie appearances, ${number(member.goalieWins)} wins and ${number(member.goalieSaves)} saves. There is no previous Bardownski season to compare against yet.`
+      : `New to the room in ${CURRENT_SEASON}${isDefense ? " on the blue line" : ""}. So far: ${number(member.goals)} goals and ${number(member.assists)} assists for ${number(member.points)} points in ${number(member.gamesPlayed)} skater games, with ${number(member.hits)} ${member.hits === 1 ? "hit" : "hits"} and a ${signed(member.plusMinus)} plus-minus. There is no previous Bardownski season to compare against yet.`,
+    focus: isDefense
+      ? "Settle into a defensive pairing and build a longer run of games on the back end."
+      : "Build a longer run of games before defining a specialty.",
+    season: CURRENT_SEASON,
+    source: "current",
+    stats,
+    ...(sample < 10 ? { sampleNote: `Limited ${number(sample)}-game ${isGoalie ? "goalie" : "skater"} sample this season; avoid firm style conclusions.` } : {}),
+  };
 }

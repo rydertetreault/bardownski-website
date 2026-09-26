@@ -2,13 +2,17 @@ import Image from "next/image";
 import Link from "next/link";
 import "./roster.css";
 import { FROZEN_CHELSTATS } from "@/lib/chelstats-frozen";
+import { getHockeySeason } from "@/lib/hockey-season";
 import { SEASON_REVEAL } from "@/lib/season-reveal";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "2026–2027 Roster | Bardownski Hockey", description: "Meet the 2026–2027 Bardownski roster: forwards, defense, goalies, captain Xavier Laflamme and assistant captain Matt Hut. One room. All in." };
 import { getNickname } from "@/lib/nicknames";
 import RosterClient from "./RosterClient";
-import { getScoutingReport, type ScoutingReport } from "./scouting";
+import { getCurrentSeasonScoutingReport, getScoutingReport, type ScoutingReport } from "./scouting";
+
+// Membership and games played are read from the live 2026–2027 tracker.
+export const dynamic = "force-dynamic";
 
 // Gamertag → real name (for looking up nicknames, jersey numbers, etc.)
 // Fill in the empty ones with the player's real name
@@ -27,9 +31,11 @@ function resolveName(gamertag: string): string {
   return GAMERTAG_TO_NAME[gamertag] || gamertag;
 }
 
-// Roster roles can differ from the archived stats feed (Ryder is tagged SKTR).
+// Roster roles can differ from the stats feeds (Ryder is tagged SKTR in the archive).
 const POSITION_OVERRIDES: Record<string, string> = {
   RYDER: "G",
+  BBANK69: "D",
+  DeadHendrix1740: "D",
 };
 
 // Jersey numbers (by real name or gamertag)
@@ -70,14 +76,17 @@ export type RosterPlayer = {
 };
 
 export default async function RosterPage() {
-  // Identities and scouting evidence come from the saved 2025–2026 directory.
-  // Performance appears only in explicitly labeled last-season reports.
-  const chelstats = FROZEN_CHELSTATS;
-  const members = chelstats?.members ?? [];
+  // Only current-season club members with at least one game (skater or goalie)
+  // make the roster. Returning players keep their saved 2025–2026 scouting
+  // report; newcomers get a report from their live 2026–2027 totals.
+  const season = await getHockeySeason();
+  const archived = new Map((FROZEN_CHELSTATS?.members ?? []).map((m) => [m.username.toLowerCase(), m]));
+  const members = (season.data?.members ?? []).filter((m) => m.gamesPlayed + m.goalieGP >= 1);
 
   const players: RosterPlayer[] = members.map((m) => {
     const name = resolveName(m.username);
-    const position = POSITION_OVERRIDES[name] ?? m.position;
+    const previous = archived.get(m.username.toLowerCase());
+    const position = POSITION_OVERRIDES[name] ?? POSITION_OVERRIDES[m.username] ?? previous?.position ?? m.position;
 
     return {
       name,
@@ -86,7 +95,7 @@ export default async function RosterPage() {
       leadership: ROSTER_LEADERS.find((leader) => leader.profileName === name)?.letter ?? null,
       positionGroup: getPositionGroup(position),
       nickname: getNickname(name),
-      scouting: getScoutingReport(m, name),
+      scouting: previous ? getScoutingReport(previous, name) : getCurrentSeasonScoutingReport(m, position),
     };
   });
 

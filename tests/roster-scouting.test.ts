@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import { getScoutingReport } from "../src/app/roster/scouting";
+import { getCurrentSeasonScoutingReport, getScoutingReport } from "../src/app/roster/scouting";
 import { FROZEN_CHELSTATS } from "../src/lib/chelstats-frozen";
 import type { ClubMember } from "../src/lib/chelstats";
 
@@ -151,4 +151,17 @@ test("helper is standalone with only a type import and no page or network depend
   assert.match(source, /import type \{ ClubMember \}/);
   assert.equal((source.match(/^import /gm) ?? []).length, 1);
   assert.doesNotMatch(source, /fetch\s*\(|from ["'][^"']*page|chelstats-frozen/);
+});
+
+test("newcomers get a labelled current-season report instead of an archive report", () => {
+  const base = FROZEN_CHELSTATS.members.find((m) => m.username === "S1obbyRobby")!;
+  const newcomer: ClubMember = { ...base, username: "BBANK69", position: "D", gamesPlayed: 8, goals: 2, assists: 5, points: 7, hits: 12, plusMinus: -3, goalieGP: 0 };
+  const report = getCurrentSeasonScoutingReport(newcomer, "D");
+  assert.equal(report.source, "current");
+  assert.equal(report.season, "2026–2027");
+  assert.equal(report.role, "Defenseman · New This Season");
+  assert.deepEqual(report.stats.map((stat) => stat.value), ["8", "2", "5", "7"]);
+  assert.match(report.description, /blue line/);
+  assert.match(report.sampleNote ?? "", /Limited 8-game skater sample/);
+  assert.equal(getScoutingReport(base, "ROB").source, "archive");
 });
