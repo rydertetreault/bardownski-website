@@ -76,7 +76,8 @@ test("public Lab is image-led, builder-first and free of feed diagnostics/native
     assert.doesNotMatch(readFileSync(path, "utf8"), /<select\b|<option\b|Feed checked|stored sync|tracking is connected/);
   }
   const planner = readFileSync("src/components/lines/LinePlanner.tsx", "utf8");
-  assert.match(planner, /PROJECTED FIT/);
+  assert.match(planner, /<span>CONNECTION<\/span>/);
+  assert.doesNotMatch(planner, /PROJECTED FIT/);
   assert.match(planner, /gradeSource === "lab-performance"/);
   assert.match(planner, /draft\.datasetId !== dataset\.id \|\| draft\.season !== season/);
 });

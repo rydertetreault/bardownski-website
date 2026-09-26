@@ -1,5 +1,6 @@
 import type { ClubMember } from "@/lib/chelstats";
 import type { GoalieDataset } from "@/lib/goalie-lines";
+import type { ConnectionGame, ConnectionPlayer } from "@/lib/line-connection";
 import { normalizeChemistryName, type ChemistryGame } from "@/lib/line-chemistry";
 import { getPlayerGrade, getPlayerPerformanceRating, type SeasonSkaterStats } from "@/lib/line-ratings";
 
@@ -29,6 +30,8 @@ export type LineDataset = {
   games: ChemistryGame[];
   players: LinePlayer[];
   goalies?: GoalieDataset;
+  /** Pairwise connection inputs: games with their goalie, and player ratings/positions. */
+  connection?: { games: ConnectionGame[]; players: ConnectionPlayer[] };
   sourceTotal: number;
   excluded: number;
 };

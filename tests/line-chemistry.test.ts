@@ -89,7 +89,7 @@ test("full rosters exclude opponents and goalies; local sheets never infer a goa
   ] })])[0].skaters, ["MATT HUT"]);
 });
 
-test("invalid scores, private matches and all forfeit markers are excluded", () => {
+test("invalid scores, private matches and no-play forfeit markers are excluded", () => {
   const invalid = [null, undefined, NaN, Infinity, -Infinity, -1];
   for (const score of invalid) {
     for (const field of ["scoreUs", "scoreThem"] as const) {
@@ -103,6 +103,10 @@ test("invalid scores, private matches and all forfeit markers are excluded", () 
     assert.deepEqual(buildChemistryGames([full(record.id)], [local(record.id, undefined, extra)]), []);
   }
   assert.deepEqual(buildChemistryGames([full(" "), full("bad-time", undefined, { timestamp: NaN })], []), []);
+  // Opponent quit after real play (shots, clock or player stats): the game counts.
+  for (const played of [{ shotsUs: 4 }, { toaThem: "2:10" }, { players: [{ name: "MATT", position: "C", isGoalie: false, isOurPlayer: true, goals: 1 }] }]) {
+    assert.equal(buildChemistryGames([full("dnf", ["MATT"], { forfeit: true, ...played })], []).length, 1);
+  }
   assert.equal(buildChemistryGames([full("zero", undefined, { scoreUs: 0, scoreThem: 0, timestamp: 0 })], []).length, 1);
 });
 

@@ -56,7 +56,7 @@ export interface GoalieLineEvaluation {
 }
 
 export const GOALIE_METHOD_DESCRIPTION =
-  "Selected-season full regular/finals match records only; no partial archive, private games, forfeits or conflicting scores. " +
+  "Selected-season full regular/finals match records only; no partial archive, private games, forfeits without recorded play or conflicting scores. " +
   "Exactly 2, 3 or 5 distinct skaters must coappear with one verified OUR goalie in the same selected whole record, " +
   "with no goalie/skater identity overlap. Conflicting equally selected goalie identities are excluded, not merged. " +
   "Shared wins/losses/draws and the local getLineRating index describe club outcomes, not goalie influence or a win probability. " +

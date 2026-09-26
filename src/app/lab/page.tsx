@@ -9,6 +9,7 @@ import LabTools from "./LabTools";
 import { getAllMatchesForRecords } from "@/lib/match-history";
 import { buildChemistryDataset } from "@/lib/line-chemistry";
 import { buildGoalieDataset } from "@/lib/goalie-lines";
+import { buildConnectionGames, buildConnectionPlayers } from "@/lib/line-connection";
 import { NHL27_IDENTITY } from "@/lib/nhl27-api";
 import { buildLinePlayers, type LineDataset } from "@/components/lines/line-datasets";
 import "./lab.css";
@@ -53,6 +54,8 @@ export default async function LabPage({ searchParams }: { searchParams: Promise<
 
   const currentChemistry = buildChemistryDataset(season.data?.matches ?? [], []);
   const archiveChemistry = buildChemistryDataset(archivedMatches);
+  const currentGoalies = buildGoalieDataset(members, season.data?.matches ?? []);
+  const archiveGoalies = buildGoalieDataset(FROZEN_CHELSTATS.members, archivedMatches);
   const currentLines: LineDataset = {
     id: NHL27_IDENTITY.storageKey,
     season: HOCKEY_SEASON,
@@ -60,7 +63,11 @@ export default async function LabPage({ searchParams }: { searchParams: Promise<
     totalGames: season.coverage.totalGames,
     games: currentChemistry.games,
     players: buildLinePlayers(members, currentChemistry.games, "current"),
-    goalies: buildGoalieDataset(members, season.data?.matches ?? []),
+    goalies: currentGoalies,
+    connection: {
+      games: buildConnectionGames(currentChemistry.games, currentGoalies.games, season.data?.matches ?? []),
+      players: buildConnectionPlayers(members, season.data?.matches ?? [], currentChemistry.games),
+    },
     sourceTotal: currentChemistry.total,
     excluded: currentChemistry.excluded,
   };
@@ -71,7 +78,11 @@ export default async function LabPage({ searchParams }: { searchParams: Promise<
     totalGames: FROZEN_CHELSTATS.clubStats.totalGames,
     games: archiveChemistry.games,
     players: buildLinePlayers(FROZEN_CHELSTATS.members, archiveChemistry.games, "archive"),
-    goalies: buildGoalieDataset(FROZEN_CHELSTATS.members, archivedMatches),
+    goalies: archiveGoalies,
+    connection: {
+      games: buildConnectionGames(archiveChemistry.games, archiveGoalies.games, archivedMatches),
+      players: buildConnectionPlayers(FROZEN_CHELSTATS.members, archivedMatches, archiveChemistry.games),
+    },
     sourceTotal: archiveChemistry.total,
     excluded: archiveChemistry.excluded,
   };

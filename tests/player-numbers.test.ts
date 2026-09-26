@@ -26,7 +26,7 @@ test("Lab club numbers match published roster for real names, nicknames and game
 test("builder uses numbered plus-node selectors, never jerseys or drawing-board panels", () => {
   const planner = readFileSync("src/components/lines/LinePlanner.tsx", "utf8");
   assert.doesNotMatch(planner, /Sweater|line-sweater|THE DRAWING BOARD|line-ice/);
-  assert.match(planner, /line-triangle/);
+  assert.match(planner, /className="line-edge" data-a=\{edge.a\} data-b=\{edge.b\}/);
   assert.match(planner, /variant="player"/);
   assert.match(planner, /playerNumber \?\? "—" : "\+"/);
   assert.match(planner, /player\?\.name \?\? "Add player"/);

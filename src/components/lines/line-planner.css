@@ -103,7 +103,7 @@
 .line-pairs small { grid-column:1/-1; color:#a5babc; font-size:9px; }
 .line-recommendations { margin-top:64px; }
 .player-lab .line-section-head h3 { font-size:clamp(34px,3.5vw,48px); line-height:1.05; text-transform:uppercase; }
-.line-rank-filters { display:grid; grid-template-columns:minmax(180px,1.4fr) minmax(130px,1fr); gap:14px; }
+.line-rank-filters { display:grid; grid-template-columns:minmax(180px,1.4fr) minmax(150px,1fr) minmax(130px,1fr); gap:14px; }
 .line-availability { margin-bottom:30px; }
 .line-pool { padding-bottom:20px; }
 .line-availability fieldset { border:0; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:12px; }
@@ -145,13 +145,13 @@
 .line-evidence li>span:last-child { color:#a5babc; font-size:9px; width:40px; text-align:right; }
 .line-evidence small { display:block; color:#a5babc; font-size:9px; margin-top:6px; }
 .line-sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
-@media(max-width:1100px) { .line-heading { align-items:start; flex-direction:column; gap:24px; }.line-workspace { grid-template-columns:minmax(0,1fr) 250px; gap:26px; }.line-draft-heading { flex-direction:column; align-items:start; gap:22px; }.line-evaluation { padding-left:24px; }.line-chemistry-dial { width:190px; height:190px; }.line-draft-actions>span { display:none; }.line-section-head { align-items:start; flex-direction:column; gap:24px; }.line-rank-filters { width:100%; grid-template-columns:1fr 1fr; }.line-combination-grid { gap:24px; }.line-combination { padding-right:20px; }.line-player-name { font-size:23px; } }
+@media(max-width:1100px) { .line-heading { align-items:start; flex-direction:column; gap:24px; }.line-workspace { grid-template-columns:minmax(0,1fr) 250px; gap:26px; }.line-draft-heading { flex-direction:column; align-items:start; gap:22px; }.line-evaluation { padding-left:24px; }.line-chemistry-dial { width:190px; height:190px; }.line-draft-actions>span { display:none; }.line-section-head { align-items:start; flex-direction:column; gap:24px; }.line-rank-filters { width:100%; grid-template-columns:1fr 1fr 1fr; }.line-combination-grid { gap:24px; }.line-combination { padding-right:20px; }.line-player-name { font-size:23px; } }
 @media(max-width:850px) { .line-workspace { grid-template-columns:1fr; }.line-draft-heading { flex-direction:row; align-items:center; }.line-evaluation { padding:28px 0 0; border-left:0; border-top:1px solid var(--line-rule); display:grid; grid-template-columns:210px minmax(0,1fr); gap:0 30px; }.line-evaluation-top,.line-evaluation h3 { grid-column:1/-1; }.line-chemistry-dial { width:210px; height:210px; grid-row:3/span 3; align-self:center; }.line-overall-grade { margin-top:24px; justify-content:start; }.line-stat-grid { margin-block:18px; }.line-score-link,.line-score-source { grid-column:1/-1; }.line-combination-grid { grid-template-columns:1fr; gap:30px; }.line-combination { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:0 24px; padding:0 0 28px!important; border-right:0; border-bottom:1px solid var(--line-rule); }.line-combination-top { grid-column:1/-1; }.line-combination ul { grid-column:2; grid-row:2/span 2; align-self:center; }.line-combination button { grid-column:1/-1; justify-self:start; }.line-pairs { grid-template-columns:1fr 1fr; }.line-player-name { font-size:28px; } }
 @media(max-width:550px) { .line-season-workspace { padding:40px 20px 36px; }.line-heading { margin-bottom:30px; }.line-season-selector { width:100%; }.line-season-selector button { flex:1; text-align:center; padding:11px 14px; }.line-workspace { padding-top:28px; }.line-draft-heading { flex-direction:column; align-items:stretch; gap:22px; }.line-formats button { flex:1; padding:10px 8px; }.line-slots { grid-auto-rows:184px; gap:20px 0; }.line-slot { padding-inline:5px; }.line-player-node { width:78px; height:78px; font-size:38px; margin-bottom:14px; }.line-slot.is-selected .line-player-node { font-size:44px; }.line-player-name { font-size:21px; line-height:1.05; }.line-player-edit { font-size:9px; margin-top:7px; }.line-slot .lab-select .lab-select-trigger { min-height:142px; padding:0 3px; }.player-lab .line-player-grade { font-size:9px; margin-top:7px; }.line-position { right:-5px; height:24px; min-width:28px; }.line-connections { height:410px; }.line-draft-actions { gap:5px; }.line-draft-actions button { font-size:10px; padding:11px 16px; }.line-evaluation { grid-template-columns:130px minmax(0,1fr); gap:0 22px; }.line-chemistry-dial { width:135px; height:135px; margin-left:-4px; }.line-chemistry-dial strong { font-size:58px; letter-spacing:-1px; }.line-chemistry-dial strong small { font-size:24px; }.line-chemistry-dial>div>span { font-size:6px; letter-spacing:.6px; }.line-overall-grade { gap:10px; }.line-overall-grade>span { font-size:10px; }.player-lab .line-score-caption { font-size:11px; }.line-stat-grid { gap:16px 12px; padding-block:15px; }.line-stat-grid strong { font-size:26px; }.line-stat-grid span { font-size:8px; }.line-recommendations { margin-top:42px; }.line-rank-filters { gap:12px; grid-template-columns:minmax(0,1fr) minmax(0,1fr); }.line-combination { display:block; }.line-pairs { grid-template-columns:1fr; gap:20px; }.line-planner summary>span { letter-spacing:.3px; font-size:7px; } }
 @media(prefers-reduced-motion:reduce) { .line-season-workspace * { transition:none!important; scroll-behavior:auto!important; } }
 
 /* Optional netminder stays behind the skater formation, not in its count. */
-.line-goalie-slot { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); align-items:center; gap:16px 0; padding:26px 0 30px; border-top:1px solid var(--line-rule); position:relative; }
+.line-goalie-slot { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); align-items:center; gap:16px 0; padding:6px 0 10px; position:relative; }
 .line-goalie-intro { grid-column:1; align-self:center; }
 .player-lab .line-goalie-intro h4 { font-size:30px; line-height:1; text-transform:uppercase; margin:10px 0 12px; }
 .line-goalie-intro em { color:#c4a1dc; }
@@ -269,18 +269,22 @@
 
 /* Align each result with the players it describes: skaters first, goalie below. */
 .line-workspace { row-gap:28px; }
-.line-workspace>.line-draft { grid-column:1; grid-row:1; }
-.line-workspace>.line-evaluation { grid-column:2; grid-row:1; }
-.line-workspace>.line-goalie-slot { grid-column:1; grid-row:2; margin:0; padding-block:24px; }
-.line-workspace>.goalie-connection { grid-column:2; grid-row:2; }
-.line-workspace>.line-workspace-actions { grid-column:1/-1; grid-row:3; }
+/* Each column stacks on its own, so a tall builder never pushes the side panels apart. */
+.line-workspace>.line-col { display:flex; flex-direction:column; gap:28px; min-width:0; }
+.line-workspace>.line-col-main { grid-column:1; grid-row:1; }
+.line-workspace>.line-col-side { grid-column:2; grid-row:1; }
+.line-workspace>.line-workspace-actions { grid-column:1/-1; grid-row:2; }
 .line-workspace-actions .line-message:empty { min-height:0; padding:0; }
 @media(max-width:850px) {
-  .line-workspace>.line-draft { grid-column:1; grid-row:1; }
-  .line-workspace>.line-evaluation { grid-column:1; grid-row:2; }
-  .line-workspace>.line-goalie-slot { grid-column:1; grid-row:3; }
-  .line-workspace>.goalie-connection { grid-column:1; grid-row:4; }
-  .line-workspace>.line-workspace-actions { grid-column:1; grid-row:5; }
+  /* One column: unwrap the columns to keep builder → connection → pairs → goalie order. */
+  /* `order` (not fixed rows) so a missing pair list leaves no empty row / double gap. */
+  .line-workspace>.line-col { display:contents; }
+  .line-col>* { grid-column:1; grid-row:auto; }
+  .line-col>.line-draft { order:1; }
+  .line-col>.line-evaluation { order:2; }
+  .line-col>.line-connection-pairs { order:3; }
+  .line-col>.goalie-connection { order:4; }
+  .line-workspace>.line-workspace-actions { grid-column:1; grid-row:auto; order:5; }
 }
 
 /* Mirror the goalie companion's rules and accents, in player teal. */
@@ -291,3 +295,78 @@
 .player-connection .line-stat-grid { border-color:#68c8ce38; }
 .line-ideas .goalie-impact.is-compact { --goalie-paper:#101b1e; --goalie-muted:#b8cdcf; --goalie-rule:#68c8ce35; }
 @media(max-width:850px) { .line-evaluation.player-connection { padding:14px 0 0; border-left:0; } }
+/* Connection panel: out-of-position notes and live pair breakdown. */
+.line-position-notes { list-style:none; margin:14px 0 0; padding:12px 14px; border:1px solid #c4a1dc55; border-radius:10px; background:#c4a1dc12; display:grid; gap:6px; }
+.line-position-notes li { font-size:11px; line-height:1.5; color:#e6dcef; }
+.line-position-notes strong { color:#f0efeb; }
+.player-lab .line-position-notes .line-position-cost { font-size:9px; letter-spacing:.8px; text-transform:uppercase; color:var(--line-lilac,#c4a1dc); }
+.line-connection-pairs { margin:0; }
+.line-connection-pairs ul { list-style:none; margin:10px 0 0; padding:0; display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); column-gap:28px; }
+.line-connection-pairs li { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:10px; padding:8px 0; border-top:1px solid var(--line-rule,#ffffff24); font-size:11px; line-height:1.4; }
+.line-connection-pairs li span { overflow-wrap:anywhere; }
+.line-connection-pairs li small { display:block; margin-top:2px; font-size:9px; color:#a5babc; }
+.line-connection-pairs li strong { font:800 22px/1 LabBarlow,Impact,sans-serif; color:#68c8ce; }
+.line-connection-pairs li[data-goalie] strong { color:var(--line-lilac,#c4a1dc); }
+@media(max-width:850px) { .line-position-notes { grid-column:1/-1; } }
+/* Line ideas: switch between best fits and lines that have actually played. */
+.line-ideas-views { display:inline-flex; margin:0 10px 22px 0; vertical-align:top; }
+@media(max-width:550px) { .line-ideas-views { display:flex; margin-right:0; margin-bottom:12px; } }
+.line-combination li.line-combination-ai { color:#a5babc; font-weight:400; font-style:italic; }
+.line-combination li.line-combination-ai .line-combination-number { background:transparent; border:1px dashed #68c8ce55; color:#a5babc; font:700 9px/1 Arial,Helvetica,sans-serif; letter-spacing:.14em; padding-left:.14em; }
+.line-combination li.line-combination-goalie { border-top:1px dashed #c4a1dc44; margin-top:2px; }
+.line-combination li.line-combination-goalie .line-combination-number { background:#1d1429; color:#c4a1dc; }
+.line-combination li.line-combination-goalie.line-combination-ai .line-combination-number { background:transparent; border-color:#c4a1dc66; color:#a5babc; }
+.line-count-goalie { margin:14px 0 4px; align-self:flex-start; }
+.line-netminder.is-not-counted .line-player-node,.line-netminder.is-not-counted .line-player-name { opacity:.45; }
+@media(max-width:850px) { .line-count-goalie { grid-column:1/-1; } }
+@media(max-width:550px) { .line-rank-filters #line-rank-sort, .line-rank-filters .lab-select:first-child { grid-column:1/-1; } }
+/* 6s: the diagram spans all three rows so the defense links in too. */
+.line-formation-5 .line-connections { height:520px; }
+/* Picking a player: that slot's links light up purple. */
+.line-connections .line-edge { transition:stroke .2s ease, stroke-width .2s ease; }
+.line-formation:has(.line-slots > .line-slot:nth-child(1) [aria-expanded="true"]) .line-edge:is([data-a="1"],[data-b="1"]),
+.line-formation:has(.line-slots > .line-slot:nth-child(2) [aria-expanded="true"]) .line-edge:is([data-a="2"],[data-b="2"]),
+.line-formation:has(.line-slots > .line-slot:nth-child(3) [aria-expanded="true"]) .line-edge:is([data-a="3"],[data-b="3"]),
+.line-formation:has(.line-slots > .line-slot:nth-child(4) [aria-expanded="true"]) .line-edge:is([data-a="4"],[data-b="4"]),
+.line-formation:has(.line-slots > .line-slot:nth-child(5) [aria-expanded="true"]) .line-edge:is([data-a="5"],[data-b="5"]) { stroke:#c4a1dc; stroke-width:2.5; stroke-dasharray:none; filter:url(#line-edge-glow); animation:line-edge-pulse 1.6s ease-in-out infinite; }
+@keyframes line-edge-pulse {
+  0%, 100% { stroke-opacity:.6; stroke-width:2; }
+  50% { stroke-opacity:1; stroke-width:3.5; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .line-connections .line-edge { transition:none; }
+  .line-connections .line-edge { animation:none !important; }
+}
+
+/* The goalie sits in the same panel as the skaters, in a crease. While the goalie
+   picker is open, a cone shows the shooting angles he takes away and waves radiate
+   along it; picking (or closing) stops it, leaving just the crease. */
+.line-netminder { position:relative; isolation:isolate; --crease-goal:78px; }
+.line-crease { position:absolute; z-index:-1; left:50%; top:calc(var(--crease-goal) - 400px); width:600px; height:420px; margin-left:-300px; overflow:visible; pointer-events:none; }
+.line-crease path { vector-effect:non-scaling-stroke; }
+.line-crease-zone { fill:#c4a1dc1f; stroke:#c4a1dc88; stroke-width:1.5; }
+.line-crease-goal-line { fill:none; stroke:#c4a1dc55; stroke-width:1.5; }
+.line-crease-cone { fill:#c4a1dc; opacity:0; transition:opacity .35s ease; }
+.line-crease-edge { fill:none; stroke:#c4a1dc; stroke-width:1.5; stroke-dasharray:5 7; opacity:0; transition:opacity .35s ease; }
+.line-crease-wave { fill:none; stroke:#c4a1dc; stroke-width:2.5; opacity:0; transform-box:view-box; transform-origin:300px 400px; }
+.line-netminder:has([aria-expanded="true"]) .line-crease-cone { opacity:.09; }
+.line-netminder:has([aria-expanded="true"]) .line-crease-edge { opacity:.8; }
+.line-netminder:has([aria-expanded="true"]) .line-crease-wave { animation:line-crease-wave 1.4s ease-out infinite; }
+@keyframes line-crease-wave {
+  0% { transform:scale(.18); opacity:0; }
+  15% { opacity:.9; }
+  100% { transform:scale(1); opacity:0; }
+}
+@media (max-width:550px) {
+  .line-netminder { --crease-goal:64px; }
+  .line-crease { width:360px; height:252px; margin-left:-180px; top:calc(var(--crease-goal) - 240px); }
+}
+@media (prefers-reduced-motion:reduce) {
+  .line-crease-wave { animation:none !important; }
+}
+@media (max-width:550px) {
+  /* Phones: goalie centred under the defense, intro below; the cone may rise but never widen the page. */
+  .line-goalie-slot { grid-template-columns:minmax(0,1fr); overflow-x:clip; overflow-y:visible; }
+  .line-goalie-slot .line-netminder { grid-column:1; grid-row:1; justify-self:center; width:min(100%,220px); }
+  .line-goalie-slot .line-goalie-intro { grid-column:1; grid-row:2; text-align:center; }
+}

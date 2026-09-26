@@ -4,7 +4,7 @@ import { test } from "node:test";
 import type { ClubMatch, ClubMember, MatchPlayerStat } from "../src/lib/chelstats";
 import { FROZEN_CHELSTATS } from "../src/lib/chelstats-frozen";
 import {
-  buildGoalieDataset, evaluateGoalieLine, GOALIE_METHOD_DESCRIPTION,
+  buildGoalieDataset, evaluateGoalieLine, evaluateGoaliePair, GOALIE_METHOD_DESCRIPTION,
   type GoalieDataset, type GoalieGame, type GoalieLineEvaluation, type GoalieProfile,
 } from "../src/lib/goalie-lines";
 import { buildChemistryDataset, evaluateChemistrySelection, normalizeChemistryName } from "../src/lib/line-chemistry";
@@ -88,7 +88,7 @@ test("public contract and pure adapter: normalized profile, exact whole game, no
   assert.deepEqual(JSON.parse(JSON.stringify(dataset)), dataset);
 });
 
-test("real current fixture: goalie-only member is selectable, but its forfeit is not a shared sample", () => {
+test("real current fixture: goalie-only member is selectable, and a quit-early game with real play is a shared sample", () => {
   const data = fixture();
   freeze(data);
   const current = buildGoalieDataset(data.members, data.matches);
@@ -102,10 +102,18 @@ test("real current fixture: goalie-only member is selectable, but its forfeit is
   assert.equal(keeper.shotsAgainst, 14);
   close(keeper.savePct, 100 * 13 / 14);
   assert.equal(keeper.gaa, 1.02);
-  assert.deepEqual(current.games, []);
+  // The fixture's 7–1 win is flagged as a forfeit (opponent quit), but it
+  // recorded shots and 13 saves: it was played, so it counts.
+  assert.deepEqual(current.games.map(game => [game.id, game.goalsFor, game.goalsAgainst, game.goalieId, game.saves]),
+    [["730353500312", 7, 1, keeper.id, 13]]);
+  // Only Matt skated for us that game (plus an AI), so Matt + Dylan has no shared sample…
   const result = evaluateGoalieLine(current, ["MATT", "DYLAN"], "RYDER")!;
   assert.deepEqual(result.rating, unrated);
   assert.equal(result.stats.games, 0);
+  // …but the Matt–goalie pairing now has that played game.
+  const pair = evaluateGoaliePair(current, "MATT", "RYDER")!;
+  assert.equal(pair.stats.games, 1);
+  assert.equal(pair.stats.wins, 1);
 });
 
 test("current/archive isolation: never use bundled partial games, season totals or names as shared evidence", () => {
@@ -231,10 +239,14 @@ test("one verified OUR goalie only; opponents, unknown roles and skater/goalie a
   assert.equal(repeated.games[0].saves, 9, "one human's duplicated alias rows are never summed");
 });
 
-test("all chemistry exclusions apply: private/forfeit veto, invalid scores, impossible scoring and outcome conflicts", () => {
-  for (const extra of [{ forfeit: true }, { result: "FORFEIT WIN" }, { id: "forfeit-one" }, { matchType: "private" as const }]) {
+test("all chemistry exclusions apply: private/no-play forfeit veto, invalid scores, impossible scoring and outcome conflicts", () => {
+  // An awarded forfeit: no shots, no clock, no player stats.
+  const noPlay: Partial<ClubMatch> = { forfeit: true, shotsUs: 0, shotsThem: 0, toaUs: "0:00", toaThem: "0:00",
+    players: [skater("MATT"), skater("DYLAN"), goalie({ saves: 0, shotsAgainst: 0, goalsAgainst: 0 })], scoreThem: 0 };
+  for (const extra of [noPlay, { result: "FORFEIT WIN" }, { id: "forfeit-one" }, { matchType: "private" as const }]) {
     assert.deepEqual(buildGoalieDataset([], [full("bad", extra)]).games, []);
   }
+  assert.equal(buildGoalieDataset([], [full("quit", { forfeit: true })]).games.length, 1, "opponent quit after real play: counts");
   for (const bad of [NaN, Infinity, -1, 1.5, null, undefined, "3"]) {
     for (const field of ["scoreUs", "scoreThem"] as const) {
       assert.deepEqual(buildGoalieDataset([], [full("bad", { [field]: bad } as Partial<ClubMatch>)]).games, []);
@@ -242,7 +254,7 @@ test("all chemistry exclusions apply: private/forfeit veto, invalid scores, impo
   }
   const impossible = full("bad", { players: [skater("MATT", { goals: 4 }), skater("DYLAN"), goalie()] });
   assert.deepEqual(buildGoalieDataset([], [impossible]).games, []);
-  for (const conflict of [full("one", { forfeit: true }), full("one", { matchType: "private" }), full("one", { scoreUs: 4 })]) {
+  for (const conflict of [full("one", noPlay), full("one", { matchType: "private" }), full("one", { scoreUs: 4 })]) {
     assert.deepEqual(buildGoalieDataset([], [full(), conflict]).games, []);
     assert.deepEqual(buildGoalieDataset([], [conflict, full()]).games, []);
   }

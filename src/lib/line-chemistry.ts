@@ -51,6 +51,10 @@ export interface ChemistryRecommendationOptions {
 
 type RecordedPlayer = Pick<MatchPlayerStat, "name" | "position" | "isOurPlayer" | "isGoalie"> & {
   goals?: number;
+  assists?: number;
+  shots?: number;
+  hits?: number;
+  saves?: number;
 };
 /** Structurally accepts readonly ClubMatch[] and untrusted nullable saved scores. */
 export type ChemistryMatchInput = Pick<ClubMatch, "id" | "timestamp" | "date" | "opponent"> & {
@@ -59,6 +63,11 @@ export type ChemistryMatchInput = Pick<ClubMatch, "id" | "timestamp" | "date" | 
   result?: string;
   matchType?: string;
   forfeit?: boolean;
+  /** Evidence of real play; lets an opponent-quit (DNF) game count. */
+  shotsUs?: number;
+  shotsThem?: number;
+  toaUs?: string;
+  toaThem?: string;
   players?: readonly RecordedPlayer[] | null;
 };
 
@@ -110,8 +119,24 @@ function goalie(player: { position?: string; isGoalie?: boolean }): boolean {
   return player.isGoalie === true || /^(g|gk|goalie|goaltender|goalkeeper)$/i.test(player.position?.trim() ?? "");
 }
 
+const positive = (value: unknown) => typeof value === "number" && Number.isFinite(value) && value > 0;
+const clockRan = (value: unknown) => typeof value === "string" && /[1-9]/.test(value);
+
+/** Shots, time on attack or any player stat. An awarded result has none. */
+function recordedPlay(game: ChemistryMatchInput | ChemistryLocalGame): boolean {
+  const match = game as ChemistryMatchInput;
+  if (positive(match.shotsUs) || positive(match.shotsThem) || clockRan(match.toaUs) || clockRan(match.toaThem)) return true;
+  return (game.players ?? []).some(player => {
+    const stats = player as RecordedPlayer;
+    return [stats.goals, stats.assists, stats.shots, stats.hits, stats.saves].some(positive);
+  });
+}
+
+/** Private games and synthetic/awarded forfeits are excluded. A game the
+ * opponent (or we) quit part-way still counts when the feed recorded play:
+ * common in 3s, and those minutes were really played together. */
 function excludedType(game: ChemistryMatchInput | ChemistryLocalGame): boolean {
-  return game.matchType?.trim().toLowerCase() === "private" || game.forfeit === true ||
+  return game.matchType?.trim().toLowerCase() === "private" || (game.forfeit === true && !recordedPlay(game)) ||
     /forfeit/i.test(game.result ?? "") || /^forfeit(?:-|$)/i.test(game.id.trim());
 }
 
@@ -169,7 +194,7 @@ function canonicalGames(games: readonly ChemistryGame[]): ChemistryGame[] {
 /** Pure adapter: no fetching, environment access or archive mutation. Pass [] as
  * fallbackLocal to disable the bundled 75-game partial archive. Invalid full
  * scores/inconsistent records may fall back to an independently valid record,
- * but explicit forfeits/private games veto the ID across both sources.
+ * but private games and forfeits with no recorded play veto the ID across both sources.
  * Local players are never attached to a different/full game to invent a lineup. */
 export function buildChemistryGames(
   fullMatches: readonly ChemistryMatchInput[],
