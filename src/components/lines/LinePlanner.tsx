@@ -72,7 +72,10 @@ const number = (n: number | null, digits = 1) => n === null ? "—" : n.toLocale
 export default function LinePlanner({ dataset }: Props) {
   const { players, season } = dataset;
   const draftKey = lineDraftKey(dataset);
-  const goalieDataset = dataset.goalies ?? EMPTY_GOALIES;
+  const allGoalies = dataset.goalies ?? EMPTY_GOALIES;
+  // Club members only: drop-in guests never appear in pickers, lists or comparisons.
+  const memberIds = useMemo(() => dataset.connection ? new Set(dataset.connection.players.filter(player => player.member).map(player => player.id)) : null, [dataset.connection]);
+  const goalieDataset = useMemo(() => memberIds ? { ...allGoalies, players: allGoalies.players.filter(goalie => memberIds.has(goalie.id)) } : allGoalies, [allGoalies, memberIds]);
   const [goalieId, setGoalieId] = useState("");
   const [countGoalie, setCountGoalie] = useState(true);
   /** Exact number of our skaters per idea line; "any" fills every slot. */
@@ -271,7 +274,7 @@ export default function LinePlanner({ dataset }: Props) {
           <a className="line-score-link" href="#chemistry-method" onClick={() => { const method = document.getElementById("chemistry-method"); if (method instanceof HTMLDetailsElement) method.open = true; }}>How connection &amp; grades work <span aria-hidden="true">↗</span></a>
           <p className="line-score-source">Bardownski index · club average = 60 · not a win prediction</p>
         </aside>
-        <GoalieCompatibility compact dataset={goalieDataset} players={players} skaters={slots} selectedGoalie={goalieId} season={season} onChooseGoalie={chooseGoalie} viewState={pairingView} onViewStateChange={setPairingView} />
+        <GoalieCompatibility compact dataset={goalieDataset} players={pickable} skaters={slots} selectedGoalie={goalieId} season={season} onChooseGoalie={chooseGoalie} viewState={pairingView} onViewStateChange={setPairingView} />
       </div>
       <div className="line-workspace-actions">
         <div className="line-draft-actions"><button type="button" onClick={save} disabled={!filled && !goalieId}>Save line <span aria-hidden="true">↗</span></button><button type="button" onClick={restore}>Load saved</button><button type="button" onClick={() => { setSlots(Array(size).fill("")); setGoalieId(""); setMessage("Line cleared."); }} disabled={!filled && !goalieId}>Clear line</button><span>YOUR LINE. YOUR CALL.</span></div>
