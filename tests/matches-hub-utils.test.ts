@@ -4,7 +4,9 @@ import type { Match } from "../src/types";
 import {
   PREVIOUS_SEASON_WIN_STREAK,
   currentWinRun,
+  GAME_MODE_LABELS,
   filterMatches,
+  matchGameMode,
   hasMatchReportData,
   matchDetailHref,
   sortMatches,
@@ -337,4 +339,26 @@ it("all helpers leave frozen input arrays and match objects unchanged", () => {
     matchDetailHref(entry, "2025-2026");
   }
   assert.deepEqual(matches, before);
+});
+
+describe("game mode filter", () => {
+  const matches = [
+    match("threes", 10, { gameMode: "3s" }),
+    match("sixes", 20, { gameMode: "6s", scoreUs: 0 }),
+    match("unknown-mode", 30),
+  ];
+
+  it("defaults to every mode and narrows to 3s or 6v6 alongside result filters", () => {
+    assert.deepEqual(ids(filterMatches(matches, "all", "")), ["threes", "sixes", "unknown-mode"]);
+    assert.deepEqual(ids(filterMatches(matches, "all", "", "3s")), ["threes"]);
+    assert.deepEqual(ids(filterMatches(matches, "all", "", "6s")), ["sixes"]);
+    assert.deepEqual(ids(filterMatches(matches, "W", "", "6s")), []);
+    assert.deepEqual(ids(filterMatches(matches, "L", "", "6s")), ["sixes"]);
+  });
+
+  it("reports unknown modes as null and labels 6s as 6v6", () => {
+    assert.equal(matchGameMode(matches[2]), null);
+    assert.equal(matchGameMode(matches[1]), "6s");
+    assert.equal(GAME_MODE_LABELS["6s"], "6v6");
+  });
 });

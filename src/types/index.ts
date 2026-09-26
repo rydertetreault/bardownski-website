@@ -48,6 +48,8 @@ export interface ThreeStar {
   isGoalie: boolean;
 }
 
+export type GameMode = "3s" | "6s";
+
 export interface Match {
   id: string;
   timestamp: number;
@@ -60,6 +62,8 @@ export interface Match {
   scoreThem: number | null;
   status: "upcoming" | "live" | "final";
   matchType?: "regular" | "finals" | "private";
+  /** Club game mode: EASHL 3v3 ("3s") or 6v6 ("6s"). Absent when unknown (e.g. archive). */
+  gameMode?: GameMode;
   shotsUs?: number;
   shotsThem?: number;
   toaUs?: string;

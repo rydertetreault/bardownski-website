@@ -181,6 +181,21 @@ function dnf(r: Row): boolean {
   const goalieWinner = optional(r, "winnerByGoalieDnf", "recentGames[].clubs[]", true, 0, 1);
   return (result & 0x4000) !== 0 || winner === 1 || goalieWinner === 1;
 }
+/** cNhlOnlineGameType: verified public feed uses 5 for 6v6 and 200 for 3v3. */
+const GAME_MODES: Readonly<Record<string, NonNullable<ClubMatch["gameMode"]>>> = { "5": "6s", "200": "3s" };
+function gameMode(r: Row): ClubMatch["gameMode"] {
+  const raw = r.cNhlOnlineGameType;
+  return raw == null ? undefined : GAME_MODES[String(raw).trim()];
+}
+/**
+ * Games stored before mode capture have no gameMode. 3s is at most three
+ * skaters plus a goalie, so five or more of our players can only be 6v6. Every
+ * pre-capture game with four or fewer of ours was verified as 3s (Sept 2026).
+ */
+export function withNhl27GameMode(match: ClubMatch): ClubMatch {
+  if (match.gameMode === "3s" || match.gameMode === "6s") return match;
+  return { ...match, gameMode: match.players.length >= 5 ? "6s" : "3s" };
+}
 function game(value: unknown, matchType: ClubMatch["matchType"]): ClubMatch {
   const p = "recentGames[]";
   const r = row(value, p), clubs = row(r.clubs, `${p}.clubs`);
@@ -209,6 +224,7 @@ function game(value: unknown, matchType: ClubMatch["matchType"]): ClubMatch {
   const timestamp = numeric(r.timestamp, `${p}.timestamp`, true, 0, 8640000000000);
   const side = numeric(ours.teamSide, `${p}.teamSide`, true, 0, 1);
   const result = count(ours, "result", `${p}.clubs.29202`);
+  const mode = gameMode(ours);
   return {
     id: id(r.matchId, `${p}.matchId`), timestamp,
     date: new Date(timestamp * 1000).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }),
@@ -216,6 +232,7 @@ function game(value: unknown, matchType: ClubMatch["matchType"]): ClubMatch {
     opponentClubId: opponentId,
     ...(opponentCrest ? { opponentCrest } : {}),
     homeAway: side === 0 ? "home" : "away", matchType,
+    ...(mode ? { gameMode: mode } : {}),
     // Never use recentScore strings, result codes, or the opponent's score to invent a score.
     scoreUs: count(ours, "score", `${p}.clubs.29202`), scoreThem: count(ours, "opponentScore", `${p}.clubs.29202`),
     shotsUs: optional(ours, "shots", p, true), shotsThem: optional(opponent, "shots", p, true),

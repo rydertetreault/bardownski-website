@@ -93,6 +93,7 @@
 .matches-hub a.hub-feature:hover { background: #174d56; }
 .hub-board-tools { display: flex; align-items: end; justify-content: space-between; gap: 25px; }
 .hub-filters { display: flex; flex-wrap: wrap; gap: 7px; }
+.hub-board-tools > .hub-mode-filters { margin-right: auto; padding-left: 18px; border-left: 1px solid var(--hub-line); }
 .hub-filters button { min-height: 44px; padding: 11px 17px; background: transparent; color: var(--hub-muted); border: 1px solid var(--hub-line); font-size: 12px; font-weight: 700; }
 .hub-filters button[aria-pressed=true] { background: var(--hub-accent); color: #fffefa; border-color: var(--hub-accent); }
 .hub-filters button:hover:not([aria-pressed=true]) { background: #0067750c; border-color: var(--hub-accent); color: var(--hub-accent); }
@@ -117,6 +118,8 @@
 .hub-match-teams, .hub-match-score { display: grid; gap: 9px; font-size: 15px; line-height: 1.4; }
 .hub-match-teams > span { color: var(--hub-muted); overflow-wrap: anywhere; }
 .hub-match-teams small { display: inline-block; margin-left: 7px; font-size: 9px; font-weight: 400; color: var(--hub-muted); text-transform: uppercase; }
+.hub-mode-tag { display: inline-block; margin-left: 9px; padding: 2px 6px; border: 1px solid var(--hub-line); font-size: 9px; font-weight: 700; line-height: 1.4; letter-spacing: .6px; text-transform: uppercase; color: var(--hub-muted); vertical-align: 2px; }
+.hub-mode-tag[data-mode="6s"] { border-color: var(--hub-accent); color: var(--hub-accent); }
 .hub-match-score { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
 .hub-match-score > span { color: var(--hub-muted); }
 .hub-match-cta { text-align: right; font-size: 11px; font-weight: 700; color: var(--hub-accent); }
@@ -177,6 +180,7 @@
   .hub-archive-record { padding-left: 18px; }
   .hub-archive-record strong { font-size: 36px; }
   .hub-board-tools { flex-direction: column; align-items: stretch; gap: 20px; }
+  .hub-board-tools > .hub-mode-filters { margin-right: 0; padding-left: 0; border-left: 0; }
   .hub-search { flex-basis: auto; }
   .matches-hub .hub-match-row { grid-template-columns: 30px minmax(0,1fr) 30px auto; gap: 12px; padding: 22px 12px; }
   .hub-match-date { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 15px; }

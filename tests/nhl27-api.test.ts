@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { getClubCrestUrl } from "../src/lib/club-crest";
 import {
-  fetchNhl27Snapshot, NHL27_IDENTITY, NHL27_STATS_URL, parseNhl27Snapshot, resolveNhl27Name,
+  fetchNhl27Snapshot, NHL27_IDENTITY, NHL27_STATS_URL, parseNhl27Snapshot, resolveNhl27Name, withNhl27GameMode,
   type Nhl27MatchPlayerStat,
 } from "../src/lib/nhl27-api";
 
@@ -392,4 +392,27 @@ test("crest tolerance does not relax strict opponent identity or core score vali
   p.recentGames.RegularSeason[0].clubs["29202"].score = "7";
   p.recentGames.RegularSeason[0].clubs["16793"].details.clubId = "999";
   assert.throws(() => parseNhl27Snapshot(p, at), /details.clubId/);
+});
+
+test("game mode: cNhlOnlineGameType 200 is 3s, 5 is 6v6, unknown codes stay unset", () => {
+  const q = fixture();
+  const games = q.recentGames.RegularSeason;
+  games[1].clubs["29202"].cNhlOnlineGameType = "5";
+  games[2].clubs["29202"].cNhlOnlineGameType = "999";
+  delete games[3].clubs["29202"].cNhlOnlineGameType;
+  const byId = new Map(parseNhl27Snapshot(q, at).data.matches.map(m => [m.id, m]));
+  assert.equal(byId.get(String(games[0].matchId))?.gameMode, "3s");
+  assert.equal(byId.get(String(games[1].matchId))?.gameMode, "6s");
+  assert.equal(byId.get(String(games[2].matchId))?.gameMode, undefined);
+  assert.equal(byId.get(String(games[3].matchId))?.gameMode, undefined);
+});
+
+test("stored games without a mode are backfilled from our player count", () => {
+  const base = parseNhl27Snapshot(fixture(), at).data.matches[0];
+  const { gameMode: _omit, ...legacy } = base;
+  void _omit;
+  const players = (n: number) => Array.from({ length: n }, () => base.players[0]);
+  assert.equal(withNhl27GameMode({ ...legacy, players: players(4) }).gameMode, "3s");
+  assert.equal(withNhl27GameMode({ ...legacy, players: players(5) }).gameMode, "6s");
+  assert.equal(withNhl27GameMode({ ...legacy, gameMode: "6s", players: players(2) }).gameMode, "6s");
 });

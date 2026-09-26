@@ -1,7 +1,15 @@
-import type { Match } from "@/types";
+import type { GameMode, Match } from "@/types";
 
 export type MatchSeason = "2026-2027" | "2025-2026";
 export type MatchFilter = "all" | "W" | "L" | "upcoming";
+export type ModeFilter = "all" | GameMode;
+
+export const GAME_MODE_LABELS: Readonly<Record<GameMode, string>> = { "3s": "3s", "6s": "6v6" };
+
+/** Game mode from the feed, or null when unknown (e.g. archive matches). */
+export function matchGameMode(match: Pick<Match, "gameMode">): GameMode | null {
+  return match.gameMode === "3s" || match.gameMode === "6s" ? match.gameMode : null;
+}
 
 export const PREVIOUS_SEASON_WIN_STREAK = 24;
 
@@ -59,10 +67,12 @@ export function filterMatches(
   matches: Match[],
   filter: MatchFilter,
   query: string,
+  mode: ModeFilter = "all",
 ): Match[] {
   const search = query.toLowerCase();
   return matches.filter((match) => {
     if (!match.opponent.toLowerCase().includes(search)) return false;
+    if (mode !== "all" && matchGameMode(match) !== mode) return false;
     if (filter === "all") return true;
     if (filter === "upcoming") return match.status === "upcoming";
     return result(match) === filter;

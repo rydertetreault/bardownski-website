@@ -264,6 +264,7 @@ export interface ClubMatch {
   scoreUs: number;
   scoreThem: number;
   matchType: "regular" | "finals" | "private";
+  gameMode?: import("@/types").GameMode;
   shotsUs: number;
   shotsThem: number;
   toaUs: string;

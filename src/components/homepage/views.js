@@ -5,7 +5,7 @@ import { getNickname, getDisplayNameFromGamertag, getNicknameText } from "@/lib/
 import { HOCKEY_SEASON } from "@/lib/hockey-season-state";
 import { SEASON_REVEAL } from "@/lib/season-reveal";
 import { getPlayerPhoto, FALLBACK_PLAYER_PHOTOS } from "@/lib/player-photos";
-import { matchDetailHref } from "@/app/matches/hub-utils";
+import { GAME_MODE_LABELS, matchDetailHref, matchGameMode } from "@/app/matches/hub-utils";
 import { homeArchive as a } from "./home-data";
 // Published articles use both ISO dates and long English calendar dates.
 export const articleDate = (value) => {
@@ -50,7 +50,7 @@ function currentResults(season) {
   const rows = matches.map(m => {
     const scored = m.scoreUs !== null && m.scoreThem !== null;
     const result = scored ? m.scoreUs > m.scoreThem ? "W" : m.scoreUs < m.scoreThem ? "L" : "T" : "—";
-    const content = `<span class="result-letter ${result === "W" ? "win" : "loss"}">${result}</span><span class="result-team"><b>${escape(m.opponent)}</b><small>${escape(m.date)}${m.forfeit ? " · Forfeit" : ""}</small></span><strong>${m.scoreUs ?? "—"}<i>–</i>${m.scoreThem ?? "—"}</strong><span class="result-arrow" aria-hidden="true">↗</span>`;
+    const content = `<span class="result-letter ${result === "W" ? "win" : "loss"}">${result}</span><span class="result-team"><b>${escape(m.opponent)}</b><small>${escape(m.date)}${m.forfeit ? " · Forfeit" : ""}${matchGameMode(m) ? ` <i class="result-mode" data-mode="${matchGameMode(m)}">${GAME_MODE_LABELS[matchGameMode(m)]}</i>` : ""}</small></span><strong>${m.scoreUs ?? "—"}<i>–</i>${m.scoreThem ?? "—"}</strong><span class="result-arrow" aria-hidden="true">↗</span>`;
     return `<a class="result-row" href="${matchDetailHref(m, "2026-2027") ?? "/matches#results"}">${content}</a>`;
   }).join("");
   return `<section class="results-card module score-strip cut-results" id="results" data-module="matches" data-reveal>${head(`RECENT MATCHES / ${HOCKEY_SEASON}`, "Recent matches", '<a class="text-link" href="/matches">All matches ↗</a>')}<div class="result-rows">${rows || `<p class="fine">${season?.status === "unavailable" ? "Recent results are temporarily unavailable." : "No results yet this season."}</p>`}</div>${season?.status === "stale" ? '<small class="fine">Latest available results.</small>' : ""}</section>`;

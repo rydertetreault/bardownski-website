@@ -3,6 +3,7 @@ import type { Match, MatchPlayerStat } from "@/types";
 import { CHAMPIONSHIP, CHAMPIONSHIP_DESCRIPTION, isChampionshipClincher } from "@/lib/championship";
 import { generateMatchDescription } from "@/lib/match-description";
 import OpponentCrest from "./OpponentCrest";
+import { GAME_MODE_LABELS, matchGameMode } from "../hub-utils";
 import { getNickname } from "@/lib/nicknames";
 
 export type MatchReportProps = {
@@ -177,7 +178,8 @@ export default function MatchReport({ match, season, titleId, standalone = false
   const isClincher = archive && outcome === "win" && isChampionshipClincher(match);
   const status = match.status === "final" ? "Final" : match.status === "live" ? "In progress" : "Upcoming";
   const outcomeLabel = outcome === "win" ? "Bardownski win" : outcome === "loss" ? "Bardownski loss" : outcome === "draw" ? "Draw" : match.status === "final" ? "Score unavailable" : status;
-  const matchType = match.matchType === "finals" ? "Club finals" : match.matchType === "private" ? "Private game" : "Club match";
+  const mode = matchGameMode(match);
+  const matchType = `${match.matchType === "finals" ? "Club finals" : match.matchType === "private" ? "Private game" : "Club match"}${mode ? ` · ${GAME_MODE_LABELS[mode]}` : ""}`;
   const recap = recapText(match, outcome, isClincher, archive);
   const ourPlayers = match.players?.filter(player => player.isOurPlayer) ?? [];
   const opposition = match.players?.filter(player => !player.isOurPlayer) ?? [];

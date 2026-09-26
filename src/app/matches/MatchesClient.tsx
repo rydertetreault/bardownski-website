@@ -8,7 +8,7 @@ import MatchDialog, { type SelectedMatch } from "./components/MatchDialog";
 import type { Match, ClubRecord } from "@/types";
 import { HOCKEY_SEASON, HOCKEY_ARCHIVE_SEASON, type HockeySeasonState } from "@/lib/hockey-season-state";
 import { getResult } from "./utils";
-import { currentWinRun, filterMatches, matchDetailHref, PREVIOUS_SEASON_WIN_STREAK, sortMatches, type MatchFilter, type MatchSeason } from "./hub-utils";
+import { currentWinRun, filterMatches, GAME_MODE_LABELS, matchDetailHref, matchGameMode, PREVIOUS_SEASON_WIN_STREAK, sortMatches, type MatchFilter, type MatchSeason, type ModeFilter } from "./hub-utils";
 
 function matchLabel(match: Match) {
   return `${match.status === "final" ? "Final" : match.status === "live" ? "In progress" : "Upcoming"} · ${match.forfeit ? "Forfeit" : match.matchType === "finals" ? "Club finals" : match.matchType === "private" ? "Private game" : "Club match"}`;
@@ -19,6 +19,11 @@ function resultLabel(match: Match) {
   return result === "W" ? "Win" : result === "L" ? "Loss" : match.status === "live" ? "Live" : "—";
 }
 
+function ModeTag({ match }: { match: Match }) {
+  const mode = matchGameMode(match);
+  return mode ? <span className="hub-mode-tag" data-mode={mode}>{GAME_MODE_LABELS[mode]}</span> : null;
+}
+
 type OpenReport = (event: MouseEvent<HTMLAnchorElement>, match: Match, season: MatchSeason) => void;
 
 function MatchRow({ match, season, onOpen }: { match: Match; season: MatchSeason; onOpen: OpenReport }) {
@@ -27,7 +32,7 @@ function MatchRow({ match, season, onOpen }: { match: Match; season: MatchSeason
   const content = <>
     <span className="hub-match-date">{match.date}<small>{matchLabel(match)}</small></span>
     <span className="hub-result" data-result={result ?? "pending"} aria-label={resultLabel(match)}>{result ?? "—"}</span>
-    <span className="hub-match-teams"><strong>Bardownski <small>{match.homeAway === "home" ? "Home" : "Away"}</small></strong><span>{match.opponent}</span></span>
+    <span className="hub-match-teams"><strong>Bardownski <small>{match.homeAway === "home" ? "Home" : "Away"}</small><ModeTag match={match} /></strong><span>{match.opponent}</span></span>
     <span className="hub-match-score"><strong>{match.scoreUs ?? "—"}</strong><span>{match.scoreThem ?? "—"}</span></span>
     <span className="hub-match-cta">{href ? <>Match report <span aria-hidden="true">↗</span></> : match.forfeit ? "Forfeit · no match data" : "Report pending"}</span>
   </>;
@@ -44,10 +49,15 @@ function MatchBoard({ matches, season, emptyTitle, emptyMessage, onOpen, archive
 }) {
   const [filter, setFilter] = useState<MatchFilter>("all");
   const [query, setQuery] = useState("");
+  const [mode, setMode] = useState<ModeFilter>("all");
   const pageSize = archive ? 6 : 10;
   const [page, setPage] = useState(1);
   const board = useRef<HTMLDivElement>(null);
-  const filtered = filterMatches(matches, filter, query.trim());
+  const filtered = filterMatches(matches, filter, query.trim(), mode);
+  const hasModes = matches.some(match => matchGameMode(match) !== null);
+  const modes: { value: ModeFilter; label: string }[] = [
+    { value: "all", label: "All modes" }, { value: "3s", label: GAME_MODE_LABELS["3s"] }, { value: "6s", label: GAME_MODE_LABELS["6s"] },
+  ];
   const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const activePage = Math.min(page, pages);
   const start = (activePage - 1) * pageSize;
@@ -66,13 +76,16 @@ function MatchBoard({ matches, season, emptyTitle, emptyMessage, onOpen, archive
       <div className="hub-filters" role="group" aria-label={`${archive ? HOCKEY_ARCHIVE_SEASON : HOCKEY_SEASON} match filters`}>
         {filters.map(item => <button key={item.value} type="button" aria-pressed={filter === item.value} onClick={() => { setFilter(item.value); setPage(1); }}>{item.label}</button>)}
       </div>
+      {hasModes && <div className="hub-filters hub-mode-filters" role="group" aria-label={`${archive ? HOCKEY_ARCHIVE_SEASON : HOCKEY_SEASON} game mode filters`}>
+        {modes.map(item => <button key={item.value} type="button" aria-pressed={mode === item.value} onClick={() => { setMode(item.value); setPage(1); }}>{item.label}</button>)}
+      </div>}
       <div className="hub-search"><label htmlFor={`hub-search-${id}`}>Find an opponent</label><input id={`hub-search-${id}`} type="search" placeholder="Search opponents…" value={query} onChange={event => { setQuery(event.target.value); setPage(1); }} /></div>
     </div>
-    <div className="hub-board-meta"><p role="status" aria-live="polite">{filtered.length ? `${start + 1}–${Math.min(start + pageSize, filtered.length)} of ${filtered.length}` : "0"} {filtered.length === 1 ? "match" : "matches"}{filter !== "all" || query.trim() ? " in this view" : " available"}</p><span>Newest first <span aria-hidden="true">↓</span></span></div>
+    <div className="hub-board-meta"><p role="status" aria-live="polite">{filtered.length ? `${start + 1}–${Math.min(start + pageSize, filtered.length)} of ${filtered.length}` : "0"} {filtered.length === 1 ? "match" : "matches"}{filter !== "all" || mode !== "all" || query.trim() ? " in this view" : " available"}</p><span>Newest first <span aria-hidden="true">↓</span></span></div>
     {filtered.length ? <ul className="hub-match-list">{filtered.slice(start, start + pageSize).map(match => <MatchRow key={match.id} match={match} season={season} onOpen={onOpen} />)}</ul> : <div className="hub-empty">
       <span className="hub-empty-mark" aria-hidden="true">—</span>
-      <div><h3>{matches.length ? "No matches in this view." : emptyTitle}</h3><p>{matches.length ? "Try another opponent or choose a different result." : emptyMessage}</p>
-        {matches.length > 0 && <button className="hub-text-button" type="button" onClick={() => { setFilter("all"); setQuery(""); setPage(1); }}>Clear filters ↗</button>}
+      <div><h3>{matches.length ? "No matches in this view." : emptyTitle}</h3><p>{matches.length ? "Try another opponent, result or game mode." : emptyMessage}</p>
+        {matches.length > 0 && <button className="hub-text-button" type="button" onClick={() => { setFilter("all"); setMode("all"); setQuery(""); setPage(1); }}>Clear filters ↗</button>}
       </div>
     </div>}
     {filtered.length > 0 && <nav className="hub-pagination" aria-label={`${archive ? HOCKEY_ARCHIVE_SEASON : HOCKEY_SEASON} match pages`}>
@@ -89,7 +102,7 @@ function LatestResult({ match, onOpen }: { match: Match; onOpen: OpenReport }) {
   const content = <>
     <div className="hub-feature-top"><span>Latest result / {match.date}</span><span className="hub-feature-outcome" data-result={getResult(match)}>{resultLabel(match)}{match.forfeit ? " · Forfeit" : " · Final"}</span></div>
     <div className="hub-feature-score"><div><span className="hub-team-monogram hub-team-logo"><Image data-brand-mark src="/images/logo/B-logo.png" alt="Bardownski B logo" width={48} height={48} /></span><strong>Bardownski</strong><small>{match.homeAway === "home" ? "Home ice" : "On the road"}</small></div><p><b>{match.scoreUs ?? "—"}</b><span>–</span><b>{match.scoreThem ?? "—"}</b></p><div><OpponentCrest opponent={match.opponent} crest={match.opponentCrest} className="hub-opponent-crest" /><strong>{match.opponent}</strong><small>Opposition</small></div></div>
-    <div className="hub-feature-bottom"><span>{match.matchType === "finals" ? "Club finals" : match.matchType === "private" ? "Private game" : "Club match"} · {HOCKEY_SEASON}</span><strong>{href ? "Open match report ↗" : "Forfeit result · No match report"}</strong></div>
+    <div className="hub-feature-bottom"><span>{match.matchType === "finals" ? "Club finals" : match.matchType === "private" ? "Private game" : "Club match"}{matchGameMode(match) ? ` · ${GAME_MODE_LABELS[matchGameMode(match)!]}` : ""} · {HOCKEY_SEASON}</span><strong>{href ? "Open match report ↗" : "Forfeit result · No match report"}</strong></div>
   </>;
   return href ? <Link href={href} className="hub-feature" prefetch={false} onClick={event => onOpen(event, match, "2026-2027")} aria-haspopup="dialog" aria-label={`Latest match report: Bardownski ${match.scoreUs ?? "score unavailable"}–${match.scoreThem ?? "score unavailable"} ${match.opponent}, ${match.date}`}>{content}</Link> : <div className="hub-feature">{content}</div>;
 }
