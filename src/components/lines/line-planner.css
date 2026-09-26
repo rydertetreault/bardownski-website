@@ -54,7 +54,6 @@
 .line-player-node { display:grid; place-items:center; position:relative; flex-shrink:0; width:96px; height:96px; margin:0 auto 16px; border:1px dashed #68c8ce88; border-radius:50%; background:#101d21; color:#68c8ce; font:400 46px/1 Arial,sans-serif; transition:background .2s,border-color .2s,transform .2s; }
 .line-position { position:absolute; right:-6px; bottom:0; min-width:30px; height:26px; display:grid; place-items:center; border:3px solid #0b0c0d; border-radius:30px; padding:0 4px; background:#172c31; color:#a5babc; font:700 8px/1 Arial,sans-serif; letter-spacing:.5px; }
 .line-slot.is-selected .line-player-node { border:1px solid #68c8ce66; background:#006775; color:#f0efeb; font:800 54px/1 LabBarlow,Impact,sans-serif; }
-.line-slot:nth-child(even).is-selected .line-player-node { background:#320d48; border-color:#c4a1dc66; }
 .line-slot .lab-select-trigger:hover .line-player-node { transform:translateY(-3px); border-color:#f0efeb; background:#19434a; }
 .line-player-name { display:block; width:100%; font:800 clamp(21px,2.1vw,30px)/1.08 LabBarlow,Impact,sans-serif; letter-spacing:.1px; overflow-wrap:anywhere; text-transform:uppercase; }
 .line-player-edit { display:flex; align-items:center; justify-content:center; gap:8px; margin-top:8px; color:#a5babc; font:400 10px/1.5 Arial,sans-serif; }
