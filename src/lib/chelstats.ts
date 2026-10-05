@@ -24,6 +24,7 @@ const CLUB_ID = "149602";
 // Gamertag → real name (used for stats display, matches getNickname keys)
 const GAMERTAG_TO_NAME: Record<string, string> = {
   "Rydayro": "RYDER",
+  "JeneReneTetreau": "RYDER",
   "S1obbyRobby": "ROB",
   "Mhut8": "MATT",
   "u4 Pablo": "DYLAN",

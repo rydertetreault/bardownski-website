@@ -12,6 +12,7 @@ import { articles } from "../src/lib/news";
 
 const players = [
   ["RYDER", "Rydayro", "JENE RENE TETREAU IV"],
+  ["RYDER", "JeneReneTetreau", "JENE RENE TETREAU IV"],
   ["ROB", "S1obbyRobby", "SLOBBY ROBBY"],
   ["MATT", "Mhut8", "MATT HUT"],
   ["DYLAN", "u4 Pablo", "XAVIER LAFLAMME"],

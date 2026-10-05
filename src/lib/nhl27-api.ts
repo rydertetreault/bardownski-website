@@ -22,7 +22,7 @@ export interface Nhl27Snapshot {
 
 type Row = Record<string, unknown>;
 const NAMES: Readonly<Record<string, string>> = {
-  rydayro: "RYDER", s1obbyrobby: "ROB", mhut8: "MATT", "u4 pablo": "DYLAN",
+  rydayro: "RYDER", jenerenetetreau: "RYDER", s1obbyrobby: "ROB", mhut8: "MATT", "u4 pablo": "DYLAN",
   "op wet": "COLIN", "u4 hood": "KADEN", "julio 3026": "JIMMY", "op ding1633": "LOGAN",
 };
 

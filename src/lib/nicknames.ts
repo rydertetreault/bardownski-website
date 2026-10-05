@@ -2,6 +2,7 @@
 // Add new players here: "gamertag": "REAL_NAME"
 const GAMERTAG_MAP: Record<string, string> = {
   "Rydayro": "RYDER",
+  "JeneReneTetreau": "RYDER",
   "S1obbyRobby": "ROB",
   "Mhut8": "MATT",
   "u4 Pablo": "DYLAN",

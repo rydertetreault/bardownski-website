@@ -416,3 +416,7 @@ test("stored games without a mode are backfilled from our player count", () => {
   assert.equal(withNhl27GameMode({ ...legacy, players: players(5) }).gameMode, "6s");
   assert.equal(withNhl27GameMode({ ...legacy, gameMode: "6s", players: players(2) }).gameMode, "6s");
 });
+
+test("NHL27 gamertags resolve to the player's club name", () => {
+  assert.equal(resolveNhl27Name("JeneReneTetreau"), "RYDER");
+});

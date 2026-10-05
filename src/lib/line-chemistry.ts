@@ -97,7 +97,7 @@ const lexical = (a: string, b: string) => a < b ? -1 : a > b ? 1 : 0;
 // The nickname helper's gamertag lookup is case-sensitive. Index its known spellings
 // once; display values still come exclusively from the shared nickname helpers.
 const gamertagNames = new Map([
-  "Rydayro", "S1obbyRobby", "Mhut8", "u4 Pablo", "oP wet", "u4 Hood", "Julio 3026", "oP Ding1633",
+  "Rydayro", "JeneReneTetreau", "S1obbyRobby", "Mhut8", "u4 Pablo", "oP wet", "u4 Hood", "Julio 3026", "oP Ding1633",
 ].map(tag => [tag.toUpperCase(), getDisplayNameFromGamertag(tag)]));
 
 /** Use this on foreground member.username/name as well as selected player IDs. */

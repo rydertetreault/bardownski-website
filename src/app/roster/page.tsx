@@ -18,6 +18,7 @@ export const dynamic = "force-dynamic";
 // Fill in the empty ones with the player's real name
 const GAMERTAG_TO_NAME: Record<string, string> = {
   Rydayro: "RYDER",
+  JeneReneTetreau: "RYDER",
   S1obbyRobby: "ROB",
   Mhut8: "MATT",
   "u4 Pablo": "DYLAN",
@@ -80,12 +81,16 @@ export default async function RosterPage() {
   // make the roster. Returning players keep their saved 2025–2026 scouting
   // report; newcomers get a report from their live 2026–2027 totals.
   const season = await getHockeySeason();
-  const archived = new Map((FROZEN_CHELSTATS?.members ?? []).map((m) => [m.username.toLowerCase(), m]));
+  // Key by resolved name too, so a returning player on a new gamertag keeps his archive.
+  const archived = new Map((FROZEN_CHELSTATS?.members ?? []).flatMap((m) => [
+    [m.username.toLowerCase(), m] as const,
+    [resolveName(m.username).toLowerCase(), m] as const,
+  ]));
   const members = (season.data?.members ?? []).filter((m) => m.gamesPlayed + m.goalieGP >= 1);
 
   const players: RosterPlayer[] = members.map((m) => {
     const name = resolveName(m.username);
-    const previous = archived.get(m.username.toLowerCase());
+    const previous = archived.get(m.username.toLowerCase()) ?? archived.get(name.toLowerCase());
     const position = POSITION_OVERRIDES[name] ?? POSITION_OVERRIDES[m.username] ?? previous?.position ?? m.position;
 
     return {
