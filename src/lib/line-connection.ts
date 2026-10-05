@@ -65,6 +65,8 @@ export interface ConnectionRecord {
   draws: number;
   goalsFor: number;
   goalsAgainst: number;
+  /** Line records only: games where a drop-in guest filled an open spot. */
+  dropInGames?: number;
 }
 
 export interface PairConnection {
@@ -380,8 +382,13 @@ export class ConnectionModel {
   /**
    * Any lineup of two or more distinct players (skater slots + optional goalie).
    * Empty slots are ignored; returns null below two players.
+   *
+   * By default the unit record is every game with all of these players in it.
+   * With `exact`, it is only games where these were ALL of our club skaters
+   * (drop-in guests count as AI), so a one-skater line never borrows games
+   * he played beside a teammate. Line ideas use exact records.
    */
-  evaluate(slots: readonly LineupSlot[], goalieId: string | null): ConnectionResult | null {
+  evaluate(slots: readonly LineupSlot[], goalieId: string | null, { exact = false }: { exact?: boolean } = {}): ConnectionResult | null {
     const skaters = slots.filter(slot => slot.id);
     const participants: Participant[] = skaters.map(slot => ({ id: slot.id, goalie: false }));
     if (goalieId) participants.push({ id: goalieId, goalie: true });
@@ -399,9 +406,10 @@ export class ConnectionModel {
     const pairMean = pairs.reduce((sum, pair) => sum + this.pair(
       participants.find(p => p.id === pair.players[0])!, participants.find(p => p.id === pair.players[1])!).percentage, 0) / pairs.length;
 
-    const unitGames = this.games.filter(game => participants.every(p => plays(game, p)));
-    const unit = record(unitGames);
-    const unitBlend = participants.length > 2
+    const unitGames = this.games.filter(game => participants.every(p => plays(game, p)) && (!exact || this.exactLineup(game, skaters.length)));
+    const unit = { ...record(unitGames), dropInGames: this.dropIns(unitGames) };
+    // An exact one-skater unit is its own record, not just the goalie–skater pair.
+    const unitBlend = participants.length > 2 || exact
       ? blend(this.display(resultScore(unit)), unit.games, pairMean, PAIR_PRIOR_GAMES) : pairMean;
 
     const outOfPosition: PositionNote[] = [];
@@ -429,6 +437,18 @@ export class ConnectionModel {
       evidence: unit.games >= 5 ? "proven" : unit.games > 0 ? "early" : sharedPairs ? "pairs" : "projection",
       positionPenalty: Math.round(positionPenalty), outOfPosition,
     };
+  }
+
+  /** Games where a non-member (drop-in guest) skated for us. */
+  private dropIns(games: readonly ConnectionGame[]): number {
+    return games.filter(game => game.skaters.some(id => !this.players.get(id)?.member)).length;
+  }
+
+  /** True when the game's club skaters (guests excluded) number exactly `count`
+   * and its scoresheet is whole. Callers have already checked who played. */
+  private exactLineup(game: ConnectionGame, count: number): boolean {
+    if (game.complete === false) return false;
+    return new Set(game.skaters.filter(id => this.players.get(id)?.member)).size === count;
   }
 
   /**
@@ -464,7 +484,7 @@ export class ConnectionModel {
       const visit = (depth: number) => {
         if (depth === fill.length) {
           const slots = roles.map((role, index) => ({ id: current[index], role }));
-          const result = this.evaluate(slots, goalieId);
+          const result = this.evaluate(slots, goalieId, { exact: true });
           if (!result || result.unit.games < minGames) return;
           const key = current.filter(Boolean).sort().join("|");
           const previous = best.get(key);
@@ -559,9 +579,9 @@ export class ConnectionModel {
       if (withGoalie && !group.goalie) continue;
       if (options.skaters !== undefined && group.ids.length !== options.skaters) continue;
       const slots = this.placeAsPlayed(roles, group.ids, group.games);
-      const result = this.evaluate(slots.map((id, index) => ({ id, role: roles[index] })), withGoalie ? group.goalie : null);
+      const result = this.evaluate(slots.map((id, index) => ({ id, role: roles[index] })), withGoalie ? group.goalie : null, { exact: size !== 2 });
       if (!result) continue;
-      const lineup = record(group.games);
+      const lineup = { ...record(group.games), dropInGames: this.dropIns(group.games) };
       if (lineup.games < minGames) continue;
       lines.push({ slots, goalie: group.goalie, result, lineup });
     }

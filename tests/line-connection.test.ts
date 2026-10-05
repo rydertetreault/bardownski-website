@@ -213,3 +213,26 @@ test("positions depend on how many of our skaters played: a lone skater at C, a 
   assert.ok(alone("C") < alone("W"));
   assert.equal(m.suggest(["C", "W", "D"], ["", "", ""], "KEEPER", ["XAV"], { skaters: 1 })[0].slots[0], "XAV", "suggested at C when alone");
 });
+
+test("line ideas count only games with exactly that lineup of club skaters", () => {
+  const roster = [player("SOLO", 80, { C: 10 }), player("MATE", 75, { LW: 10 }), player("THIRD", 72, { D: 10 }),
+    player("NET", 85, { G: 12 }), player("DROPIN", 90, { C: 1 }, false)];
+  const m = new ConnectionModel([
+    // SOLO alone with NET: 2 games, plus 1 beside a drop-in guest (AI, still solo).
+    game(["SOLO"], "NET", 3, 1), game(["SOLO"], "NET", 2, 2), game(["SOLO", "DROPIN"], "NET", 4, 0),
+    // THIRD only ever played with club teammates: never a one-skater line.
+    ...Array.from({ length: 4 }, () => game(["SOLO", "MATE", "THIRD"], "NET", 1, 3)),
+    { ...game(["THIRD"], "NET", 9, 0), complete: false },
+  ], roster);
+  const ids = roster.map(p => p.id);
+  const fits = m.suggest(["C", "W", "D"], ["", "", ""], "NET", ids, { sort: "games", skaters: 1 });
+  const games = Object.fromEntries(fits.map(line => [line.slots.find(Boolean), line.result.unit.games]));
+  assert.deepEqual(games, { SOLO: 3, THIRD: 0, MATE: 0 });
+  const used = m.usedLines(["C", "W", "D"], ["", "", ""], "NET", { sort: "games", skaters: 1 });
+  assert.deepEqual(used.map(line => [line.slots.find(Boolean), line.lineup.games, line.result.unit.games]), [["SOLO", 3, 3]]);
+  // Games where a drop-in filled an open spot are counted and flagged.
+  assert.equal(fits.find(line => line.slots.includes("SOLO"))!.result.unit.dropInGames, 1);
+  assert.equal(used[0].lineup.dropInGames, 1);
+  // The line builder still reports every game with the picked players.
+  assert.equal(m.evaluate([any("THIRD"), { id: "", role: "any" }], "NET")!.unit.games, 5);
+});
