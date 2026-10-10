@@ -420,3 +420,11 @@ test("stored games without a mode are backfilled from our player count", () => {
 test("NHL27 gamertags resolve to the player's club name", () => {
   assert.equal(resolveNhl27Name("JeneReneTetreau"), "RYDER");
 });
+
+test("EA 'Access Denied' HTML proxied in a recent group is classified as an upstream block", () => {
+  const q = fixture();
+  q.recentGames.RegularSeason = "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>denied</BODY></HTML>";
+  assert.throws(() => parseNhl27Snapshot(q, at), /^Error: NHL27 upstream blocked: EA denied the recentGames\.RegularSeason request$/);
+  const plain = fixture(); plain.recentGames.RegularSeason = "Error";
+  assert.throws(() => parseNhl27Snapshot(plain, at), /must be an array/);
+});

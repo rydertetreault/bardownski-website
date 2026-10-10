@@ -7,7 +7,7 @@ import { fetchNhl27Snapshot, NHL27_IDENTITY } from "../src/lib/nhl27-api";
 loadEnvConfig(process.cwd());
 // The upstream feed is intermittently flaky; retry transient transport failures once.
 // Schema/parse failures are not retried. Worst case (20s + 3s + 20s) fits the 60s lease.
-const TRANSIENT = /timed out|network request unsuccessful|HTTP (408|425|429|5\d\d)|not valid JSON/;
+const TRANSIENT = /timed out|network request unsuccessful|HTTP (408|425|429|5\d\d)|not valid JSON|upstream blocked/;
 async function fetchWithRetry() {
   try { return await fetchNhl27Snapshot(); }
   catch (error) {
@@ -30,6 +30,14 @@ async function main() {
     ...(result.error ? {error:result.error} : {}),
     ...(result.reason ? {reason:result.reason} : {}),
   },null,2));
-  if (result.status !== "connected") process.exitCode = 1;
+  if (result.status === "connected") return;
+  // Upstream outages (EA blocking chelstats, timeouts, 5xx) are outside our control and
+  // self-heal on the next run; last good data stays served. Annotate instead of failing,
+  // so the schedule doesn't spam failure emails. Real schema/storage failures still fail.
+  if (result.snapshot && result.reason && TRANSIENT.test(result.reason)) {
+    console.log(`::warning title=NHL27 upstream unavailable::${result.reason}. Kept last good snapshot.`);
+    return;
+  }
+  process.exitCode = 1;
 }
 main().catch(() => { console.error("NHL27 collector failed; no credentials or upstream payload logged."); process.exitCode=1; });

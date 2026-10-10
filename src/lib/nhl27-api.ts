@@ -274,6 +274,11 @@ export function parseNhl27Snapshot(payload: unknown, fetchedAt?: string): Nhl27S
   const groups = { RegularSeason: "regular", ClubFinals: "finals", PrivateGames: "private" } as const;
   for (const [key, type] of Object.entries(groups)) {
     if (recent[key] == null) continue;
+    // chelstats proxies EA; when EA's edge blocks it, the group is EA's HTML error page
+    // instead of an array. Classify as an upstream outage (body is never logged).
+    if (typeof recent[key] === "string" && /access denied|<html/i.test(recent[key])) {
+      throw new Error(`NHL27 upstream blocked: EA denied the recentGames.${key} request`);
+    }
     if (!Array.isArray(recent[key])) fail(`recentGames.${key}`, "must be an array");
     matches.push(...recent[key].map(v => game(v, type)));
   }
