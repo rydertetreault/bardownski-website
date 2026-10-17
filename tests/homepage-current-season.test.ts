@@ -316,3 +316,50 @@ test("with populated current data the reveal remains one News story, never a her
   assert.equal(one(root, ".cinema-backdrop img").getAttribute("src"), "/images/homepage/history-2022.webp");
   assert.deepEqual(root.querySelectorAll("#highlights [data-video]").map(button => button.getAttribute("data-video")), ["finish", "crease"]);
 });
+
+test("weekly race sits beside the MVP board, qualified first, smaller than MVP and never inside the announcement", () => {
+  const supplied = awards();
+  const provisional = weeklyPlayer({ playerId: "early", name: "u4 Pablo", games: 1, eligible: false, score: 300, rank: 1 });
+  const goalie = weeklyPlayer({ playerId: "current-goalie", name: "Rydayro", position: "G", isGoalie: true,
+    games: 3, eligible: true, saves: 61, shotsAgainst: 64, savePct: 61 / 64 * 100, rank: 3 });
+  supplied.currentWeek = week([provisional, weeklyPlayer(), goalie]);
+  const root = render(current([], { awards: supplied }));
+  const race = one(root, ".open-rank-section > .weekly-race");
+  assert.equal(root.querySelectorAll("#standings .weekly-race").length, 0, "Its own grid column, not inside the MVP card");
+  assert.equal(root.querySelectorAll("#weekly .weekly-race").length, 0, "Announcement section stays projection-free");
+  assert.match(text(race, ".eyebrow"), /^THIS WEEK \/ Sep 14 – Sep 20$/);
+  assert.match(text(race, "h3"), /Player of the Week race/);
+  assert.match(text(race, ".race-head small"), /not final/i);
+  const rows = race.querySelectorAll(".race-row");
+  assert.deepEqual(rows.map(row => text(row, ".race-line")), ["4 GP · 13 PTS", "3 GP · 95.3% SV", "1 GP · 13 PTS"], "Qualified players lead; provisional follows");
+  assert.match(text(rows[2], "small"), /Needs 2 more GP/);
+  assert.ok(rows[2].getAttribute("class")!.includes("race-provisional"));
+  assert.match(text(race, "> .fine"), /4 games this week · 3\+ games in a role to qualify/);
+  assert.equal(root.querySelectorAll("#standings details").length, 3, "MVP board is unchanged");
+});
+
+test("weekly race hides once its week has closed and stays empty-safe and escaped", () => {
+  const supplied = awards();
+  supplied.currentWeek = { ...supplied.currentWeek, status: "complete" };
+  assert.equal(render(current([], { awards: supplied })).querySelectorAll(".weekly-race").length, 0, "A closed week is never shown as live");
+  supplied.currentWeek = week([]);
+  assert.match(text(render(current([], { awards: supplied })), ".weekly-race"), /no games recorded this week yet/i);
+  assert.equal(render(current([], { awards: null })).querySelectorAll(".weekly-race").length, 0);
+  const payload = `<img data-injected="yes" src=x onerror="alert(1)">`;
+  supplied.currentWeek = week([weeklyPlayer({ name: payload, position: payload as never })]);
+  const root = render(current([], { awards: supplied }));
+  assert.ok(text(root, ".weekly-race .race-row b").includes(payload));
+  assert.equal(root.querySelectorAll("[data-injected], [onerror]").length, 0);
+});
+
+test("weekly race lists up to six players so a qualified fourth place is never cut off", () => {
+  const supplied = awards();
+  const players = ["RYDER", "LOGAN", "BBANK69", "COLIN", "slimsammy71", "MATT", "DYLAN"].map((name, i) =>
+    weeklyPlayer({ playerId: name, name, games: i < 4 ? 9 : 1, eligible: i < 4, rank: i + 1 }));
+  supplied.currentWeek = week(players);
+  const race = one(render(current([], { awards: supplied })), ".weekly-race");
+  const names = race.querySelectorAll(".race-row b").map(b => b.textContent);
+  assert.equal(names.length, 6);
+  assert.ok(names[3].startsWith(getDisplayName("COLIN")), "Fourth qualified player is listed");
+  assert.match(text(race, "> .fine"), /^\+1 more · /);
+});
