@@ -14,7 +14,7 @@ import { HOCKEY_SEASON } from "../src/lib/hockey-season-state";
 import { getNickname } from "../src/lib/nicknames";
 
 const now = "2026-09-14T00:00:00.000Z";
-const emptyHistory = calculateWeeklyAwardHistory([], now);
+const emptyHistory = calculateWeeklyAwardHistory([], now, []);
 const winner = (playerId: string, name: string, wins: number, rank: number): WeeklyAwardHistoryEntry => ({
   playerId, name, wins, rank, lastWin: "2026-09-07T00:00:00.000Z",
 });
@@ -52,7 +52,7 @@ test("stats page keeps current-only weekly history and roster, with no live trac
   assert.match(page, /currentStats \? \[currentStats, \.\.\.archives\] : archives/);
   assert.match(page, /currentAvailable=\{available\}/);
   assert.match(page, /const members = season\.data\?\.members \?\? \[\]/);
-  assert.match(page, /season\.data \? calculateWeeklyAwardHistory\(season\.data\.matches, season\.awards\?\.asOf[^;]+: null/);
+  assert.match(page, /season\.data \? calculateWeeklyAwardHistory\(season\.data\.matches, season\.awards\?\.asOf[^;]+, season\.data\.members\) : null/);
   const props = page.match(/<WeeklyHonors\b[\s\S]*?\/>/)?.[0] ?? "";
   assert.match(props, /history=\{weeklyHistory\}/);
   assert.match(props, /members=\{members\}/);

@@ -36,7 +36,13 @@ function member(username = "A", overrides: Partial<ClubMember> = {}): ClubMember
     goalieSaves: 0, goalieShots: 0, savePct: 0, gaa: 0, shutouts: 0, shutoutPeriods: 0,
     overallRating: 75, playstyle: "", ...overrides };
 }
-function data(matches: ClubMatch[], members: ClubMember[] = []): ChelstatsData {
+// Fixture roster: every "our" player in the supplied games is a club member unless a test
+// supplies its own roster (drop-in tests do).
+function rosterOf(matches: ClubMatch[]): ClubMember[] {
+  const names = new Set(matches.flatMap(m => (m?.players ?? []).filter(p => p?.isOurPlayer).map(p => p.name)));
+  return [...names].map(username => member(username));
+}
+function data(matches: ClubMatch[], members: ClubMember[] = rosterOf(matches)): ChelstatsData {
   return { matches, members, clubStats: { record: "0-0-0", wins: 0, losses: 0, otl: 0,
     goals: 0, goalsAgainst: 0, goalsPerGame: 0, goalsAgainstPerGame: 0, totalGames: matches.length,
     seasons: 0, titlesWon: 0, currentDivision: 0, bestDivision: 0, starLevel: 0, overallRating: 0 } };
@@ -251,4 +257,18 @@ test("actual NHL27 public tracker fixture computes live MVP/weekly stats and rem
   assert.deepEqual(calculateHockeyAwards(data([]), MONDAY).seasonMvp, []);
   assert.deepEqual(calculateHockeyAwards(data([]), MONDAY).lastCompletedWeek.winners, []);
   assert.doesNotMatch(readFileSync(new URL("../src/lib/hockey-awards.ts", import.meta.url), "utf8"), /chelstats-frozen|FROZEN_CHELSTATS|process\.env|fetch\(|Date\.now|new Date\(\)/);
+});
+
+test("drop-in guests never enter Player of the Week standings, leaders or winners", () => {
+  // The guest outscores everyone, but only roster members can rank or win.
+  const rows = games([player("A"), player("Guest", { goals: 9, assists: 9 })]);
+  const week = calculateHockeyAwards(data(rows, [member("A")]), MONDAY).lastCompletedWeek;
+  assert.deepEqual(week.standings.map(p => p.name), ["A"]);
+  assert.deepEqual(week.winners.map(p => p.name), ["A"]);
+  assert.equal(week.coverage.reasons["drop-in"], 3);
+  // Gamertag roster rows match resolved display names in match rows (Mhut8 -> MATT).
+  const matt = calculateHockeyAwards(data(games([player("MATT")]), [member("Mhut8")]), MONDAY).lastCompletedWeek;
+  assert.deepEqual(matt.winners.map(p => p.name), ["MATT"]);
+  // No roster: fail closed rather than let anyone (guests included) win.
+  assert.deepEqual(calculateHockeyAwards(data(rows, []), MONDAY).lastCompletedWeek.standings, []);
 });

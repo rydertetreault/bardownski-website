@@ -1,5 +1,6 @@
 /** Pure NHL27 awards over the supplied tracker data. No storage, clocks or archive fallback. */
 import { computeMvpOddsFromMembers, mvpMarketFromScores, type ChelstatsData, type ClubMember, type ClubMatch, type MatchPlayerStat } from "./chelstats";
+import { resolveNhl27Name } from "./nhl27-api";
 
 export interface SeasonMvpEntry {
   name: string; position: string; isGoalie: boolean; score: number; rank: number; games: number;
@@ -26,7 +27,7 @@ export interface WeeklyAwardEntry {
 }
 export type AwardSkipReason = "invalid-game" | "outside-week" | "future" | "private" | "synthetic"
   | "duplicate-game" | "conflicting-game" | "no-valid-appearances" | "invalid-player"
-  | "duplicate-player" | "conflicting-player";
+  | "duplicate-player" | "conflicting-player" | "drop-in";
 export interface AwardCoverageSample { gameId: string; playerId?: string; reason: AwardSkipReason }
 export interface AwardCoverage {
   /** Stored input rows, not an assertion that the upstream week is fully captured. */
@@ -160,7 +161,15 @@ interface Totals {
   hits: number; shots: number; plusMinus: number; gwg: number; blockedShots: number; takeaways: number; giveaways: number;
   saves: number; shotsAgainst: number; ga: number; shutouts: number; weightedShutouts: number; wins: number;
 }
-function weekly(matches: ClubMatch[], start: number, now: number): WeeklyAwards {
+/** Club roster keys. Match rows carry resolved display names ("MATT") or raw gamertags
+ * for unmapped members; roster rows carry gamertags. Both resolve to the same key. */
+function rosterKeys(members: readonly ClubMember[]): Set<string> {
+  return new Set(members.map(m => key(resolveNhl27Name(text(m.username)))).filter(Boolean));
+}
+/** Drop-in guests (anyone not on the club roster) NEVER enter Player of the Week:
+ * no standings, no leaders, no winners. An empty roster fails closed (nobody qualifies). */
+function weekly(matches: ClubMatch[], start: number, now: number, members: readonly ClubMember[]): WeeklyAwards {
+  const roster = rosterKeys(members);
   const end = start + WEEK;
   const status = now >= end ? "complete" : "in-progress";
   const coverage: AwardCoverage = { inputGames: matches.length, acceptedGames: 0, skippedGames: 0,
@@ -192,7 +201,7 @@ function weekly(matches: ClubMatch[], start: number, now: number): WeeklyAwards 
   // Only unambiguous name aliases can join ID-less historical rows to source IDs.
   const aliases = new Map<string, Set<string>>();
   for (const m of accepted) for (const p of m.players as SourcePlayer[]) {
-    if (!p?.isOurPlayer || !text(p.name) || !text(p.playerId)) continue;
+    if (!p?.isOurPlayer || !text(p.name) || !text(p.playerId) || !roster.has(key(resolveNhl27Name(text(p.name))))) continue;
     const ids = aliases.get(key(p.name)) ?? new Set<string>(); ids.add(text(p.playerId)); aliases.set(key(p.name), ids);
   }
   function identity(p: SourcePlayer): string {
@@ -205,6 +214,7 @@ function weekly(matches: ClubMatch[], start: number, now: number): WeeklyAwards 
     for (const p of m.players as SourcePlayer[]) {
       if (!p || p.isOurPlayer !== true) continue;
       if (!text(p.name)) { skip("invalid-player", m.id, 1, text(p.playerId) || "missing-name"); continue; }
+      if (!roster.has(key(resolveNhl27Name(text(p.name))))) { skip("drop-in", m.id, 1, text(p.playerId) || key(p.name)); continue; }
       const id = identity(p); const rows = players.get(id) ?? []; rows.push(p); players.set(id, rows);
     }
     let appearances = 0;
@@ -283,7 +293,7 @@ export function calculateHockeyAwards(data: ChelstatsData, asOf: string): Hockey
   day.setUTCDate(day.getUTCDate() - (day.getUTCDay() + 6) % 7);
   const monday = day.getTime();
   return { asOf: new Date(now).toISOString(), seasonMvp: calculateSeasonMvp(data.members),
-    currentWeek: weekly(data.matches, monday, now), lastCompletedWeek: weekly(data.matches, monday - WEEK, now) };
+    currentWeek: weekly(data.matches, monday, now, data.members), lastCompletedWeek: weekly(data.matches, monday - WEEK, now, data.members) };
 }
 
 /** Pure history over current NHL27 tracker matches supplied by the caller (no archive fallback).
@@ -295,7 +305,8 @@ export function calculateHockeyAwards(data: ChelstatsData, asOf: string): Hockey
  * from source IDs even if names match. Names alone cannot distinguish two ID-less people.
  * The display name is the lexically smallest winning name for that identity, independent of order.
  */
-export function calculateWeeklyAwardHistory(matches: ClubMatch[], asOf: string): WeeklyAwardHistory {
+/** `members` is the club roster for the same season; drop-in guests never win or rank. */
+export function calculateWeeklyAwardHistory(matches: ClubMatch[], asOf: string, members: readonly ClubMember[]): WeeklyAwardHistory {
   const now = Date.parse(asOf);
   if (!/T.*(?:Z|[+-]\d{2}:\d{2})$/i.test(asOf) || !finite(now)) throw new RangeError("Awards asOf must be an ISO timestamp with timezone");
   const starts = new Set<number>();
@@ -310,7 +321,7 @@ export function calculateWeeklyAwardHistory(matches: ClubMatch[], asOf: string):
     if (finite(start) && finite(new Date(end).getTime()) && end <= now) starts.add(start);
   }
   const weeks = [...starts].sort((a, b) => b - a)
-    .map(start => weekly(matches, start, now)).filter(week => week.games > 0);
+    .map(start => weekly(matches, start, now, members)).filter(week => week.games > 0);
   const winners = new Map<string, WeeklyAwardHistoryEntry>();
   let awardedWeeks = 0, totalAwards = 0;
   for (const week of weeks) {

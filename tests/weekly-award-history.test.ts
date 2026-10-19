@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { calculateHockeyAwards, calculateWeeklyAwardHistory, type WeeklyAwardHistory } from "../src/lib/hockey-awards";
-import type { ChelstatsData, ClubMatch, MatchPlayerStat } from "../src/lib/chelstats";
+import type { ChelstatsData, ClubMatch, ClubMember, MatchPlayerStat } from "../src/lib/chelstats";
 
 const MONDAY = "2026-09-14T00:00:00.000Z";
 const WEEK_1 = "2026-08-24T00:00:00.000Z";
@@ -25,12 +25,18 @@ function game(id: string, when = WEEK_3, players = [player()], overrides: Partia
 function games(when = WEEK_3, players = [player()], n = 3): ClubMatch[] {
   return Array.from({ length: n }, (_, i) => game(`${when}-${i}`, when, players));
 }
-function data(matches: ClubMatch[]): ChelstatsData {
-  return { matches, members: [], clubStats: { record: "0-0-0", wins: 0, losses: 0, otl: 0,
+// Fixture roster: every "our" player in the supplied games is a club member unless a test
+// supplies its own roster (drop-in tests do).
+function rosterOf(matches: ClubMatch[]): ClubMember[] {
+  const names = new Set(matches.flatMap(m => (m?.players ?? []).filter(p => p?.isOurPlayer).map(p => p.name)));
+  return [...names].map(username => ({ username }) as ClubMember);
+}
+function data(matches: ClubMatch[], members: ClubMember[] = rosterOf(matches)): ChelstatsData {
+  return { matches, members, clubStats: { record: "0-0-0", wins: 0, losses: 0, otl: 0,
     goals: 0, goalsAgainst: 0, goalsPerGame: 0, goalsAgainstPerGame: 0, totalGames: matches.length,
     seasons: 0, titlesWon: 0, currentDivision: 0, bestDivision: 0, starLevel: 0, overallRating: 0 } };
 }
-const history = (matches: ClubMatch[], asOf = MONDAY) => calculateWeeklyAwardHistory(matches, asOf);
+const history = (matches: ClubMatch[], asOf = MONDAY, members = rosterOf(matches)) => calculateWeeklyAwardHistory(matches, asOf, members);
 
 // Full equality includes coverage: history must pass unfiltered input to the existing calculation.
 function assertWeeklyParity(matches: ClubMatch[], result: WeeklyAwardHistory): void {
@@ -306,4 +312,11 @@ test("renamed IDs aggregate deterministically without mutating deeply frozen inp
 test("history has no clock, network, storage or legacy archive fallback", () => {
   const source = readFileSync(new URL("../src/lib/hockey-awards.ts", import.meta.url), "utf8");
   assert.doesNotMatch(source, /chelstats-frozen|FROZEN_CHELSTATS|process\.env|fetch\(|Date\.now|new Date\(\)|redis|localStorage/);
+});
+
+test("weekly history never awards or ranks drop-in guests", () => {
+  const rows = games(WEEK_3, [player("A"), player("Guest", { goals: 9, assists: 9 })]);
+  const result = history(rows, MONDAY, [{ username: "A" } as ClubMember]);
+  assert.deepEqual(result.rankings.map(r => r.name), ["A"]);
+  assert.ok(result.weeks.every(week => week.standings.every(p => p.name !== "Guest")));
 });

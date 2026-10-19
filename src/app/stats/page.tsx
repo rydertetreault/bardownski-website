@@ -27,7 +27,7 @@ export default async function StatsPage() {
   const members = season.data?.members ?? [];
   const available = season.status === "connected" || season.status === "stale";
   const currentStats = available ? chelstatsToSeasonData(members, { season: HOCKEY_SEASON, date: season.updatedAt }) : null;
-  const weeklyHistory = season.data ? calculateWeeklyAwardHistory(season.data.matches, season.awards?.asOf ?? new Date().toISOString()) : null;
+  const weeklyHistory = season.data ? calculateWeeklyAwardHistory(season.data.matches, season.awards?.asOf ?? new Date().toISOString(), season.data.members) : null;
 
   return <div className="stats-edition">
     <header className="stats-hero">
