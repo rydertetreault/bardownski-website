@@ -83,12 +83,12 @@ const films = {
     captions: SEASON_REVEAL.captionsSrc,
   },
   finish: {
-    title: "Matt Hut / Archived hockey highlight",
+    title: "Matt Hut / Huge hit",
     src: "/videos/homepage/finish.mp4",
     poster: "/images/homepage/player-teal.webp",
   },
   crease: {
-    title: "JRT IV / Archived hockey highlight",
+    title: "JRT IV / Spectacular saves",
     src: "/videos/homepage/crease.mp4",
     poster: "/images/homepage/goalie-purple.webp",
   },
@@ -157,7 +157,9 @@ document.addEventListener("click", (e) => {
       `${stamp}<h2 id="dialog-title">Recent saved matches</h2><p>Latest eight saved games. The archive is incomplete.</p><div class="modal-games result-rows">${a.matches.map((m, i) => resultRow(m, i)).join("")}</div>`,
       b,
     );
-  if (b.dataset.news === SEASON_REVEAL.articleId && b.tagName === "A") return; // Full, accessible film/article route.
+  // The reveal story is a film: play it in the dialog. The link still opens the
+  // full article (with transcript) without JS, or via new-tab/modified clicks above.
+  if (b.dataset.news === SEASON_REVEAL.articleId) { e.preventDefault(); video("reveal", b); return; }
   if (b.dataset.news) {
     const article = news.find((article) => article.id === b.dataset.news);
     if (article) {

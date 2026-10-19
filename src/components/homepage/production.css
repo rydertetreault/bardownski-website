@@ -136,3 +136,21 @@ html:has(.bd-home.motion-off) { scroll-behavior:auto; }
   .bd-home .open-rank-section > .weekly-race { max-width: none; padding-left: 14px; }
   .bd-home .weekly-race .race-row > b { font-size: 15px; }
 }
+
+/* Detail dialog (articles, clips, players): a rounded panel centred on screen over a
+   blurred page. The base reset left it pinned to the top-left corner. */
+.bd-home.demo-10 .detail-modal {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  height: fit-content;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
+}
+.bd-home.demo-10 .detail-modal::backdrop {
+  background: rgba(6, 8, 10, 0.5);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+.bd-home.demo-10 .close-modal { border-radius: 50%; }

@@ -1,6 +1,6 @@
-import Image from "next/image";
 import type { Metadata } from "next";
 import ArticleVideo from "../ArticleVideo";
+import { ZoomableImage } from "@/components/ui/MediaLightbox";
 import revealTranscript from "@/lib/season-reveal-transcript.json";
 import { SEASON_REVEAL } from "@/lib/season-reveal";
 import "../article.css";
@@ -76,14 +76,15 @@ export default async function ArticlePage({
             <ArticleVideo src={article.video} poster={article.image} captions={article.captions} title={article.title} />
           </div>
         ) : article.image ? (
-          <div className="relative w-full h-64 md:h-80 rounded-xl overflow-hidden mb-10 border border-border">
-            <Image
+          <div className="article-hero-image relative w-full rounded-xl overflow-hidden mb-10 border border-border">
+            {/* Natural aspect ratio (never cropped). Click: full size, in colour. */}
+            <ZoomableImage
               src={article.image}
               alt={article.title}
-              fill
-              className="object-cover object-[center_20%]"
+              sizes="(max-width: 900px) 100vw, 840px"
+              className="block w-full h-auto"
+              priority
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
           </div>
         ) : null}
 

@@ -1,0 +1,81 @@
+/* Enlarged media: a rounded panel centered on screen over a blurred page. */
+dialog.media-lightbox {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  max-width: min(94vw, 1600px);
+  max-height: 92vh;
+  width: fit-content;
+  height: fit-content;
+  overflow: visible;
+  color: #f0efeb;
+}
+dialog.media-lightbox::backdrop {
+  background: rgba(6, 8, 10, 0.55);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+.media-lightbox-frame {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0b0c0d;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
+  line-height: 0;
+}
+.media-lightbox-media {
+  display: block;
+  max-width: min(94vw, 1600px);
+  max-height: 92vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+.media-lightbox-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font: 400 24px/1 Arial, sans-serif;
+  cursor: pointer;
+}
+.media-lightbox-close:hover,
+.media-lightbox-close:focus-visible { background: #68c8ce; color: #0b0c0d; }
+
+/* Inline trigger: the photo itself is the button. */
+.media-zoom-trigger {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+}
+.media-zoom-trigger img { display: block; width: 100%; height: auto; }
+.media-zoom-hint {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 16px;
+  opacity: 0.85;
+  pointer-events: none;
+}
+.media-zoom-trigger:hover .media-zoom-hint,
+.media-zoom-trigger:focus-visible .media-zoom-hint { opacity: 1; background: #68c8ce; color: #0b0c0d; }

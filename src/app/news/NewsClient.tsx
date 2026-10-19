@@ -9,8 +9,9 @@ import { useState } from "react";
 type NewsItem = {id:string; title:string; summary:string; date:string; image?:string; video?:string; captions?:string; featured?:boolean; category:string};
 const CATEGORIES = ["All", "Highlights", "Results", "Club News", "Stats", "Announcements"];
 
-function StoryMedia({ item, priority = false }: { item: NewsItem; priority?: boolean }) {
-  return <div className="news-media">{item.video
+// Feed cards show the poster; only the lead story embeds a playable film.
+function StoryMedia({ item, priority = false, still = false }: { item: NewsItem; priority?: boolean; still?: boolean }) {
+  return <div className="news-media">{item.video && !still
     ? <ArticleVideo src={item.video} poster={item.image} captions={item.captions} title={item.title} />
     : item.image
       ? <Image src={item.image} alt={item.title} fill priority={priority} sizes={priority ? "(max-width: 750px) 90vw, 60vw" : "(max-width: 480px) 90px, (max-width: 750px) 155px, 220px"} />
@@ -25,6 +26,9 @@ export default function NewsClient({ items }: { items: NewsItem[] }) {
   const categories = [...new Set([...CATEGORIES, ...items.map(item => item.category)])];
   const filtered = items.filter(item => (active === "All" || item.category === active) && `${item.title} ${item.summary}`.toLowerCase().includes(query.trim().toLowerCase()));
   const [featured, ...rest] = filtered;
+  // A pinned feature (the 2027 reveal) leads the page AND sits in the feed at its real date.
+  const time = (date: string) => { const t = new Date(date).getTime(); return Number.isNaN(t) ? 0 : t; };
+  const feed = featured?.featured ? [...filtered].sort((a, b) => time(b.date) - time(a.date)) : rest;
   const isFiltered = active !== "All" || query.trim().length > 0;
   function clearFilters() { setActive("All"); setQuery(""); setLimit(8); }
 
@@ -64,13 +68,13 @@ export default function NewsClient({ items }: { items: NewsItem[] }) {
       </aside>}
     </div>}
 
-    {rest.length > 0 && <div className="news-feed">
+    {feed.length > 0 && <div className="news-feed">
       <div className="news-section-heading" id="story-feed"><h2>More from the club.</h2><span>{active === "All" ? "THE STORY COLLECTION" : active.toUpperCase()}</span></div>
-      <div className="news-story-layout">{rest.slice(0,limit).map(item => <article key={item.id} className="news-story">
-        <StoryMedia item={item} />
+      <div className="news-story-layout">{feed.slice(0,limit).map(item => <article key={item.id} className="news-story">
+        <StoryMedia item={item} still />
         <div className="news-story-copy"><p className="news-eyebrow">{item.category}<span>{item.date}</span></p><h3><Link href={`/news/${item.id}`}>{item.title}</Link></h3><p className="news-summary">{item.summary}</p><Link className="news-read" href={`/news/${item.id}`} aria-label={`Read ${item.title}`}>Read the story <span aria-hidden="true">↗</span></Link></div>
       </article>)}</div>
-      {rest.length > limit && <button className="news-load" type="button" onClick={() => setLimit(n => n + 8)}>More stories <span>+ {Math.min(8, rest.length - limit)}</span></button>}
+      {feed.length > limit && <button className="news-load" type="button" onClick={() => setLimit(n => n + 8)}>More stories <span>+ {Math.min(8, feed.length - limit)}</span></button>}
     </div>}
     {!filtered.length && <div className="news-empty"><h2>No stories found.</h2><p>Try another search or explore a different topic.</p><button type="button" onClick={clearFilters}>Browse all stories ↗</button></div>}
     <footer className="news-end"><p className="news-eyebrow">Keep up with the club</p><h2>Back to<br /><em>the action.</em></h2><Link href="/">Follow the current season <span aria-hidden="true">↗</span></Link></footer>

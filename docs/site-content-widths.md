@@ -6,7 +6,7 @@ The user approved a single readability-focused system across all pages, while pr
 
 - **1280px maximum content width**, centered. The cap excludes horizontal gutters.
 - **32px gutters** above 1024px; **24px** at 601–1024px; **20px** at 600px and below.
-- **700px reading columns** for long articles. Article media can use the wider 1280px rail.
+- **700px reading columns** for long articles (hockey news stories use 840px). Article media (photos and video) matches the reading column.
 - Section backgrounds, hero photos, diagonal transitions, and background decoration remain full bleed.
 - Existing mobile layouts, tables' horizontal scrolling, compact dialogs, photos, section colors and content are preserved.
 

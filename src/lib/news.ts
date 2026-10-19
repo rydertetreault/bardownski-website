@@ -33,6 +33,22 @@ export const articles: Article[] = [
     ].join("\n\n"),
   },
   {
+    id: "season-update-october-2026",
+    title: "Season Update: Matt Hut Leads the MVP Race, and Player of the Week Sits at Three-All",
+    date: "2026-10-19",
+    category: "Club News",
+    // Still @ 2.15 s of media/team/b-roll/ryder-matt-bRoll-away.mov (2026–27), grayscale.
+    image: "/images/2026-2027/ryder-matt-away-bw.webp",
+    summary: [
+      "Six weeks into the 2026–27 season, Bardownski sits at 58–48–4 through 110 games, with 408 goals for and 384 against. That is a step back from the 207–144–15 finish that ended with last year's first Club Finals championship, and the scoring has come down with it, from 5.15 goals a game in NHL 26 to 3.71 so far. The individual races have more than made up for it. The MVP race has a new name on top, the weekly award has been split right down the middle, and last year's leaderboard is already being rewritten.",
+      "Start with the MVP race, because it looks nothing like last year's. NHL 26 belonged to Xavier Laflamme. He finished with 1,410 points and 920 goals in 290 games, closed the season as the -115 MVP favourite with Matt Hut a distant second at +599, then won MVP of the championship run on top of it. This year the order has flipped. Matt Hut leads at +101, roughly a coin flip against the entire field, with 199 goals, 87 assists and 286 points in 88 of the 110 games, plus a club-high 14 game-winners. He is scoring 2.26 goals a game, up from 2.03 last season, when he had 472 goals in 233 games. He is also one goal away from 200, and he already has two seven-goal games this season, most recently against Whitemigz on October 18.",
+      "The reigning MVP is not going anywhere, though. Xavier Laflamme sits second at +276 with 91 goals and 161 points in 40 games. His 4.0 points a game is below last year's 4.9, but it is still the best rate on the roster, and he is +53 with the club winning 65% of the games he plays. The gap is mostly games played. If the captain closes it, so does the race. JRT IV is third at +439. Last year he took Top Goaltender with 2,135 saves and a club-record 21 shutouts. This year he has four shutouts in 82 games, a 43–37–2 record and a 73% save percentage, up from 71% a season ago. Behind them, Wolfgang Mozart (67 points in 32 games) and Top G (78 points in 39 games) are separated by almost nothing in the battle for fourth.",
+      "Then there is Player of the Week, and it has turned into a two-man show. Six awards have been handed out. Matt Hut has three, JRT IV has three, and nobody else has one. JRT IV took the opening week with 52 saves on 62 shots. Matt Hut answered by winning the next three in a row, starting with the 39-game launch week where he put up 92 goals and 118 points in 32 games. Xavier Laflamme had 113 points that week and missed by a hair, the closest call of the season. Matt Hut followed with 15 goals in nine games, then 38 points in 14 games, holding off Wolfgang Mozart and Top G.",
+      "The wall took it back. In the week of October 5, JRT IV went 6–0 in net with 66 saves on 76 shots, a 1.67 GAA and a shutout, the best goaltending week of the season. Matt Hut was second with 21 points in six games, and it was not close. Last week JRT IV played 23 games in goal, turned aside 264 of 354 shots and won again. Matt Hut was runner-up once more with 29 goals and 44 points in 11 games, and Wolfgang Mozart was third with 41 points in 20 games. That squared the season series at three apiece. It is the same JRT IV who won the weekly nod in the spring on his way to the shutout record, and the wall looks every bit as tall in the new sweater.",
+      "The new week is only three games old, and JRT IV is already out in front again, with Xavier Laflamme second and Matt Hut third. For the captain, it is a shot at his first weekly award of the season and a chance to start chasing down a second straight MVP. For Matt Hut, there is a 200th goal on deck and a chance to finally turn last year's runner-up finish into a first-place one. For JRT IV, a fourth award would break the tie. Last year ended with a banner. This year, the race for who leads the way is wide open. The next Player of the Week is announced Monday, and the MVP tracker updates as the games are played.",
+    ].join("\n\n"),
+  },
+  {
     id: "season-finale-nhl26",
     title: "Season Over. History Made. Bardownski Closes the NHL 26 Chapter",
     date: "September 10, 2026",

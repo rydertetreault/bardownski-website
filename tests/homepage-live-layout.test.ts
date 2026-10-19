@@ -183,8 +183,12 @@ test("home hero comes first and preserves the section order and no-JS content", 
   const root = home();
   assert.ok(one(root, ".bd-home.demo-10.hybrid [data-home-content]"));
   assert.deepEqual(root.querySelectorAll("section").map(section => section.id || "hero"), [
-    "hero", "results", "weekly", "standings", "highlights", "news", "history", "awards", "scrapbook",
+    "hero", "results", "weekly", "standings", "news", "highlights", "history", "awards", "scrapbook",
   ]);
+  // Content swapped, slot palettes/dividers stayed: dark teal slot -> to-news cut -> white purple slot.
+  assert.ok(one(root, "#news").classList.contains("cut-highlights"), "News fills the dark slot after the MVP tracker");
+  assert.ok(one(root, "#highlights").classList.contains("cut-news"), "Highlights fill the white slot");
+  assert.ok(one(root, "#news + .section-cut.to-news + #highlights"), "Divider stays between the two slots");
   assert.equal(text(root, ".cinema-hero h1"), "HOME ICE.THE NEXT SHIFT.");
   assert.equal(one(root, ".cinema-backdrop img").getAttribute("src"), "/images/homepage/history-2022.webp");
   assert.equal(root.querySelectorAll("#season-reveal, .home-reveal").length, 0, "No standalone reveal above the home hero");
@@ -292,7 +296,7 @@ test("homepage and real Navbar section links resolve to unique rendered targets"
   const ids = root.querySelectorAll("[id]").map(element => element.id);
   assert.equal(new Set(ids).size, ids.length, "No ambiguous duplicate anchors");
   const nav = one(root, 'nav[aria-label="Homepage sections"]');
-  assert.deepEqual(nav.querySelectorAll("a").map(a => a.getAttribute("href")), ["#results", "#weekly", "#standings", "#highlights", "#news", "#history"]);
+  assert.deepEqual(nav.querySelectorAll("a").map(a => a.getAttribute("href")), ["#results", "#weekly", "#standings", "#news", "#highlights", "#history"]);
   const navbar = source("src/components/layout/Navbar.tsx");
   const strips = nodes(navbar, ts.isVariableDeclaration).find(node => node.name.getText(navbar) === "pageStrips");
   assert.ok(strips?.initializer && ts.isObjectLiteralExpression(strips.initializer));
@@ -368,7 +372,10 @@ test("generated images, history portraits, album, font/license, and lazy videos 
   }
   for (const root of roots) {
     for (const image of root.querySelectorAll("img")) {
-      assertLocalAsset(image.getAttribute("src")!, image.getAttribute("src")!.startsWith("/images/announcements/") ? "/images/announcements/" : "/images/homepage/");
+      // News cards show each story's own published image; everything else stays in the homepage namespace.
+      const src = image.getAttribute("src")!;
+      const inNews = Boolean(image.closest("#news"));
+      assertLocalAsset(src, src.startsWith("/images/announcements/") ? "/images/announcements/" : inNews ? "/images/" : "/images/homepage/");
       assert.ok(image.hasAttribute("alt"));
     }
   }

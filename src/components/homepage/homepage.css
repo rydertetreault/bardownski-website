@@ -7691,7 +7691,7 @@
   padding-block: 65px;
 }
 :where(.bd-home).demo-10 .highlight-list-section .section-head h2 {
-  color: var(--club-white);
+  color: var(--text);
 }
 :where(.bd-home).demo-10 .highlight-list .highlight-item-copy strong {
   font:
@@ -7716,25 +7716,25 @@
 :where(.bd-home).demo-10 .cut-news .section-head h2 {
   color: var(--club-black);
 }
-:where(.bd-home).demo-10 .cut-news .news-item {
-  border-top: 3px solid var(--club-purple);
+:where(.bd-home).demo-10 .news-section .news-item {
+  border-top: 3px solid var(--accent);
   padding-top: 20px;
 }
-:where(.bd-home).demo-10 .cut-news .news-image {
+:where(.bd-home).demo-10 .news-section .news-image {
   border-bottom: 0;
   border-radius: 0;
   aspect-ratio: 16/10;
 }
-:where(.bd-home).demo-10 .cut-news .news-item h3 {
+:where(.bd-home).demo-10 .news-section .news-item h3 {
   font:
     800 32px/1.1 HomeBarlow,
     sans-serif;
   letter-spacing: -0.4px;
-  color: var(--club-black);
+  color: var(--text);
 }
-:where(.bd-home).demo-10 .cut-news .news-meta,
-:where(.bd-home).demo-10 .cut-news .text-link {
-  color: var(--club-purple);
+:where(.bd-home).demo-10 .news-section .news-meta,
+:where(.bd-home).demo-10 .news-section .text-link {
+  color: var(--accent);
 }
 :where(.bd-home).demo-10 .awards-shelf .section-head h2 {
   color: var(--club-white);
@@ -7960,7 +7960,7 @@
     grid-template-columns: 22px minmax(165px, 210px) 1fr auto;
     gap: 22px;
   }
-  :where(.bd-home).demo-10 .cut-news .news-item h3 {
+  :where(.bd-home).demo-10 .news-section .news-item h3 {
     font-size: 28px;
   }
 }
@@ -7969,7 +7969,7 @@
     font-size: 12.5vw;
   }
   :where(.bd-home).demo-10 .cut-desk,
-:where(.bd-home).demo-10 .cut-news,
+:where(.bd-home).demo-10 .news-section,
 :where(.bd-home).demo-10 .awards-shelf {
     padding-inline: 6vw;
   }
@@ -7990,7 +7990,7 @@
   :where(.bd-home).demo-10 .highlight-list .highlight-item-copy strong {
     font-size: 23px;
   }
-  :where(.bd-home).demo-10 .cut-news .news-item h3 {
+  :where(.bd-home).demo-10 .news-section .news-item h3 {
     font-size: 32px;
   }
   :where(.bd-home).demo-10 #history {

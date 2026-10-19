@@ -24,7 +24,7 @@ export const routeInventory = [
   { path: '/highlights', ready: '.highlights-edition', rails: [rail('.film-inner')], bands: ['.film-hero', '.film-index', '.film-player', '.film-outro'] },
   { path: '/news', ready: '.news-index', rails: [rail('.news-masthead'), rail('.news-tools'), rail('.news-results-heading'), rail('.news-frontpage,.news-empty'), rail('.news-end')], bands: ['.news-masthead', '.news-stories', '.news-end'] },
   { path: '/awards', ready: '.awards-page', rails: [rail('.awards-page .new-section')], bands: ['.awards-page .new-section'] },
-  { path: '/news/bardownski-2027-reveal', ready: '.hockey-article', rails: [rail('.hockey-article > :is(.site-content-container,.max-w-3xl)'), rail('.hockey-article .space-y-6', 'reading', 700)], reading: '.hockey-article .space-y-6 > p, .hockey-article .reveal-resources > p', bands: ['.hockey-article'] },
+  { path: '/news/bardownski-2027-reveal', ready: '.hockey-article', rails: [rail('.hockey-article > :is(.site-content-container,.max-w-3xl)'), rail('.hockey-article .space-y-6', 'reading', 840)], reading: '.hockey-article .space-y-6 > p, .hockey-article .reveal-resources > p', readingMax: 840, bands: ['.hockey-article'] },
   { path: '/fc', ready: 'main h1', rails: [rail('main > div > section > :is(.site-content-container,.max-w-7xl)'), rail(fcRail), rail('main > div > .border-y > :is(.site-content-container,.max-w-7xl)')], bands: ['main > div > section', 'main > div > .border-y'] },
   ...['fixtures', 'squad', 'stats', 'records', 'gallery', 'highlights', 'news'].map(name => ({ path: `/fc/${name}`, ready: 'main h1', rails: [rail(fcRail)], bands: ['main > div'] })),
 ];
@@ -175,7 +175,7 @@ export async function run() {
               for (const node of band.nodes) if (Math.abs(node.left) > 2 || Math.abs(node.right - measurement.layoutWidth) > 2) fail(route.path, width, band.selector, `Band ${node.left.toFixed(1)}..${node.right.toFixed(1)}px; expected 0..${measurement.layoutWidth}px`);
             }
             if (route.reading && !measurement.reading.length) fail(route.path, width, route.reading, 'Required article text missing');
-            for (const paragraph of measurement.reading) if (paragraph.contentWidth > 702) fail(route.path, width, paragraph.element, `Article text ${paragraph.contentWidth.toFixed(1)}px exceeds 700px`);
+            for (const paragraph of measurement.reading) if (paragraph.contentWidth > (route.readingMax ?? 700) + 2) fail(route.path, width, paragraph.element, `Article text ${paragraph.contentWidth.toFixed(1)}px exceeds ${route.readingMax ?? 700}px`);
             for (const node of measurement.nav) {
               if (node.left < -2 || node.right > measurement.layoutWidth + 2) fail(route.path, width, node.element, 'Navigation box outside viewport');
               if (!node.localScroller && node.scrollWidth > node.clientWidth + 2) fail(route.path, width, node.element, `Navigation clips/overflows by ${node.scrollWidth - node.clientWidth}px`);

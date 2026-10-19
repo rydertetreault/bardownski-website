@@ -164,3 +164,9 @@ html {
 .site-main img:not([data-brand-mark]) {
   filter: grayscale(1) !important;
 }
+/* Enlarged views (lightboxes, full screen) show the original colour. Same specificity,
+   declared later, so it wins over the rule above only for opted-in enlarged images. */
+.site-main img[data-full-color],
+dialog img[data-full-color] {
+  filter: none !important;
+}

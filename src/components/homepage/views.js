@@ -55,35 +55,39 @@ function currentResults(season) {
   }).join("");
   return `<section class="results-card module score-strip cut-results" id="results" data-module="matches" data-reveal>${head(`RECENT MATCHES / ${HOCKEY_SEASON}`, "Recent matches", '<a class="text-link" href="/matches">All matches ↗</a>')}<div class="result-rows">${rows || `<p class="fine">${season?.status === "unavailable" ? "Recent results are temporarily unavailable." : "No results yet this season."}</p>`}</div>${season?.status === "stale" ? '<small class="fine">Latest available results.</small>' : ""}</section>`;
 }
-function highlightList() {
+/** @param {string} slot Section slot class: owns the background/accent palette, not the content. */
+function highlightList(slot = "cut-highlights") {
   const previews = [
     {
       id: "finish",
       image: "finish-preview",
-      title: "Matt Hut’s highlight",
-      label: "MATT HUT / CLUB HIGHLIGHT",
+      title: "Huge Hit",
+      label: "MATT HUT / PLAY OF THE PERIOD",
       length: "0:10",
-      note: "Archived club gameplay.",
-      alt: "Still from Matt Hut’s archived highlight: a skater moving up the ice",
+      note: "A massive open-ice hit that sends his man flying.",
+      alt: "Still from Matt Hut’s huge hit: a skater moving up the ice",
     },
     {
       id: "crease",
       image: "crease-preview",
-      title: "JRT IV’s highlight",
-      label: "JRT IV / GOALTENDING",
+      title: "Spectacular Saves",
+      label: "JRT IV / PLAY OF THE GAME",
       length: "0:12",
-      note: "Archived goaltending highlight.",
-      alt: "Still from JRT IV’s archived highlight: a goaltender in the crease",
+      note: "A slot stop, a cross-crease save and a power-play save.",
+      alt: "Still from JRT IV’s spectacular saves: a goaltender in the crease",
     },
   ];
-  return `<section class="highlights section cut-highlights highlight-list-section" id="highlights" data-module="highlights">${head("CLUB VIDEO", "Highlights", '<a class="text-link" href="/highlights">All highlights ↗</a>')}<p class="highlight-list-intro">Watch recent moments from the club archive.</p><div class="highlight-list">${previews.map((clip, i) => `<button class="clip highlight-item" data-video="${clip.id}" aria-label="Watch ${clip.title}, ${clip.length}"><span class="highlight-item-number" aria-hidden="true">0${i + 1}</span><span class="clip-thumb">${photo(clip.image, clip.alt)}<span class="highlight-duration">${clip.length}</span></span><span class="highlight-item-copy"><small>${clip.label}</small><strong>${clip.title}</strong><span>${clip.note}</span></span><span class="highlight-watch"><span>Watch clip</span><b aria-hidden="true">▶</b></span><span class="highlight-item-rule" aria-hidden="true"></span></button>`).join("")}</div><small class="fine">2025–2026 archive · Select a clip to open the player.</small></section>`;
+  return `<section class="highlights section ${slot} highlight-list-section" id="highlights" data-module="highlights">${head("CLUB VIDEO", "Highlights", '<a class="text-link" href="/highlights">All highlights ↗</a>')}<p class="highlight-list-intro">Watch recent moments from the club archive.</p><div class="highlight-list">${previews.map((clip, i) => `<button class="clip highlight-item" data-video="${clip.id}" aria-label="Watch ${clip.title}, ${clip.length}"><span class="highlight-item-number" aria-hidden="true">0${i + 1}</span><span class="clip-thumb">${photo(clip.image, clip.alt)}<span class="highlight-duration">${clip.length}</span></span><span class="highlight-item-copy"><small>${clip.label}</small><strong>${clip.title}</strong><span>${clip.note}</span></span><span class="highlight-watch"><span>Watch clip</span><b aria-hidden="true">▶</b></span><span class="highlight-item-rule" aria-hidden="true"></span></button>`).join("")}</div><small class="fine">2025–2026 archive · Select a clip to open the player.</small></section>`;
 }
 /** @param {string} variant @param {string} title @param {import("@/lib/news").Article[]} items */
 function news(variant = "", title = "Recent news", items = a.news) {
   const imgs = ["goalie-purple", "player-purple", "championship"];
   const artwork = (item, index) => item.id === SEASON_REVEAL.articleId
     ? `<img src="${SEASON_REVEAL.poster}" alt="${escape(SEASON_REVEAL.posterAlt)}" loading="lazy" decoding="async">`
-    : photo(imgs[index], "Club archive imagery accompanying " + item.category);
+    // A story's own image first; archive stock only for stories without one.
+    : item.image
+      ? photo("", `Photo for ${getNicknameText(item.title)}`, "", false, "center", item.image)
+      : photo(imgs[index], "Club archive imagery accompanying " + item.category);
   return `<section class="news-section section ${variant}" id="news" data-module="news">${head("RECENT CLUB NEWS", title, '<a class="text-link" href="/news">All news ↗</a>')}<div class="news-grid" data-reveal-group>${items.slice(0, 3).map((n, i) => `<article class="news-item${n.featured ? " featured-news" : ""}" data-reveal><a href="/news/${encodeURIComponent(n.id)}" data-news="${escape(n.id)}" class="news-button"><span class="news-image">${artwork(n, i)}<span>${n.featured ? "FEATURED FILM" : `0${i + 1}`}</span></span><span class="news-meta">${escape(n.category)} / <time${articleDate(n.date) ? ` datetime="${articleDate(n.date)}"` : ""}>${escape(n.date)}</time></span><h3>${escape(getNicknameText(n.title))}</h3><p>${escape(getNicknameText(n.summary.split(/\.\s/)[0] + "."))}</p><span class="text-link">Read the story ↗</span></a></article>`).join("")}</div></section>`;
 }
 export function seasonContent(year) {
@@ -196,12 +200,12 @@ export function renderHome(items = a.news, season = null) {
   const awards = current?.awards ?? null;
   const stale = current?.status === "stale";
   return `${cinemaHero("v4-film-hero")}${pageThread()}
-  <nav class="mono-section-nav" aria-label="Homepage sections"><span class="mono-nav-label">ON THIS PAGE</span><div>${[["results","Matches"],["weekly","Weekly player"],["standings","MVP tracker"],["highlights","Highlights"],["news","News"],["history","Past seasons"]].map(([id,label])=>`<a href="#${id}" data-section-link="${id}">${label}</a>`).join("")}</div><button class="motion-toggle" aria-pressed="false" hidden>Pause animations</button><span class="mono-nav-progress" aria-hidden="true"></span></nav>
+  <nav class="mono-section-nav" aria-label="Homepage sections"><span class="mono-nav-label">ON THIS PAGE</span><div>${[["results","Matches"],["weekly","Weekly player"],["standings","MVP tracker"],["news","News"],["highlights","Highlights"],["history","Past seasons"]].map(([id,label])=>`<a href="#${id}" data-section-link="${id}">${label}</a>`).join("")}</div><button class="motion-toggle" aria-pressed="false" hidden>Pause animations</button><span class="mono-nav-progress" aria-hidden="true"></span></nav>
   ${currentResults(current)}
   <div class="interlude cut-interlude" data-scroll>${logoReveal()}<span class="cut-label">2026–2027 / PLAYER OF THE WEEK</span><p>Every shift counts.</p><em>Announced every Monday.</em><span class="interlude-line" aria-hidden="true"></span></div>
   ${currentWeekly(awards, stale)}
   ${sectionCut("to-rankings")}${currentRankings(awards, stale)}${sectionCut("from-rankings")}
-  ${highlightList()}${sectionCut("to-news")}${news("cut-news","Recent news",items)}
+  ${news("cut-highlights","Recent news",items)}${sectionCut("to-news")}${highlightList("cut-news")}
   ${history("cut-history")}${archivedAwards()}${sectionCut("to-scrapbook")}${scrapbook()}
   <div class="site-footer home-signoff club-mark-panel" aria-label="Bardownski club sign-off"><a class="footer-wordmark" href="/">BARDOWNSKI<span>®</span></a><div class="footer-bottom"><p>Bardownski Hockey Club · Newfoundland · Established 2020.</p><nav aria-label="Club sign-off navigation"><a href="/roster">The club ↗</a><a href="/news">News ↗</a><a href="/highlights">Highlights ↗</a></nav><small>2026–2027 SEASON</small></div></div>
   ${dialogs()}`;

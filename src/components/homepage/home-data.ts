@@ -17,19 +17,19 @@ const historyPhotos: Partial<Record<string, {
   "2020": {
     image: "history-2020",
     imagePosition: "50% 0%",
-    imageAlt: "Bardownski teammates in white jerseys gathered together on the ice",
+    imageAlt: "Bardownski teammates gathered together on the ice",
     imageCaption: "TOGETHER ON THE ICE / CLUB ARCHIVE",
   },
   "2021": {
     image: "history-2021",
     imagePosition: "50% 25%",
-    imageAlt: "Club gameplay screenshot of a Bardownski skater in a white jersey kneeling on the ice and holding a stick across his chest",
+    imageAlt: "A Bardownski skater kneeling on the ice with his stick across his chest",
     imageCaption: "WHITE-JERSEY CELEBRATION / CLUB ARCHIVE",
   },
   "2022": {
     image: "history-2022",
     imagePosition: "50% 60%",
-    imageAlt: "Overhead club gameplay screenshot of a Bardownski goaltender in the blue crease with a white-jersey teammate and pink stick nearby",
+    imageAlt: "Overhead view of a Bardownski goaltender in the crease with a teammate nearby",
     imageCaption: "OVERHEAD CREASE VIEW / CLUB ARCHIVE",
   },
   "2023": {
