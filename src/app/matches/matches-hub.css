@@ -57,7 +57,7 @@
 .hub-streak-ticks i[data-filled=true] { background: #320d48; }
 .matches-hub .hub-streak > p { display: flex; flex-wrap: wrap; gap: 5px 15px; justify-content: space-between; font-size: 10px; line-height: 1.7; margin-top: 14px; }
 .hub-streak a { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
-.hub-pulse { --hub-accent: #b7e7e6; display: grid; grid-template-columns: 1.05fr .65fr 1fr; gap: 30px; padding: 30px 5% 48px; background: #006775; color: #f0efeb; }
+.hub-pulse { --hub-accent: #b7e7e6; display: grid; grid-template-columns: 1fr .6fr .7fr 1fr; gap: 30px; padding: 30px 5% 48px; background: #006775; color: #f0efeb; }
 .hub-pulse > div + div { border-left: 1px solid #b7e7e64d; padding-left: 38px; }
 .hub-pulse-stat { display: flex; align-content: start; flex-wrap: wrap; align-items: baseline; gap: 0 14px; }
 .hub-pulse-stat > span, .hub-form > span { width: 100%; display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1.1px; margin-bottom: 12px; color: #d7efee; }
@@ -69,6 +69,28 @@
 .hub-form li { display: grid; place-items: center; width: 34px; height: 34px; font-size: 12px; font-weight: 700; background: #e7d2ef; color: #4a235b; }
 .hub-form li[data-result=W] { color: #064953; background: #b7e7e6; }
 .hub-form > p { font: 800 28px/1.4 var(--hub-display); }
+/* Line streaks: compact tiles for groups on an active run together this season. */
+.hub-lines { --hub-accent: #583268; padding-block: 56px 8px; }
+.hub-lines-heading { display: flex; justify-content: space-between; align-items: end; gap: 30px; margin-bottom: 22px; }
+.matches-hub .hub-lines-heading .hub-eyebrow { margin-bottom: 12px; }
+.matches-hub .hub-lines h2 { font-size: clamp(32px,3.4vw,46px); }
+.hub-lines h2 em { font-style: normal; color: #583268; }
+.hub-lines-heading > p { max-width: 320px; font-size: 13px; color: var(--hub-muted); line-height: 1.7; }
+.hub-lines-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill,minmax(230px,1fr)); gap: 12px; }
+.hub-line-card { display: flex; flex-direction: column; background: #fffefa; border: 1px solid var(--hub-line); border-top: 3px solid #583268; padding: 14px 16px 12px; }
+.hub-line-top { display: flex; align-items: center; gap: 10px; }
+.hub-line-count { font: 800 40px/.9 var(--hub-display); color: #320d48; font-variant-numeric: tabular-nums; }
+.hub-line-label { font-size: 9px; font-weight: 700; line-height: 1.35; letter-spacing: .9px; text-transform: uppercase; color: var(--hub-muted); }
+.hub-line-tag { margin-left: auto; padding: 3px 7px; font-size: 9px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: #583268; border: 1px solid #c4a1dc; }
+.hub-line-players { list-style: none; margin: 12px 0 0; padding: 0; border-top: 1px solid var(--hub-line); }
+.hub-line-players li { display: flex; align-items: center; gap: 9px; min-height: 30px; border-bottom: 1px solid #bccdcb80; }
+.hub-line-num { flex: none; width: 20px; font-size: 10px; font-weight: 700; color: #583268; font-variant-numeric: tabular-nums; }
+.hub-line-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-weight: 700; letter-spacing: .3px; color: var(--hub-ink); }
+.hub-line-g { flex: none; margin-left: auto; display: grid; place-items: center; width: 18px; height: 18px; font-size: 9px; font-weight: 700; color: #f0efeb; background: #583268; }
+.hub-line-meta { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 10px; font-size: 10px; color: var(--hub-muted); }
+.hub-line-meta span:first-child { font-weight: 700; color: #583268; }
+.matches-hub .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.hub-lines-empty { padding: 18px; border: 1px dashed var(--hub-line); font-size: 13px; color: var(--hub-muted); }
 .hub-results, .hub-archive { position: relative; padding: 76px 5% 92px; scroll-margin-top: 24px; }
 .hub-section-heading { display: flex; justify-content: space-between; align-items: end; gap: 30px; margin-bottom: 32px; }
 .hub-section-heading > p { max-width: 350px; font-size: 14px; color: var(--hub-muted); line-height: 1.8; }
@@ -169,7 +191,11 @@
   .hub-hero-photo img { object-position: 50% 32%; }
   .hub-hero-photo figcaption { top: 30px; }
   .hub-streak-numbers > div { flex-direction: row; align-items: center; gap: 16px; }
-  .hub-pulse { gap: 20px; grid-template-columns: 1fr .65fr; }
+  .hub-pulse { gap: 20px; grid-template-columns: 1fr .65fr .65fr; }
+  .hub-lines { padding-block: 44px 4px; }
+  .hub-lines-heading { flex-direction: column; align-items: start; gap: 10px; }
+  .hub-lines-list { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(220px,72%); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
+  .hub-line-card { scroll-snap-align: start; }
   .hub-pulse > div + div { padding-left: 24px; }
   .hub-pulse .hub-form { grid-column: 1 / -1; border-left: 0; border-top: 1px solid #b7e7e64d; padding: 20px 0 0; }
   .hub-form ol { display: inline-flex; vertical-align: middle; margin-right: 15px; }
@@ -205,7 +231,8 @@
   .hub-streak-numbers > div { flex-direction: column; align-items: start; gap: 12px; }
   .hub-streak-numbers strong { font-size: 72px; }
   .hub-streak-benchmark { padding-left: 16px; }
-  .hub-pulse { padding-inline: 6%; }
+  .hub-pulse { padding-inline: 6%; grid-template-columns: 1fr 1fr; }
+  .hub-pulse .hub-pulse-best { grid-column: 1 / -1; border-left: 0; border-top: 1px solid #b7e7e64d; padding: 20px 0 0; }
   .hub-pulse-stat strong { font-size: 38px; }
   .hub-pulse-stat > span { font-size: 9px; letter-spacing: .5px; }
   .hub-results, .hub-archive { padding-top: 48px; }
@@ -287,7 +314,7 @@
 }
 
 /* Shared interior rails. Section surfaces and diagonal handoffs stay full bleed. */
-.matches-hub :is(.hub-pulse,.hub-results,.hub-archive,.hub-closing) {
+.matches-hub :is(.hub-pulse,.hub-lines,.hub-results,.hub-archive,.hub-closing) {
   padding-inline: max(var(--site-gutter),calc((100% - var(--site-content-max))/2));
 }
 /* Split children use their full-width hero as the rail reference, not their own

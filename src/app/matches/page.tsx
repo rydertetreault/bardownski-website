@@ -7,6 +7,7 @@ import { FROZEN_CHELSTATS } from "@/lib/chelstats-frozen";
 import { getHockeySeason } from "@/lib/hockey-season";
 import { getAllMatchesForRecords } from "@/lib/match-history";
 import type { Match, ClubRecord } from "@/types";
+import { lineWinStreaks } from "./line-streaks";
 
 // The preserved Redis archive is read at request time, never accumulated here.
 export const dynamic = "force-dynamic";
@@ -53,5 +54,8 @@ export default async function MatchesPage() {
     otl: chelstats.clubStats.otl,
   };
 
-  return <MatchesClient season={season} archivedMatches={matches} archivedRecord={clubRecord} />;
+  // Computed here so the chemistry module stays out of the client bundle.
+  const lineStreaks = lineWinStreaks(season.matches, (season.data?.members ?? []).map(member => member.username));
+
+  return <MatchesClient season={season} archivedMatches={matches} archivedRecord={clubRecord} lineStreaks={lineStreaks} />;
 }

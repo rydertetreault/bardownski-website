@@ -8,7 +8,9 @@ import MatchDialog, { type SelectedMatch } from "./components/MatchDialog";
 import type { Match, ClubRecord } from "@/types";
 import { HOCKEY_SEASON, HOCKEY_ARCHIVE_SEASON, type HockeySeasonState } from "@/lib/hockey-season-state";
 import { getResult } from "./utils";
-import { currentWinRun, filterMatches, GAME_MODE_LABELS, matchDetailHref, matchGameMode, PREVIOUS_SEASON_WIN_STREAK, sortMatches, type MatchFilter, type MatchSeason, type ModeFilter } from "./hub-utils";
+import type { LineStreak } from "./line-streaks";
+import { getPlayerNumber } from "@/lib/player-numbers";
+import { bestWinRun, currentWinRun, filterMatches, GAME_MODE_LABELS, matchDetailHref, matchGameMode, PREVIOUS_SEASON_WIN_STREAK, sortMatches, type MatchFilter, type MatchSeason, type ModeFilter } from "./hub-utils";
 
 function matchLabel(match: Match) {
   return `${match.status === "final" ? "Final" : match.status === "live" ? "In progress" : "Upcoming"} · ${match.forfeit ? "Forfeit" : match.matchType === "finals" ? "Club finals" : match.matchType === "private" ? "Private game" : "Club match"}`;
@@ -97,6 +99,26 @@ function MatchBoard({ matches, season, emptyTitle, emptyMessage, onOpen, archive
   </div>;
 }
 
+function LineStreaks({ streaks }: { streaks: LineStreak[] }) {
+  const size = (n: number) => n === 4 ? "Four" : n === 3 ? "Trio" : "Duo";
+  return <section className="hub-lines" aria-labelledby="hub-lines-title">
+    <div className="hub-lines-heading"><div><p className="hub-eyebrow">{HOCKEY_SEASON} / Line streaks</p><h2 id="hub-lines-title">WHO’S <em>ON A HEATER.</em></h2></div><p>Players who keep winning when they play together, skating or in net.</p></div>
+    {streaks.length ? <ol className="hub-lines-list">{streaks.map(streak => <li key={streak.players.join("|")} className="hub-line-card">
+      <div className="hub-line-top">
+        <strong className="hub-line-count">{streak.current}</strong>
+        <span className="hub-line-label">{streak.current === 1 ? "Win" : "Wins"}<br />in a row</span>
+        <span className="hub-line-tag">{size(streak.players.length)}{streak.goalies.length ? " + G" : ""}</span>
+      </div>
+      <ul className="hub-line-players" aria-label="Players">{streak.players.map(name => {
+        const number = getPlayerNumber(name);
+        const inNet = streak.goalies.includes(name);
+        return <li key={name}><span className="hub-line-num" aria-hidden="true">{number ?? "–"}</span><span className="hub-line-name">{name}</span>{inNet && <span className="hub-line-g" title="In net">G<span className="sr-only">oalie</span></span>}</li>;
+      })}</ul>
+      <p className="hub-line-meta"><span>{streak.best > streak.current ? `Best ${streak.best}` : "Season best"}</span><span>{streak.games} GP</span><span>Last W {streak.lastWin.replace(/,? \d{4}$/, "")}</span></p>
+    </li>)}</ol> : <p className="hub-lines-empty">No line has strung together back-to-back wins yet. Next game could start one.</p>}
+  </section>;
+}
+
 function LatestResult({ match, onOpen }: { match: Match; onOpen: OpenReport }) {
   const href = matchDetailHref(match, "2026-2027");
   const content = <>
@@ -107,7 +129,7 @@ function LatestResult({ match, onOpen }: { match: Match; onOpen: OpenReport }) {
   return href ? <Link href={href} className="hub-feature" prefetch={false} onClick={event => onOpen(event, match, "2026-2027")} aria-haspopup="dialog" aria-label={`Latest match report: Bardownski ${match.scoreUs ?? "score unavailable"}–${match.scoreThem ?? "score unavailable"} ${match.opponent}, ${match.date}`}>{content}</Link> : <div className="hub-feature">{content}</div>;
 }
 
-export default function MatchesClient({ season, archivedMatches, archivedRecord }: { season: HockeySeasonState; archivedMatches: Match[]; archivedRecord: ClubRecord | null }) {
+export default function MatchesClient({ season, archivedMatches, archivedRecord, lineStreaks = [] }: { season: HockeySeasonState; archivedMatches: Match[]; archivedRecord: ClubRecord | null; lineStreaks?: LineStreak[] }) {
   const [selected, setSelected] = useState<SelectedMatch | null>(null);
   const openReport: OpenReport = (event, match, matchSeason) => {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -120,6 +142,7 @@ export default function MatchesClient({ season, archivedMatches, archivedRecord 
   const latest = matches.find(match => match.status === "final");
   const form = matches.filter(match => match.matchType !== "private" && getResult(match) !== null).slice(0, 5).reverse();
   const run = currentWinRun(matches);
+  const seasonBest = bestWinRun(matches);
   const emptyTitle = season.status === "unavailable" ? "Results are temporarily unavailable." : "The next chapter starts here.";
   const emptyMessage = season.status === "unavailable"
     ? "Please try again later. You can still revisit last season’s matches below."
@@ -137,8 +160,10 @@ export default function MatchesClient({ season, archivedMatches, archivedRecord 
     </header>
 
     <section className="hub-pulse" aria-label="Season at a glance">
-      <div className="hub-pulse-stat"><span>{HOCKEY_SEASON} record</span><strong>{record ? `${record.wins}–${record.losses}–${record.otl}` : "—"}</strong><small>W–L–OTL</small></div><div className="hub-pulse-stat"><span>Games played</span><strong>{record ? record.totalGames : "—"}</strong><small>This season</small></div><div className="hub-form"><span>Recent form <small>Oldest → newest</small></span>{form.length ? <ol aria-label="Last five available competitive results, oldest to newest">{form.map(match => <li key={match.id} data-result={getResult(match)} title={`${resultLabel(match)} · ${match.date} · ${match.opponent}`}><span aria-label={`${resultLabel(match)} against ${match.opponent}, ${match.date}`}>{getResult(match)}</span></li>)}</ol> : <p>Next game. Fresh start.</p>}<small>Available competitive results</small></div>
+      <div className="hub-pulse-stat"><span>{HOCKEY_SEASON} record</span><strong>{record ? `${record.wins}–${record.losses}–${record.otl}` : "—"}</strong><small>W–L–OTL</small></div><div className="hub-pulse-stat"><span>Games played</span><strong>{record ? record.totalGames : "—"}</strong><small>This season</small></div><div className="hub-pulse-stat hub-pulse-best"><span>Best win streak</span><strong>{seasonBest ?? "—"}</strong><small>{HOCKEY_SEASON} · Last season {PREVIOUS_SEASON_WIN_STREAK}</small></div><div className="hub-form"><span>Recent form <small>Oldest → newest</small></span>{form.length ? <ol aria-label="Last five available competitive results, oldest to newest">{form.map(match => <li key={match.id} data-result={getResult(match)} title={`${resultLabel(match)} · ${match.date} · ${match.opponent}`}><span aria-label={`${resultLabel(match)} against ${match.opponent}, ${match.date}`}>{getResult(match)}</span></li>)}</ol> : <p>Next game. Fresh start.</p>}<small>Available competitive results</small></div>
     </section>
+
+    <LineStreaks streaks={lineStreaks} />
 
     <section className="hub-results" id="results" aria-labelledby="results-title">
       <div className="hub-section-heading"><div><p className="hub-eyebrow">01 / On the scoreboard</p><h2 id="results-title">RECENT MATCHES.</h2></div><p>Pick a game. Get the full picture.<br />Team stats, player performances and the match recap.</p></div>

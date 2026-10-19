@@ -362,3 +362,15 @@ describe("game mode filter", () => {
     assert.equal(GAME_MODE_LABELS["6s"], "6v6");
   });
 });
+
+describe("bestWinRun", async () => {
+  const { bestWinRun } = await import("../src/app/matches/hub-utils");
+  it("returns null with no results and the longest run otherwise", () => {
+    assert.equal(bestWinRun([]), null);
+    const games = [
+      match("a", 1), match("b", 2), match("c", 3), match("d", 4, { scoreUs: 0 }),
+      match("e", 5), match("p", 6, { matchType: "private", scoreUs: 0 }), match("f", 7),
+    ];
+    assert.equal(bestWinRun(games), 3);
+  });
+});

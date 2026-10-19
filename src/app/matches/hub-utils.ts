@@ -97,3 +97,23 @@ export function currentWinRun(matches: Match[]): number | null {
   }
   return wins;
 }
+
+/**
+ * Longest run of consecutive wins in the supplied season's competitive finals.
+ * Same conventions as currentWinRun: private games are skipped, and finals with
+ * an unknown score break the run. Returns null when there are no results yet.
+ */
+export function bestWinRun(matches: Match[]): number | null {
+  const finals = sortMatches(matches).filter(
+    (match) => match.status === "final" && match.matchType !== "private",
+  );
+  if (!finals.some((match) => result(match) !== null)) return null;
+
+  let best = 0;
+  let wins = 0;
+  for (const match of finals) {
+    wins = result(match) === "W" ? wins + 1 : 0;
+    best = Math.max(best, wins);
+  }
+  return best;
+}
