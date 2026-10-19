@@ -93,6 +93,9 @@ source resolution). Photos render black and white site-wide by design, see
 | `team/b-roll/loading-flash.mov`                 | `videos/splash/loading-flash.mp4`           | Site opener — `src/components/layout/SplashScreen.tsx`. Tail of the ident only (source 16.6 s → end, ≈2.4 s): streaks → flash → BARDOWNSKI; 720p30, silent, faststart, ≈0.6 MB. |
 | `team/b-roll/ryder-save-bRoll.mov` @ 2.60 s     | `images/players/ryder-crease.webp`          | JRT IV player photo (`src/lib/player-photos.ts`), gallery. |
 | `team/b-roll/ryder-matt-bRoll-alt.mov` @ 2.40 s | `images/players/matt-alt.webp`              | Matt Hut player photo, gallery. |
+| `team/b-roll/ryder-matt-bRoll-away.mov` @ 2.15 s | `images/2026-2027/ryder-matt-away-bw.webp` | "Season Update (October 2026)" news article + homepage news card. Grayscale baked in, 1280×720, WebP q85. Sharpest frame by Laplacian variance. |
+| `team/b-roll/*.mov` (all five)                  | `videos/b-roll/<same name>.mp4`             | Gallery videos. Lossless remux (`-c copy -movflags +faststart`), no re-encode. JRT IV / Matt Hut clips are also in `/highlights` (posters `images/highlights/r7–r10, m8, m9.webp` @ 2.60 / 0.60 / 2.40 / 2.15 s). |
+| `team/jerseys/BD - Home/Away/Alt.mp4`           | `videos/BD - Home/Away/Alt.mp4`             | Not in the gallery (jersey showcases are excluded). |
 | `players/matt/b-roll/matt-bRoll-image-alt.png`  | `images/gallery/screenshots/matt-alt-2027.webp` | Gallery. 1920×1080. |
 | `players/ryder/highlights/ryder-save-away.mov`  | `videos/ryder-save-away.mp4` + `images/highlights/r5.webp` | Highlights (JRT IV) and the gallery reel. Poster @ 3.0 s; monochrome copy via `scripts/generate-monochrome-posters.ts`. |
 | `players/ryder/highlights/ryder-save-away2.mov` | `videos/ryder-save-away2.mp4` + `images/highlights/r6.webp` | Highlights (JRT IV) and the gallery reel. Poster @ 3.2 s. |

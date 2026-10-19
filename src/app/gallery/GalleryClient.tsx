@@ -129,7 +129,7 @@ function PhotoLightbox({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[100] flex items-center justify-center p-6"
-      style={{ backgroundColor: "rgba(0,0,0,0.92)" }}
+      style={{ backgroundColor: "rgba(6,8,10,0.55)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }}
       onClick={onClose}
     >
       {index > 0 && (
@@ -179,14 +179,15 @@ function PhotoLightbox({
           alt={items[index].alt}
           width={1400}
           height={900}
-          className="w-full h-auto max-h-[82vh] object-contain rounded"
-          style={{ borderRadius: "4px" }}
+          data-full-color
+          className="w-full h-auto max-h-[82vh] object-contain"
+          style={{ borderRadius: "16px", boxShadow: "0 30px 90px rgba(0,0,0,0.55)" }}
         />
         <p
           className="text-center text-xs mt-3 uppercase tracking-widest"
           style={{ color: "rgba(255,255,255,0.3)" }}
         >
-          {items[index].alt} · {index + 1} / {items.length}
+          {items[index].title} · {index + 1} / {items.length}
         </p>
       </motion.div>
     </motion.div>
@@ -211,7 +212,7 @@ function VideoModal({ video, onClose }: { video: GalleryVideo; onClose: () => vo
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[100] flex items-center justify-center p-6"
-      style={{ backgroundColor: "rgba(0,0,0,0.92)" }}
+      style={{ backgroundColor: "rgba(6,8,10,0.55)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }}
       onClick={onClose}
     >
       <button
@@ -237,8 +238,8 @@ function VideoModal({ video, onClose }: { video: GalleryVideo; onClose: () => vo
               src={`https://www.youtube.com/embed/${getYouTubeId(video.src)}?autoplay=1`}
               allow="autoplay; fullscreen"
               allowFullScreen
-              className="absolute inset-0 w-full h-full rounded bg-black"
-              style={{ borderRadius: "4px" }}
+              className="absolute inset-0 w-full h-full bg-black"
+              style={{ borderRadius: "16px" }}
             />
           </div>
         ) : (
@@ -246,8 +247,8 @@ function VideoModal({ video, onClose }: { video: GalleryVideo; onClose: () => vo
             src={video.src}
             controls
             autoPlay
-            className="w-full max-h-[82vh] rounded bg-black"
-            style={{ borderRadius: "4px" }}
+            className="w-full max-h-[82vh] bg-black"
+            style={{ borderRadius: "16px", boxShadow: "0 30px 90px rgba(0,0,0,0.55)" }}
           />
         )}
         <p
@@ -401,7 +402,8 @@ function VideoCard({ video, style, onClick }: { video: GalleryVideo; style?: Rea
         <ThumbnailVideo
           src={video.src}
           playing={hovered}
-          className="absolute inset-0 w-full h-full object-cover"
+          // Previews are black and white like every photo; the opened player stays in colour.
+          className="absolute inset-0 w-full h-full object-cover grayscale"
         />
       )}
 

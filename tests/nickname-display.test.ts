@@ -142,12 +142,15 @@ test("highlight identities, links and source filenames remain unchanged", () => 
   assert.deepEqual(media, [
     "https://youtu.be/aGrVfM6HsO0", "/videos/Ryder1.mp4", "/videos/Ryder2.mp4", "/videos/ryder3.mp4",
     "/videos/ryder-save-away.mp4", "/videos/ryder-save-away2.mp4",
+    "/videos/b-roll/ryder-save-bRoll.mp4", "/videos/b-roll/ryder-standing-bRoll.mp4",
+    "/videos/b-roll/ryder-matt-bRoll-alt.mp4", "/videos/b-roll/ryder-matt-bRoll-away.mp4",
     "/videos/Dylan1.mp4", "/videos/Dylan2.mp4", "/videos/dylan - 2026.mp4",
     "/videos/GottaBe - Trap Edition.mp4", "/videos/Kaden1.mp4", "/videos/Slobby Robby 2026.mp4",
     ...Array.from({ length: 7 }, (_, i) => `/videos/matt${i + 1}.mp4`),
+    "/videos/b-roll/ryder-matt-bRoll-alt.mp4", "/videos/b-roll/ryder-matt-bRoll-away.mp4",
   ]);
   const ids = [...source.matchAll(/\bid: "([^"]+)"/g)].map(match => match[1]);
-  assert.deepEqual(ids, ["ryder", "r1", "r2", "r3", "r4", "r5", "r6", "dylan", "d1", "d2", "d3", "kaden", "k1", "k2", "slobby-robby", "sr1", "matt", "m1", "m2", "m3", "m4", "m5", "m6", "m7"]);
+  assert.deepEqual(ids, ["ryder", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "dylan", "d1", "d2", "d3", "kaden", "k1", "k2", "slobby-robby", "sr1", "matt", "m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8", "m9"]);
 });
 
 test("FC squad resolves presentation fields but keeps identity and kit lookup keys raw", () => {
