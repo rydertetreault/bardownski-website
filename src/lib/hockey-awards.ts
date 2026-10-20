@@ -1,5 +1,5 @@
 /** Pure NHL27 awards over the supplied tracker data. No storage, clocks or archive fallback. */
-import { computeMvpOddsFromMembers, mvpMarketFromScores, type ChelstatsData, type ClubMember, type ClubMatch, type MatchPlayerStat } from "./chelstats";
+import { computeMvpOddsFromMembers, mvpDefensePerGame, mvpForwardPerGame, mvpMarketFromScores, type MvpSkaterRates, type ChelstatsData, type ClubMember, type ClubMatch, type MatchPlayerStat } from "./chelstats";
 import { resolveNhl27Name } from "./nhl27-api";
 
 export interface SeasonMvpEntry {
@@ -69,6 +69,18 @@ export interface WeeklyAwardHistory {
 }
 
 const WEEK = 7 * 24 * 60 * 60 * 1000;
+/** Weekly goalie replacement level: backups on this team sit around 67-68% SV%. */
+const GOALIE_REPLACEMENT_SV_PCT = 65;
+const GOALIE_REPLACEMENT_GAA = 5;
+/** Points per SV% point above replacement. Calibrated on 2026-27 weeks so a .800 week
+ * (a really good week here) lands with strong forward weeks (~100-120 per game) and a
+ * .730 week (the season average) near the median skater week. */
+const GOALIE_SV_PCT_WEIGHT = 5;
+/** Sustained-goaltending bonus: each game in the week earns 1 point per SV% point the
+ * week's save percentage sits above .700, so holding a good rate over more games is
+ * rewarded beyond sqrt(games). Below .700 the bonus is 0. */
+const GOALIE_SUSTAIN_SV_PCT = 70;
+const GOALIE_SUSTAIN_WEIGHT = 1;
 const quantize = (n: number) => Math.round(n * 10) / 10 || 0;
 const text = (v: unknown): string => typeof v === "string" ? v.trim().replace(/\s+/g, " ") : "";
 const key = (v: unknown) => text(v).toLowerCase();
@@ -159,7 +171,8 @@ function fingerprint(m: ClubMatch): string {
 interface Totals {
   playerId: string; name: string; position: AwardPosition; games: number; goals: number; assists: number;
   hits: number; shots: number; plusMinus: number; gwg: number; blockedShots: number; takeaways: number; giveaways: number;
-  saves: number; shotsAgainst: number; ga: number; shutouts: number; weightedShutouts: number; wins: number;
+  saves: number; shotsAgainst: number; ga: number; shutouts: number; weightedShutouts: number;
+  shutoutPeriods: number; wins: number;
 }
 /** Club roster keys. Match rows carry resolved display names ("MATT") or raw gamertags
  * for unmapped members; roster rows carry gamertags. Both resolve to the same key. */
@@ -230,13 +243,15 @@ function weekly(matches: ClubMatch[], start: number, now: number, members: reado
       if (!t) {
         t = { playerId: id, name: text(p.name), position: role, games: 0, goals: 0, assists: 0, hits: 0,
           shots: 0, plusMinus: 0, gwg: 0, blockedShots: 0, takeaways: 0, giveaways: 0,
-          saves: 0, shotsAgainst: 0, ga: 0, shutouts: 0, weightedShutouts: 0, wins: 0 };
+          saves: 0, shotsAgainst: 0, ga: 0, shutouts: 0, weightedShutouts: 0, shutoutPeriods: 0, wins: 0 };
         totals.set(roleKey, t);
       }
       if (compare(text(p.name), t.name) < 0) t.name = text(p.name);
       t.games++; t.wins += m.scoreUs > m.scoreThem ? 1 : 0; appearances++;
       if (role === "G") {
         t.saves += p.saves; t.shotsAgainst += p.shotsAgainst; t.ga += p.goalsAgainst;
+        // Like shutouts, a scoreless period only counts when the goalie actually faced shots.
+        if (p.shotsAgainst > 0) t.shutoutPeriods += p.shutoutPeriods ?? 0;
         if (p.goalsAgainst === 0 && p.shotsAgainst > 0) {
           t.shutouts++;
           t.weightedShutouts += p.shutoutPeriods == null ? (m.forfeit ? 0.5 : 1)
@@ -256,17 +271,28 @@ function weekly(matches: ClubMatch[], start: number, now: number, members: reado
     const gp = t.games, points = t.goals + t.assists;
     const savePct = t.shotsAgainst > 0 ? t.saves / t.shotsAgainst * 100 : 0;
     const gaa = t.ga / gp;
-    // Historical weekly weights, with the requested three-role-game qualification.
+    // Skaters use the season MVP per-game formulas verbatim. Goalies use the MVP goalie
+    // terms, but only for production they earn: SV% and GAA count above replacement
+    // level (SV% reweighted to the skater scale), and there is no per-save workload term. A replacement-level losing start
+    // scores 0, like a skater game with nothing on the sheet.
     let perGame: number;
-    if (t.position === "G") perGame = Math.max(0, (savePct - 65) * 2 + (5 - gaa) * 4
-      + t.weightedShutouts / gp * 22 + Math.max(t.wins / gp * 100 - 50, 0) * 0.2 + t.saves / gp * 1.5);
-    else if (t.position === "D") perGame = points / gp * 16 + Math.max(t.plusMinus, 0) / gp * 6
-      + t.hits / gp * 0.8 + t.blockedShots / gp * 1.5 + t.takeaways / gp - t.giveaways / gp * 0.5;
-    else perGame = points / gp * 8 + Math.max(t.plusMinus, 0) / gp * 3 + t.gwg / gp * 15
-      + (t.shots > 0 ? t.goals / t.shots * 100 : 0) * 0.15 + t.hits / gp * 0.3
-      + t.takeaways / gp * 0.3 - t.giveaways / gp * 0.2 + t.blockedShots / gp * 0.4;
+    if (t.position === "G") {
+      perGame = Math.max(savePct - GOALIE_REPLACEMENT_SV_PCT, 0) * GOALIE_SV_PCT_WEIGHT
+        + (t.shotsAgainst > 0 ? Math.max(GOALIE_REPLACEMENT_GAA - gaa, 0) * 3 : 0)
+        + t.weightedShutouts / gp * 20
+        + t.shutoutPeriods / gp * 30
+        + t.wins / gp * 100 * 0.3;
+    } else {
+      const rates: MvpSkaterRates = { ppg: points / gp, goalsPerGame: t.goals / gp,
+        plusMinusPerGame: Math.max(t.plusMinus, 0) / gp, gwgPerGame: t.gwg / gp,
+        shotPct: t.shots > 0 ? t.goals / t.shots * 100 : 0, hitsPerGame: t.hits / gp,
+        blockedShotsPerGame: t.blockedShots / gp, takeawaysPerGame: t.takeaways / gp,
+        giveawaysPerGame: t.giveaways / gp };
+      perGame = t.position === "D" ? mvpDefensePerGame(rates) : mvpForwardPerGame(rates);
+    }
     const eligible = gp >= 3;
-    const rawScore = perGame * (coverage.acceptedGames < 3 || eligible ? Math.sqrt(gp) : 1);
+    const rawScore = perGame * (coverage.acceptedGames < 3 || eligible ? Math.sqrt(gp) : 1)
+      + (t.position === "G" ? Math.max(savePct - GOALIE_SUSTAIN_SV_PCT, 0) * GOALIE_SUSTAIN_WEIGHT * gp : 0);
     if (!finite(rawScore * 10)) continue;
     const entry: WeeklyAwardEntry = { playerId: t.playerId, name: t.name, position: t.position, isGoalie: t.position === "G",
       games: gp, score: quantize(rawScore), rank: 0, eligible, goals: t.goals, assists: t.assists, points,

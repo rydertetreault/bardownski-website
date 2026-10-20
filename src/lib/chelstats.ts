@@ -856,6 +856,42 @@ export function mvpMarketFromScores(scores: number[]): MvpMarketLine[] {
   });
 }
 
+/* ── Shared MVP per-game skater formulas ───────────────────────────── */
+
+/** Per-game skater rates. plusMinusPerGame is already floored at zero. */
+export interface MvpSkaterRates {
+  ppg: number; goalsPerGame: number; plusMinusPerGame: number; gwgPerGame: number;
+  /** 0–100 */
+  shotPct: number; hitsPerGame: number; blockedShotsPerGame: number;
+  takeawaysPerGame: number; giveawaysPerGame: number;
+}
+
+/** Forward per-game score. Shared by the season MVP race and Player of the Week. */
+export function mvpForwardPerGame(r: MvpSkaterRates): number {
+  return r.ppg * 20 +
+    r.goalsPerGame * 15 +
+    r.plusMinusPerGame * 8 +
+    r.gwgPerGame * 30 +
+    r.shotPct * 0.3 +
+    r.hitsPerGame * 0.5 +
+    r.takeawaysPerGame * 0.5 -
+    r.giveawaysPerGame * 0.3;
+}
+
+/** Defense per-game score: same shape rebased so a D at the 0.35 PPG baseline
+ * scores comparably to a forward at the 0.70 PPG baseline (PPG*28 vs PPG*20).
+ * Above baseline, D-men outscore forwards at the same raw production. Drops
+ * gwg and shotPct (low/noisy for D), adds blocked shots, +/- weighted ~2x. */
+export function mvpDefensePerGame(r: MvpSkaterRates): number {
+  return r.ppg * 28 +
+    r.goalsPerGame * 22 +
+    r.plusMinusPerGame * 18 +
+    r.hitsPerGame * 1.2 +
+    r.blockedShotsPerGame * 2.0 +
+    r.takeawaysPerGame * 1.5 -
+    r.giveawaysPerGame * 0.8;
+}
+
 /* ── MVP Odds from live chelstats data ─────────────────────────────── */
 
 export function computeMvpOddsFromMembers(
@@ -880,34 +916,13 @@ export function computeMvpOddsFromMembers(
       const gp = m.gamesPlayed;
       const bucket = getPositionBucket(m.position);
 
-      let perGame: number;
-      if (bucket === "defense") {
-        // D weights are tuned so a D at the 0.35 PPG baseline scores
-        // comparably to a forward at the 0.70 PPG baseline (PPG*28 vs
-        // PPG*20). Above baseline, D-men outscore forwards at the same
-        // raw production — being good at a position with fewer scoring
-        // opportunities is worth more. Drops gwg and shotPct (low/noisy
-        // for D) and adds blocked shots; +/- weighted ~2x heavier.
-        perGame =
-          m.ppg * 28 +
-          (m.goals / gp) * 22 +
-          Math.max(m.plusMinus, 0) / gp * 18 +
-          (m.hits / gp) * 1.2 +
-          (m.blockedShots / gp) * 2.0 +
-          (m.takeaways / gp) * 1.5 -
-          (m.giveaways / gp) * 0.8;
-      } else {
-        // Forwards: existing formula, byte-for-byte.
-        perGame =
-          m.ppg * 20 +
-          (m.goals / gp) * 15 +
-          Math.max(m.plusMinus, 0) / gp * 8 +
-          (m.gwg / gp) * 30 +
-          m.shotPct * 0.3 +
-          (m.hits / gp) * 0.5 +
-          (m.takeaways / gp) * 0.5 -
-          (m.giveaways / gp) * 0.3;
-      }
+      const rates: MvpSkaterRates = {
+        ppg: m.ppg, goalsPerGame: m.goals / gp, plusMinusPerGame: Math.max(m.plusMinus, 0) / gp,
+        gwgPerGame: m.gwg / gp, shotPct: m.shotPct, hitsPerGame: m.hits / gp,
+        blockedShotsPerGame: m.blockedShots / gp, takeawaysPerGame: m.takeaways / gp,
+        giveawaysPerGame: m.giveaways / gp,
+      };
+      const perGame = bucket === "defense" ? mvpDefensePerGame(rates) : mvpForwardPerGame(rates);
 
       // Floor the log term at gp=100 so the dampening only engages above
       // that threshold. Below 100, gpScale = sqrt(gp). Without the floor,

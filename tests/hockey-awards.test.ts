@@ -102,18 +102,58 @@ test("MVP malformed roles cannot poison valid candidates, missing unused rates d
   assert.equal(calculateSeasonMvp([skater])[0].isGoalie, false);
 });
 
-test("weekly exact forward, defense and goalie historical weights and aggregate goalie rates", () => {
+test("weekly forward, defense and goalie weights follow the season MVP model", () => {
   const rows = games([player("F"), player("D", { position: "leftDefense" }), goalie()]);
   const result = completed(rows);
   const byName = Object.fromEntries(result.standings.map(p => [p.name, p]));
-  assert.equal(byName.F.score, q((2 * 8 + 3 + 25 * .15 + 2 * .3 + 2 * .3 - .2 + .4) * Math.sqrt(3)));
-  assert.equal(byName.D.score, q((2 * 16 + 6 + 2 * .8 + 1.5 + 2 - .5) * Math.sqrt(3)));
-  assert.equal(byName.G.score, q(((90 - 65) * 2 + (5 - 1) * 4 + 10 + 9 * 1.5) * Math.sqrt(3)));
+  // Per game: 1 G, 1 A, +1, 2 hits, 4 shots (25%), 1 block, 2 takeaways, 1 giveaway.
+  assert.equal(byName.F.score, q((2 * 20 + 15 + 8 + 25 * .3 + 2 * .5 + 2 * .5 - .3) * Math.sqrt(3)));
+  assert.equal(byName.D.score, q((2 * 28 + 22 + 18 + 2 * 1.2 + 2 + 2 * 1.5 - .8) * Math.sqrt(3)));
+  // 90% SV, 1.00 GAA, no shutout periods, 3-0: no per-save workload credit.
+  // Plus the sustained bonus: 1 point per SV% point above .700, per game.
+  assert.equal(byName.G.score, q(((90 - 65) * 5 + (5 - 1) * 3 + 100 * .3) * Math.sqrt(3) + (90 - 70) * 3));
   assert.equal(byName.G.games, 3); assert.equal(byName.G.gaa, 1); assert.equal(byName.G.savePct, 90);
   assert.equal(result.games, 3); assert.equal(result.coverage.acceptedAppearances, 9);
   const unequal = completed([game("1", [goalie("G", { saves: 1, shotsAgainst: 2, goalsAgainst: 1, savePct: .99 })]),
     game("2", [goalie("G", { saves: 18, shotsAgainst: 20, goalsAgainst: 2, savePct: .01 })])]).standings[0];
   assert.equal(unequal.savePct, 19 / 22 * 100); assert.equal(unequal.gaa, 1.5);
+});
+
+test("weekly skater formulas are the season MVP formulas on the same rates", () => {
+  const rows = games([player("F", { goals: 2, assists: 1, shots: 5, gameWinningGoal: 1, plusMinus: 2 }),
+    player("D", { position: "leftDefense", goals: 0, assists: 2, plusMinus: -1, blockedShots: 3 })], 5);
+  const byName = Object.fromEntries(completed(rows).standings.map(p => [p.name, p]));
+  // Members with the identical five-game line, scored by the MVP model (sqrt(gp) below 100 GP).
+  const mvp = Object.fromEntries(computeMvpOddsFromMembers([
+    member("F", { gamesPlayed: 5, goals: 10, assists: 5, ppg: 3, plusMinus: 10, gwg: 5, shotPct: 40, hits: 10, takeaways: 10, giveaways: 5, blockedShots: 5 }),
+    member("D", { position: "D", gamesPlayed: 5, goals: 0, assists: 10, ppg: 2, plusMinus: -5, gwg: 0, shotPct: 0, hits: 10, takeaways: 10, giveaways: 5, blockedShots: 15 }),
+  ]).map(e => [e.name, e.score]));
+  assert.equal(byName.F.score, q(mvp.F)); assert.equal(byName.D.score, q(mvp.D));
+});
+
+test("simply playing earns a goalie nothing, same as a skater with an empty sheet", () => {
+  const replacementLoss = { scoreUs: 1, scoreThem: 5 };
+  const rows = games([goalie("G", { saves: 13, shotsAgainst: 20, goalsAgainst: 7, shutoutPeriods: 0 }),
+    player("F", { goals: 0, assists: 0, hits: 0, shots: 0, plusMinus: -2, blockedShots: 0, takeaways: 0, giveaways: 0 })])
+    .map(m => ({ ...m, ...replacementLoss }));
+  const byName = Object.fromEntries(completed(rows).standings.map(p => [p.name, p]));
+  assert.equal(byName.G.score, 0, "65% SV, 7.00 GAA and a loss is not worth points, however many saves");
+  assert.equal(byName.F.score, 0);
+  // Facing more shots at the same save percentage does not raise the score.
+  const busy = completed(games([goalie("G", { saves: 26, shotsAgainst: 40, goalsAgainst: 14, shutoutPeriods: 0 })])
+    .map(m => ({ ...m, ...replacementLoss }))).standings[0];
+  assert.equal(busy.score, 0);
+});
+
+test("sustaining a good save percentage over more games earns more", () => {
+  const week = (n: number, saves: number) => completed(games([goalie("G", { saves, shotsAgainst: 20, goalsAgainst: 20 - saves, shutoutPeriods: 0 })], n)
+    .map(m => ({ ...m, scoreUs: 1, scoreThem: 5 }))).standings[0].score;
+  // 75% SV in a losing week: the bonus is 5 points per game on top of the sqrt(games) rate score.
+  const rate = (75 - 65) * 5;
+  assert.equal(week(3, 15), q(rate * Math.sqrt(3) + 5 * 3));
+  assert.equal(week(20, 15), q(rate * Math.sqrt(20) + 5 * 20));
+  // At or below .700 there is no sustained bonus.
+  assert.equal(week(20, 14), q((70 - 65) * 5 * Math.sqrt(20)));
 });
 
 test("actual source position spellings, rather than first position or SKTR guesses", () => {
@@ -216,7 +256,9 @@ test("real DNF counts reported stats, synthetic forfeits do not, and shutouts re
   const noPeriods = completed(games([goalie("G", { saves: 10, shotsAgainst: 10, goalsAgainst: 0, shutoutPeriods: undefined as unknown as number })]).map(m => ({ ...m, forfeit: true })));
   assert.ok(noPeriods.standings[0].score < dnf.standings[0].score);
   const noShots = completed(games([goalie("G", { saves: 0, shotsAgainst: 0, goalsAgainst: 0, shutoutPeriods: 3 })]));
-  assert.equal(noShots.standings[0].shutouts, 0); assert.equal(noShots.standings[0].savePct, 0); assert.equal(noShots.standings[0].score, 0);
+  assert.equal(noShots.standings[0].shutouts, 0); assert.equal(noShots.standings[0].savePct, 0);
+  // Facing no shots earns no SV%, GAA or shutout-period credit; only the 3-0 record counts.
+  assert.equal(noShots.standings[0].score, q(100 * .3 * Math.sqrt(3)));
   const synthetic = completed([...dnfRows, game("forfeit-win-900"), game("synthetic-1")]);
   assert.equal(synthetic.games, 3); assert.equal(synthetic.coverage.reasons.synthetic, 2);
 });
