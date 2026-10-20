@@ -37,6 +37,7 @@ const POSITION_OVERRIDES: Record<string, string> = {
   RYDER: "G",
   BBANK69: "D",
   DeadHendrix1740: "D",
+  showbizmay10: "D",
 };
 
 // Jersey numbers (by real name or gamertag)
@@ -49,6 +50,7 @@ const JERSEY_NUMBERS: Record<string, number> = {
   KADEN: 9,
   JIMMY: 69,
   LOGAN: 6,
+  showbizmay10: 10,
 };
 
 // Keep the established captain and assistant consistent with the club’s shared leadership data.

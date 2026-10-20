@@ -5,6 +5,7 @@ import { getDisplayName } from "./nicknames";
 const PLAYER_NUMBERS = new Map([
   ["RYDER", 14], ["DYLAN", 4], ["MATT", 8], ["ROB", 1],
   ["COLIN", 2], ["KADEN", 9], ["JIMMY", 69], ["LOGAN", 6],
+  ["showbizmay10", 10],
 ].map(([name, number]) => [getDisplayName(String(name)).trim().toUpperCase(), Number(number)]));
 
 export function getPlayerNumber(name: string): number | null {

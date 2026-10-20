@@ -13,6 +13,7 @@ test("Lab club numbers match published roster for real names, nicknames and game
     [["KADEN", "u4 Hood", "GOTTA BE"], 9],
     [["JIMMY", "Julio 3026", "JIMMY LEMONS"], 69],
     [["LOGAN", "oP Ding1633", "TOP G"], 6],
+    [["showbizmay10", "SHOWBIZMAY10"], 10],
   ] as const) {
     for (const alias of aliases) {
       assert.equal(getPlayerNumber(alias), number);
