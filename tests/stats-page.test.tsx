@@ -206,3 +206,32 @@ test("member snapshot adapter preserves goalie GAA and reported zero shutouts wi
   const historical = {...stats,saves:stats.saves.map(({gaa, ...saved}) => { void gaa; return saved; })};
   assert.equal(getEnrichedPlayers(historical)[0].gaa, undefined, "Older missing GAA stays absent, not zero");
 });
+
+test("weekly results browse completed weeks with winners, latest first, with qualified players' points", () => {
+  const entry = (playerId: string, name: string, position: "F" | "D" | "G", games: number, score: number, eligible = true) =>
+    ({ playerId, name, position, isGoalie: position === "G", games, score, rank: 0, eligible, goals: 29, assists: 15, points: 44,
+      saves: 264, shotsAgainst: 354, savePct: 264 / 354 * 100, gaa: 3.913, shutouts: 0, wins: 9 });
+  const week = (start: string, standings: ReturnType<typeof entry>[], winners = standings.slice(0, 1)) =>
+    ({ start, end: start, status: "complete", games: 5, minimumGames: 3, standings, leaders: winners, winners,
+      coverage: emptyHistory.weeks[0]?.coverage }) as unknown as WeeklyAwardHistory["weeks"][number];
+  const history: WeeklyAwardHistory = { ...historyWith(winner("1", "MATT", 1, 1), winner("2", "RYDER", 1, 1)), weeks: [
+    week("2026-10-12T00:00:00.000Z", [entry("2", "RYDER", "G", 23, 488.1), entry("1", "MATT", "F", 11, 476.4), entry("3", "DYLAN", "F", 2, 900, false)]),
+    week("2026-10-05T00:00:00.000Z", [entry("4", "LOGAN", "F", 3, 1)], []),
+    week("2026-09-28T00:00:00.000Z", [entry("1", "MATT", "F", 14, 369.8), entry("5", "COLIN", "D", 9, 369.8)]),
+  ] };
+  const markup = renderToStaticMarkup(<WeeklyHonors history={history} members={[]} stale={false} />);
+  honorsRows(markup);
+  const options = [...markup.matchAll(/<option value="[^"]+"[^>]*>([^<]*)<\/option>/g)].map(m => m[1]);
+  assert.deepEqual(options, ["Oct 12–18", "Sep 28–Oct 4"], "Only weeks with a winner, latest first");
+  const table = markup.match(/<table class="stats-week-table">[\s\S]*?<\/table>/)?.[0] ?? "";
+  assert.match(table, /Oct 12–18 · Player of the Week points/);
+  const rows = [...table.matchAll(/<tr data-winner="(true|false)">([\s\S]*?)<\/tr>/g)].map(([, w, c]) => [w, c.split(/<[^>]+>/).filter(Boolean).join(" ")]);
+  assert.equal(rows.length, 2, "Unqualified players are not listed");
+  assert.equal(rows[0][0], "true"); assert.equal(rows[0][1], "01 JENE RENE TETREAU IV G Winner 9-14 .746 SV% 3.91 GAA 0 SO 23 488.1");
+  assert.equal(rows[1][0], "false"); assert.equal(rows[1][1], "02 MATT HUT F 29 G 15 A 44 PTS 11 476.4");
+  assert.doesNotMatch(markup, /DYLAN|XAVIER/);
+  assert.match(markup, /<button[^>]*class="stats-week-info"[^>]*aria-expanded="false"[^>]*aria-controls="weekly-math"/, "Scoring explainer starts closed");
+  assert.doesNotMatch(markup, /stats-week-math"/);
+  const none = renderToStaticMarkup(<WeeklyHonors history={historyWith()} members={[]} stale={false} />);
+  assert.doesNotMatch(none, /stats-week-results/);
+});
