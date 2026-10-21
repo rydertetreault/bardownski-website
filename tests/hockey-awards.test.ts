@@ -165,13 +165,19 @@ test("actual source position spellings, rather than first position or SKTR guess
   assert.equal(completed(games([player("Unknown", { position: "SKTR" })])).standings.length, 0);
   const switched = [...games([player("Hybrid", { position: "rightDefense" })]),
     game("4", [player("Hybrid", { goals: 99, shots: 99 })]), game("5", [goalie("Hybrid", { saves: 90, shotsAgainst: 90, goalsAgainst: 0 })])];
+  // Forward and defense games combine (3 D + 1 F = 4); the goalie game is scored separately.
   const best = completed(switched).standings;
-  assert.equal(best.length, 1); assert.equal(best[0].position, "D"); assert.equal(best[0].games, 3);
-  assert.equal(best[0].points, 6); assert.equal(best[0].eligible, true);
+  assert.equal(best.length, 1); assert.equal(best[0].position, "D"); assert.equal(best[0].games, 4);
+  assert.equal(best[0].points, 6 + 100); assert.equal(best[0].saves, 0); assert.equal(best[0].eligible, true);
+  // A goalie's skater games never dilute (or pad) his goalie entry.
+  const goalieWeek = completed([...games([goalie("Wall")]), game("4", [player("Wall")])]).standings;
+  assert.equal(goalieWeek.length, 1); assert.equal(goalieWeek[0].position, "G"); assert.equal(goalieWeek[0].games, 3);
+  assert.equal(goalieWeek[0].score, completed(games([goalie("Wall")])).standings[0].score);
   const split = completed([game("1", [player("Hybrid")]), game("2", [player("Hybrid")]),
     game("3", [player("Hybrid", { position: "D" })])]);
-  assert.equal(split.standings.length, 1); assert.equal(split.standings[0].eligible, false);
-  assert.deepEqual(split.winners, [], "three combined appearances cannot qualify either role");
+  assert.equal(split.standings.length, 1); assert.equal(split.standings[0].games, 3);
+  assert.equal(split.standings[0].position, "F"); assert.equal(split.standings[0].eligible, true);
+  assert.equal(split.winners[0]?.playerId, "Hybrid", "three combined appearances qualify");
 });
 
 test("Monday deadline, current provisional leaders, completed only winners and no future/private/archive games", () => {
@@ -261,6 +267,12 @@ test("real DNF counts reported stats, synthetic forfeits do not, and shutouts re
   assert.equal(noShots.standings[0].score, q(100 * .3 * Math.sqrt(3)));
   const synthetic = completed([...dnfRows, game("forfeit-win-900"), game("synthetic-1")]);
   assert.equal(synthetic.games, 3); assert.equal(synthetic.coverage.reasons.synthetic, 2);
+});
+
+test("a goal on a game EA logged with zero shots still counts the game", () => {
+  const week = completed(games([player("Deflect", { goals: 2, shots: 0 })]));
+  assert.equal(week.standings[0].games, 3); assert.equal(week.standings[0].goals, 6);
+  assert.equal(week.coverage.reasons["invalid-player"], undefined);
 });
 
 test("invalid/nonfinite/missing stats, opponents, invalid dates and unknown roles cannot create awards", () => {

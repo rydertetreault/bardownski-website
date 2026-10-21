@@ -93,18 +93,25 @@ test("each exact weekly tie wins; cumulative ties use competition ranks 1,1,3", 
   assertWeeklyParity(matches, result);
 });
 
-test("under-three and split-role leaders stay visible without wins; empty/rejected weeks are omitted", () => {
+test("under-three leaders stay visible without wins; split-role games combine; empty/rejected weeks are omitted", () => {
   const split = [...games(WEEK_3, [player()], 2), game("defense", WEEK_3, [player("A", { position: "D" })])];
-  const matches = [...games(WEEK_1, [player()], 1), ...games(WEEK_2, [player()], 2), ...split,
+  const matches = [...games(WEEK_1, [player()], 1), ...games(WEEK_2, [player()], 2),
     ...games("2026-08-17T00:00:00Z", []),
     ...games("2026-08-10T00:00:00Z", [player("Invalid", { goals: NaN })])];
   const result = history(matches);
-  assert.deepEqual(result.weeks.map(w => [w.start, w.games]), [[WEEK_3, 3], [WEEK_2, 2], [WEEK_1, 1]]);
+  assert.deepEqual(result.weeks.map(w => [w.start, w.games]), [[WEEK_2, 2], [WEEK_1, 1]]);
   assert.ok(result.weeks.every(w => w.leaders.length === 1 && !w.leaders[0].eligible && w.winners.length === 0));
   assert.deepEqual(result.rankings, []);
   assert.equal(result.awardedWeeks, 0);
   assert.equal(result.totalAwards, 0);
   assertWeeklyParity(matches, result);
+  // Two forward games plus one defense game are one player with three games, so they qualify.
+  const combined = history([...matches, ...split]);
+  assert.equal(combined.weeks[0].start, WEEK_3);
+  assert.equal(combined.weeks[0].standings[0].games, 3);
+  assert.equal(combined.weeks[0].standings[0].position, "F");
+  assert.deepEqual(combined.rankings.map(p => p.playerId), ["A"]);
+  assertWeeklyParity([...matches, ...split], combined);
 });
 
 test("only eligible winners count even when a provisional spike tops the standings", () => {

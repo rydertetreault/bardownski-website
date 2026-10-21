@@ -155,7 +155,9 @@ function validPlayer(p: SourcePlayer, role: AwardPosition): boolean {
     && p.saves + p.goalsAgainst === p.shotsAgainst
     && (p.shutoutPeriods == null || (count(p.shutoutPeriods) && p.shutoutPeriods <= 3));
   return skaterCounts.every(k => count(p[k])) && finite(p.plusMinus) && Number.isSafeInteger(p.plusMinus)
-    && optionalCounts.every(k => p[k] == null || count(p[k])) && p.goals <= p.shots;
+    && optionalCounts.every(k => p[k] == null || count(p[k]));
+  // EA sometimes reports 0 shots on a game the player scored in (e.g. deflections).
+  // That is real game data, not a reason to drop the whole appearance.
 }
 // Stable serialization distinguishes malformed values and ignores object insertion order.
 function canonical(value: unknown): string {
@@ -173,6 +175,30 @@ interface Totals {
   hits: number; shots: number; plusMinus: number; gwg: number; blockedShots: number; takeaways: number; giveaways: number;
   saves: number; shotsAgainst: number; ga: number; shutouts: number; weightedShutouts: number;
   shutoutPeriods: number; wins: number;
+}
+const savePctOf = (t: Totals) => t.shotsAgainst > 0 ? t.saves / t.shotsAgainst * 100 : 0;
+/** Per-game score for one role's weekly totals.
+ * Skaters use the season MVP per-game formulas verbatim. Goalies use the MVP goalie
+ * terms, but only for production they earn: SV% and GAA count above replacement
+ * level (SV% reweighted to the skater scale), and there is no per-save workload term.
+ * A replacement-level losing start scores 0, like a skater game with nothing on the sheet. */
+function perGameScore(t: Totals): number {
+  const gp = t.games;
+  if (t.position === "G") {
+    const gaa = t.ga / gp;
+    return Math.max(savePctOf(t) - GOALIE_REPLACEMENT_SV_PCT, 0) * GOALIE_SV_PCT_WEIGHT
+      + (t.shotsAgainst > 0 ? Math.max(GOALIE_REPLACEMENT_GAA - gaa, 0) * 3 : 0)
+      + t.weightedShutouts / gp * 20
+      + t.shutoutPeriods / gp * 30
+      + t.wins / gp * 100 * 0.3;
+  }
+  const points = t.goals + t.assists;
+  const rates: MvpSkaterRates = { ppg: points / gp, goalsPerGame: t.goals / gp,
+    plusMinusPerGame: Math.max(t.plusMinus, 0) / gp, gwgPerGame: t.gwg / gp,
+    shotPct: t.shots > 0 ? t.goals / t.shots * 100 : 0, hitsPerGame: t.hits / gp,
+    blockedShotsPerGame: t.blockedShots / gp, takeawaysPerGame: t.takeaways / gp,
+    giveawaysPerGame: t.giveaways / gp };
+  return t.position === "D" ? mvpDefensePerGame(rates) : mvpForwardPerGame(rates);
 }
 /** Club roster keys. Match rows carry resolved display names ("MATT") or raw gamertags
  * for unmapped members; roster rows carry gamertags. Both resolve to the same key. */
@@ -258,7 +284,8 @@ function weekly(matches: ClubMatch[], start: number, now: number, members: reado
             : p.shutoutPeriods >= 3 ? 1 : p.shutoutPeriods === 2 ? 0.75 : 0.5;
         }
       } else {
-        t.goals += p.goals; t.assists += p.assists; t.hits += p.hits; t.shots += p.shots;
+        // Every goal is a shot on goal; keeps shooting % <= 100 when EA under-reports shots.
+        t.goals += p.goals; t.assists += p.assists; t.hits += p.hits; t.shots += Math.max(p.shots, p.goals);
         t.plusMinus += p.plusMinus; t.gwg += p.gameWinningGoal;
         t.blockedShots += p.blockedShots ?? 0; t.takeaways += p.takeaways ?? 0; t.giveaways += p.giveaways ?? 0;
       }
@@ -266,40 +293,44 @@ function weekly(matches: ClubMatch[], start: number, now: number, members: reado
     coverage.acceptedAppearances += appearances;
     if (appearances) coverage.acceptedGames++; else skip("no-valid-appearances", m.id);
   }
-  const best = new Map<string, WeeklyAwardEntry>();
+  // Skater games (forward + defense) merge into one skater entry: a player who swaps between
+  // forward and defense keeps every game, with a per-game score that is the games-weighted
+  // average of each role's per-game score. Goalie games are scored separately as their own
+  // entry and never mixed with skater games; a player shows whichever entry is stronger.
+  const entryGroups = new Map<string, Totals[]>();
   for (const t of totals.values()) {
-    const gp = t.games, points = t.goals + t.assists;
-    const savePct = t.shotsAgainst > 0 ? t.saves / t.shotsAgainst * 100 : 0;
-    const gaa = t.ga / gp;
-    // Skaters use the season MVP per-game formulas verbatim. Goalies use the MVP goalie
-    // terms, but only for production they earn: SV% and GAA count above replacement
-    // level (SV% reweighted to the skater scale), and there is no per-save workload term. A replacement-level losing start
-    // scores 0, like a skater game with nothing on the sheet.
-    let perGame: number;
-    if (t.position === "G") {
-      perGame = Math.max(savePct - GOALIE_REPLACEMENT_SV_PCT, 0) * GOALIE_SV_PCT_WEIGHT
-        + (t.shotsAgainst > 0 ? Math.max(GOALIE_REPLACEMENT_GAA - gaa, 0) * 3 : 0)
-        + t.weightedShutouts / gp * 20
-        + t.shutoutPeriods / gp * 30
-        + t.wins / gp * 100 * 0.3;
-    } else {
-      const rates: MvpSkaterRates = { ppg: points / gp, goalsPerGame: t.goals / gp,
-        plusMinusPerGame: Math.max(t.plusMinus, 0) / gp, gwgPerGame: t.gwg / gp,
-        shotPct: t.shots > 0 ? t.goals / t.shots * 100 : 0, hitsPerGame: t.hits / gp,
-        blockedShotsPerGame: t.blockedShots / gp, takeawaysPerGame: t.takeaways / gp,
-        giveawaysPerGame: t.giveaways / gp };
-      perGame = t.position === "D" ? mvpDefensePerGame(rates) : mvpForwardPerGame(rates);
+    const group = JSON.stringify([t.playerId, t.position === "G" ? "G" : "S"]);
+    const rows = entryGroups.get(group) ?? []; rows.push(t); entryGroups.set(group, rows);
+  }
+  const best = new Map<string, WeeklyAwardEntry>();
+  for (const roles of entryGroups.values()) {
+    const playerId = roles[0].playerId;
+    let weighted = 0, sustain = 0, gp = 0;
+    let primary: { t: Totals; perGame: number } | null = null;
+    for (const t of roles) {
+      const rolePerGame = perGameScore(t);
+      weighted += rolePerGame * t.games; gp += t.games;
+      if (t.position === "G") sustain += Math.max(savePctOf(t) - GOALIE_SUSTAIN_SV_PCT, 0) * GOALIE_SUSTAIN_WEIGHT * t.games;
+      // Displayed position: the role played most this week (ties: higher per-game score, then F < D < G order).
+      if (!primary || t.games > primary.t.games || (t.games === primary.t.games &&
+        (rolePerGame > primary.perGame || (rolePerGame === primary.perGame && compare(t.position, primary.t.position) < 0)))) primary = { t, perGame: rolePerGame };
     }
+    if (!primary || gp === 0) continue;
+    const perGame = weighted / gp;
     const eligible = gp >= 3;
-    const rawScore = perGame * (coverage.acceptedGames < 3 || eligible ? Math.sqrt(gp) : 1)
-      + (t.position === "G" ? Math.max(savePct - GOALIE_SUSTAIN_SV_PCT, 0) * GOALIE_SUSTAIN_WEIGHT * gp : 0);
+    const rawScore = perGame * (coverage.acceptedGames < 3 || eligible ? Math.sqrt(gp) : 1) + sustain;
     if (!finite(rawScore * 10)) continue;
-    const entry: WeeklyAwardEntry = { playerId: t.playerId, name: t.name, position: t.position, isGoalie: t.position === "G",
-      games: gp, score: quantize(rawScore), rank: 0, eligible, goals: t.goals, assists: t.assists, points,
-      saves: t.saves, shotsAgainst: t.shotsAgainst, savePct, gaa, shutouts: t.shutouts, wins: t.wins };
-    const previous = best.get(t.playerId);
+    const sum = (k: keyof Totals) => roles.reduce((n, t) => n + (t[k] as number), 0);
+    const goalie = roles.find(t => t.position === "G");
+    const goals = sum("goals"), assists = sum("assists");
+    const name = roles.map(t => t.name).sort(compare)[0];
+    const entry: WeeklyAwardEntry = { playerId, name, position: primary.t.position, isGoalie: primary.t.position === "G",
+      games: gp, score: quantize(rawScore), rank: 0, eligible, goals, assists, points: goals + assists,
+      saves: sum("saves"), shotsAgainst: sum("shotsAgainst"), savePct: goalie ? savePctOf(goalie) : 0,
+      gaa: goalie ? goalie.ga / goalie.games : 0, shutouts: sum("shutouts"), wins: sum("wins") };
+    const previous = best.get(playerId);
     if (!previous || (entry.eligible && !previous.eligible) || (entry.eligible === previous.eligible &&
-      (entry.score > previous.score || (entry.score === previous.score && compare(entry.position, previous.position) < 0)))) best.set(t.playerId, entry);
+      (entry.score > previous.score || (entry.score === previous.score && compare(entry.position, previous.position) < 0)))) best.set(playerId, entry);
   }
   const standings = ranked([...best.values()]);
   const eligible = standings.filter(p => p.eligible);
