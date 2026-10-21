@@ -31,7 +31,7 @@ they stay stable even if a nickname changes.
 
 | Folder    | Nickname on site      | EA gamertag   |
 |-----------|-----------------------|---------------|
-| `ryder`   | Jene Rene Tetreau IV  | Rydayro       |
+| `ryder`   | Jean Rene Tetreau IV  | Rydayro       |
 | `rob`     | Slobby Robby          | S1obbyRobby   |
 | `matt`    | Matt Hut              | Mhut8         |
 | `dylan`   | Xavier Laflamme       | u4 Pablo      |

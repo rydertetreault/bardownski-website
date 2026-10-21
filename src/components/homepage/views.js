@@ -15,7 +15,7 @@ export const articleDate = (value) => {
 export const num = (n) => Number(n).toLocaleString("en-US");
 export const photo = (file, alt, cls = "", eager = false, position = "center", src = `/images/homepage/${file}.webp`) =>
   `<img class="${cls}" src="${escape(src)}" alt="${escape(alt)}" style="object-position:${position}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`;
-const name = (p) => (getNickname(p.name) === "JENE RENE TETREAU IV" ? "JRT IV" : getNickname(p.name));
+const name = (p) => (getNickname(p.name) === "JEAN RENE TETREAU IV" ? "JRT IV" : getNickname(p.name));
 const role = (p) =>
   p.role === "G" ? "GOALTENDER" : p.role === "D" ? "DEFENSE" : "FORWARD";
 const won = (m) => m.scoreUs > m.scoreThem;
@@ -114,7 +114,7 @@ function archivedAwards() {
     .map((id) => a.honors.find((h) => h.id === id))
     .map(
       (h, i) =>
-        `<button class="award-tile" data-award="${h.id}" data-reveal><span class="award-symbol" aria-hidden="true">${["★", "✳", "✦", "✹"][i]}</span><span class="eyebrow">${h.title}</span><h3>${h.winners.map((n) => (n === "JENE RENE TETREAU IV" ? "JRT IV" : n)).join(" & ")}</h3><small>${h.id === "unsung" ? "Team-selected honor" : h.result}</small><span class="text-link">View award ↗</span></button>`,
+        `<button class="award-tile" data-award="${h.id}" data-reveal><span class="award-symbol" aria-hidden="true">${["★", "✳", "✦", "✹"][i]}</span><span class="eyebrow">${h.title}</span><h3>${h.winners.map((n) => (n === "JEAN RENE TETREAU IV" ? "JRT IV" : n)).join(" & ")}</h3><small>${h.id === "unsung" ? "Team-selected honor" : h.result}</small><span class="text-link">View award ↗</span></button>`,
     )
     .join("")}</div></section>`;
 }

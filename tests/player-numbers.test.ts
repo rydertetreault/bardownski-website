@@ -5,7 +5,7 @@ import { getPlayerNumber } from "../src/lib/player-numbers";
 
 test("Lab club numbers match published roster for real names, nicknames and gamertags", () => {
   for (const [aliases, number] of [
-    [["RYDER", "Rydayro", "JENE RENE TETREAU IV"], 14],
+    [["RYDER", "Rydayro", "JEAN RENE TETREAU IV"], 14],
     [["DYLAN", "u4 Pablo", "XAVIER LAFLAMME"], 4],
     [["MATT", "Mhut8", "MATT HUT"], 8],
     [["ROB", "S1obbyRobby", "SLOBBY ROBBY"], 1],

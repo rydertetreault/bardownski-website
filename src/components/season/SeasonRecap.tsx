@@ -261,7 +261,7 @@ export default function SeasonRecap() {
               <small>POINTS · 329 ASSISTS</small>
             </article>
             <article className="scroll-reveal">
-              <b>Jene Rene Tetreau IV</b>
+              <b>Jean Rene Tetreau IV</b>
               <strong>2,135</strong>
               <small>SAVES · 21 SHUTOUTS</small>
             </article>

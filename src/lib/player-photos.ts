@@ -7,7 +7,7 @@ import { getDisplayName } from "./nicknames";
 export interface PlayerPhoto { src: string; alt: string }
 
 const PLAYER_PHOTOS: Readonly<Record<string, PlayerPhoto>> = {
-  "JENE RENE TETREAU IV": { src: "/images/players/ryder-crease.webp", alt: "JRT IV sliding across the crease, from the 2026–27 film room" },
+  "JEAN RENE TETREAU IV": { src: "/images/players/ryder-crease.webp", alt: "JRT IV sliding across the crease, from the 2026–27 film room" },
   "XAVIER LAFLAMME": { src: "/images/highlights/d1.webp", alt: "Xavier Laflamme celebrating a goal, from the club film room" },
   "MATT HUT": { src: "/images/players/matt-alt.webp", alt: "Matt Hut celebrating with JRT IV at the net" },
   "GOTTA BE": { src: "/images/highlights/k1.webp", alt: "Gotta Be raising his stick, from the club film room" },

@@ -69,7 +69,7 @@ try {
   await page.getByRole("button", { name: /Archive 2025–2026/ }).click();
   await pick(0, "MATT HUT");
   await pick(1, "JIMMY LEMONS");
-  await chooseGoalie("JENE RENE TETREAU IV");
+  await chooseGoalie("JEAN RENE TETREAU IV");
   const compatibility = page.locator("#goalie-compatibility");
   assert.equal(await compatibility.locator(".gc-row").count(), 2, "Pairings work with an incomplete 3s line");
   for (const name of ["MATT HUT", "JIMMY LEMONS"]) {
