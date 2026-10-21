@@ -7,6 +7,7 @@
 
 import { FROZEN_CHELSTATS, FROZEN_SEASON_LABEL } from "./chelstats-frozen";
 import { parseClubCrest, type ClubCrest } from "./club-crest";
+import { resolveMatchPosition } from "./match-position";
 import type {
   SeasonData,
   ParsedStats,
@@ -365,7 +366,7 @@ function transformGame(
     const gamertag = p.playername || "";
     return {
       name: resolveName(p.playername || "Unknown"),
-      position: POSITION_OVERRIDES[gamertag] ?? (p.position || "skater"),
+      position: POSITION_OVERRIDES[gamertag] ?? resolveMatchPosition(p.position || "skater", p.posSorted),
       goals: num(p.skgoals),
       assists: num(p.skassists),
       hits: num(p.skhits),

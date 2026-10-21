@@ -58,6 +58,7 @@ function positionLabel(player: MatchPlayerStat): string {
   const positions: Record<string, string> = {
     center: "C", leftwing: "LW", rightwing: "RW", leftdefense: "LD", rightdefense: "RD",
     leftdefenceman: "LD", rightdefenceman: "RD", defense: "D", defence: "D",
+    defensemen: "D", defenseman: "D", defencemen: "D", defenceman: "D",
   };
   return positions[player.position?.replace(/[\s_-]/g, "").toLowerCase()] || player.position || "—";
 }

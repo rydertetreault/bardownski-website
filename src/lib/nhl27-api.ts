@@ -1,6 +1,7 @@
 /** Isolated NHL27 ingestion. No archive imports, persistence, or season overrides. */
 import type { ChelstatsData, ClubMatch, ClubMember, ClubStats, MatchPlayerStat } from "./chelstats";
 import { parseClubCrest } from "./club-crest";
+import { resolveMatchPosition } from "./match-position";
 
 export const NHL27_IDENTITY = Object.freeze({
   gameTitle: "NHL27",
@@ -149,7 +150,7 @@ function player(value: unknown, playerId: string, isOurPlayer: boolean): Nhl27Ma
   const p = "recentGames[].players[][]";
   const r = row(value, p);
   const c = (key: string, signed = false) => count(r, key, p, signed);
-  const position = text(r.position, `${p}.position`);
+  const position = resolveMatchPosition(text(r.position, `${p}.position`), r.posSorted);
   const name = text(r.playername, `${p}.playername`);
   return {
     playerId: id(playerId, `${p}.playerId`), name: isOurPlayer ? resolveNhl27Name(name) : name,
