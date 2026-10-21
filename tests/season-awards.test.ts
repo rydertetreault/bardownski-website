@@ -6,7 +6,7 @@ const byId = Object.fromEntries(SEASON_AWARDS.map(a => [a.id, a]));
 assert.deepEqual(byId.mvp.winners, ["XAVIER LAFLAMME"]);
 assert.equal(byId.mvp.result, "2075.54 performance score");
 assert.deepEqual(byId.defense.winners, ["GOTTA BE"]);
-assert.deepEqual(byId.goalie.winners, ["JEAN RENE TETREAU IV"]);
+assert.deepEqual(byId.goalie.winners, ["JENE RENE TETREAU IV"]);
 assert.equal(byId.points.result, "1,410 points");
 assert.equal(byId.goals.result, "920 goals");
 assert.equal(byId.assists.result, "490 assists");

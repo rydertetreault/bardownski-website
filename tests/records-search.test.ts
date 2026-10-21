@@ -19,7 +19,7 @@ function ids(records: SearchableRecord[], query: string) {
 }
 
 const rob = player("SLOBBY ROBBY", "LD", 20);
-const ryder = player("JEAN RENE TETREAU IV", "G", 30);
+const ryder = player("JENE RENE TETREAU IV", "G", 30);
 const matt = player("MATT HUT", "C", 40);
 
 test("holder relevance outranks participant boards and returns original references", () => {
@@ -41,9 +41,9 @@ test("real names, nicknames, gamertags and partial names resolve in both directi
       assert.deepEqual(ids(records, query), ["rob"], `${stored}: ${query}`);
     }
   }
-  for (const stored of ["RYDER", "Rydayro", "JEAN RENE TETREAU IV"]) {
+  for (const stored of ["RYDER", "Rydayro", "JENE RENE TETREAU IV"]) {
     const records = [board("ryder", [player(stored, "G")])];
-    for (const query of ["Ryder", "rydayro", "Jean Rene", "tetre", "JÉAN-RÉNÉ"]) {
+    for (const query of ["Ryder", "rydayro", "Jene Rene", "tetre", "JÉNE-RÉNÉ"]) {
       assert.deepEqual(ids(records, query), ["ryder"], `${stored}: ${query}`);
     }
   }
@@ -51,7 +51,7 @@ test("real names, nicknames, gamertags and partial names resolve in both directi
 
 test("every known identity resolves all search aliases without shared mutable state", () => {
   const identities = [
-    ["RYDER", "Rydayro", "JEAN RENE TETREAU IV"],
+    ["RYDER", "Rydayro", "JENE RENE TETREAU IV"],
     ["ROB", "S1obbyRobby", "SLOBBY ROBBY"],
     ["MATT", "Mhut8", "MATT HUT"],
     ["DYLAN", "u4 Pablo", "XAVIER LAFLAMME"],
@@ -245,7 +245,7 @@ test("search UI uses full nicknames rather than real-name or shortened examples"
   assert.match(markup, /placeholder="Search by nickname, position, or stat…"/);
   assert.match(markup, /“Matt Hut goals”/);
   assert.match(markup, /data-search-term="Slobby Robby">Slobby Robby<\/button>/);
-  assert.match(markup, /data-search-term="Jean Rene Tetreau IV">Jean Rene Tetreau IV<\/button>/);
+  assert.match(markup, /data-search-term="Jene Rene Tetreau IV">Jene Rene Tetreau IV<\/button>/);
   assert.doesNotMatch(markup, /Try Robby|Matt goals|Robby blocks|data-search-term="(?:Robby|Ryder)"/);
   const runtime = readFileSync(new URL("../src/app/records/redesign/initialize.js", import.meta.url), "utf8");
   assert.match(runtime, /Try a nickname, position, or stat — like “Slobby Robby”/);

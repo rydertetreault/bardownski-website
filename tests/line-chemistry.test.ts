@@ -59,7 +59,7 @@ test("local archive: 75 IDs, three inconsistent scores quarantined, sparse cover
 test("canonical names unify real names, gamertags, display names, whitespace and case", () => {
   for (const [tag, real, display] of [
     ["Mhut8", "MATT", "MATT HUT"], ["u4 Pablo", "DYLAN", "XAVIER LAFLAMME"],
-    ["Rydayro", "RYDER", "JEAN RENE TETREAU IV"], ["S1obbyRobby", "ROB", "SLOBBY ROBBY"],
+    ["Rydayro", "RYDER", "JENE RENE TETREAU IV"], ["S1obbyRobby", "ROB", "SLOBBY ROBBY"],
     ["oP wet", "COLIN", "WOLFGANG MOZART"], ["u4 Hood", "KADEN", "GOTTA BE"],
     ["Julio 3026", "JIMMY", "JIMMY LEMONS"], ["oP Ding1633", "LOGAN", "TOP G"],
   ]) {

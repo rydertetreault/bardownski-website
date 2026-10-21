@@ -39,7 +39,7 @@ Drop-ins are any of "our" players in a match who are **not** on the club roster 
 
 ## News articles
 
-- **Player names:** use nicknames (`src/lib/nicknames.ts`), e.g. Matt Hut, Xavier Laflamme, JRT IV / Jean Rene Tetreau IV.
+- **Player names:** use nicknames (`src/lib/nicknames.ts`), e.g. Matt Hut, Xavier Laflamme, JRT IV / Jene Rene Tetreau IV.
 - **Stats:** must come from real data: the NHL27 tracker snapshot and matches in Upstash, keyed under `hockey:nhl27:2026-2027:common-gen5:29202`. Never invent numbers.
 - **Photos:** use this season's media (`media/`, see `media/README.md`). Stills are black and white. Don't reuse old-season photos for current-season stories.
 - **Layout:** article photos match the text column, shown whole at their natural aspect ratio (never cropped). The reveal film matches the text column too (`src/app/news/article.css`).

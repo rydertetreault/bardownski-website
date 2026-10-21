@@ -227,7 +227,7 @@ test("weekly results browse completed weeks with winners, latest first, with qua
   assert.match(table, /Oct 12–18 · Player of the Week points/);
   const rows = [...table.matchAll(/<tr data-winner="(true|false)">([\s\S]*?)<\/tr>/g)].map(([, w, c]) => [w, c.split(/<[^>]+>/).filter(Boolean).join(" ")]);
   assert.equal(rows.length, 2, "Unqualified players are not listed");
-  assert.equal(rows[0][0], "true"); assert.equal(rows[0][1], "01 JEAN RENE TETREAU IV G Winner 9-14 .746 SV% 3.91 GAA 0 SO 23 488.1");
+  assert.equal(rows[0][0], "true"); assert.equal(rows[0][1], "01 JENE RENE TETREAU IV G Winner 9-14 .746 SV% 3.91 GAA 0 SO 23 488.1");
   assert.equal(rows[1][0], "false"); assert.equal(rows[1][1], "02 MATT HUT F 29 G 15 A 44 PTS 11 476.4");
   assert.doesNotMatch(markup, /DYLAN|XAVIER/);
   assert.match(markup, /<button[^>]*class="stats-week-info"[^>]*aria-expanded="false"[^>]*aria-controls="weekly-math"/, "Scoring explainer starts closed");

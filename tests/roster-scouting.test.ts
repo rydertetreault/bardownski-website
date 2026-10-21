@@ -11,7 +11,7 @@ const fixtures = [
   { username: "u4 Hood", name: "KADEN", nickname: "Gotta Be", role: "Offensive Defenseman", values: ["117", "121", "196", "317"] },
   { username: "Julio 3026", name: "JIMMY", nickname: "Jimmy Lemons", role: "Two-Way Winger", values: ["112", "95", "187", "282"] },
   { username: "S1obbyRobby", name: "ROB", nickname: "Slobby Robby", role: "Shutdown Defenseman", values: ["91", "33", "170", "203"] },
-  { username: "Rydayro", name: "RYDER", nickname: "Jean Rene Tetreau IV", role: "Goaltender", values: ["209", "132", "2,135", "71.0%"] },
+  { username: "Rydayro", name: "RYDER", nickname: "Jene Rene Tetreau IV", role: "Goaltender", values: ["209", "132", "2,135", "71.0%"] },
   { username: "oP Ding1633", name: "LOGAN", nickname: "Top G", role: "Impact Winger", values: ["125", "150", "172", "322"] },
   { username: "oP wet", name: "COLIN", nickname: "Wolfgang Mozart", role: "Utility", values: ["101", "80", "141", "221"] },
   { username: "Treyway6479", name: "Treyway6479", nickname: "Treyway6479", role: "Winger · Limited Sample", values: ["8", "0", "6", "6"] },

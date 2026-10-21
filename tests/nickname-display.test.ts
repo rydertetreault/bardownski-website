@@ -11,8 +11,8 @@ import {
 import { articles } from "../src/lib/news";
 
 const players = [
-  ["RYDER", "Rydayro", "JEAN RENE TETREAU IV"],
-  ["RYDER", "JeneReneTetreau", "JEAN RENE TETREAU IV"],
+  ["RYDER", "Rydayro", "JENE RENE TETREAU IV"],
+  ["RYDER", "JeneReneTetreau", "JENE RENE TETREAU IV"],
   ["ROB", "S1obbyRobby", "SLOBBY ROBBY"],
   ["MATT", "Mhut8", "MATT HUT"],
   ["DYLAN", "u4 Pablo", "XAVIER LAFLAMME"],
@@ -39,7 +39,7 @@ for (const resolve of resolvers) {
   test(`${resolve.name}: preserve full nicknames, unknown identities and non-name values`, () => {
     const values = [
       ...players.map(([, , nickname]) => nickname),
-      "Matt Hut", "Jimmy Lemons", "Jean Rene Tetreau IV", "JRT IV", "Xavier Laflamme",
+      "Matt Hut", "Jimmy Lemons", "Jene Rene Tetreau IV", "JRT IV", "Xavier Laflamme",
       "  Matt Hut  ", "Matt  Hut", "Jimmy\tLemons", "JRT IV's saves",
       "Matthew", "Ryderman", "Robert", "Robbie", "Loganathan", "Ryder Smith",
       "Matt scored", "oP wet extra", "new gamertag", "  Unmapped Name  ",
@@ -54,9 +54,9 @@ for (const resolve of resolvers) {
 test("prose normalizer covers every mapped first name, possessives and uppercase copy", () => {
   assert.equal(
     getNicknameText("Ryder, Rob, Matt, Dylan, Colin, Kaden, Jimmy and Logan."),
-    "Jean Rene Tetreau IV, Slobby Robby, Matt Hut, Xavier Laflamme, Wolfgang Mozart, Gotta Be, Jimmy Lemons and Top G.",
+    "Jene Rene Tetreau IV, Slobby Robby, Matt Hut, Xavier Laflamme, Wolfgang Mozart, Gotta Be, Jimmy Lemons and Top G.",
   );
-  assert.equal(getNicknameText("Ryder’s saves and Matt's goals; Jimmy’s assists."), "Jean Rene Tetreau IV’s saves and Matt Hut's goals; Jimmy Lemons’s assists.");
+  assert.equal(getNicknameText("Ryder’s saves and Matt's goals; Jimmy’s assists."), "Jene Rene Tetreau IV’s saves and Matt Hut's goals; Jimmy Lemons’s assists.");
   for (const [name, , nickname] of players) {
     assert.equal(getNicknameText(`${name} SCORED`), `${nickname} SCORED`);
     assert.equal(getNicknameText(name.toLowerCase()), getNicknameText(name[0] + name.slice(1).toLowerCase()));
@@ -64,10 +64,10 @@ test("prose normalizer covers every mapped first name, possessives and uppercase
 });
 
 test("prose normalizer never doubles full nicknames and is idempotent", () => {
-  const existing = "Matt Hut, MATT HUT, Matt\tHut, Jimmy Lemons, JIMMY LEMONS, Jimmy  Lemons, Jean Rene Tetreau IV, JRT IV, Xavier Laflamme, Slobby Robby, Wolfgang Mozart, Gotta Be and Top G.";
+  const existing = "Matt Hut, MATT HUT, Matt\tHut, Jimmy Lemons, JIMMY LEMONS, Jimmy  Lemons, Jene Rene Tetreau IV, JRT IV, Xavier Laflamme, Slobby Robby, Wolfgang Mozart, Gotta Be and Top G.";
   assert.equal(getNicknameText(existing), existing);
   const mixed = "Matt passed to Jimmy Lemons, then Jimmy found Matt Hut. Ryder stood tall.";
-  const expected = "Matt Hut passed to Jimmy Lemons, then Jimmy Lemons found Matt Hut. Jean Rene Tetreau IV stood tall.";
+  const expected = "Matt Hut passed to Jimmy Lemons, then Jimmy Lemons found Matt Hut. Jene Rene Tetreau IV stood tall.";
   assert.equal(getNicknameText(mixed), expected);
   assert.equal(getNicknameText(expected), expected);
   assert.equal(getNicknameText("Matt Hut’s goal and Jimmy Lemons's assist"), "Matt Hut’s goal and Jimmy Lemons's assist");
@@ -82,8 +82,8 @@ test("prose normalizer leaves unrelated words and technical URL/media tokens int
     "/highlights#highlights-matt Ryder.mp4 Matt.webp #matt",
     "", "  ", "constructor __proto__ toString",
   ]) assert.equal(getNicknameText(text), text);
-  assert.equal(getNicknameText("Matt. Jimmy! (Ryder)"), "Matt Hut. Jimmy Lemons! (Jean Rene Tetreau IV)");
-  assert.equal(getNicknameText("Matt/Jimmy and Ryder.Dylan"), "Matt Hut/Jimmy Lemons and Jean Rene Tetreau IV.Xavier Laflamme");
+  assert.equal(getNicknameText("Matt. Jimmy! (Ryder)"), "Matt Hut. Jimmy Lemons! (Jene Rene Tetreau IV)");
+  assert.equal(getNicknameText("Matt/Jimmy and Ryder.Dylan"), "Matt Hut/Jimmy Lemons and Jene Rene Tetreau IV.Xavier Laflamme");
 });
 
 // Only inspect editorial/display fields; raw media paths, keys and identity

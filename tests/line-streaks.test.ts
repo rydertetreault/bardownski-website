@@ -11,7 +11,7 @@ const player = (raw: string) => {
 const game = (id: string, timestamp: number, us: number, them: number, names: string[], extra = {}) => ({
   id, timestamp, date: `Day ${timestamp}`, scoreUs: us, scoreThem: them, matchType: "regular", players: names.map(player), ...extra,
 });
-const JRT = "JEAN RENE TETREAU IV", MATT = "MATT HUT", XAV = "XAVIER LAFLAMME";
+const JRT = "JENE RENE TETREAU IV", MATT = "MATT HUT", XAV = "XAVIER LAFLAMME";
 
 test("goalie counts as part of the line (Matt, Xavier, JRT in net)", () => {
   const streaks = lineWinStreaks([

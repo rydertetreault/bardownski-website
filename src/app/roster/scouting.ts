@@ -94,7 +94,7 @@ export function getScoutingReport(member: ClubMember, name: string): ScoutingRep
     case "RYDER":
       return report(
         "Goaltender",
-        `Jean Rene Tetreau IV brings a post-to-post style built around lateral movement, positioning and reading the next chance. Across ${goalieGames} goalie appearances in ${SEASON}, he recorded ${goalieWins} wins, ${saves} saves, a ${savePct} save percentage and ${number(member.shutouts)} shutouts. It was a substantial workload between the pipes. The next layer is repeatability: arriving set after moving across the crease and helping the defense manage the second chance.`,
+        `Jene Rene Tetreau IV brings a post-to-post style built around lateral movement, positioning and reading the next chance. Across ${goalieGames} goalie appearances in ${SEASON}, he recorded ${goalieWins} wins, ${saves} saves, a ${savePct} save percentage and ${number(member.shutouts)} shutouts. It was a substantial workload between the pipes. The next layer is repeatability: arriving set after moving across the crease and helping the defense manage the second chance.`,
         "Prioritize a set position after lateral movement and clear rebound communication.",
         goalieStats,
       );

@@ -182,7 +182,7 @@ test("exact 2/3/5 distinct skaters AND selected goalie coappear; different games
     const chosen = names.slice(0, size);
     const result = evaluateGoalieLine(dataset, chosen, "RYDER")!;
     assert.equal(result.stats.games, expected);
-    assert.deepEqual(evaluateGoalieLine(dataset, [...chosen].reverse(), "JEAN RENE TETREAU IV"), result);
+    assert.deepEqual(evaluateGoalieLine(dataset, [...chosen].reverse(), "JENE RENE TETREAU IV"), result);
   }
   assert.equal(evaluateGoalieLine(dataset, ["MATT", "LOGAN"], "RYDER")!.stats.games, 0);
   assert.equal(evaluateGoalieLine(dataset, names, "KADEN")!.stats.games, 1);

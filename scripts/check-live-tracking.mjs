@@ -14,7 +14,7 @@ try {
       assert.match(await page.locator(".tracking-freshness").innerText(),/Feed checked:.*Stored matches:/);
     }
     assert.match(await page.locator('.line-archive-note').innerText(),/2026–2027 CURRENT SEASON/);
-    assert.equal(await page.locator('.line-availability').innerText().then(t=>t.includes('JEAN RENE TETREAU IV')),false,'Goalie-only season member excluded from skater drafts');
+    assert.equal(await page.locator('.line-availability').innerText().then(t=>t.includes('JENE RENE TETREAU IV')),false,'Goalie-only season member excluded from skater drafts');
     await page.getByRole('button',{name:'Pair',exact:true}).click();
     await page.locator('#line-slot-0').selectOption('MATT HUT');
     await page.locator('#line-slot-1').selectOption('JIMMY LEMONS');
