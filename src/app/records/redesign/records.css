@@ -101,6 +101,14 @@
   background: var(--cut-to);
   clip-path: polygon(0 100%, 100% 0, 100% 100%);
 }
+.records-redesign .records-cut--watch {
+  --cut-from: var(--records-black);
+  --cut-to: var(--records-paper);
+}
+.records-redesign .records-cut--team {
+  --cut-from: var(--records-paper);
+  --cut-to: var(--records-teal);
+}
 .records-redesign .records-cut--players {
   --cut-from: var(--records-teal);
   --cut-to: var(--records-paper);
@@ -121,7 +129,7 @@
   --cut-from: var(--records-teal);
   --cut-to: var(--records-black);
 }
-.records-redesign :is(.records-cut--players, .records-cut--index, .records-cut--end)::after {
+.records-redesign :is(.records-cut--team, .records-cut--players, .records-cut--index, .records-cut--end)::after {
   clip-path: polygon(0 0, 100% 100%, 0 100%);
 }
 
@@ -170,12 +178,14 @@
 .records-redesign .record.pending > strong {
   color: var(--muted);
 }
-.records-redesign #categories button[aria-pressed="true"] {
+.records-redesign #categories button[aria-pressed="true"],
+.records-redesign .record-groups button[aria-pressed="true"] {
   background: var(--accent);
   color: var(--bg);
   border-color: var(--accent);
 }
-.records-redesign #categories button:not([aria-pressed="true"]):hover {
+.records-redesign #categories button:not([aria-pressed="true"]):hover,
+.records-redesign .record-groups button:not([aria-pressed="true"]):hover {
   background: #0067750c;
   color: var(--accent);
 }
@@ -337,7 +347,7 @@
 }
 
 /* Shared 1280px reading rail; colored bands and cuts keep their full width. */
-.records-redesign :is(.team-monuments, .pm-records, .individual-heading, .honor-strip, .season-hall, .explorer, .roadmap, .coverage, .records-end) {
+.records-redesign :is(.record-watch, .team-monuments, .pm-records, .individual-heading, .honor-strip, .season-hall, .explorer, .roadmap, .coverage, .records-end) {
   padding-inline: max(var(--site-gutter), calc((100% - var(--site-content-max)) / 2));
 }
 .records-redesign .coverage { margin-inline: 0; }
@@ -355,3 +365,103 @@
   .records-redesign .hero > div:first-child { grid-column: 1; padding: 50px var(--site-gutter) 35px; }
   .records-redesign .hero .records-hero-photo { grid-column: 1; }
 }
+
+/* ── Record library: individual vs team groups ─────────────────────────── */
+.records-redesign .record-groups{display:flex;flex-direction:column;gap:7px;margin:0 0 28px}
+.records-redesign .record-groups button{background:transparent;border:1px solid transparent;padding:13px 12px;text-align:left;font-size:12px;display:flex;justify-content:space-between;gap:10px;color:var(--muted)}
+
+.records-redesign .record-groups span{font-size:10px;opacity:.7}
+.records-redesign .grouped-results{display:grid;gap:48px}
+.records-redesign .record-group-head{display:grid;grid-template-columns:1fr auto;align-items:end;gap:6px 16px;border-bottom:2px solid var(--accent);padding-bottom:14px;margin-bottom:22px}
+.records-redesign .record-group-head .eyebrow{grid-column:1/-1;margin:0}
+.records-redesign .record-group-head h3{font-size:30px;letter-spacing:-1px;line-height:1}
+.records-redesign .record-group-head>span{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.records-redesign .record-subgroup+.record-subgroup{margin-top:30px}
+.records-redesign .record-subgroup h4{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin:0 0 14px}
+.records-redesign .record-subgroup h4 span{font-size:11px;letter-spacing:0;text-transform:none;font-weight:400;color:var(--muted)}
+.records-redesign .record.is-static{cursor:default}
+.records-redesign .record.is-static:hover{border-color:var(--line);transform:none}
+.records-redesign .record.is-static .record-bottom span{color:var(--muted)}
+.records-redesign div.monument.streak{cursor:default}
+.records-redesign .monument-note{color:var(--muted);font-size:11px;letter-spacing:0;line-height:1.5}
+@media(max-width:760px){.records-redesign .record-groups{flex-direction:row;flex-wrap:wrap;gap:6px;margin-bottom:10px}.records-redesign .record-groups button{border:1px solid var(--line);padding:10px;font-size:10px;gap:8px}.records-redesign .record-group-head h3{font-size:24px}}
+
+/* ── Record detail dialog: matches the homepage article dialog ─────────── */
+@font-face{font-family:RecordsBarlow;src:url("/images/homepage/barlow-condensed.ttf") format("truetype");font-weight:800;font-display:swap}
+.records-redesign dialog#detail{--modal-accent:#c4a1dc;position:fixed;inset:0;margin:auto;height:fit-content;width:min(800px,calc(100% - 32px));max-height:88dvh;overflow:auto;overscroll-behavior:contain;padding:45px;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-top:3px solid var(--modal-accent);border-bottom:3px solid var(--modal-accent);border-radius:18px;box-shadow:0 30px 90px rgba(0,0,0,.55)}
+.records-redesign dialog#detail::backdrop{background:rgba(6,8,10,.5);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.records-redesign dialog#detail .close{position:sticky;top:0;float:none;display:grid;place-items:center;margin:0 -20px 0 auto;width:40px;height:40px;border-radius:50%;background:var(--panel);border:1px solid var(--line);color:var(--fg);font-size:28px;line-height:1;z-index:2;cursor:pointer}
+.records-redesign dialog#detail .close:hover,.records-redesign dialog#detail .close:focus-visible{border-color:var(--modal-accent);color:var(--modal-accent)}
+.records-redesign #detail .data-stamp{display:inline-block;font:9px/1.5 Arial,sans-serif;color:var(--modal-accent);letter-spacing:1px;margin:0 0 20px}
+.records-redesign #detail h2{font-family:RecordsBarlow,Impact,sans-serif;font-weight:800;font-size:clamp(30px,5vw,55px);line-height:1.08;letter-spacing:-.025em;margin:10px 0 22px;color:var(--fg)}
+.records-redesign #detail .detail-figure{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 22px;border-block:1px solid var(--line);padding:22px 0;margin:0 0 10px}
+.records-redesign #detail .detail-number{font-family:RecordsBarlow,Impact,sans-serif;font-weight:800;font-size:clamp(64px,10vw,104px);line-height:.9;letter-spacing:-.02em;color:var(--modal-accent);margin:0}
+.records-redesign #detail .detail-holder{font:700 13px/1.5 Arial,sans-serif;letter-spacing:.5px;margin:0;color:var(--fg)}
+.records-redesign #detail .detail-heading{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 16px;font:700 11px/1.4 Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;color:var(--fg);margin:32px 0 4px}
+.records-redesign #detail .detail-heading span{font-weight:400;letter-spacing:0;text-transform:none;color:var(--muted);font-size:11px}
+.records-redesign #detail .result-rows{display:grid}
+.records-redesign #detail .detail-note{font:13px/1.7 Arial,sans-serif;color:var(--muted);border-left:2px solid var(--modal-accent);padding:4px 0 4px 14px;margin:14px 0 6px}
+.records-redesign #detail .result-row{display:flex;align-items:center;gap:16px;padding:18px 8px;margin:0 -8px;border-bottom:1px solid var(--line);color:var(--fg);text-decoration:none;transition:background .2s}
+.records-redesign #detail .result-row:hover,.records-redesign #detail .result-row:focus-visible{background:var(--line)}
+.records-redesign #detail .result-letter{display:grid;place-items:center;width:28px;height:28px;border:1px solid var(--line);font:700 11px Arial,sans-serif;flex-shrink:0}
+.records-redesign #detail .result-letter.win{color:var(--modal-accent)}
+.records-redesign #detail .result-letter.loss{color:var(--muted)}
+.records-redesign #detail .result-team{flex:1;min-width:0}
+.records-redesign #detail .result-team b{display:block;font:700 12px/1.4 Arial,sans-serif}
+.records-redesign #detail .result-team small{display:block;margin-top:5px;color:var(--muted);font:10px/1.3 Arial,sans-serif}
+.records-redesign #detail .result-row>strong{font:800 33px/1 RecordsBarlow,Impact,sans-serif;white-space:nowrap}
+.records-redesign #detail .result-row strong i{font-style:normal;color:var(--muted);margin:0 3px}
+.records-redesign #detail .result-arrow{font-size:15px;color:var(--muted)}
+.records-redesign #detail .rankings{margin:0}
+.records-redesign #detail .rankings li{padding:0;display:block}
+.records-redesign #detail .rankings li>a,.records-redesign #detail .rankings li:not(:has(>a)){display:flex;gap:18px;align-items:center;padding:14px 0;font-size:12px}
+.records-redesign #detail .rankings li>a{color:inherit;text-decoration:none;padding-inline:8px;margin-inline:-8px;transition:background .2s}
+.records-redesign #detail .rankings li>a:hover,.records-redesign #detail .rankings li>a:focus-visible{background:var(--line)}
+.records-redesign #detail .rankings a>span,.records-redesign #detail .rankings li>span{color:var(--muted);width:15px}
+.records-redesign #detail .rankings strong{margin-left:auto;color:var(--modal-accent)}
+.records-redesign #detail .rankings a>i{font-style:normal;color:var(--muted)}
+.records-redesign #detail .rule{border-radius:10px;margin:32px 0 0}
+.records-redesign #detail .rule b{color:var(--modal-accent)}
+.records-redesign #detail .rule p,.records-redesign #detail .source{font:13px/1.8 Arial,sans-serif;color:var(--muted)}
+@keyframes records-detail-enter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.records-redesign.record-motion #detail-content.is-entering{animation:records-detail-enter .5s both}
+@media(max-width:760px){.records-redesign dialog#detail{padding:24px;width:calc(100% - 24px)}.records-redesign dialog#detail .close{margin-right:-8px}.records-redesign #detail h2{font-size:35px}.records-redesign #detail .rankings li>a,.records-redesign #detail .rankings li:not(:has(>a)){gap:10px;font-size:11px}.records-redesign #detail .result-row>strong{font-size:26px}}
+@media(prefers-reduced-motion:reduce){.records-redesign #detail-content.is-entering{animation:none}}
+
+/* ── Record watch: this season's broken records as a ledger, no boxes ───── */
+.records-redesign .record-watch{padding-top:35px;padding-bottom:10px}
+.records-redesign .watch-heading{margin-bottom:26px}
+.records-redesign .record-watch{--accent:#7b3fb0}
+.records-redesign .watch-group{margin-bottom:44px}
+.records-redesign .watch-group+.watch-group{padding-top:36px;border-top:2px solid var(--line)}
+.records-redesign .watch-group-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-bottom:6px}
+.records-redesign .watch-group-head h3{font:800 34px/1 RecordsBarlow,Impact,sans-serif;letter-spacing:-.01em;text-transform:uppercase}
+.records-redesign .watch-group-head p{flex-basis:100%;font-size:13px;color:var(--muted)}
+.records-redesign .watch-pill{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:5px 12px;border-radius:999px;background:var(--accent);color:var(--bg)}
+.records-redesign .watch-group--pace .watch-pill{background:transparent;color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.records-redesign .watch-group--pace .watch-group-head h3::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--accent);margin:0 12px 6px 0;vertical-align:middle;animation:records-watch-pulse 1.8s ease-in-out infinite}
+@keyframes records-watch-pulse{50%{opacity:.25}}
+.records-redesign .watch-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:56px}
+.records-redesign .watch-row{width:100%;display:grid;grid-template-columns:minmax(118px,auto) minmax(0,1fr) auto;align-items:center;gap:22px;padding:18px 0;border:0;border-bottom:1px solid var(--line);background:transparent;text-align:left;color:var(--fg)}
+.records-redesign .watch-num{display:flex;flex-direction:column;align-items:flex-start;gap:7px}
+.records-redesign .watch-num strong{font:800 62px/.9 RecordsBarlow,Impact,sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--fg)}
+.records-redesign .watch-was{font-size:12px;color:var(--muted);opacity:.7}
+.records-redesign .watch-body{display:flex;flex-direction:column;gap:8px;min-width:0}
+.records-redesign .watch-what{font-size:17px;font-weight:700;line-height:1.25}
+.records-redesign .watch-who{display:flex;flex-direction:column;gap:3px}
+.records-redesign .watch-who b{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent)}
+.records-redesign .watch-who small{font-size:12px;color:var(--muted)}
+.records-redesign .watch-go{font-size:18px;color:var(--muted);transition:transform .2s,color .2s}
+.records-redesign .watch-row:hover .watch-what{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}
+.records-redesign .watch-row:hover .watch-go{color:var(--fg);transform:translate(2px,-2px)}
+.records-redesign .watch-group--pace .watch-num strong{color:transparent;-webkit-text-stroke:1.5px var(--fg)}
+.records-redesign .watch-bar{display:flex;flex-direction:column;gap:5px;margin-top:2px}
+.records-redesign .watch-track{display:block;height:6px;border-radius:999px;background:var(--line);overflow:hidden}
+.records-redesign .watch-track i{display:block;height:100%;border-radius:999px;background:var(--accent)}
+.records-redesign .watch-bar em{font-style:normal;font-size:11px;color:var(--muted)}
+.records-redesign .watch-empty{font-size:14px;color:var(--muted);padding-bottom:36px}
+@media(max-width:900px){.records-redesign .watch-list{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:500px){.records-redesign .watch-row{grid-template-columns:auto minmax(0,1fr);gap:16px}.records-redesign .watch-go{display:none}.records-redesign .watch-num strong{font-size:48px}.records-redesign .watch-num{min-width:84px}.records-redesign .watch-group-head h3{font-size:28px}}
+@media(prefers-reduced-motion:reduce){.records-redesign .watch-group--pace .watch-group-head h3::before{animation:none}.records-redesign .watch-go{transition:none}}
+.records-redesign #detail .detail-note--broken{border-left-color:var(--modal-accent);color:var(--fg)}
+.records-redesign #detail .rankings li.ranking-search-match>a,.records-redesign #detail .rankings li.ranking-search-match:not(:has(>a)){padding-left:12px;margin-left:0}

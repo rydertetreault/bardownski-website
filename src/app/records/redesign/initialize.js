@@ -2,7 +2,7 @@ import { searchRecords } from "./search";
 
 // Preserved Records redesign, scoped to its own React-owned host.
 // Datasets are frozen copies of the Stats tables and recorded team achievements.
-export function initializeRecords(root) {
+export function initializeRecords(root, data) {
  const controller = new AbortController();
  const document = {
    querySelector: selector => root.querySelector(selector),
@@ -13,6 +13,11 @@ export function initializeRecords(root) {
 const members = [{"username":"u4 Pablo","position":"C","gamesPlayed":290,"goals":920,"assists":490,"points":1410,"ppg":4.9,"plusMinus":483,"hits":2189,"shots":2348,"shotPct":39.2,"pim":140,"gwg":43,"winPct":0,"takeaways":907,"giveaways":2146,"interceptions":197,"blockedShots":152,"faceoffPct":56.1,"passCompPct":79.8,"goalieGP":0,"goalieWins":0,"goalieRecord":"0-0-0","goalieSaves":0,"goalieShots":0,"savePct":0,"gaa":0,"shutouts":0,"shutoutPeriods":0,"overallRating":92,"playstyle":"","name":"XAVIER LAFLAMME"},{"username":"oP wet","position":"LW","gamesPlayed":101,"goals":80,"assists":141,"points":221,"ppg":2.2,"plusMinus":20,"hits":359,"shots":345,"shotPct":23.2,"pim":41,"gwg":6,"winPct":0,"takeaways":277,"giveaways":556,"interceptions":82,"blockedShots":56,"faceoffPct":50,"passCompPct":75.6,"goalieGP":27,"goalieWins":21,"goalieRecord":"21-6-0","goalieSaves":201,"goalieShots":296,"savePct":68,"gaa":4.7,"shutouts":5,"shutoutPeriods":9,"overallRating":87,"playstyle":"","name":"WOLFGANG MOZART"},{"username":"Mhut8","position":"C","gamesPlayed":233,"goals":472,"assists":329,"points":801,"ppg":3.4,"plusMinus":182,"hits":1029,"shots":1407,"shotPct":33.5,"pim":142,"gwg":24,"winPct":0,"takeaways":684,"giveaways":1273,"interceptions":116,"blockedShots":132,"faceoffPct":56.1,"passCompPct":78.2,"goalieGP":2,"goalieWins":0,"goalieRecord":"0-0-0","goalieSaves":18,"goalieShots":21,"savePct":85,"gaa":0,"shutouts":0,"shutoutPeriods":0,"overallRating":83,"playstyle":"","name":"MATT HUT"},{"username":"Julio 3026","position":"RW","gamesPlayed":112,"goals":95,"assists":187,"points":282,"ppg":2.5,"plusMinus":63,"hits":458,"shots":496,"shotPct":19.2,"pim":97,"gwg":7,"winPct":0,"takeaways":248,"giveaways":525,"interceptions":44,"blockedShots":98,"faceoffPct":40.2,"passCompPct":78.8,"goalieGP":25,"goalieWins":12,"goalieRecord":"12-13-0","goalieSaves":220,"goalieShots":328,"savePct":67,"gaa":4.71,"shutouts":2,"shutoutPeriods":14,"overallRating":87,"playstyle":"","name":"JIMMY LEMONS"},{"username":"Rydayro","position":"SKTR","gamesPlayed":27,"goals":15,"assists":27,"points":42,"ppg":1.6,"plusMinus":-27,"hits":55,"shots":75,"shotPct":20,"pim":20,"gwg":0,"winPct":0,"takeaways":61,"giveaways":158,"interceptions":18,"blockedShots":17,"faceoffPct":40.2,"passCompPct":79.1,"goalieGP":209,"goalieWins":132,"goalieRecord":"132-77-0","goalieSaves":2135,"goalieShots":3007,"savePct":71,"gaa":4.78,"shutouts":21,"shutoutPeriods":95,"overallRating":97,"playstyle":"","name":"JENE RENE TETREAU IV"},{"username":"oP Ding1633","position":"LW","gamesPlayed":125,"goals":150,"assists":172,"points":322,"ppg":2.6,"plusMinus":35,"hits":562,"shots":656,"shotPct":22.9,"pim":137,"gwg":6,"winPct":0,"takeaways":285,"giveaways":699,"interceptions":39,"blockedShots":71,"faceoffPct":37.9,"passCompPct":76.9,"goalieGP":0,"goalieWins":0,"goalieRecord":"0-0-0","goalieSaves":0,"goalieShots":0,"savePct":0,"gaa":0,"shutouts":0,"shutoutPeriods":0,"overallRating":82,"playstyle":"","name":"TOP G"},{"username":"Treyway6479","position":"LW","gamesPlayed":8,"goals":0,"assists":6,"points":6,"ppg":0.8,"plusMinus":-20,"hits":2,"shots":13,"shotPct":0,"pim":6,"gwg":0,"winPct":0,"takeaways":10,"giveaways":35,"interceptions":3,"blockedShots":2,"faceoffPct":0,"passCompPct":75.4,"goalieGP":0,"goalieWins":0,"goalieRecord":"0-0-0","goalieSaves":0,"goalieShots":0,"savePct":0,"gaa":0,"shutouts":0,"shutoutPeriods":0,"overallRating":61,"playstyle":"","name":"Treyway6479"},{"username":"S1obbyRobby","position":"D","gamesPlayed":91,"goals":33,"assists":170,"points":203,"ppg":2.2,"plusMinus":51,"hits":399,"shots":237,"shotPct":13.9,"pim":128,"gwg":1,"winPct":0,"takeaways":261,"giveaways":431,"interceptions":61,"blockedShots":123,"faceoffPct":100,"passCompPct":82.3,"goalieGP":0,"goalieWins":0,"goalieRecord":"0-0-0","goalieSaves":0,"goalieShots":0,"savePct":0,"gaa":0,"shutouts":0,"shutoutPeriods":0,"overallRating":93,"playstyle":"","name":"SLOBBY ROBBY"},{"username":"u4 Hood","position":"D","gamesPlayed":117,"goals":121,"assists":196,"points":317,"ppg":2.7,"plusMinus":-33,"hits":384,"shots":346,"shotPct":35,"pim":102,"gwg":4,"winPct":0,"takeaways":255,"giveaways":745,"interceptions":72,"blockedShots":109,"faceoffPct":20,"passCompPct":76.4,"goalieGP":3,"goalieWins":0,"goalieRecord":"0-0-0","goalieSaves":14,"goalieShots":23,"savePct":60,"gaa":0,"shutouts":2,"shutoutPeriods":2,"overallRating":84,"playstyle":"","name":"GOTTA BE"}];
 const seasons = [{"season":"2025","stats":{"date":"Final · last game Jul 22, 2026","roster":[{"name":"XAVIER LAFLAMME","position":"C"},{"name":"WOLFGANG MOZART","position":"LW"},{"name":"MATT HUT","position":"C"},{"name":"JIMMY LEMONS","position":"RW"},{"name":"JENE RENE TETREAU IV","position":"SKTR"},{"name":"TOP G","position":"LW"},{"name":"Treyway6479","position":"LW"},{"name":"SLOBBY ROBBY","position":"D"},{"name":"GOTTA BE","position":"D"}],"points":[{"rank":1,"name":"XAVIER LAFLAMME","value":1410,"secondary":290},{"rank":2,"name":"MATT HUT","value":801,"secondary":233},{"rank":3,"name":"TOP G","value":322,"secondary":125},{"rank":4,"name":"GOTTA BE","value":317,"secondary":117},{"rank":5,"name":"JIMMY LEMONS","value":282,"secondary":112},{"rank":6,"name":"WOLFGANG MOZART","value":221,"secondary":101},{"rank":7,"name":"SLOBBY ROBBY","value":203,"secondary":91},{"rank":8,"name":"JENE RENE TETREAU IV","value":42,"secondary":27},{"rank":9,"name":"Treyway6479","value":6,"secondary":8}],"goals":[{"rank":1,"name":"XAVIER LAFLAMME","value":920,"secondary":39.2},{"rank":2,"name":"MATT HUT","value":472,"secondary":33.5},{"rank":3,"name":"TOP G","value":150,"secondary":22.9},{"rank":4,"name":"GOTTA BE","value":121,"secondary":35},{"rank":5,"name":"JIMMY LEMONS","value":95,"secondary":19.2},{"rank":6,"name":"WOLFGANG MOZART","value":80,"secondary":23.2},{"rank":7,"name":"SLOBBY ROBBY","value":33,"secondary":13.9},{"rank":8,"name":"JENE RENE TETREAU IV","value":15,"secondary":20},{"rank":9,"name":"Treyway6479","value":0,"secondary":0}],"assists":[{"rank":1,"name":"XAVIER LAFLAMME","value":490,"secondary":79.8},{"rank":2,"name":"MATT HUT","value":329,"secondary":78.2},{"rank":3,"name":"GOTTA BE","value":196,"secondary":76.4},{"rank":4,"name":"JIMMY LEMONS","value":187,"secondary":78.8},{"rank":5,"name":"TOP G","value":172,"secondary":76.9},{"rank":6,"name":"SLOBBY ROBBY","value":170,"secondary":82.3},{"rank":7,"name":"WOLFGANG MOZART","value":141,"secondary":75.6},{"rank":8,"name":"JENE RENE TETREAU IV","value":27,"secondary":79.1},{"rank":9,"name":"Treyway6479","value":6,"secondary":75.4}],"plusMinus":[{"rank":1,"name":"XAVIER LAFLAMME","value":483},{"rank":2,"name":"MATT HUT","value":182},{"rank":3,"name":"JIMMY LEMONS","value":63},{"rank":4,"name":"SLOBBY ROBBY","value":51},{"rank":5,"name":"TOP G","value":35},{"rank":6,"name":"WOLFGANG MOZART","value":20},{"rank":7,"name":"Treyway6479","value":-20},{"rank":8,"name":"JENE RENE TETREAU IV","value":-27},{"rank":9,"name":"GOTTA BE","value":-33}],"hits":[{"rank":1,"name":"XAVIER LAFLAMME","value":2189,"secondary":140},{"rank":2,"name":"MATT HUT","value":1029,"secondary":142},{"rank":3,"name":"TOP G","value":562,"secondary":137},{"rank":4,"name":"JIMMY LEMONS","value":458,"secondary":97},{"rank":5,"name":"SLOBBY ROBBY","value":399,"secondary":128},{"rank":6,"name":"GOTTA BE","value":384,"secondary":102},{"rank":7,"name":"WOLFGANG MOZART","value":359,"secondary":41},{"rank":8,"name":"JENE RENE TETREAU IV","value":55,"secondary":20},{"rank":9,"name":"Treyway6479","value":2,"secondary":6}],"saves":[{"rank":1,"name":"JENE RENE TETREAU IV","value":2135,"secondary":71,"ggp":209},{"rank":2,"name":"JIMMY LEMONS","value":220,"secondary":67,"ggp":25},{"rank":3,"name":"WOLFGANG MOZART","value":201,"secondary":68,"ggp":27},{"rank":4,"name":"MATT HUT","value":18,"secondary":85,"ggp":2},{"rank":5,"name":"GOTTA BE","value":14,"secondary":60,"ggp":3}],"shutouts":[{"rank":1,"name":"JENE RENE TETREAU IV","value":21,"secondary":95},{"rank":2,"name":"WOLFGANG MOZART","value":5,"secondary":9},{"rank":3,"name":"JIMMY LEMONS","value":2,"secondary":14},{"rank":4,"name":"GOTTA BE","value":2,"secondary":2}],"milestones":[],"shots":[{"rank":1,"name":"XAVIER LAFLAMME","value":2348,"secondary":39.2},{"rank":2,"name":"MATT HUT","value":1407,"secondary":33.5},{"rank":3,"name":"TOP G","value":656,"secondary":22.9},{"rank":4,"name":"JIMMY LEMONS","value":496,"secondary":19.2},{"rank":5,"name":"GOTTA BE","value":346,"secondary":35},{"rank":6,"name":"WOLFGANG MOZART","value":345,"secondary":23.2},{"rank":7,"name":"SLOBBY ROBBY","value":237,"secondary":13.9},{"rank":8,"name":"JENE RENE TETREAU IV","value":75,"secondary":20},{"rank":9,"name":"Treyway6479","value":13,"secondary":0}],"gwg":[{"rank":1,"name":"XAVIER LAFLAMME","value":43},{"rank":2,"name":"MATT HUT","value":24},{"rank":3,"name":"JIMMY LEMONS","value":7},{"rank":4,"name":"WOLFGANG MOZART","value":6},{"rank":5,"name":"TOP G","value":6},{"rank":6,"name":"GOTTA BE","value":4},{"rank":7,"name":"SLOBBY ROBBY","value":1},{"rank":8,"name":"JENE RENE TETREAU IV","value":0},{"rank":9,"name":"Treyway6479","value":0}],"takeaways":[{"rank":1,"name":"XAVIER LAFLAMME","value":907,"secondary":290},{"rank":2,"name":"MATT HUT","value":684,"secondary":233},{"rank":3,"name":"TOP G","value":285,"secondary":125},{"rank":4,"name":"WOLFGANG MOZART","value":277,"secondary":101},{"rank":5,"name":"SLOBBY ROBBY","value":261,"secondary":91},{"rank":6,"name":"GOTTA BE","value":255,"secondary":117},{"rank":7,"name":"JIMMY LEMONS","value":248,"secondary":112},{"rank":8,"name":"JENE RENE TETREAU IV","value":61,"secondary":27},{"rank":9,"name":"Treyway6479","value":10,"secondary":8}],"blockedShots":[{"rank":1,"name":"XAVIER LAFLAMME","value":152,"secondary":290},{"rank":2,"name":"MATT HUT","value":132,"secondary":233},{"rank":3,"name":"SLOBBY ROBBY","value":123,"secondary":91},{"rank":4,"name":"GOTTA BE","value":109,"secondary":117},{"rank":5,"name":"JIMMY LEMONS","value":98,"secondary":112},{"rank":6,"name":"TOP G","value":71,"secondary":125},{"rank":7,"name":"WOLFGANG MOZART","value":56,"secondary":101},{"rank":8,"name":"JENE RENE TETREAU IV","value":17,"secondary":27},{"rank":9,"name":"Treyway6479","value":2,"secondary":8}],"giveaways":[{"rank":1,"name":"XAVIER LAFLAMME","value":2146,"secondary":290},{"rank":2,"name":"MATT HUT","value":1273,"secondary":233},{"rank":3,"name":"GOTTA BE","value":745,"secondary":117},{"rank":4,"name":"TOP G","value":699,"secondary":125},{"rank":5,"name":"WOLFGANG MOZART","value":556,"secondary":101},{"rank":6,"name":"JIMMY LEMONS","value":525,"secondary":112},{"rank":7,"name":"SLOBBY ROBBY","value":431,"secondary":91},{"rank":8,"name":"JENE RENE TETREAU IV","value":158,"secondary":27},{"rank":9,"name":"Treyway6479","value":35,"secondary":8}],"pim":[{"rank":1,"name":"MATT HUT","value":142,"secondary":233},{"rank":2,"name":"XAVIER LAFLAMME","value":140,"secondary":290},{"rank":3,"name":"TOP G","value":137,"secondary":125},{"rank":4,"name":"SLOBBY ROBBY","value":128,"secondary":91},{"rank":5,"name":"GOTTA BE","value":102,"secondary":117},{"rank":6,"name":"JIMMY LEMONS","value":97,"secondary":112},{"rank":7,"name":"WOLFGANG MOZART","value":41,"secondary":101},{"rank":8,"name":"JENE RENE TETREAU IV","value":20,"secondary":27},{"rank":9,"name":"Treyway6479","value":6,"secondary":8}],"interceptions":[{"rank":1,"name":"XAVIER LAFLAMME","value":197,"secondary":290},{"rank":2,"name":"MATT HUT","value":116,"secondary":233},{"rank":3,"name":"WOLFGANG MOZART","value":82,"secondary":101},{"rank":4,"name":"GOTTA BE","value":72,"secondary":117},{"rank":5,"name":"SLOBBY ROBBY","value":61,"secondary":91},{"rank":6,"name":"JIMMY LEMONS","value":44,"secondary":112},{"rank":7,"name":"TOP G","value":39,"secondary":125},{"rank":8,"name":"JENE RENE TETREAU IV","value":18,"secondary":27},{"rank":9,"name":"Treyway6479","value":3,"secondary":8}],"faceoffPct":[{"rank":1,"name":"SLOBBY ROBBY","value":100,"secondary":91},{"rank":2,"name":"XAVIER LAFLAMME","value":56.1,"secondary":290},{"rank":3,"name":"MATT HUT","value":56.1,"secondary":233},{"rank":4,"name":"WOLFGANG MOZART","value":50,"secondary":101},{"rank":5,"name":"JIMMY LEMONS","value":40.2,"secondary":112},{"rank":6,"name":"JENE RENE TETREAU IV","value":40.2,"secondary":27},{"rank":7,"name":"TOP G","value":37.9,"secondary":125},{"rank":8,"name":"GOTTA BE","value":20,"secondary":117}]}},{"season":"2024","stats":{"date":"08/22/2024","roster":[{"name":"MATT HUT","position":"C"},{"name":"JIMMY LEMONS","position":"LW/LD/GK"},{"name":"TOP G","position":"RW"},{"name":"GOTTA BE","position":"RW/LD"},{"name":"XAVIER LAFLAMME","position":"C/RW"},{"name":"SLOBBY ROBBY","position":"LD/RD"},{"name":"TYLER","position":"LD/RD"},{"name":"WOLFGANG MOZART","position":"LW/LD"},{"name":"HUDSON","position":"LD/RD"},{"name":"JENE RENE TETREAU IV","position":"GK"}],"plusMinus":[],"points":[{"rank":1,"name":"MATT HUT","value":649,"secondary":229,"trend":null},{"rank":2,"name":"TOP G","value":380,"secondary":139,"trend":null},{"rank":3,"name":"JIMMY LEMONS","value":356,"secondary":173,"trend":null},{"rank":4,"name":"XAVIER LAFLAMME","value":273,"secondary":88,"trend":null},{"rank":5,"name":"GOTTA BE","value":133,"secondary":55,"trend":"up"}],"goals":[{"rank":1,"name":"MATT HUT","value":440,"secondary":35.4,"trend":null},{"rank":2,"name":"XAVIER LAFLAMME","value":157,"secondary":26.9,"trend":"up"},{"rank":3,"name":"TOP G","value":146,"secondary":26.3,"trend":"down"},{"rank":4,"name":"JIMMY LEMONS","value":143,"secondary":21.4,"trend":"down"},{"rank":5,"name":"GOTTA BE","value":54,"secondary":25.1,"trend":null}],"assists":[{"rank":1,"name":"TOP G","value":234,"secondary":73.1,"trend":null},{"rank":2,"name":"JIMMY LEMONS","value":213,"secondary":74.7,"trend":null},{"rank":3,"name":"MATT HUT","value":209,"secondary":75.1,"trend":null},{"rank":4,"name":"XAVIER LAFLAMME","value":116,"secondary":77.6,"trend":"up"},{"rank":5,"name":"SLOBBY ROBBY","value":89,"secondary":80.5,"trend":"down"}],"hits":[{"rank":1,"name":"MATT HUT","value":1345,"secondary":124,"trend":null},{"rank":2,"name":"JIMMY LEMONS","value":728,"secondary":116,"trend":null},{"rank":3,"name":"TOP G","value":616,"secondary":164,"trend":null},{"rank":4,"name":"XAVIER LAFLAMME","value":332,"secondary":83,"trend":null},{"rank":4,"name":"SLOBBY ROBBY","value":332,"secondary":34,"trend":null}],"saves":[{"rank":1,"name":"JENE RENE TETREAU IV","value":316,"secondary":77.5,"trend":"up","ggp":22},{"rank":2,"name":"JIMMY LEMONS","value":526,"secondary":76.9,"trend":"down","ggp":42}],"shutouts":[{"rank":1,"name":"JENE RENE TETREAU IV","value":2,"trend":"up"},{"rank":2,"name":"JIMMY LEMONS","value":3,"trend":"down"}],"milestones":[]}},{"season":"2023","stats":{"date":"06/10/23","roster":[],"plusMinus":[],"points":[{"rank":1,"name":"MATT HUT","value":1807,"secondary":578,"trend":null},{"rank":2,"name":"XAVIER LAFLAMME","value":1079,"secondary":321,"trend":null},{"rank":3,"name":"TOP G","value":923,"secondary":353,"trend":null},{"rank":4,"name":"JIMMY LEMONS","value":887,"secondary":429,"trend":null},{"rank":5,"name":"GOTTA BE","value":522,"secondary":257,"trend":null}],"goals":[{"rank":1,"name":"MATT HUT","value":1325,"secondary":42.3,"trend":null},{"rank":2,"name":"XAVIER LAFLAMME","value":589,"secondary":33.7,"trend":null},{"rank":3,"name":"TOP G","value":344,"secondary":27.7,"trend":null},{"rank":4,"name":"GOTTA BE","value":229,"secondary":33.2,"trend":null},{"rank":5,"name":"JIMMY LEMONS","value":228,"secondary":20.9,"trend":null}],"assists":[{"rank":1,"name":"JIMMY LEMONS","value":659,"secondary":73.5,"trend":null},{"rank":2,"name":"TOP G","value":579,"secondary":70.2,"trend":null},{"rank":3,"name":"XAVIER LAFLAMME","value":490,"secondary":72.9,"trend":null},{"rank":4,"name":"MATT HUT","value":482,"secondary":72.7,"trend":null},{"rank":5,"name":"JENE RENE TETREAU IV","value":319,"secondary":69.7,"trend":null}],"hits":[{"rank":1,"name":"JENE RENE TETREAU IV","value":2400,"secondary":63,"trend":null},{"rank":2,"name":"XAVIER LAFLAMME","value":1570,"secondary":264,"trend":null},{"rank":3,"name":"MATT HUT","value":1436,"secondary":279,"trend":null},{"rank":4,"name":"TOP G","value":1400,"secondary":321,"trend":null},{"rank":5,"name":"JIMMY LEMONS","value":1317,"secondary":288,"trend":null}],"saves":[{"rank":1,"name":"JENE RENE TETREAU IV","value":5152,"secondary":74.6,"trend":null},{"rank":2,"name":"JIMMY LEMONS","value":27,"secondary":71.1,"trend":null},{"rank":2,"name":"WOLFGANG MOZART","value":27,"secondary":64.3,"trend":null},{"rank":4,"name":"MATT HUT","value":18,"secondary":69.2,"trend":null},{"rank":5,"name":"TOP G","value":14,"secondary":36.8,"trend":null}],"shutouts":[{"rank":1,"name":"JENE RENE TETREAU IV","value":20,"trend":null},{"rank":2,"name":"JIMMY LEMONS","value":0,"trend":null},{"rank":2,"name":"WOLFGANG MOZART","value":0,"trend":null},{"rank":4,"name":"MATT HUT","value":0,"trend":null},{"rank":5,"name":"TOP G","value":0,"trend":null}],"milestones":[]}}];
 const teamRecords = {"count":102,"streak":24,"computedStreak":11,"historicalFloor":24,"goals":20,"goalMatches":[{"id":"19142234140022","date":"May 15, 2026","opponent":"The Goofballs","scoreUs":20,"scoreThem":4}],"margin":17,"marginMatches":[{"id":"18288406630115","date":"May 4, 2026","opponent":"HammerChickens","scoreUs":18,"scoreThem":1}],"championship":{"season":"Season 4","division":"Elite Division","recordInRun":"16-2-1","opponent":"B A N G N A T I O N","scoreUs":5,"scoreThem":3,"date":"May 3, 2026"}};
+const gameData = data ?? {currentSeasonKey:'2026',currentSeasonLabel:'2026–2027',seasons:[],gameCount:0,liveMembers:[],playerGames:[],team:{goals:{value:0,games:[]},margin:{value:0,games:[]},shots:{value:0,games:[]},streaks:[]},syncedAt:null};
+const liveKey=gameData.currentSeasonKey, liveLabel=gameData.currentSeasonLabel;
+const liveMembers=gameData.liveMembers||[];
+const logText=gameData.seasons.map(s=>`${s.games}${s.played?` of ${s.played}`:''} ${s.label} games`).join(' and ');
+const logSource=`Source: every logged game — ${logText||'no logged games yet'}. Games played before logging began are not on file, so a record here is the best in logged games.`;
 const demo='vault';
 root.classList.add(demo);
 const titles={vault:['BARDOWNSKI HOCKEY CLUB','CLUB<br><em>RECORDS.</em>'],database:['BARDOWNSKI HOCKEY CLUB','CLUB<br><em>RECORDS.</em>'],archive:['BARDOWNSKI HOCKEY CLUB','Club<br><em>records.</em>']};
@@ -21,10 +26,11 @@ document.querySelectorAll('.lab a').forEach(a=>{if(a.href.endsWith('='+demo))a.s
 const format=(n,unit)=>unit==='signed'?(n>0?'+':'')+n.toLocaleString('en-US'):unit==='percent'?n.toFixed(1)+'%':unit==='rate'?n.toFixed(2):n.toLocaleString('en-US');
 const records=[];
 function add(id,title,key,category,{unit='',filter=m=>m.gamesPlayed>0,rule='All skaters in the final-season snapshot. Highest total wins.',value,asc=false,tags=''}={}){
-const ranking=members.filter(filter).map(m=>({name:m.name,tag:m.username,gp:m.gamesPlayed,number:value?value(m):m[key]})).sort((a,b)=>asc?a.number-b.number:b.number-a.number);
+const row=(m,season)=>({name:m.name,tag:m.username,gp:m.gamesPlayed,number:value?value(m):m[key],season,position:m.position||''});
+const ranking=[...members.filter(filter).map(m=>row(m,seasons[0].season)),...liveMembers.filter(m=>Number.isFinite(value?value(m):m[key])).filter(filter).map(m=>row(m,liveKey))].sort((a,b)=>asc?a.number-b.number:b.number-a.number);
 const best=ranking[0]?.number; records.push({id,title,category,scope:'Season',ranking,winners:ranking.filter(r=>r.number===best).map(r=>r.name),value:format(best,unit),unit,rule,tags,status:'verified',description:'Source: frozen NHL 26 club snapshot; last game July 22, 2026. This establishes a leader for the captured season, not an all-time or career record. Exact ties share the lead.'});
 }
-add('pm','Best plus/minus — Overall','plusMinus','Defense',{unit:'signed',tags:'+/- +/− plus minus two way differential'});
+add('pm','Best plus/minus — Overall','plusMinus','Efficiency',{unit:'signed',tags:'+/- +/− plus minus two way differential'});
 add('points','Most points','points','Scoring');add('goals','Most goals','goals','Scoring');add('assists','Most assists','assists','Scoring');add('gwg','Most game-winning goals','gwg','Scoring',{tags:'clutch gwg'});
 add('hits','Most hits','hits','Physical');add('blocks','Most blocked shots','blockedShots','Defense',{tags:'blocks shot blocking'});add('takeaways','Most takeaways','takeaways','Defense',{tags:'steals possession'});add('interceptions','Most interceptions','interceptions','Defense');add('shots','Most shots','shots','Scoring');add('pim','Most penalty minutes','pim','Physical',{tags:'pim penalties',rule:'Highest penalty-minute total. Descriptive record, not a positive-performance award.'});
 add('gp','Most skater appearances','gamesPlayed','Durability',{tags:'games played gp attendance'});
@@ -32,8 +38,8 @@ const minSkater=m=>m.gamesPlayed>=50;
 add('ppg','Highest points per game','points','Efficiency',{unit:'rate',filter:minSkater,value:m=>m.points/m.gamesPlayed,rule:'At least 50 skater games. Exact points ÷ games played, not the rounded API PPG. Highest rate wins.'});
 add('gpg','Highest goals per game','goals','Efficiency',{unit:'rate',filter:minSkater,value:m=>m.goals/m.gamesPlayed,rule:'At least 50 skater games. Goals ÷ skater games; highest rate wins.'});
 add('shotpct','Best shooting percentage','shotPct','Efficiency',{unit:'percent',filter:m=>m.shots>=100,rule:'At least 100 shots. Snapshot shooting percentage; highest wins.',tags:'shot accuracy'});
-add('fpm','Best plus/minus — Forwards','plusMinus','Defense',{unit:'signed',filter:m=>/^(C|LW|RW|F|LF|RF)(\/(C|LW|RW|F|LF|RF))*$/i.test(m.position),rule:'Players listed exclusively at forward positions in the relevant season. Highest plus/minus wins. Mixed forward/defense or unspecified SKTR entries remain eligible for Overall only.',tags:'+/- +/− plus minus forward forwards offense'});
-add('dpm','Best plus/minus — Defense','plusMinus','Defense',{unit:'signed',filter:m=>/^(D|LD|RD)(\/(D|LD|RD))*$/i.test(m.position),rule:'Players listed exclusively at defense positions (D, LD, RD) in the relevant season. Highest plus/minus wins. Mixed forward/defense or unspecified SKTR entries remain eligible for Overall only.',tags:'+/- +/− plus minus defensemen'});
+add('fpm','Best plus/minus — Forwards','plusMinus','Efficiency',{unit:'signed',filter:m=>/^(C|LW|RW|F|LF|RF)(\/(C|LW|RW|F|LF|RF))*$/i.test(m.position),rule:'Players listed exclusively at forward positions in the relevant season. Highest plus/minus wins. Mixed forward/defense or unspecified SKTR entries remain eligible for Overall only.',tags:'+/- +/− plus minus forward forwards offense'});
+add('dpm','Best plus/minus — Defense','plusMinus','Efficiency',{unit:'signed',filter:m=>/^(D|LD|RD)(\/(D|LD|RD))*$/i.test(m.position),rule:'Players listed exclusively at defense positions (D, LD, RD) in the relevant season. Highest plus/minus wins. Mixed forward/defense or unspecified SKTR entries remain eligible for Overall only.',tags:'+/- +/− plus minus defensemen'});
 add('dp','Most points by a defenseman','points','Scoring',{filter:m=>m.position==='D',rule:'Listed defensemen only (D). Highest points total wins.',tags:'defense defensemen'});
 add('db','Most blocks by a defenseman','blockedShots','Defense',{filter:m=>m.position==='D',rule:'Listed defensemen only (D). Highest blocked-shot total wins.',tags:'defensemen'});
 add('pmrate','Best plus/minus per game','plusMinus','Efficiency',{unit:'rate',filter:minSkater,value:m=>m.plusMinus/m.gamesPlayed,rule:'At least 50 skater games. Plus/minus ÷ skater games; highest rate wins.',tags:'+/- +/− plus minus defense'});
@@ -42,22 +48,22 @@ for(const [id,title,key] of [['saves','Most saves','goalieSaves'],['shutouts','M
 add('sv','Best save percentage','savePct','Goaltending',{unit:'percent',filter:m=>m.goalieGP>=20,rule:'At least 20 goalie games. Recorded snapshot save percentage; highest wins.',tags:'sv save rate'});
 add('gaa','Lowest goals-against average','gaa','Goaltending',{unit:'rate',filter:m=>m.goalieGP>=20,asc:true,rule:'At least 20 goalie games. Recorded GAA; lower is better.',tags:'gaa goals against'});
 function pending(id,title,category,scope,rule,tags=''){records.push({id,title,category,scope,status:'pending',winners:[],value:'—',ranking:[],rule,tags,description:'Not calculated from the available data. No winner is claimed until the required data and eligibility rules are verified.'})}
-pending('game-pm','Best plus/minus in one game','Defense','Single game','Requires individual plus/minus from verified match history. Exclude forfeits; keep links to every tied performance.','+/- +/− plus minus');
-pending('game-p','Most points in one game','Scoring','Single game','Requires complete player goals + assists from tracked matches. Exclude forfeits; show opponent, date, and match link.');
-pending('game-save','Most saves in one game','Goaltending','Single game','Requires verified goalie saves from individual tracked matches. Exclude forfeits.');
-pending('game-block','Most blocks in one game','Defense','Single game','Requires verified per-game blocked shots and full match coverage. Exclude forfeits.');
-pending('career-pm','Career plus/minus','Defense','All-time','Requires complete comparable season totals across club history. Current snapshot alone cannot establish a career record.','+/- +/− plus minus history');
+
+
+
+
+
 pending('all-so','All-time single-season shutouts','Goaltending','All-time','Requires comparable historical season totals and coverage verification. The 2025–2026 snapshot has 21; the full historical comparison is not loaded here.');
-pending('faceoff','Best faceoff percentage','Efficiency','Season','A defensible record needs a minimum faceoff-attempt threshold. Attempts are unavailable in the frozen snapshot, so even a displayed 100% is not treated as the record.','faceoffs draws');
-pending('pass','Best passing percentage','Efficiency','Season','Requires pass-attempt counts for minimum-volume eligibility. Attempts are unavailable in this snapshot.','passing completion');
+
+
 // Same three season datasets and labels used by /stats, not a career sum.
 const currentSeason=seasons[0].season;
 const historical=seasons.slice(1);
 const lookup=(s,key,name)=>(s.stats[key]||[]).find(e=>e.name===name);
 const totalKeys={pm:'plusMinus',points:'points',goals:'goals',assists:'assists',hits:'hits',blocks:'blockedShots',takeaways:'takeaways',interceptions:'interceptions',shots:'shots',pim:'pim',gwg:'gwg',saves:'saves',shutouts:'shutouts'};
 for(const r of records.filter(r=>r.status==='verified')){
- r.ranking.forEach(e=>e.season=currentSeason);
- r.covered=[currentSeason];
+ r.ranking.forEach(e=>{e.season=e.season||currentSeason});
+ r.covered=[...new Set([...(r.ranking.some(e=>e.season===liveKey)?[liveKey]:[]),currentSeason])];
  for(const season of historical){
   let entries=[];
   const rows=key=>season.stats[key]||[];
@@ -90,7 +96,7 @@ for(const r of records.filter(r=>r.status==='verified')){
 const shot=records.find(r=>r.id==='shotpct');shot.description+=' Historical shooting percentages cannot meet the 100-shot eligibility check without exact attempts, so those entries are excluded rather than assumed eligible.';
 const sv=records.find(r=>r.id==='sv');sv.description+=' The 2023 saves table has no goalie game counts; 2023 percentages cannot be qualified against the 20-game minimum.';
 const redundant=records.findIndex(r=>r.id==='all-so');if(redundant>=0)records.splice(redundant,1);
-const career=records.find(r=>r.id==='career-pm');career.rule='The 2023 and 2024 Stats tables do not report plus/minus. Career plus/minus cannot be calculated by treating those seasons as zero.';
+
 
 // Position search uses the roster from the entry's own season, not today's
 // lineup. A goalie leaderboard itself supplies the goalie role; missing older
@@ -99,14 +105,48 @@ for (const record of records) {
   for (const entry of record.ranking) {
     entry.position = record.category === 'Goaltending' ? 'G' :
       seasons.find(season => season.season === entry.season)?.stats.roster
-        .find(player => player.name === entry.name)?.position || '';
+        .find(player => player.name === entry.name)?.position || entry.position || '';
   }
+}
+// Single-game player records, computed server-side from the saved match history.
+// Every entry keeps the game it came from, so each record links to its scoresheet.
+// Records set before games were logged, confirmed by the club. They have no
+// scoresheet to link, but they are the record until a logged game beats them.
+const KNOWN_GAME_RECORDS = {
+  'game-save': { name: 'JENE RENE TETREAU IV', number: 38, season: '2024', position: 'G' },
+};
+for (const g of gameData.playerGames) {
+  const ranking = g.ranking.map(e => ({ name: e.name, tag: e.name, position: e.position, number: e.number, season: e.season, game: e.game }));
+  const known = KNOWN_GAME_RECORDS[g.id];
+  if (known && !ranking.some(e => e.number > known.number)) ranking.unshift({ ...known, tag: known.name, game: null, known: true });
+  const best = ranking[0].number;
+  const top = ranking.filter(e => e.number === best);
+  const previous = known && (!g.previous?.length || known.number >= g.previous[0].number) ? [known] : (g.previous && g.previous.length ? g.previous : []);
+  const broken = top.every(e => e.season === liveKey) && previous.length > 0 && best > previous[0].number
+    ? { previous: previous[0].number, holders: [...new Set(previous.map(e => e.name))], games: previous.map(e => e.game).filter(Boolean) } : null;
+  records.push({ id: g.id, title: g.title, category: g.category, scope: 'Single game', status: 'verified', unit: g.unit,
+    tags: g.tags, ranking, covered: [...new Set(ranking.map(e => e.season))], value: format(best, g.unit), kind: 'game',
+    winners: top.map(e => e.game ? `${e.name} · vs ${e.game.opponent}` : `${e.name} · ${e.season}`),
+    games: top.filter(e => e.game).map(e => e.game), broken,
+    rule: g.rule + (known ? ` The ${known.number}-save record from ${known.season} was set before games were logged, so it has no scoresheet; it stands until a logged game beats it.` : ''),
+    description: logSource });
 }
 let searchMatches = new Map();
 let activeSearchMatch;
 const categories=['All','Scoring','Defense','Goaltending','Physical','Efficiency','Durability'];let category='All';
 const $=s=>document.querySelector(s), esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-$('#categories').innerHTML=categories.map(c=>`<button data-category="${c}" aria-pressed="${c==='All'}">${c}<span>${c==='All'?records.length:records.filter(r=>r.category===c).length}</span></button>`).join('');
+$('#categories').innerHTML=categories.map(c=>`<button data-category="${c}" aria-pressed="${c==='All'}">${c}<span></span></button>`).join('');
+let group='all';
+const groupLabels={all:'All records',individual:'Individual',team:'Team'};
+$('.categories > .eyebrow').insertAdjacentHTML('beforebegin',`<p class="eyebrow">RECORD TYPE</p><div id="record-groups" class="record-groups" role="group" aria-label="Record type">${Object.entries(groupLabels).map(([id,label])=>`<button type="button" data-group="${id}" aria-pressed="${id==='all'}">${label}<span></span></button>`).join('')}</div>`);
+const inGroup=r=>group==='all'||(group==='team')===Boolean(r.team);
+const hasGames=r=>Array.isArray(r.games)&&r.games.length>0;
+const clickable=r=>r.team?hasGames(r):true;
+const scopeLabel=r=>r.team?'Club history':r.scope==='Single game'?'Single game':'Single season';
+function updateCounts(){
+  document.querySelectorAll('[data-group]').forEach(b=>{b.querySelector('span').textContent=records.filter(r=>b.dataset.group==='all'||(b.dataset.group==='team')===Boolean(r.team)).length});
+  document.querySelectorAll('[data-category]').forEach(b=>{b.querySelector('span').textContent=records.filter(r=>inGroup(r)&&(b.dataset.category==='All'||r.category===b.dataset.category)).length});
+}
 $('.spotlights').innerHTML=['points','pm','saves'].map((id,i)=>{const r=records.find(r=>r.id===id);return `<button data-record="${id}"><span class="eyebrow">0${i+1} / ${r.title}</span><strong>${r.value}</strong><b>${r.winners.join(' & ')}</b><small>BEST SINGLE SEASON / AVAILABLE HISTORY <span>↗</span></small></button>`}).join('');
 function render() {
   const query = $('#search').value.trim();
@@ -119,11 +159,12 @@ function render() {
     if (!ranking.length) return { ...record, status: 'unavailable' };
     const best = ranking[0].number;
     return { ...record, ranking, value: format(best, record.unit),
-      winners: ranking.filter(entry => entry.number === best).map(entry => `${entry.name} · ${entry.season}`),
+      winners: ranking.filter(entry => entry.number === best).map(entry => record.kind === 'game' && entry.game ? `${entry.name} · vs ${entry.game.opponent}` : `${entry.name} · ${entry.season}`),
+      ...(record.kind === 'game' ? { games: ranking.filter(entry => entry.number === best && entry.game).map(entry => entry.game) } : {}),
       covered: [selectedSeason] };
   }).filter(record => record.status !== 'unavailable' &&
     (selectedSeason === 'all' || record.status === 'verified') &&
-    (category === 'All' || record.category === category) &&
+    inGroup(record) && (category === 'All' || record.category === category) &&
     (scope === 'all' || record.scope === scope) &&
     (status === 'all' || record.status === status));
   const found = searchRecords(viewRecords, query);
@@ -133,16 +174,42 @@ function render() {
   if ($('#sort').value === 'category') filtered.sort((a,b) => a.category.localeCompare(b.category) || a.title.localeCompare(b.title));
   $('#sort option[value="featured"]').textContent = query ? 'Best matches' : 'Featured first';
   $('#search-clear').hidden = !$('#search').value;
-  $('#result-count').textContent = `${filtered.length} of ${records.length} records${query ? ` matching “${query}”` : ''}${category !== 'All' ? ' / '+category : ''}`;
-  $('#results').className = demo === 'database' ? 'table-results' : 'card-results';
-  $('#results').innerHTML = filtered.length ? filtered.map(record => {
+  $('#result-count').textContent = `${filtered.length} of ${records.length} records${query ? ` matching “${query}”` : ''}${group !== 'all' ? ' / '+groupLabels[group] : ''}${category !== 'All' ? ' / '+category : ''}`;
+  $('#results').className = 'grouped-results';
+  const card = record => {
     const match = searchMatches.get(record.id);
     const context = match ? `<span class="record-search-match"><b>${match.isHolder ? 'Matching record holder' : 'Related leaderboard entry'}</b><span>${esc(match.entry.name)}${match.entry.season ? ' · '+esc(match.entry.season) : ''}</span><span>#${match.rank} · ${format(match.entry.number, record.unit)}${match.isHolder ? '' : ' — open to see their ranking'}</span></span>` : '';
-    return `<button class="record ${record.status}" data-record="${record.id}"><span class="record-meta">${record.category} <i>${record.scope}</i></span><h3>${esc(record.title)}</h3><strong>${record.value}</strong><span class="holder">${record.winners.length ? esc(record.winners.join(' & ')) : 'Verification needed'}</span>${context}<span class="record-bottom"><span>${record.status === 'verified' ? (record.team ? 'TEAM RECORD' : record.covered.length === seasons.length ? 'ALL DISPLAYED SEASONS' : 'LIMITED HISTORICAL COVERAGE') : 'NEEDS MORE DATA'}</span><b>Details ↗</b></span></button>`;
-  }).join('') : `<div class="empty"><h3>No records match ${query ? '“'+esc(query)+'”' : 'those filters'}.</h3><p>Try a nickname, position, or stat — like “Slobby Robby”, “goalie”, or “blocks”.<br>Check the category and season filters, or start fresh.</p><button id="empty-reset">Clear all filters</button></div>`;
+    const games = hasGames(record) ? record.games.length : 0;
+    const label = record.status !== 'verified' ? 'NEEDS MORE DATA'
+      : record.team ? (record.id === 'team-streak' && games ? `TEAM RECORD · ${games} OF ${teamRecords.streak} GAMES SAVED` : games ? `TEAM RECORD · ${games} ${games === 1 ? 'GAME' : 'GAMES'}` : 'TEAM RECORD · NO GAME HISTORY')
+      : record.kind === 'game' ? `FROM ${gameData.gameCount} LOGGED GAMES`
+      : record.covered.length === seasons.length ? 'ALL DISPLAYED SEASONS' : 'LIMITED HISTORICAL COVERAGE';
+    const action = !clickable(record) ? '' : record.id === 'team-streak' && games ? '<b>View the saved games ↗</b>' : games ? `<b>${games === 1 ? 'View the game' : 'View the games'} ↗</b>` : '<b>Details ↗</b>';
+    const body = `<span class="record-meta">${record.category} <i>${scopeLabel(record)}</i></span><h3>${esc(record.title)}</h3><strong>${record.value}</strong><span class="holder">${record.winners.length ? esc(record.winners.join(' & ')) : 'Verification needed'}</span>${context}<span class="record-bottom"><span>${label}</span>${action}</span>`;
+    return clickable(record)
+      ? `<button class="record ${record.status}" data-record="${record.id}">${body}</button>`
+      : `<div class="record ${record.status} is-static" aria-label="${esc(record.title)}: ${esc(record.value)}. No game-by-game history is saved for this record.">${body}</div>`;
+  };
+  const section = (title, note, list) => list.length ? `<div class="record-subgroup"><h4>${title}<span>${note}</span></h4><div class="card-results">${list.map(card).join('')}</div></div>` : '';
+  const individual = filtered.filter(r => !r.team), team = filtered.filter(r => r.team);
+  const single = individual.filter(r => r.scope === 'Single game'), seasonal = individual.filter(r => r.scope !== 'Single game');
+  const head = (eyebrow, title, n) => `<div class="record-group-head"><p class="eyebrow">${eyebrow}</p><h3>${title}</h3><span>${n} ${n === 1 ? 'record' : 'records'}</span></div>`;
+  const singleSection = section('Single game', `Best one-game performances from ${gameData.gameCount} logged games, updated as games are played`, single);
+  const seasonSection = section('Single season', 'Best season totals and rates across the Stats tables', seasonal);
+  const teamSection = section(group === 'all' ? 'Team' : 'Bardownski', 'Records with saved games open the games behind them', team);
+  $('#results').innerHTML = filtered.length ? (group === 'all'
+    // All records: one neutral heading; the type only appears as a subsection label.
+    ? `<section class="record-group" aria-label="All records">${head('THE RECORD BOOK', 'All Records', filtered.length)}${singleSection}${seasonSection}${teamSection}</section>`
+    : group === 'individual'
+      ? `<section class="record-group" aria-label="Individual records">${head('INDIVIDUAL RECORDS', 'Player Records', individual.length)}${singleSection}${seasonSection}</section>`
+      : `<section class="record-group" aria-label="Team records">${head('TEAM RECORDS', 'Club Records', team.length)}${teamSection}</section>`)
+  : `<div class="empty"><h3>No records match ${query ? '“'+esc(query)+'”' : 'those filters'}.</h3><p>Try a nickname, position, or stat — like “Slobby Robby”, “goalie”, or “blocks”.<br>Check the category and season filters, or start fresh.</p><button id="empty-reset">Clear all filters</button></div>`;
 }
-function reset(){category='All';$('#search').value='';$('#scope').value='all';$('#season').value='all';$('#availability').value='all';$('#sort').value='featured';document.querySelectorAll('[data-category]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.category==='All'));render()}
+function reset(){category='All';group='all';document.querySelectorAll('[data-group]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.group==='all'));$('#search').value='';$('#scope').value='all';$('#season').value='all';$('#availability').value='all';$('#sort').value='featured';document.querySelectorAll('[data-category]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.category==='All'));render()}
 ['#search','#scope','#availability','#sort','#season'].forEach(s=>$(s).addEventListener(s==='#search'?'input':'change',render));
+$('#season option[value="all"]').insertAdjacentHTML('afterend',`<option value="${liveKey}">${liveLabel} (live)</option>`);
+$('.coverage p').textContent=`${liveLabel} records update automatically as games are logged (${gameData.seasons.find(s=>s.key===liveKey)?.games??0} games so far). Historical records come from 2023, 2024 and the 2025–2026 archive; older tables are partial leaderboards, and plus/minus is absent in 2023 and 2024.`;
+$('.coverage span').textContent=`${liveLabel.slice(0,4)} / 2025 / 2024 / 2023`;
 $('.record-search').addEventListener('submit', event => event.preventDefault(), {signal: controller.signal});
 $('#search-clear').addEventListener('click', () => {
   $('#search').value = ''; render(); $('#search').focus();
@@ -153,20 +220,99 @@ document.addEventListener('click', event => {
   $('#search').value = example.dataset.searchTerm;
   render(); $('#search').focus();
 });
-document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.category){category=b.dataset.category;document.querySelectorAll('[data-category]').forEach(x=>x.setAttribute('aria-pressed',x===b));render()}if(b.dataset.query){reset();$('#search').value=b.dataset.query;render()}if(b.id==='reset'||b.id==='empty-reset')reset();if(b.dataset.record){activeSearchMatch=b.closest('#results')?searchMatches.get(b.dataset.record):undefined;openRecord(b.dataset.record)}});
-function openRecord(id){let r=records.find(r=>r.id===id);const selected=$('#season').value;if(selected!=='all'&&r.status==='verified'){const ranking=r.ranking.filter(e=>e.season===selected);if(ranking.length){const best=ranking[0].number;r={...r,ranking,value:format(best,r.unit),winners:ranking.filter(e=>e.number===best).map(e=>`${e.name} · ${e.season}`)};}else{r={...r,ranking:[],value:'—',winners:[],status:'unavailable',description:`No eligible entries are published for ${selected}. Try Compare all seasons to see the available leaderboard. ${r.description}`};}}$('#detail-content').innerHTML=`<p class="eyebrow">${r.category} / ${r.scope}</p><h2>${r.title}</h2><div class="detail-number">${r.value}</div><p class="detail-holder">${r.winners.join(' & ')||'No verified holder yet'}</p><div class="rule"><b>ELIGIBILITY & CALCULATION</b><p>${r.rule}</p></div>${r.ranking.length?`<h3>Player-season leaderboard</h3><ol class="rankings">${r.ranking.map((x,i)=>`<li${activeSearchMatch&&x.name===activeSearchMatch.entry.name&&x.season===activeSearchMatch.entry.season?' class="ranking-search-match"':''}><span>${i>0&&x.number===r.ranking[i-1].number?'=':i+1}</span><b>${esc(x.name)} <small>· ${x.season||""}</small></b><strong>${format(x.number,r.unit)}</strong></li>`).join('')}</ol>`:''}<p class="source">${r.description}</p>${r.status==='verified'?'<p class="source">Rate thresholds in this demo are proposed eligibility rules, not existing club policy. No voting or awards are inferred from these records.</p>':''}`;$('#detail').showModal();}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.group){group=b.dataset.group;document.querySelectorAll('[data-group]').forEach(x=>x.setAttribute('aria-pressed',x===b));category='All';document.querySelectorAll('[data-category]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.category==='All'));updateCounts();render()}if(b.dataset.category){category=b.dataset.category;document.querySelectorAll('[data-category]').forEach(x=>x.setAttribute('aria-pressed',x===b));render()}if(b.dataset.query){reset();$('#search').value=b.dataset.query;render()}if(b.id==='reset'||b.id==='empty-reset')reset();if(b.dataset.record){activeSearchMatch=b.closest('#results')?searchMatches.get(b.dataset.record):undefined;openRecord(b.dataset.record)}});
+const gameRow = g => {
+  const result = g.scoreUs > g.scoreThem ? 'W' : g.scoreUs < g.scoreThem ? 'L' : 'T';
+  return `<a class="result-row" href="${esc(g.href)}"><span class="result-letter ${result === 'W' ? 'win' : 'loss'}">${result}</span><span class="result-team"><b>${esc(g.opponent)}</b><small>${esc(g.date)} · Final</small></span><strong>${g.scoreUs}<i>–</i>${g.scoreThem}</strong><span class="result-arrow" aria-hidden="true">↗</span></a>`;
+};
+function openRecord(id){
+  let r=records.find(r=>r.id===id);
+  if(!r||!clickable(r))return;
+  const selected=$('#season').value;
+  if(!r.team&&selected!=='all'&&r.status==='verified'){
+    const ranking=r.ranking.filter(e=>e.season===selected);
+    if(ranking.length){const best=ranking[0].number;const top=ranking.filter(e=>e.number===best);r={...r,ranking,value:format(best,r.unit),winners:r.kind==='game'?top.map(e=>e.game?`${e.name} · vs ${e.game.opponent}`:`${e.name} · ${e.season}`):top.map(e=>`${e.name} · ${e.season}`),games:r.kind==='game'?top.filter(e=>e.game).map(e=>e.game):r.games};}
+    else{r={...r,ranking:[],value:'—',winners:[],games:[],status:'unavailable',description:`No eligible entries are published for ${selected}. Try Compare all seasons to see the available leaderboard. ${r.description}`};}
+  }
+  const stamp=r.team?'TEAM RECORD / CLUB HISTORY':r.status!=='verified'?`INDIVIDUAL RECORD / NEEDS MORE DATA`:`INDIVIDUAL RECORD / ${scopeLabel(r).toUpperCase()}`;
+  const games=hasGames(r)?r.games:[];
+  const gamesHeading=r.id==='team-streak'?(streakBroken?`The ${games.length} straight wins`:`${games.length} saved wins from the streak`):games.length===1?'The game':`The ${games.length} games`;
+  const brokenNote=r.broken?`<p class="detail-note detail-note--broken"><b>Record broken in ${liveLabel}.</b> Previous record: ${format(r.broken.previous,r.unit)}${r.broken.holders.length&&r.broken.holders[0]!=='BARDOWNSKI'?` by ${esc(r.broken.holders.join(' & '))}`:''}.</p>`:'';
+  const gameNote=(r.id==='team-streak'&&streakNote?`<p class="detail-note">${streakNote}</p>`:'')+brokenNote;
+  const gameList=games.length?`<h3 class="detail-heading">${gamesHeading}<span>Open a game for the full scoresheet</span></h3>${gameNote}<div class="result-rows">${games.map(gameRow).join('')}</div>`:'';
+  const rankRow=(x,i)=>{
+    const place=i>0&&x.number===r.ranking[i-1].number?'=':i+1;
+    const match=activeSearchMatch&&x.name===activeSearchMatch.entry.name&&x.season===activeSearchMatch.entry.season&&(!x.game||x.game===activeSearchMatch.entry.game);
+    const inner=`<span>${place}</span><b>${esc(x.name)} <small>· ${x.game?`vs ${esc(x.game.opponent)} · ${esc(x.game.date)}`:x.known?`${esc(x.season)} · set before games were logged`:esc(x.season||'')}</small></b><strong>${format(x.number,r.unit)}</strong>${x.game?'<i aria-hidden="true">↗</i>':''}`;
+    return `<li${match?' class="ranking-search-match"':''}>${x.game?`<a href="${esc(x.game.href)}">${inner}</a>`:inner}</li>`;
+  };
+  const ranking=r.ranking.length?`<h3 class="detail-heading">${r.kind==='game'?'Top single-game performances':'Player-season leaderboard'}</h3><ol class="rankings">${r.ranking.map(rankRow).join('')}</ol>`:'';
+  $('#detail-content').innerHTML=`<span class="data-stamp">${stamp}</span><h2 id="detail-title">${esc(r.title)}</h2><div class="detail-figure"><strong class="detail-number">${r.value}</strong><p class="detail-holder">${esc(r.winners.join(' & ')||'No verified holder yet')}</p></div>${gameList}${ranking}<div class="rule"><b>ELIGIBILITY & CALCULATION</b><p>${r.rule}</p></div><p class="source">${r.description}</p>`;
+  const dialog=$('#detail');dialog.setAttribute('aria-labelledby','detail-title');
+  if(!dialog.open)dialog.showModal();
+  dialog.scrollTop=0;
+  const body=$('#detail-content');body.classList.remove('is-entering');void body.offsetWidth;if(root.classList.contains('record-motion'))body.classList.add('is-entering');
+}
 $('.close').addEventListener('click',()=>$('#detail').close());$('#detail').addEventListener('click',e=>{if(e.target===$('#detail')){const r=$('#detail').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)$('#detail').close()}});render();
 
 // Public, read-only snapshot from the records page's match-history source.
-const teamCategory=document.createElement('button');teamCategory.dataset.category='Team';teamCategory.setAttribute('aria-pressed','false');teamCategory.innerHTML='Team<span>4</span>';$('#categories').append(teamCategory);
-function teamRecord(id,title,value,rule,matches=[]){records.push({id,title,category:'Team',scope:'All-time',status:'verified',value:String(value),unit:'',covered:[],ranking:[],winners:['BARDOWNSKI'],rule,description:matches.length?matches.map(m=>`${m.date} · ${m.opponent} · ${m.scoreUs}–${m.scoreThem}`).join(' / '):'Historical team achievement recorded in the existing site. Full match-by-match evidence is not available for the historical streak.',team:true,matches});}
-teamRecord('team-streak','Longest team win streak',teamRecords.streak,'24 wins is the historical record already recorded on the live Records page. The saved 102-entry history computes an 11-game streak; it does not reproduce the historical 24-game run. No dates or opponents are invented.');
-teamRecord('team-goals','Most team goals in one game',teamRecords.goals,'Highest team goal total in the saved match-history snapshot. Forfeits excluded; ties retain all matching games. Not a claim that every historical club game is tracked.',teamRecords.goalMatches);
-teamRecord('team-margin','Largest recorded winning margin','+'+teamRecords.margin,'Largest score differential in the available stored history, excluding forfeits.',teamRecords.marginMatches);
-teamRecord('team-title','Club championships',1,'One confirmed club championship from the existing championship recap: Season 4 Elite Division Club Finals, May 3, 2026. Season 4 is a competition cycle, not the year label in Stats.');
+
+function teamRecord(id,title,value,rule,games=[],description=''){records.push({id,title,category:'Team',scope:'All-time',status:'verified',value:String(value),unit:'',covered:[],ranking:[],winners:['BARDOWNSKI'],rule,team:true,games,
+  description:description||(games.length?`${logSource} Private games excluded.`:'Historical team achievement recorded by the club. No game-by-game history is saved for it, so it cannot be opened.')});}
+const archiveStreak=gameData.team.streaks.find(s=>s.season==='2025')||{value:0,games:[]};
+const liveStreak=gameData.team.streaks.find(s=>s.season===liveKey)||{value:0,games:[]};
+const streakBroken=liveStreak.value>teamRecords.streak;
+const streakRecord=streakBroken?liveStreak.value:teamRecords.streak;
+const streakGames=streakBroken?liveStreak.games:archiveStreak.games;
+const streakMissing=Math.max(0,teamRecords.streak-streakGames.length);
+const streakNote=streakBroken?'':streakGames.length?`Only ${streakGames.length} of the ${teamRecords.streak} wins are in the saved match history. The other ${streakMissing} were played before games were saved, so they can't be shown.`:'';
+teamRecord('team-streak','Longest team win streak',streakRecord,streakBroken?`${streakRecord} straight wins in ${liveLabel}, every game logged. The previous record was ${teamRecords.streak}, set before games were logged.`:'24 straight wins is the club record. The saved games below are the longest unbroken run of wins in the saved match history and were most likely part of the record streak. No dates or opponents are invented for the games that were not saved.',streakGames,streakNote?`${streakNote} ${logSource}`:'');
+records.at(-1).broken=streakBroken?{previous:teamRecords.streak,holders:['BARDOWNSKI'],games:[]}:null;
+records.at(-1).liveBest={value:liveStreak.value,games:liveStreak.games};
+teamRecord('team-goals','Most team goals in one game',gameData.team.goals.value,'Highest Bardownski goal total in one saved game. Private games excluded; games the opponent quit early still count. Ties keep every game.',gameData.team.goals.games);
+records.at(-1).broken=gameData.team.goals.broken?{previous:gameData.team.goals.broken.previous,holders:['BARDOWNSKI'],games:gameData.team.goals.broken.previousGames}:null;
+teamRecord('team-shots','Most team shots in one game',gameData.team.shots.value,'Highest Bardownski shot total in one saved game. Private games excluded; games the opponent quit early still count. Ties keep every game.',gameData.team.shots.games);
+records.at(-1).broken=gameData.team.shots.broken?{previous:gameData.team.shots.broken.previous,holders:['BARDOWNSKI'],games:gameData.team.shots.broken.previousGames}:null;
+teamRecord('team-margin','Largest winning margin','+'+gameData.team.margin.value,'Largest goal differential in one saved game. Private games excluded; games the opponent quit early still count. Ties keep every game.',gameData.team.margin.games);
+records.at(-1).broken=gameData.team.margin.broken?{previous:gameData.team.margin.broken.previous,holders:['BARDOWNSKI'],games:gameData.team.margin.broken.previousGames}:null;
+teamRecord('team-title','Club championships',1,'One confirmed club championship from the existing championship recap: Season 4 Elite Division Club Finals, May 3, 2026. Season 4 is a competition cycle, not the year label in Stats. The full championship run is not in the saved match history.');
+// Season records: flag when the live season already beats every earlier season.
+for(const r of records.filter(r=>r.status==='verified'&&!r.team&&r.kind!=='game')){
+  const top=r.ranking[0];if(!top||top.season!==liveKey)continue;
+  const earlier=r.ranking.filter(e=>e.season!==liveKey);if(!earlier.length)continue;
+  const beat=r.id==='gaa'?top.number<earlier[0].number:top.number>earlier[0].number;
+  if(beat){const prevBest=earlier[0].number;r.broken={previous:prevBest,holders:[...new Set(earlier.filter(e=>e.number===prevBest).map(e=>e.name))],games:[],provisional:r.unit==='rate'||r.unit==='percent'||r.unit==='signed'};}
+}
+const brokenRecords=records.filter(r=>r.broken);
+// Season records this season's leader is closing in on: live best vs the record,
+// as a share of the record (lower-is-better GAA is inverted). Roster players only,
+// since liveMembers is the club roster.
+// Only running season totals (goals, points, saves…) build toward a record; averages,
+// percentages and plus/minus don't, so they never get a progress bar.
+const CHASE_MIN=0.7;
+const chasing=records.filter(r=>r.status==='verified'&&!r.team&&r.kind!=='game'&&!r.broken&&r.unit==='').map(r=>{
+  const live=r.ranking.filter(e=>e.season===liveKey),earlier=r.ranking.filter(e=>e.season!==liveKey);
+  if(!live.length||!earlier.length)return null;
+  const now=live[0].number,rec=earlier[0].number;if(!(now>0)||!(rec>0))return null;
+  const pct=now/rec;if(pct>=1||pct<CHASE_MIN)return null;
+  return {r,now,rec,pct,holder:[...new Set(live.filter(e=>e.number===now).map(e=>e.name))].join(' & ')};
+}).filter(Boolean).sort((a,b)=>b.pct-a.pct);
+const watch=document.createElement('section');watch.className='record-watch';watch.setAttribute('aria-label','Records broken this season');
+const synced=gameData.syncedAt?new Date(gameData.syncedAt).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):null;
+const liveGames=gameData.seasons.find(s=>s.key===liveKey)?.games??0;
+// Two groups: records already broken for good (single games, counting totals that
+// can only grow) and season rates that lead the record but can still drop.
+const lockedRecords=brokenRecords.filter(r=>!r.broken.provisional);
+const pacingRecords=brokenRecords.filter(r=>r.broken.provisional);
+const holderOf=r=>r.team?'Bardownski':[...new Set(r.ranking.filter(e=>e.number===r.ranking[0].number).map(e=>e.name))].join(' & ');
+const watchRow=r=>{const pace=r.broken.provisional;const when=r.kind==='game'&&r.games[0]?r.games[0].date:r.team&&r.games?.length?r.games.at(-1).date:pace&&liveGames?`Through ${liveGames} games`:liveLabel;const kind=r.team?'Team':r.kind==='game'?'Single game':'Season';return `<li><button type="button" class="watch-row" data-record="${r.id}"><span class="watch-num"><strong>${r.value}</strong><span class="watch-was">Old record ${format(r.broken.previous,r.unit)}</span></span><span class="watch-body"><span class="watch-what">${esc(r.title)}</span><span class="watch-who"><b>${esc(holderOf(r))}</b><small>${esc(kind)} · ${esc(when)}</small></span></span><span class="watch-go" aria-hidden="true">↗</span></button></li>`};
+const chaseRow=c=>`<li><button type="button" class="watch-row watch-row--chase" data-record="${c.r.id}"><span class="watch-num"><strong>${format(c.now,c.r.unit)}</strong><span class="watch-was">Record ${format(c.rec,c.r.unit)}</span></span><span class="watch-body"><span class="watch-what">${esc(c.r.title)}</span><span class="watch-who"><b>${esc(c.holder)}</b><small>Season · ${liveGames?`Through ${liveGames} games`:esc(liveLabel)}</small></span><span class="watch-bar" role="img" aria-label="${Math.round(c.pct*100)}% of the record"><span class="watch-track"><i style="width:${(c.pct*100).toFixed(1)}%"></i></span><em>${Math.round(c.pct*100)}% of the record</em></span></span><span class="watch-go" aria-hidden="true">↗</span></button></li>`;
+const watchGroup=(name,note,list,mod,extra=[])=>list.length+extra.length?`<div class="watch-group watch-group--${mod}"><div class="watch-group-head"><h3>${name}</h3><span class="watch-pill">${list.length+extra.length} ${list.length+extra.length===1?'record':'records'}</span><p>${note}</p></div><ul class="watch-list">${list.map(watchRow).join('')}${extra.map(chaseRow).join('')}</ul></div>`:'';
+watch.innerHTML=`<div class="monument-heading watch-heading"><p class="eyebrow">${esc(liveLabel)} SEASON / NEW CLUB RECORDS</p><h2>Records Broken<br>This Season</h2><p>Every club record beaten in ${esc(liveLabel)}, next to the old record it replaced. Rechecked every time a game is logged.${synced?`<br>Updated ${synced}.`:''}</p></div>${brokenRecords.length||chasing.length?watchGroup('Broken','New club records, locked in.',lockedRecords,'locked')+watchGroup('In progress','Season rates ahead of the record right now, and records this season’s leaders are closing in on. Final when the season ends.',pacingRecords,'pace',chasing):`<p class="watch-empty">No records broken yet in ${esc(liveLabel)}.</p>`}`;
+$('.hero').after(watch);
 const showcase=document.createElement('section');showcase.className='team-monuments';showcase.setAttribute('aria-label','Headline team records');
-showcase.innerHTML=`<div class="monument-heading"><p class="eyebrow">TEAM RECORDS</p><h2>Team Record Holders</h2><p>Longest winning streak and highest single-game goal total.</p></div><div class="monument-grid"><button class="monument streak" data-record="team-streak"><span class="monument-kicker">01 / LONGEST WIN STREAK</span><span class="giant-number" data-count="${teamRecords.streak}">${teamRecords.streak}</span><span class="monument-label">CONSECUTIVE<br>WINS.</span><span class="streak-track" aria-hidden="true">${Array.from({length:24},(_,i)=>`<i style="--tick:${i}"></i>`).join('')}</span><span class="monument-foot">HISTORICAL CLUB RECORD <b>View record details ↗</b></span></button><button class="monument goals" data-record="team-goals"><span class="monument-kicker">02 / MOST TEAM GOALS IN ONE GAME</span><span class="giant-number" data-count="${teamRecords.goals}">${teamRecords.goals}</span><span class="monument-label">TEAM GOALS<br>IN ONE GAME</span><span class="score-ticket"><b>BARDOWNSKI <strong>20</strong></b><b>THE GOOFBALLS <strong>4</strong></b><small>MAY 15, 2026 / STORED MATCH RECORD</small></span><span class="monument-foot">MOST TEAM GOALS IN TRACKED HISTORY <b>Open the scoresheet ↗</b></span></button></div><p class="monument-source">24-win streak: historical record retained by the live site. 20-goal game: verified in ${teamRecords.count} stored matches, excluding forfeits. These are different evidence scopes.</p><button class="replay-showcase" type="button">Replay record reveals ↻</button><button class="pause-showcase" type="button" aria-pressed="false">Pause motion</button></section>`;
-$('.hero').after(showcase);
+showcase.innerHTML=`<div class="monument-heading"><p class="eyebrow">TEAM RECORDS</p><h2>Team Record Holders</h2><p>Longest winning streak and highest single-game goal total.</p></div><div class="monument-grid">${streakGames.length?'<button class="monument streak" data-record="team-streak">':`<div class="monument streak" role="group" aria-label="Longest win streak: ${teamRecords.streak} consecutive wins">`}<span class="monument-kicker">01 / LONGEST WIN STREAK</span><span class="giant-number" data-count="${streakRecord}">${streakRecord}</span><span class="monument-label">CONSECUTIVE<br>WINS.</span><span class="streak-track" aria-hidden="true">${Array.from({length:streakRecord},(_,i)=>`<i style="--tick:${i}"></i>`).join('')}</span><span class="monument-foot">HISTORICAL CLUB RECORD${streakGames.length?` <span class="monument-note">${streakBroken?`New club record, set in ${liveLabel}. Previous record: ${teamRecords.streak}.`:`${streakGames.length} of the ${teamRecords.streak} wins are saved; the rest were played before games were saved.`}</span><b>View the ${streakGames.length} saved games ↗</b>`:' <span class="monument-note">Set before games were saved; no game list is on file.</span>'}</span>${streakGames.length?'</button>':'</div>'}${gameData.team.goals.games.length?'<button class="monument goals" data-record="team-goals">':'<div class="monument goals">'}<span class="monument-kicker">02 / MOST TEAM GOALS IN ONE GAME</span><span class="giant-number" data-count="${gameData.team.goals.value}">${gameData.team.goals.value}</span><span class="monument-label">TEAM GOALS<br>IN ONE GAME</span><span class="score-ticket"><b>BARDOWNSKI <strong>${(gameData.team.goals.games[0]||{}).scoreUs??'—'}</strong></b><b>${esc(String((gameData.team.goals.games[0]||{}).opponent||'').toUpperCase())} <strong>${(gameData.team.goals.games[0]||{}).scoreThem??'—'}</strong></b><small>${esc(String((gameData.team.goals.games[0]||{}).date||'').toUpperCase())} / SAVED MATCH RECORD</small></span><span class="monument-foot">MOST TEAM GOALS IN SAVED HISTORY <b>${gameData.team.goals.games.length?'View the game ↗':''}</b></span>${gameData.team.goals.games.length?'</button>':'</div>'}</div><p class="monument-source">24-win streak: historical record retained by the live site. ${gameData.team.goals.value}-goal game: best of ${gameData.gameCount} logged games, private games excluded. Updated as games are played. These are different evidence scopes.</p><button class="replay-showcase" type="button">Replay record reveals ↻</button><button class="pause-showcase" type="button" aria-pressed="false">Pause motion</button></section>`;
+watch.after(showcase);
 $('.spotlights').insertAdjacentHTML('beforebegin','<div class="individual-heading"><p class="eyebrow">SINGLE-SEASON PLAYER RECORDS</p><h2>Points, Plus/Minus & Saves</h2></div>');
 $('.spotlights').classList.add('honor-strip');
 const pmSection=document.createElement('section');pmSection.className='pm-records';
@@ -183,7 +329,7 @@ championship.after(seasonHall);
 function seasonPanel(year){const s=seasons.find(x=>x.season===year);$('#season-panel').innerHTML=`<div class="season-banner"><strong>${year}</strong><div><span class="eyebrow">${year===currentSeason?'TEAM SEASON RECORD':'HISTORICAL SEASON STATS'}</span><h3>${year===currentSeason?'207–144–15 / 366 games':'Published player leaders'}</h3><p>${year===currentSeason?'One confirmed title. Stats tab label “2025”; final game July 22, 2026.':'Team W–L totals and championship counts are not available in this season’s Stats table.'}</p></div></div><div class="season-leaders">${[['points','Points'],['goals','Goals'],['assists','Assists'],['hits','Hits'],['saves','Saves'],['shutouts','Shutouts'],['plusMinus','Plus/minus']].map(([key,label])=>{const e=best(s,key);return `<article><span>${label}</span><strong>${e?format(e.value,key==='plusMinus'?'signed':''):'—'}</strong><b>${e?e.name:'Not recorded'}</b></article>`}).join('')}</div>`;}
 seasonPanel(currentSeason);
 document.addEventListener('click',e=>{const b=e.target.closest('[data-season-panel]');if(b){document.querySelectorAll('[data-season-panel]').forEach(x=>x.setAttribute('aria-pressed',x===b));seasonPanel(b.dataset.seasonPanel)}});
-const originalOpen=openRecord;openRecord=function(id){const r=records.find(x=>x.id===id);if(!r.team){originalOpen(id);return}$('#detail-content').innerHTML=`<p class="eyebrow">CLUB RECORD / ${r.title}</p><h2>${r.title}</h2><div class="detail-number">${r.value}</div><div class="rule"><b>RECORD SCOPE & EVIDENCE</b><p>${r.rule}</p></div><p class="source">${r.description}</p>${r.matches.map(m=>`<a class="match-link" href="https://bardownski-com.vercel.app/matches/${m.id}" target="_blank" rel="noopener noreferrer">${m.date} / ${esc(m.opponent)} / ${m.scoreUs}–${m.scoreThem} · Match details ↗</a>`).join('')}`;$('#detail').showModal()};
+
 // Full-width color chapters sit outside the existing reveal targets, so the
 // backgrounds and diagonal joins stay put when cards animate or filters change.
 function colorBand(tone, elements) {
@@ -193,6 +339,7 @@ function colorBand(tone, elements) {
   band.append(...elements);
   return band;
 }
+const watchBand = colorBand('paper', [watch]);
 const teamBand = colorBand('teal', [showcase]);
 const playerBand = colorBand('paper', [$('.individual-heading'), $('.spotlights'), $('.coverage'), pmSection]);
 const historyBand = colorBand('purple', [championship, seasonHall]);
@@ -205,6 +352,7 @@ function sectionCut(name, target, after = false) {
   if (after) target.after(cut);
   else target.before(cut);
 }
+sectionCut('watch', watchBand);
 sectionCut('team', teamBand);
 sectionCut('players', playerBand);
 sectionCut('history', historyBand);
@@ -214,13 +362,17 @@ sectionCut('end', $('.roadmap'), true);
 
 // Native intersection reveals: no scroll locking and safe static reduced-motion mode.
 const motionPreference=matchMedia('(prefers-reduced-motion: reduce)');let paused=false;let observer;const running=new Set();const animated=[...document.querySelectorAll('.monument,.honor-strip button,.championship,.season-hall')];
+// The hidden streak card is clipped to zero height, which some browsers report as never
+// intersecting, so it stayed invisible until motion was paused. Observe the unclipped
+// monument grid instead and reveal both cards from it.
+const proxies=new Map();
 function countUp(el){const n=el.querySelector('[data-count]');if(!n)return;const final=Number(n.dataset.count);const start=performance.now();function tick(time){const p=Math.min(1,(time-start)/1400);n.textContent=Math.round(final*(1-Math.pow(1-p,3)));if(p<1){const id=requestAnimationFrame(t=>{running.delete(id);tick(t)});running.add(id)}}tick(start)}
-function setupMotion(replay=false){observer?.disconnect();running.forEach(cancelAnimationFrame);running.clear();const enabled=!motionPreference.matches&&!paused&&!root.closest(".hockey-motion-off");root.classList.toggle('record-motion',enabled);$('.pause-showcase').textContent=motionPreference.matches?'Reduced motion enabled':!enabled?'Enable motion':'Pause motion';$('.pause-showcase').setAttribute('aria-pressed',String(!enabled));$('.pause-showcase').disabled=motionPreference.matches;$('.replay-showcase').disabled=!enabled;animated.forEach(el=>{if(replay)el.classList.remove('is-revealed');if(!enabled){el.classList.add('is-revealed');const n=el.querySelector('[data-count]');if(n)n.textContent=n.dataset.count}});if(enabled){observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){if(!e.target.classList.contains('is-revealed'))countUp(e.target);e.target.classList.add('is-revealed');observer.unobserve(e.target)}}),{threshold:.15});animated.forEach(el=>observer.observe(el))}}
+function setupMotion(replay=false){observer?.disconnect();running.forEach(cancelAnimationFrame);running.clear();const enabled=!motionPreference.matches&&!paused&&!root.closest(".hockey-motion-off");root.classList.toggle('record-motion',enabled);$('.pause-showcase').textContent=motionPreference.matches?'Reduced motion enabled':!enabled?'Enable motion':'Pause motion';$('.pause-showcase').setAttribute('aria-pressed',String(!enabled));$('.pause-showcase').disabled=motionPreference.matches;$('.replay-showcase').disabled=!enabled;animated.forEach(el=>{if(replay)el.classList.remove('is-revealed');if(!enabled){el.classList.add('is-revealed');const n=el.querySelector('[data-count]');if(n)n.textContent=n.dataset.count}});if(enabled){observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(!e.isIntersecting)return;(proxies.get(e.target)||[e.target]).forEach(el=>{if(!el.classList.contains('is-revealed'))countUp(el);el.classList.add('is-revealed')});observer.unobserve(e.target)}),{threshold:0,rootMargin:'0px 0px -12% 0px'});proxies.clear();animated.forEach(el=>{const target=el.classList.contains('monument')?el.parentElement:el;proxies.set(target,[...(proxies.get(target)||[]),el])});proxies.forEach((_,target)=>observer.observe(target))}}
 $('.pause-showcase').addEventListener('click',()=>{const shared=root.closest('.hockey-interior')?.querySelector('.hockey-motion-toggle');if(shared){shared.click()}else{paused=!paused;setupMotion()}});$('.replay-showcase').addEventListener('click',()=>{showcase.scrollIntoView({behavior:'smooth'});setupMotion(true)});motionPreference.addEventListener('change',()=>setupMotion(),{signal:controller.signal});setupMotion();
 const shell = root.closest('.hockey-interior');
 const sharedMotion = new MutationObserver(() => setupMotion());
 if (shell) sharedMotion.observe(shell,{attributes:true,attributeFilter:['class']});
-$('#categories [data-category="All"] span').textContent=records.length;render();
+updateCounts();render();
 
  return () => {
   controller.abort(); sharedMotion.disconnect(); observer?.disconnect(); running.forEach(cancelAnimationFrame);
