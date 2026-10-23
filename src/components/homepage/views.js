@@ -166,7 +166,7 @@ function weeklyRace(awards, stale) {
   const fmt = iso => new Date(iso).toLocaleDateString("en-US", {month:"short",day:"numeric",timeZone:"UTC"});
   const range = `${escape(fmt(week.start))} – ${escape(fmt(new Date(Date.parse(week.end) - 1).toISOString()))}`;
   const line = p => p.isGoalie
-    ? `${num(p.games)} GP · ${(Number.isFinite(p.savePct)?p.savePct:0).toFixed(1)}% SV`
+    ? `${num(p.games)} GP · ${(Number.isFinite(p.savePct)?p.savePct:0).toFixed(1)}% SV · ${num(p.shutouts)} SO`
     : `${num(p.games)} GP · ${num(p.points)} PTS`;
   const note = p => p.eligible ? "Qualified" : `Needs ${min - p.games} more GP`;
   const rows = field.map((p,i)=>`<li class="race-row${p.eligible?"":" race-provisional"}"><span class="race-rank">${i+1}</span><b>${escape(getNickname(getDisplayNameFromGamertag(p.name)))}<small>${p.isGoalie?"G":escape(p.position)} · ${note(p)}</small></b><span class="race-line">${line(p)}</span></li>`).join("");

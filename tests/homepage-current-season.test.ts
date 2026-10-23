@@ -321,7 +321,7 @@ test("weekly race sits beside the MVP board, qualified first, smaller than MVP a
   const supplied = awards();
   const provisional = weeklyPlayer({ playerId: "early", name: "u4 Pablo", games: 1, eligible: false, score: 300, rank: 1 });
   const goalie = weeklyPlayer({ playerId: "current-goalie", name: "Rydayro", position: "G", isGoalie: true,
-    games: 3, eligible: true, saves: 61, shotsAgainst: 64, savePct: 61 / 64 * 100, rank: 3 });
+    games: 3, eligible: true, saves: 61, shotsAgainst: 64, savePct: 61 / 64 * 100, shutouts: 2, rank: 3 });
   supplied.currentWeek = week([provisional, weeklyPlayer(), goalie]);
   const root = render(current([], { awards: supplied }));
   const race = one(root, ".open-rank-section > .weekly-race");
@@ -331,7 +331,7 @@ test("weekly race sits beside the MVP board, qualified first, smaller than MVP a
   assert.match(text(race, "h3"), /Player of the Week race/);
   assert.match(text(race, ".race-head small"), /not final/i);
   const rows = race.querySelectorAll(".race-row");
-  assert.deepEqual(rows.map(row => text(row, ".race-line")), ["4 GP · 13 PTS", "3 GP · 95.3% SV", "1 GP · 13 PTS"], "Qualified players lead; provisional follows");
+  assert.deepEqual(rows.map(row => text(row, ".race-line")), ["4 GP · 13 PTS", "3 GP · 95.3% SV · 2 SO", "1 GP · 13 PTS"], "Qualified players lead; provisional follows");
   assert.match(text(rows[2], "small"), /Needs 2 more GP/);
   assert.ok(rows[2].getAttribute("class")!.includes("race-provisional"));
   assert.match(text(race, "> .fine"), /4 games this week · 3\+ games in a role to qualify/);
@@ -362,4 +362,11 @@ test("weekly race lists up to six players so a qualified fourth place is never c
   assert.equal(names.length, 6);
   assert.ok(names[3].startsWith(getDisplayName("COLIN")), "Fourth qualified player is listed");
   assert.match(text(race, "> .fine"), /^\+1 more · /);
+});
+
+test("weekly race displays zero shutouts for goalies", () => {
+  const supplied = awards();
+  supplied.currentWeek = week([weeklyPlayer({ isGoalie: true, position: "G", shutouts: 0 })]);
+  const root = render(current([], { awards: supplied }));
+  assert.match(text(root, ".weekly-race .race-line"), / · 0 SO$/);
 });
