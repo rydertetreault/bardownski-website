@@ -3,6 +3,7 @@
 export const escape = (value) => String(value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
 import { getNickname, getDisplayNameFromGamertag, getNicknameText } from "@/lib/nicknames";
 import { HOCKEY_SEASON } from "@/lib/hockey-season-state";
+import { CLUB_TIME_ZONE } from "@/lib/club-time";
 import { SEASON_REVEAL } from "@/lib/season-reveal";
 import { getPlayerPhoto, FALLBACK_PLAYER_PHOTOS } from "@/lib/player-photos";
 import { GAME_MODE_LABELS, matchDetailHref, matchGameMode } from "@/app/matches/hub-utils";
@@ -137,11 +138,11 @@ function currentWeekly(awards, stale) {
   const stats = player ? (player.isGoalie
     ? [["GAMES",num(player.games)],["SV%",`${(Number.isFinite(player.savePct)?player.savePct:0).toFixed(1)}%`],["SHUTOUTS",num(player.shutouts)]]
     : [["GAMES",num(player.games)],["GOALS",num(player.goals)],["ASSISTS",num(player.assists)],["POINTS",num(player.points)]]) : [];
-  const fmt = iso => new Date(iso).toLocaleDateString("en-US", {month:"long",day:"numeric",timeZone:"UTC"});
+  const fmt = iso => new Date(iso).toLocaleDateString("en-US", {month:"long",day:"numeric",timeZone:CLUB_TIME_ZONE});
   // The stored end is the following Monday (exclusive); label the Sunday it covered.
   const weekLabel = player ? `Week of ${escape(fmt(week.start))} – ${escape(fmt(new Date(Date.parse(week.end) - 1).toISOString()))}` : null;
   const image = player ? getPlayerPhoto(player.name, player.isGoalie) : FALLBACK_PLAYER_PHOTOS.skater;
-  return `<section class="weekly-story section film-weekly cut-weekly" id="weekly" data-module="weekly" data-scroll><div class="weekly-image" data-reveal>${photo("", image.alt, "", false, "center", image.src)}<span class="image-caption">BARDOWNSKI HOCKEY</span><span class="weekly-seal" aria-hidden="true">PLAYER<br>OF THE<br>WEEK ★</span></div><article class="weekly-copy" data-reveal>${tag(`PLAYER OF THE WEEK / ${HOCKEY_SEASON}`)}<h2>${title}</h2><p>${player ? `${weekLabel}. ${winners.length > 1 ? "Shared honors for a tied week." : "Announced after the week closed Monday at 00:00 UTC."}` : "The first Player of the Week is announced once a full week of games is complete. No projections in the meantime."}${stale ? " Showing the latest saved announcement." : ""}</p><div class="mini-stats">${stats.map(([label,v])=>`<div><strong>${escape(v)}</strong><small>${label}</small></div>`).join("")}</div><a class="text-link" href="/stats#weekly-honors">All Player of the Week wins ↗</a><small class="fine">Minimum three games in a role to qualify. Winners are announced each Monday at 00:00 UTC.</small></article></section>`;
+  return `<section class="weekly-story section film-weekly cut-weekly" id="weekly" data-module="weekly" data-scroll><div class="weekly-image" data-reveal>${photo("", image.alt, "", false, "center", image.src)}<span class="image-caption">BARDOWNSKI HOCKEY</span><span class="weekly-seal" aria-hidden="true">PLAYER<br>OF THE<br>WEEK ★</span></div><article class="weekly-copy" data-reveal>${tag(`PLAYER OF THE WEEK / ${HOCKEY_SEASON}`)}<h2>${title}</h2><p>${player ? `${weekLabel}. ${winners.length > 1 ? "Shared honors for a tied week." : "Announced after the week closed at midnight Sunday, Central Time."}` : "The first Player of the Week is announced once a full week of games is complete. No projections in the meantime."}${stale ? " Showing the latest saved announcement." : ""}</p><div class="mini-stats">${stats.map(([label,v])=>`<div><strong>${escape(v)}</strong><small>${label}</small></div>`).join("")}</div><a class="text-link" href="/stats#weekly-honors">All Player of the Week wins ↗</a><small class="fine">Minimum three games in a role to qualify. Weeks run Monday–Sunday, Central Time. Winners are announced when Sunday ends at midnight CT.</small></article></section>`;
 }
 /** Season role totals shown instead of the internal model score. */
 export function mvpStatLine(p) {
@@ -163,14 +164,14 @@ function weeklyRace(awards, stale) {
   const ordered = [...week.standings.filter(p => p.eligible), ...week.standings.filter(p => !p.eligible)];
   const field = ordered.slice(0, RACE_ROWS);
   const more = ordered.length - field.length;
-  const fmt = iso => new Date(iso).toLocaleDateString("en-US", {month:"short",day:"numeric",timeZone:"UTC"});
+  const fmt = iso => new Date(iso).toLocaleDateString("en-US", {month:"short",day:"numeric",timeZone:CLUB_TIME_ZONE});
   const range = `${escape(fmt(week.start))} – ${escape(fmt(new Date(Date.parse(week.end) - 1).toISOString()))}`;
   const line = p => p.isGoalie
     ? `${num(p.games)} GP · ${(Number.isFinite(p.savePct)?p.savePct:0).toFixed(1)}% SV · ${num(p.shutouts)} SO`
     : `${num(p.games)} GP · ${num(p.points)} PTS`;
   const note = p => p.eligible ? "Qualified" : `Needs ${min - p.games} more GP`;
   const rows = field.map((p,i)=>`<li class="race-row${p.eligible?"":" race-provisional"}"><span class="race-rank">${i+1}</span><b>${escape(getNickname(getDisplayNameFromGamertag(p.name)))}<small>${p.isGoalie?"G":escape(p.position)} · ${note(p)}</small></b><span class="race-line">${line(p)}</span></li>`).join("");
-  return `<aside class="weekly-race" data-reveal aria-labelledby="weekly-race-title"><div class="race-head"><p class="eyebrow">THIS WEEK / ${range}</p><h3 id="weekly-race-title">Player of the Week race</h3><small>In progress · Not final · Announced Monday 00:00 UTC</small></div>${rows ? `<ol class="race-rows">${rows}</ol>` : '<p class="fine">No games recorded this week yet.</p>'}<small class="fine">${more > 0 ? `+${num(more)} more · ` : ""}${num(week.games)} ${week.games===1?"game":"games"} this week · ${min}+ games in a role to qualify.${stale ? " Last saved standings." : ""}</small></aside>`;
+  return `<aside class="weekly-race" data-reveal aria-labelledby="weekly-race-title"><div class="race-head"><p class="eyebrow">THIS WEEK / ${range}</p><h3 id="weekly-race-title">Player of the Week race</h3><small>In progress · Not final · Announced after Sunday, midnight CT</small></div>${rows ? `<ol class="race-rows">${rows}</ol>` : '<p class="fine">No games recorded this week yet.</p>'}<small class="fine">${more > 0 ? `+${num(more)} more · ` : ""}${num(week.games)} ${week.games===1?"game":"games"} this week · ${min}+ games in a role to qualify.${stale ? " Last saved standings." : ""}</small></aside>`;
 }
 /** @param {import("@/lib/hockey-awards").HockeyAwards|null} awards @param {boolean} stale */
 function currentRankings(awards, stale) {

@@ -1,6 +1,7 @@
 import type { ClubMember } from "@/lib/chelstats";
 import type { WeeklyAwardEntry, WeeklyAwardHistory } from "@/lib/hockey-awards";
 import { HOCKEY_SEASON } from "@/lib/hockey-season-state";
+import { addClubWeeks, formatClubDate } from "@/lib/club-time";
 import { getDisplayName } from "@/lib/nicknames";
 import { resolveNhl27Name } from "@/lib/nhl27-api";
 import WeeklyResults, { type WeeklyResultWeek } from "./WeeklyResults";
@@ -12,12 +13,13 @@ function statLine(entry: WeeklyAwardEntry): string[] {
   return [`${entry.goals} G`, `${entry.assists} A`, `${entry.points} PTS`];
 }
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-/** "Oct 12–18" or "Sep 28–Oct 4", from a UTC Monday start. */
+/** "Oct 12–18" or "Sep 28–Oct 4", from a Central-Time Monday start (Monday through Sunday, CT). */
 function weekLabel(startIso: string): string {
-  const start = new Date(startIso), end = new Date(start.getTime() + 6 * 24 * 60 * 60 * 1000);
-  const first = `${MONTHS[start.getUTCMonth()]} ${start.getUTCDate()}`;
-  const last = start.getUTCMonth() === end.getUTCMonth() ? `${end.getUTCDate()}` : `${MONTHS[end.getUTCMonth()]} ${end.getUTCDate()}`;
+  const start = Date.parse(startIso), sunday = addClubWeeks(start, 1) - 1;
+  const month = (ms: number) => formatClubDate(ms, { month: "short" });
+  const day = (ms: number) => formatClubDate(ms, { day: "numeric" });
+  const first = `${month(start)} ${day(start)}`;
+  const last = month(start) === month(sunday) ? day(sunday) : `${month(sunday)} ${day(sunday)}`;
   return `${first}–${last}`;
 }
 

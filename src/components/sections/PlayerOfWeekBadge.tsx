@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import type { WeeklyPlayer } from "@/lib/discord";
 import type { PotwWeek } from "@/lib/articles";
 import { getNickname } from "@/lib/nicknames";
+import { CLUB_TIME_ZONE } from "@/lib/club-time";
 
 interface Props {
   player: WeeklyPlayer;
@@ -26,7 +27,7 @@ function formatWeek(week?: PotwWeek | null): string | null {
     new Date(ts * 1000).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
-      timeZone: "UTC",
+      timeZone: CLUB_TIME_ZONE,
     });
   return `${fmt(week.start)} – ${fmt(week.end)}`;
 }

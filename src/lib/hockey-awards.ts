@@ -1,6 +1,7 @@
 /** Pure NHL27 awards over the supplied tracker data. No storage, clocks or archive fallback. */
 import { computeMvpOddsFromMembers, mvpDefensePerGame, mvpForwardPerGame, mvpMarketFromScores, type MvpSkaterRates, type ChelstatsData, type ClubMember, type ClubMatch, type MatchPlayerStat } from "./chelstats";
 import { resolveNhl27Name } from "./nhl27-api";
+import { addClubWeeks, clubWeekStart } from "./club-time";
 
 export interface SeasonMvpEntry {
   name: string; position: string; isGoalie: boolean; score: number; rank: number; games: number;
@@ -38,7 +39,7 @@ export interface AwardCoverage {
   samples: AwardCoverageSample[];
 }
 export interface WeeklyAwards {
-  /** UTC Monday, inclusive; following Monday, exclusive. */
+  /** Monday 00:00 Central Time, inclusive; following Monday 00:00 Central, exclusive (see club-time.ts). */
   start: string; end: string; status: "in-progress" | "complete";
   games: number; minimumGames: 3;
   standings: WeeklyAwardEntry[];
@@ -54,7 +55,7 @@ export interface HockeyAwards {
 }
 export interface WeeklyAwardHistoryEntry {
   playerId: string; name: string; wins: number; rank: number;
-  /** UTC Monday start of the latest completed week won, not a match timestamp. */
+  /** Central-Time Monday start of the latest completed week won, not a match timestamp. */
   lastWin: string;
 }
 export interface WeeklyAwardHistory {
@@ -68,7 +69,6 @@ export interface WeeklyAwardHistory {
   totalAwards: number;
 }
 
-const WEEK = 7 * 24 * 60 * 60 * 1000;
 /** Weekly goalie replacement level: backups on this team sit around 67-68% SV%. */
 const GOALIE_REPLACEMENT_SV_PCT = 65;
 const GOALIE_REPLACEMENT_GAA = 5;
@@ -209,7 +209,7 @@ function rosterKeys(members: readonly ClubMember[]): Set<string> {
  * no standings, no leaders, no winners. An empty roster fails closed (nobody qualifies). */
 function weekly(matches: ClubMatch[], start: number, now: number, members: readonly ClubMember[]): WeeklyAwards {
   const roster = rosterKeys(members);
-  const end = start + WEEK;
+  const end = addClubWeeks(start, 1);
   const status = now >= end ? "complete" : "in-progress";
   const coverage: AwardCoverage = { inputGames: matches.length, acceptedGames: 0, skippedGames: 0,
     acceptedAppearances: 0, skippedAppearances: 0, reasons: {}, samples: [] };
@@ -345,12 +345,9 @@ function weekly(matches: ClubMatch[], start: number, now: number, members: reado
 export function calculateHockeyAwards(data: ChelstatsData, asOf: string): HockeyAwards {
   const now = Date.parse(asOf);
   if (!/T.*(?:Z|[+-]\d{2}:\d{2})$/i.test(asOf) || !finite(now)) throw new RangeError("Awards asOf must be an ISO timestamp with timezone");
-  const day = new Date(now);
-  day.setUTCHours(0, 0, 0, 0);
-  day.setUTCDate(day.getUTCDate() - (day.getUTCDay() + 6) % 7);
-  const monday = day.getTime();
+  const monday = clubWeekStart(now);
   return { asOf: new Date(now).toISOString(), seasonMvp: calculateSeasonMvp(data.members),
-    currentWeek: weekly(data.matches, monday, now, data.members), lastCompletedWeek: weekly(data.matches, monday - WEEK, now, data.members) };
+    currentWeek: weekly(data.matches, monday, now, data.members), lastCompletedWeek: weekly(data.matches, addClubWeeks(monday, -1), now, data.members) };
 }
 
 /** Pure history over current NHL27 tracker matches supplied by the caller (no archive fallback).
@@ -369,11 +366,7 @@ export function calculateWeeklyAwardHistory(matches: ClubMatch[], asOf: string, 
   const starts = new Set<number>();
   for (const m of matches) {
     if (!m || !finite(m.timestamp)) continue;
-    const day = new Date(m.timestamp * 1000);
-    if (!finite(day.getTime())) continue;
-    day.setUTCHours(0, 0, 0, 0);
-    day.setUTCDate(day.getUTCDate() - (day.getUTCDay() + 6) % 7);
-    const start = day.getTime(), end = start + WEEK;
+    const start = clubWeekStart(m.timestamp * 1000), end = addClubWeeks(start, 1);
     // Date's finite representable range is narrower than Number's finite range.
     if (finite(start) && finite(new Date(end).getTime()) && end <= now) starts.add(start);
   }

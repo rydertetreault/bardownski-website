@@ -5,8 +5,9 @@ import { calculateHockeyAwards, calculateSeasonMvp } from "../src/lib/hockey-awa
 import { americanOddsFromProbability, computeMvpOddsFromMembers, mvpMarketFromScores, type ChelstatsData, type ClubMatch, type ClubMember, type MatchPlayerStat } from "../src/lib/chelstats";
 import { parseNhl27Snapshot } from "../src/lib/nhl27-api";
 
-const MONDAY = "2026-09-14T00:00:00.000Z";
-const SUNDAY = "2026-09-13T23:59:59.000Z";
+// Weeks are Central Time: Monday 2026-09-14 00:00 CDT is 05:00 UTC; the last second of Sunday is 04:59:59 UTC.
+const MONDAY = "2026-09-14T05:00:00.000Z";
+const SUNDAY = "2026-09-14T04:59:59.000Z";
 const timestamp = (iso: string) => Date.parse(iso) / 1000;
 type Player = MatchPlayerStat & { playerId?: string };
 function player(name = "A", overrides: Partial<Player> = {}): Player {
@@ -181,12 +182,12 @@ test("actual source position spellings, rather than first position or SKTR guess
 });
 
 test("Monday deadline, current provisional leaders, completed only winners and no future/private/archive games", () => {
-  const rows = [...games(), game("start", [player()], { timestamp: timestamp("2026-09-07T00:00:00Z") }),
+  const rows = [...games(), game("start", [player()], { timestamp: timestamp("2026-09-07T05:00:00Z") }),
     game("deadline", [player()], { timestamp: timestamp(MONDAY) }),
     game("last-second", [player()], { timestamp: timestamp(SUNDAY) }),
-    game("future", [player()], { timestamp: timestamp("2026-09-15T00:00:00Z") }),
+    game("future", [player()], { timestamp: timestamp("2026-09-15T05:00:00Z") }),
     game("old", [player()], { timestamp: timestamp("2026-07-20T00:00:00Z") }),
-    game("preweek", [player()], { timestamp: timestamp("2026-09-06T23:59:59Z") }),
+    game("preweek", [player()], { timestamp: timestamp("2026-09-07T04:59:59Z") }),
     game("private", [player()], { matchType: "private" })];
   const before = calculateHockeyAwards(data(rows), SUNDAY);
   assert.equal(before.currentWeek.games, 5); assert.deepEqual(before.currentWeek.winners, []);
@@ -195,21 +196,22 @@ test("Monday deadline, current provisional leaders, completed only winners and n
   assert.equal(after.currentWeek.games, 1); assert.equal(after.currentWeek.leaders[0].eligible, false);
   assert.equal(after.lastCompletedWeek.games, 5); assert.equal(after.lastCompletedWeek.winners.length, 1);
   assert.equal(after.lastCompletedWeek.status, "complete"); assert.equal(after.currentWeek.start, MONDAY);
-  assert.equal(after.lastCompletedWeek.start, "2026-09-07T00:00:00.000Z");
+  assert.equal(after.lastCompletedWeek.start, "2026-09-07T05:00:00.000Z");
   assert.equal(after.lastCompletedWeek.end, MONDAY);
   assert.equal(after.lastCompletedWeek.coverage.acceptedGames + after.lastCompletedWeek.coverage.skippedGames, rows.length);
 });
 
 test("new year, timezone conversion and repeated-read rollover never reuse an older completed award", () => {
   const rows = games().map(m => ({ ...m, timestamp: timestamp("2026-12-31T23:00:00Z") }));
-  const before = calculateHockeyAwards(data(rows), "2027-01-03T23:59:59Z");
-  assert.equal(before.currentWeek.start, "2026-12-28T00:00:00.000Z");
-  const after = calculateHockeyAwards(data(rows), "2027-01-03T19:00:00-05:00");
-  assert.equal(after.currentWeek.start, "2027-01-04T00:00:00.000Z");
+  // Sunday 11:59:59 PM CST is still the week of Dec 28; 1 AM Eastern is Monday midnight Central.
+  const before = calculateHockeyAwards(data(rows), "2027-01-04T05:59:59Z");
+  assert.equal(before.currentWeek.start, "2026-12-28T06:00:00.000Z");
+  const after = calculateHockeyAwards(data(rows), "2027-01-04T01:00:00-05:00");
+  assert.equal(after.currentWeek.start, "2027-01-04T06:00:00.000Z");
   assert.equal(after.lastCompletedWeek.winners.length, 1); assert.equal(after.currentWeek.games, 0);
-  const next = calculateHockeyAwards(data(rows), "2027-01-11T00:00:00Z");
+  const next = calculateHockeyAwards(data(rows), "2027-01-11T06:00:00Z");
   assert.equal(next.lastCompletedWeek.games, 0); assert.deepEqual(next.lastCompletedWeek.winners, []);
-  assert.equal(next.lastCompletedWeek.start, "2027-01-04T00:00:00.000Z");
+  assert.equal(next.lastCompletedWeek.start, "2027-01-04T06:00:00.000Z");
   assert.throws(() => calculateHockeyAwards(data([]), "not-a-date"), RangeError);
   assert.throws(() => calculateHockeyAwards(data([]), "2027-01-04T00:00:00"), RangeError);
 });

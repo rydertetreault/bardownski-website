@@ -2,6 +2,7 @@
 import type { ChelstatsData, ClubMatch, ClubMember, ClubStats, MatchPlayerStat } from "./chelstats";
 import { parseClubCrest } from "./club-crest";
 import { resolveMatchPosition } from "./match-position";
+import { formatClubDate } from "./club-time";
 
 export const NHL27_IDENTITY = Object.freeze({
   gameTitle: "NHL27",
@@ -193,6 +194,11 @@ function gameMode(r: Row): ClubMatch["gameMode"] {
  * skaters plus a goalie, so five or more of our players can only be 6v6. Every
  * pre-capture game with four or fewer of ours was verified as 3s (Sept 2026).
  */
+/** Display date of a game on the club's Central Time calendar ("October 25, 2026"). */
+export function nhl27MatchDate(timestamp: number): string {
+  return formatClubDate(timestamp * 1000, { month: "long", day: "numeric", year: "numeric" });
+}
+
 export function withNhl27GameMode(match: ClubMatch): ClubMatch {
   if (match.gameMode === "3s" || match.gameMode === "6s") return match;
   return { ...match, gameMode: match.players.length >= 5 ? "6s" : "3s" };
@@ -228,7 +234,7 @@ function game(value: unknown, matchType: ClubMatch["matchType"]): ClubMatch {
   const mode = gameMode(ours);
   return {
     id: id(r.matchId, `${p}.matchId`), timestamp,
-    date: new Date(timestamp * 1000).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }),
+    date: nhl27MatchDate(timestamp),
     opponent: details.name == null ? `Club #${opponentId}` : text(details.name, `${p}.opponent.details.name`),
     opponentClubId: opponentId,
     ...(opponentCrest ? { opponentCrest } : {}),

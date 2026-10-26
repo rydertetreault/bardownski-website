@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { type ClubMember } from "@/lib/chelstats";
 import { calculateSeasonMvp } from "@/lib/hockey-awards";
+import { formatClubDate } from "@/lib/club-time";
 import { getDisplayNameFromGamertag, getNickname } from "@/lib/nicknames";
 import { HOCKEY_SEASON, type HockeySeasonState } from "@/lib/hockey-season-state";
 import "./season-tracking.css";
@@ -44,9 +45,9 @@ export function MvpTracker({ members }: { members: ClubMember[] }) {
 function TrackingTime({ value }: { value: string }) {
   const date = new Date(value);
   if (!Number.isFinite(date.getTime())) return <>Timestamp unavailable</>;
-  return <time dateTime={date.toISOString()}>{date.toLocaleString("en-US", {
-    month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "UTC",
-  })} UTC</time>;
+  return <time dateTime={date.toISOString()}>{formatClubDate(date, {
+    month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short",
+  })}</time>;
 }
 
 /** Optional state preserves existing pending-only callers. Never substitute archive data. */

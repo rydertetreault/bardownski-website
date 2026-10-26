@@ -1,5 +1,6 @@
 import type { HockeyAwards } from "@/lib/hockey-awards";
 import { getDisplayNameFromGamertag, getNickname } from "@/lib/nicknames";
+import { addClubWeeks, clubWeekStart, formatClubDate } from "@/lib/club-time";
 import "./weekly-tracker.css";
 
 export type WeeklyTrackerProps = { awards: HockeyAwards | null; stale?: boolean };
@@ -12,18 +13,16 @@ function WeekRange({ start, end }: { start: string; end: string }) {
   const first = new Date(start);
   const last = new Date(end);
   if (!Number.isFinite(first.getTime()) || !Number.isFinite(last.getTime())) return <>Week dates unavailable</>;
-  const format = (date: Date) => date.toLocaleDateString("en-US", {
-    month: "short", day: "numeric", year: "numeric", timeZone: "UTC",
-  });
-  return <><time dateTime={first.toISOString()}>{format(first)} 00:00</time>{" – "}<time dateTime={last.toISOString()}>{format(last)} 00:00</time> UTC (end exclusive)</>;
+  // Label the Sunday the week covers, not the exclusive Monday cutoff.
+  const lastDay = new Date(last.getTime() - 1);
+  const format = (date: Date) => formatClubDate(date, { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+  return <><time dateTime={first.toISOString()}>{format(first)}</time>{" – "}<time dateTime={lastDay.toISOString()}>{format(lastDay)}</time> (Central Time)</>;
 }
 
 /** Calendar labels only; all standings and selections come from the current-season data layer. */
 function currentWeek() {
-  const start = new Date();
-  start.setUTCHours(0, 0, 0, 0);
-  start.setUTCDate(start.getUTCDate() - (start.getUTCDay() + 6) % 7);
-  return { start: start.toISOString(), end: new Date(start.getTime() + 7 * 86400000).toISOString() };
+  const start = clubWeekStart(Date.now());
+  return { start: new Date(start).toISOString(), end: new Date(addClubWeeks(start, 1)).toISOString() };
 }
 
 function Highlights({ entry }: { entry: HockeyAwards["currentWeek"]["standings"][number] }) {
@@ -34,7 +33,7 @@ function Highlights({ entry }: { entry: HockeyAwards["currentWeek"]["standings"]
 
 export function WeeklyTracker({ awards, stale = false }: WeeklyTrackerProps) {
   const calendar = currentWeek();
-  const previousStart = new Date(Date.parse(calendar.start) - 7 * 86400000).toISOString();
+  const previousStart = new Date(addClubWeeks(Date.parse(calendar.start), -1)).toISOString();
   // A stale snapshot can cross Monday's cutoff. Never relabel its old race as the current week.
   const current = awards?.currentWeek.start === calendar.start ? awards.currentWeek : null;
   const previous = awards?.lastCompletedWeek.start === previousStart ? awards.lastCompletedWeek : null;
@@ -46,7 +45,7 @@ export function WeeklyTracker({ awards, stale = false }: WeeklyTrackerProps) {
   return <section id="weekly-tracker" className="weekly-tracker" aria-labelledby="weekly-tracker-title">
     <header className="weekly-heading">
       <div><p className="weekly-eyebrow">NHL 27 · 2026–2027 / Weekly performance</p><h2 id="weekly-tracker-title">Player of the Week</h2></div>
-      <p className="weekly-period">Current UTC week<br /><WeekRange {...calendar} /></p>
+      <p className="weekly-period">Current week<br /><WeekRange {...calendar} /></p>
     </header>
     <div className="weekly-panel">
       {saved && <p className="weekly-stale" role="status">Saved snapshot — not live. The latest refresh is not confirmed; only data matching the displayed weeks is shown.</p>}
@@ -84,7 +83,7 @@ export function WeeklyTracker({ awards, stale = false }: WeeklyTrackerProps) {
         <summary>How Player of the Week is tracked</summary>
         <p>The historical position-aware weekly formula scores forwards, defensemen and goaltenders separately. It weighs scoring, plus/minus, physical and defensive contributions for skaters; save percentage, goals-against average, saves, wins and weighted shutouts for goalies, with a games-played workload adjustment. Scores are performance ratings, not votes or probabilities.</p>
         <p>Each unique player appears once, using their strongest qualifying scored role (or strongest provisional role if none qualifies), never the sum of roles. At least three recorded appearances in that role are required for selection. Equal scores share a rank and eligible ties share the award. Provisional standings and in-progress leaders are not final awards.</p>
-        <p>Only recorded games and valid recorded player appearances contribute, including recorded partial games; the tracker may not capture every game. Weeks run Monday 00:00 UTC inclusive to the following Monday 00:00 UTC exclusive. The award cutoff is Monday 00:00 UTC. This tracker uses current NHL 27 data only, not old Player of the Week selections.</p>
+        <p>Only recorded games and valid recorded player appearances contribute, including recorded partial games; the tracker may not capture every game. Weeks run Monday through Sunday on Central Time: from Monday 12:00 AM CT up to the next Monday 12:00 AM CT. The award is decided when Sunday ends at midnight Central. This tracker uses current NHL 27 data only, not old Player of the Week selections.</p>
       </details>
     </div>
   </section>;

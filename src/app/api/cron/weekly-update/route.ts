@@ -13,6 +13,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
 import { fetchChelstatsData, getPositionBucket } from "@/lib/chelstats";
 import { pollAndAccumulate, getMatchHistory } from "@/lib/match-history";
+import { addClubWeeks, clubWeekStart } from "@/lib/club-time";
 import type { WeeklyPlayer } from "@/lib/discord";
 import type { Article } from "@/lib/news";
 
@@ -308,20 +309,12 @@ export async function GET(request: NextRequest) {
     // Pull from the full Redis match history (not the API's 5-game limit)
     const allMatches = await getMatchHistory(chelstats);
 
-    // Window = the most recently completed Mon-Sun UTC week, so POTW lines
-    // up with the weekly groupings on the matches page rather than a
+    // Window = the most recently completed Mon-Sun Central Time week, so POTW
+    // lines up with the weekly groupings on the matches page rather than a
     // rolling 7-day band that drifts with wall-clock time.
-    const nowDate = new Date();
-    const utcDay = nowDate.getUTCDay();
-    const daysSinceLastSunday = utcDay === 0 ? 7 : utcDay;
-    const weekEndDate = new Date(nowDate);
-    weekEndDate.setUTCDate(weekEndDate.getUTCDate() - daysSinceLastSunday);
-    weekEndDate.setUTCHours(23, 59, 59, 999);
-    const weekStartDate = new Date(weekEndDate);
-    weekStartDate.setUTCDate(weekStartDate.getUTCDate() - 6);
-    weekStartDate.setUTCHours(0, 0, 0, 0);
-    const weekStartTs = Math.floor(weekStartDate.getTime() / 1000);
-    const weekEndTs = Math.floor(weekEndDate.getTime() / 1000);
+    const thisWeekStart = clubWeekStart(Date.now());
+    const weekStartTs = Math.floor(addClubWeeks(thisWeekStart, -1) / 1000);
+    const weekEndTs = Math.floor(thisWeekStart / 1000) - 1;
 
     let recentMatches = allMatches.filter(
       (m) => m.timestamp >= weekStartTs && m.timestamp <= weekEndTs

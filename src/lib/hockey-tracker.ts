@@ -1,7 +1,7 @@
 import { Redis } from "@upstash/redis";
 import { calculateHockeyAwards, type HockeyAwards } from "./hockey-awards";
 import { randomUUID } from "node:crypto";
-import { fetchNhl27Snapshot, NHL27_IDENTITY, withNhl27GameMode, type Nhl27Snapshot } from "./nhl27-api";
+import { fetchNhl27Snapshot, NHL27_IDENTITY, nhl27MatchDate, withNhl27GameMode, type Nhl27Snapshot } from "./nhl27-api";
 import type { ChelstatsData, ClubMatch } from "./chelstats";
 
 export const TRACKER_PREFIX = "hockey:nhl27:2026-2027:common-gen5:29202";
@@ -86,6 +86,8 @@ async function readStored(store: TrackerStore): Promise<{snapshot: StoredSnapsho
   const matches = Object.values(raw ?? {}).map(value => typeof value === "string" ? JSON.parse(value) as ClubMatch : value)
     .filter(match => match && typeof match.id === "string" && Number.isFinite(match.timestamp) && Array.isArray(match.players))
     .map(withNhl27GameMode)
+    // Games saved before the Central Time switch carry UTC date labels; always relabel from the timestamp.
+    .map(match => ({...match, date: nhl27MatchDate(match.timestamp)}))
     .sort((a,b) => b.timestamp - a.timestamp || a.id.localeCompare(b.id));
   return { snapshot: snapshot ? {...snapshot, data: {...snapshot.data, matches}} : null, matches };
 }

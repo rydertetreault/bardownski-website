@@ -13,10 +13,10 @@ import { calculateWeeklyAwardHistory, type WeeklyAwardHistory, type WeeklyAwardH
 import { HOCKEY_SEASON } from "../src/lib/hockey-season-state";
 import { getNickname } from "../src/lib/nicknames";
 
-const now = "2026-09-14T00:00:00.000Z";
+const now = "2026-09-14T05:00:00.000Z";
 const emptyHistory = calculateWeeklyAwardHistory([], now, []);
 const winner = (playerId: string, name: string, wins: number, rank: number): WeeklyAwardHistoryEntry => ({
-  playerId, name, wins, rank, lastWin: "2026-09-07T00:00:00.000Z",
+  playerId, name, wins, rank, lastWin: "2026-09-07T05:00:00.000Z",
 });
 const historyWith = (...rankings: WeeklyAwardHistoryEntry[]): WeeklyAwardHistory => ({
   ...emptyHistory, rankings, awardedWeeks: Math.max(0, ...rankings.map(entry => entry.wins)),
@@ -180,7 +180,7 @@ test("a matching public nickname is not evidence that a roster member has record
 });
 
 test("saved honors retain stale disclosure but no featured winner, imagery, dates, totals or scoring details", () => {
-  const history = historyWith({ ...winner("saved", "Saved winner", 3, 1), lastWin: "2020-01-06T00:00:00.000Z" });
+  const history = historyWith({ ...winner("saved", "Saved winner", 3, 1), lastWin: "2020-01-06T06:00:00.000Z" });
   const markup = renderToStaticMarkup(<WeeklyHonors history={history} members={[]} stale />);
   assert.match(markup, /Last saved data/);
   assert.match(markup, /Latest refresh unconfirmed/);
@@ -215,9 +215,9 @@ test("weekly results browse completed weeks with winners, latest first, with qua
     ({ start, end: start, status: "complete", games: 5, minimumGames: 3, standings, leaders: winners, winners,
       coverage: emptyHistory.weeks[0]?.coverage }) as unknown as WeeklyAwardHistory["weeks"][number];
   const history: WeeklyAwardHistory = { ...historyWith(winner("1", "MATT", 1, 1), winner("2", "RYDER", 1, 1)), weeks: [
-    week("2026-10-12T00:00:00.000Z", [entry("2", "RYDER", "G", 23, 488.1), entry("1", "MATT", "F", 11, 476.4), entry("3", "DYLAN", "F", 2, 900, false)]),
-    week("2026-10-05T00:00:00.000Z", [entry("4", "LOGAN", "F", 3, 1)], []),
-    week("2026-09-28T00:00:00.000Z", [entry("1", "MATT", "F", 14, 369.8), entry("5", "COLIN", "D", 9, 369.8)]),
+    week("2026-10-12T05:00:00.000Z", [entry("2", "RYDER", "G", 23, 488.1), entry("1", "MATT", "F", 11, 476.4), entry("3", "DYLAN", "F", 2, 900, false)]),
+    week("2026-10-05T05:00:00.000Z", [entry("4", "LOGAN", "F", 3, 1)], []),
+    week("2026-09-28T05:00:00.000Z", [entry("1", "MATT", "F", 14, 369.8), entry("5", "COLIN", "D", 9, 369.8)]),
   ] };
   const markup = renderToStaticMarkup(<WeeklyHonors history={history} members={[]} stale={false} />);
   honorsRows(markup);

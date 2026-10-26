@@ -53,8 +53,8 @@ function mvp(overrides: Partial<SeasonMvpEntry> & Pick<SeasonMvpEntry, "name" | 
   return { isGoalie: false, probability: 0, americanOdds: "—", goals: 0, assists: 0, points: 0, saves: 0, savePct: 0, gaa: 0, shutouts: 0, ...overrides };
 }
 function week(leaders: WeeklyAwardEntry[], complete = false): WeeklyAwards {
-  return { start: complete ? "2026-09-07T00:00:00.000Z" : "2026-09-14T00:00:00.000Z",
-    end: complete ? "2026-09-14T00:00:00.000Z" : "2026-09-21T00:00:00.000Z",
+  return { start: complete ? "2026-09-07T05:00:00.000Z" : "2026-09-14T05:00:00.000Z",
+    end: complete ? "2026-09-14T05:00:00.000Z" : "2026-09-21T05:00:00.000Z",
     status: complete ? "complete" : "in-progress", games: leaders.length ? 4 : 0, minimumGames: 3,
     standings: leaders, leaders, winners: complete ? leaders.filter(p => p.eligible) : [],
     coverage: { inputGames: 4, acceptedGames: 4, skippedGames: 0, acceptedAppearances: 4,

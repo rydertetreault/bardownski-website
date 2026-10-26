@@ -4,10 +4,11 @@ import test from "node:test";
 import { calculateHockeyAwards, calculateWeeklyAwardHistory, type WeeklyAwardHistory } from "../src/lib/hockey-awards";
 import type { ChelstatsData, ClubMatch, ClubMember, MatchPlayerStat } from "../src/lib/chelstats";
 
-const MONDAY = "2026-09-14T00:00:00.000Z";
-const WEEK_1 = "2026-08-24T00:00:00.000Z";
-const WEEK_2 = "2026-08-31T00:00:00.000Z";
-const WEEK_3 = "2026-09-07T00:00:00.000Z";
+// Central Time weeks: Monday 00:00 CDT = 05:00 UTC (00:00 CST = 06:00 UTC in winter).
+const MONDAY = "2026-09-14T05:00:00.000Z";
+const WEEK_1 = "2026-08-24T05:00:00.000Z";
+const WEEK_2 = "2026-08-31T05:00:00.000Z";
+const WEEK_3 = "2026-09-07T05:00:00.000Z";
 const timestamp = (iso: string) => Date.parse(iso) / 1000;
 type Player = MatchPlayerStat & { playerId?: string };
 function player(name = "A", overrides: Partial<Player> = {}): Player {
@@ -57,19 +58,19 @@ function assertWeeklyParity(matches: ClubMatch[], result: WeeklyAwardHistory): v
 }
 
 test("empty history normalizes asOf and does not change the required HockeyAwards shape", () => {
-  const empty: WeeklyAwardHistory = history([], "2026-09-13T19:00:00-05:00");
+  const empty: WeeklyAwardHistory = history([], "2026-09-14T01:00:00-04:00");
   assert.deepEqual(empty, { asOf: MONDAY, weeks: [], rankings: [], awardedWeeks: 0, totalAwards: 0 });
   assert.deepEqual(Object.keys(calculateHockeyAwards(data([]), MONDAY)).sort(),
     ["asOf", "currentWeek", "lastCompletedWeek", "seasonMvp"]);
 });
 
 test("repeated winners accumulate across observed weeks only, latest first with Monday lastWin", () => {
-  const matches = [...games(WEEK_1), ...games(WEEK_3), ...games("2026-07-20T00:00:00Z", [player("B")])];
+  const matches = [...games(WEEK_1), ...games(WEEK_3), ...games("2026-07-20T05:00:00Z", [player("B")])];
   const result = history(matches);
-  assert.deepEqual(result.weeks.map(w => w.start), [WEEK_3, WEEK_1, "2026-07-20T00:00:00.000Z"]);
+  assert.deepEqual(result.weeks.map(w => w.start), [WEEK_3, WEEK_1, "2026-07-20T05:00:00.000Z"]);
   assert.deepEqual(result.rankings, [
     { playerId: "A", name: "A", wins: 2, rank: 1, lastWin: WEEK_3 },
-    { playerId: "B", name: "B", wins: 1, rank: 2, lastWin: "2026-07-20T00:00:00.000Z" },
+    { playerId: "B", name: "B", wins: 1, rank: 2, lastWin: "2026-07-20T05:00:00.000Z" },
   ]);
   assert.equal(result.awardedWeeks, 3);
   assert.equal(result.totalAwards, 3);
@@ -96,8 +97,8 @@ test("each exact weekly tie wins; cumulative ties use competition ranks 1,1,3", 
 test("under-three leaders stay visible without wins; split-role games combine; empty/rejected weeks are omitted", () => {
   const split = [...games(WEEK_3, [player()], 2), game("defense", WEEK_3, [player("A", { position: "D" })])];
   const matches = [...games(WEEK_1, [player()], 1), ...games(WEEK_2, [player()], 2),
-    ...games("2026-08-17T00:00:00Z", []),
-    ...games("2026-08-10T00:00:00Z", [player("Invalid", { goals: NaN })])];
+    ...games("2026-08-17T05:00:00Z", []),
+    ...games("2026-08-10T05:00:00Z", [player("Invalid", { goals: NaN })])];
   const result = history(matches);
   assert.deepEqual(result.weeks.map(w => [w.start, w.games]), [[WEEK_2, 2], [WEEK_1, 1]]);
   assert.ok(result.weeks.every(w => w.leaders.length === 1 && !w.leaders[0].eligible && w.winners.length === 0));
@@ -124,31 +125,31 @@ test("only eligible winners count even when a provisional spike tops the standin
   assertWeeklyParity(matches, result);
 });
 
-test("current/future weeks never win; UTC Monday is inclusive and following Monday exclusive", () => {
+test("current/future weeks never win; Central Monday is inclusive and following Monday exclusive", () => {
   const matches = [game("start", WEEK_3), game("middle", "2026-09-10T12:00:00Z"),
-    game("sunday", "2026-09-13T23:59:59Z"), ...games(MONDAY), ...games("2026-09-21T00:00:00Z")];
-  assert.deepEqual(history(matches, "2026-09-13T23:59:59.999Z").weeks, []);
+    game("sunday", "2026-09-14T04:59:59Z"), ...games(MONDAY), ...games("2026-09-21T05:00:00Z")];
+  assert.deepEqual(history(matches, "2026-09-14T04:59:59.999Z").weeks, []);
   const result = history(matches);
   assert.equal(result.weeks.length, 1);
   assert.equal(result.weeks[0].start, WEEK_3);
   assert.equal(result.weeks[0].end, MONDAY);
   assert.equal(result.weeks[0].games, 3);
   assert.equal(result.awardedWeeks, 1);
-  assert.deepEqual(history(matches, "2026-09-13T19:00:00-05:00"), result);
-  assert.deepEqual(history(matches, "2026-09-16T00:00:00Z").rankings, result.rankings);
-  const next = history(matches, "2026-09-21T00:00:00Z");
+  assert.deepEqual(history(matches, "2026-09-14T01:00:00-04:00"), result);
+  assert.deepEqual(history(matches, "2026-09-16T05:00:00Z").rankings, result.rankings);
+  const next = history(matches, "2026-09-21T05:00:00Z");
   assert.deepEqual(next.weeks.map(w => w.start), [MONDAY, WEEK_3]);
   assert.equal(next.rankings[0].wins, 2);
   assert.equal(next.rankings[0].lastWin, MONDAY);
   assertWeeklyParity(matches, result);
 });
 
-test("UTC week boundaries work across a year rollover and explicit timezone conversion", () => {
+test("Central week boundaries work across a year rollover and explicit timezone conversion", () => {
   const matches = games("2026-12-31T23:00:00Z");
-  assert.deepEqual(history(matches, "2027-01-03T23:59:59Z").weeks, []);
-  const result = history(matches, "2027-01-03T19:00:00-05:00");
-  assert.equal(result.asOf, "2027-01-04T00:00:00.000Z");
-  assert.equal(result.rankings[0].lastWin, "2026-12-28T00:00:00.000Z");
+  assert.deepEqual(history(matches, "2027-01-04T05:59:59Z").weeks, []);
+  const result = history(matches, "2027-01-04T01:00:00-05:00");
+  assert.equal(result.asOf, "2027-01-04T06:00:00.000Z");
+  assert.equal(result.rankings[0].lastWin, "2026-12-28T06:00:00.000Z");
   assert.equal(result.weeks[0].end, result.asOf);
 });
 
@@ -181,7 +182,7 @@ test("conflicting match IDs fail closed across completed, current, future and in
   const matches = games();
   const conflicts: Partial<ClubMatch>[] = [
     { scoreUs: 99 }, { timestamp: timestamp(WEEK_1) }, { timestamp: timestamp(MONDAY) },
-    { timestamp: timestamp("2026-09-21T00:00:00Z") }, { timestamp: NaN },
+    { timestamp: timestamp("2026-09-21T05:00:00Z") }, { timestamp: NaN },
     { timestamp: Number.MAX_SAFE_INTEGER }, { timestamp: -1 },
     { timestamp: timestamp(WEEK_1), matchType: "private" },
     { timestamp: timestamp(WEEK_1), scoreUs: NaN },
@@ -225,12 +226,12 @@ test("finite candidates skip poisoned dates and rejected-only weeks without fill
     ...[NaN, Infinity, -Infinity, Number.MAX_SAFE_INTEGER, Number.MAX_VALUE, -1,
       timestamp(WEEK_1) + 0.5, 8.64e12, 8.64e12 + 1].map((time, i) =>
       game(`poison-${i}`, WEEK_1, [player()], { timestamp: time })),
-    ...games("2026-09-21T00:00:00Z"),
+    ...games("2026-09-21T05:00:00Z"),
   ];
   assert.deepEqual(history(rejected).weeks, []);
   const matches = [...rejected, ...games(), game("epoch", WEEK_1, [player()], { timestamp: 0 })];
   const result = history(matches);
-  assert.deepEqual(result.weeks.map(w => w.start), [WEEK_3, "1969-12-29T00:00:00.000Z"]);
+  assert.deepEqual(result.weeks.map(w => w.start), [WEEK_3, "1969-12-29T06:00:00.000Z"]);
   assert.equal(result.weeks[1].games, 1);
   assert.equal(result.totalAwards, 1);
   assert.equal(result.weeks[0].coverage.reasons.private, 1);
@@ -238,7 +239,7 @@ test("finite candidates skip poisoned dates and rejected-only weeks without fill
   assert.ok((result.weeks[0].coverage.reasons["invalid-game"] ?? 0) >= 10);
   assertWeeklyParity(matches, result);
   assert.deepEqual(history(matches, "+275760-09-13T00:00:00.000Z").weeks.map(w => w.start),
-    ["2026-09-21T00:00:00.000Z", WEEK_3, "1969-12-29T00:00:00.000Z"]);
+    ["2026-09-21T05:00:00.000Z", WEEK_3, "1969-12-29T06:00:00.000Z"]);
 });
 
 test("a player eligible in two roles still receives only one win per completed week", () => {

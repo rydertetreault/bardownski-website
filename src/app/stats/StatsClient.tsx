@@ -4,6 +4,7 @@ import { useId, useRef, useState, type KeyboardEvent } from "react";
 import type { SeasonData } from "@/lib/discord";
 import { HOCKEY_ARCHIVE_SEASON, HOCKEY_SEASON } from "@/lib/hockey-season-state";
 import { formatSeasonLabel } from "@/lib/player-comparison";
+import { CLUB_TIME_ZONE } from "@/lib/club-time";
 import { StatsDisplay } from "./components/StatsDisplay";
 
 export type StatsClientProps = {
@@ -26,7 +27,7 @@ function formatSnapshotDate(value?: string): string {
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
-    timeZone: "UTC",
+    timeZone: CLUB_TIME_ZONE,
     timeZoneName: "short",
   }).format(date);
 }
