@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "media": "node scripts/media-inventory.mjs"
+    "media": "node scripts/media-inventory.mjs",
+    "test": "tsx --test tests/*.test.ts"
   },
   "dependencies": {
     "@upstash/redis": "^1.37.0",
