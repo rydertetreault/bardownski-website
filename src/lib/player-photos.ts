@@ -8,7 +8,7 @@ export interface PlayerPhoto { src: string; alt: string }
 
 const PLAYER_PHOTOS: Readonly<Record<string, PlayerPhoto>> = {
   "JENE RENE TETREAU IV": { src: "/images/players/ryder-crease.webp", alt: "JRT IV sliding across the crease, from the 2026–27 film room" },
-  "XAVIER LAFLAMME": { src: "/images/gallery/screenshots/Screenshot 2026-03-16 183904.webp", alt: "Xavier Laflamme on the rush" },
+  "XAVIER LAFLAMME": { src: "/images/players/xavier-celebration.webp", alt: "Xavier Laflamme celebrating by the bench" },
   "MATT HUT": { src: "/images/players/matt-alt.webp", alt: "Matt Hut celebrating with JRT IV at the net" },
   "GOTTA BE": { src: "/images/highlights/k1.webp", alt: "Gotta Be raising his stick, from the club film room" },
   "SLOBBY ROBBY": { src: "/images/highlights/sr1.webp", alt: "Slobby Robby play of the game card, from the club film room" },

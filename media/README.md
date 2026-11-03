@@ -106,3 +106,7 @@ The clips that were live on `/highlights` before this library existed have been
 copied into each player's `highlights/` folder (originals remain in `public/videos/`
 because the site references them there). `public/bardownski-hockey-media/` is an
 older, untracked duplicate of the same files and can be deleted.
+
+### Award-card stills
+
+- `public/images/players/xavier-celebration.webp`: from `players/dylan/highlights/dylan - 2026.mp4` at 100.80 seconds, source 1280×720; crop left 400, top 15, 560×560, WebP quality 95, no upscaling or generated detail. The source overlay identifies Xavier Laflamme, LW #4. Used by the Player of the Week card and gallery (“Bench Salute”). Extracted from the highlight tape at the user's request to replace the blurry 183904 crop. The original “On the Rush” gallery photo is unchanged.

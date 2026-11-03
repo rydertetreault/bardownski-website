@@ -22,6 +22,7 @@ const photos: GalleryPhoto[] = [
   { src: "/images/gallery/screenshots/matt-alt-2027.webp", title: "Matt Hut Carrying the Puck Behind the Net", alt: "Matt Hut Carrying the Puck Behind the Net" },
   { src: "/images/players/ryder-crease.webp", title: "JRT IV Lunging for the Save", alt: "JRT IV Lunging for the Save" },
   // Club archive
+  { src: "/images/players/xavier-celebration.webp", title: "Bench Salute", alt: "Bench Salute" },
   { src: "/images/club%20finals.png", title: "Bardownski Players Celebrate as Hats Cover the Ice", alt: "Bardownski Players Celebrate as Hats Cover the Ice" },
   { src: "/images/gallery/screenshots/team.webp", title: "Hat Trick", alt: "Hat Trick" },
   { src: "/images/gallery/screenshots/milestone-1000pts.webp", title: "Lights Out", alt: "Lights Out" },
