@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { FINALS_MODE } from "@/lib/finals-mode";
 import "./navbar.css";
 
 const hockeyLinks = [
@@ -65,6 +66,7 @@ export default function Navbar() {
       </div>
       <div className="legacy-subnav">
         <span>{strip.title}</span>
+        {FINALS_MODE && !isFc && <Link href="/matches#results" className="finals-mode-pill" onClick={() => setOpen(false)}><span aria-hidden="true">★</span> Club finals are on</Link>}
         <nav aria-label="Page sections">
           {strip.links.map(([href, label]) => <Link href={href} key={href} onClick={() => setOpen(false)}>{label}</Link>)}
         </nav>

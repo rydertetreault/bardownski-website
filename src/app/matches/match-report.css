@@ -60,6 +60,7 @@
 .match-report .match-report__score > [data-winner="true"] { color: var(--report-pale-teal); }
 .match-report .match-report__score .match-report__score-dash { font: 400 30px/1 Arial, sans-serif; color: #c4a1dc; }
 .match-report .match-report__match-type { display: block; margin-top: 10px; color: #e0cbe9; font-size: 11px; }
+.match-report .match-report__match-type[data-finals] { color: #f3d27a; font-weight: 700; letter-spacing: .5px; }
 .match-report .match-report__championship-banner { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 7px 14px; margin-top: 30px; padding: 13px 18px; border: 1px solid #c4a1dc88; background: #c4a1dc14; color: var(--report-pale-teal); font-size: 12px; font-weight: 700; }
 .match-report .match-report__championship-banner > span:last-child { font-size: 11px; color: #eadff1; font-weight: 400; }
 

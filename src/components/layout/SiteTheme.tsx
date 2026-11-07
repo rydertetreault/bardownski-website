@@ -2,6 +2,8 @@
 
 import { usePathname } from "next/navigation";
 import HockeyMotion from "./HockeyMotion";
+import { FINALS_MODE } from "@/lib/finals-mode";
+import "./finals-mode.css";
 import "./hockey-retouch.css";
 import "./hockey-motion.css";
 
@@ -12,7 +14,7 @@ export default function SiteTheme({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isFc = pathname === "/fc" || pathname.startsWith("/fc/");
   const interior = !isFc && pathname !== "/";
-  return <div className={isFc ? "fc-site" : `hockey-site${interior ? " hockey-interior" : ""}`}>
+  return <div className={isFc ? "fc-site" : `hockey-site${interior ? " hockey-interior" : ""}${FINALS_MODE ? " finals-mode" : ""}`}>
     {children}
     {interior && <HockeyMotion key={pathname} />}
   </div>;

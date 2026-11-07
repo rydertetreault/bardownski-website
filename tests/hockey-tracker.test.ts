@@ -146,3 +146,23 @@ test("failed sync exposes a sanitized operator reason without leaking unexpected
   const leaky = await refreshHockeyTracker({force:true, store:new MemoryStore(), fetchSnapshot:async()=>{throw new TypeError("token=secret https://x.upstash.io");}});
   assert.equal(leaky.reason, "Storage or unexpected failure (TypeError)");
 });
+
+test("club finals games keep matchType 'finals' through save, cached read, window rotation and re-merge",async()=>{
+  const fixture=JSON.parse(readFileSync("tests/fixtures/nhl27-public.json","utf8"));
+  const games=fixture.recentGames.RegularSeason;
+  fixture.recentGames={RegularSeason:games.slice(1),ClubFinals:[games[0]],PrivateGames:[]};
+  const first=parseNhl27Snapshot(fixture,"2026-09-13T07:00:00.000Z"), now=Date.parse(first.fetchedAt);
+  const finalsId=String(games[0].matchId);
+  const types=(ms:{id:string;matchType:string}[])=>Object.fromEntries(ms.map(m=>[m.id,m.matchType]));
+  assert.equal(types(first.data.matches)[finalsId],"finals");
+  const store=new MemoryStore();
+  await refreshHockeyTracker({store,fetchSnapshot:async()=>first,now:()=>now});
+  assert.equal(JSON.parse(store.matches[finalsId] as string).matchType,"finals");
+  const cached=await refreshHockeyTracker({store,fetchSnapshot:async()=>{throw Error("no fetch")},now:()=>now+1000});
+  assert.deepEqual(types(cached.matches),types(first.data.matches));
+  // The game drops out of EA's recent window: history must still say finals.
+  const next=snapshot(new Date(now+300000).toISOString());next.data.matches=next.data.matches.filter(m=>m.id!==finalsId);
+  const rotated=await refreshHockeyTracker({store,force:true,fetchSnapshot:async()=>next,now:()=>now+300000});
+  assert.equal(types(rotated.matches)[finalsId],"finals");
+  assert.equal(rotated.matches.filter(m=>m.matchType==="finals").length,1);
+});

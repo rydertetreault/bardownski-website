@@ -124,3 +124,11 @@ test("latest result uses the real B logo and report links opt into a same-page d
   assert.match(html, /aria-haspopup="dialog"/);
   assert.doesNotMatch(html, />BD<|<dialog/);
 });
+
+test("only club finals games get the gold row and Finals tag, including the featured result", () => {
+  const html = section(render(current([match("final-game", 30, { matchType: "finals" }), match("regular-game", 20), match("private-game", 10, { matchType: "private" })])), "results");
+  assert.equal((html.match(/class="hub-match-row" data-finals="true"/g) ?? []).length, 1);
+  assert.equal((html.match(/class="hub-feature" data-finals="true"/g) ?? []).length, 1);
+  assert.equal((html.match(/hub-finals-tag/g) ?? []).length, 2);
+  assert.match(html, /href="\/matches\/final-game\?season=2026-2027"/);
+});

@@ -73,6 +73,8 @@ export interface Match {
   players?: MatchPlayerStat[];
   threeStars?: [ThreeStar, ThreeStar, ThreeStar] | null;
   forfeit?: boolean;
+  /** Raw EA result code (e.g. "6" = overtime loss); absent for older/manual rows. */
+  result?: string;
 }
 
 export interface ClubRecord {

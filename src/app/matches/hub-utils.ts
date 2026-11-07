@@ -117,3 +117,21 @@ export function bestWinRun(matches: Match[]): number | null {
   }
   return best;
 }
+
+/**
+ * Club finals W–L–OTL from this season's tracked finals games. EA has no finals
+ * split, so it is counted here. Wins/losses come from the score; a loss is an OTL
+ * when EA's result code (flag bits stripped) is 6. Verified against the
+ * 2025–2026 title run (16–2–1). Games with unknown scores are left out.
+ */
+export function finalsRecord(matches: Match[]): { wins: number; losses: number; otl: number } {
+  const record = { wins: 0, losses: 0, otl: 0 };
+  for (const match of matches) {
+    if (match.status !== "final" || match.matchType !== "finals") continue;
+    const outcome = result(match);
+    if (outcome === "W") record.wins += 1;
+    else if (outcome === "L" && (Number(match.result) & 0x3fff) === 6) record.otl += 1;
+    else if (outcome === "L") record.losses += 1;
+  }
+  return record;
+}

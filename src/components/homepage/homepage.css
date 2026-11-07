@@ -8368,3 +8368,19 @@
   opacity: 1;
 }
 
+
+/* Club finals games: permanent gold tag and score (not tied to FINALS_MODE). */
+:where(.bd-home) .result-row[data-finals] { box-shadow: inset 0 3px 0 #e8c15a; }
+:where(.bd-home) .result-row[data-finals] > strong { color: #f6d77c; }
+:where(.bd-home) .result-team .result-finals {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 5px;
+  background: linear-gradient(135deg, #f8de8a, #d9a93a 55%, #f3d27a);
+  color: #3b2700;
+  font-style: normal;
+  font-weight: 800;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}

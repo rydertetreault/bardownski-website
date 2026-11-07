@@ -51,8 +51,8 @@ function currentResults(season) {
   const rows = matches.map(m => {
     const scored = m.scoreUs !== null && m.scoreThem !== null;
     const result = scored ? m.scoreUs > m.scoreThem ? "W" : m.scoreUs < m.scoreThem ? "L" : "T" : "—";
-    const content = `<span class="result-letter ${result === "W" ? "win" : "loss"}">${result}</span><span class="result-team"><b>${escape(m.opponent)}</b><small>${escape(m.date)}${m.forfeit ? " · Forfeit" : ""}${matchGameMode(m) ? ` <i class="result-mode" data-mode="${matchGameMode(m)}">${GAME_MODE_LABELS[matchGameMode(m)]}</i>` : ""}</small></span><strong>${m.scoreUs ?? "—"}<i>–</i>${m.scoreThem ?? "—"}</strong><span class="result-arrow" aria-hidden="true">↗</span>`;
-    return `<a class="result-row" href="${matchDetailHref(m, "2026-2027") ?? "/matches#results"}">${content}</a>`;
+    const content = `<span class="result-letter ${result === "W" ? "win" : "loss"}">${result}</span><span class="result-team"><b>${escape(m.opponent)}</b><small>${escape(m.date)}${m.forfeit ? " · Forfeit" : ""}${m.matchType === "finals" ? ' <i class="result-finals">★ Finals</i>' : ""}${matchGameMode(m) ? ` <i class="result-mode" data-mode="${matchGameMode(m)}">${GAME_MODE_LABELS[matchGameMode(m)]}</i>` : ""}</small></span><strong>${m.scoreUs ?? "—"}<i>–</i>${m.scoreThem ?? "—"}</strong><span class="result-arrow" aria-hidden="true">↗</span>`;
+    return `<a class="result-row"${m.matchType === "finals" ? " data-finals" : ""} href="${matchDetailHref(m, "2026-2027") ?? "/matches#results"}">${content}</a>`;
   }).join("");
   return `<section class="results-card module score-strip cut-results" id="results" data-module="matches" data-reveal>${head(`RECENT MATCHES / ${HOCKEY_SEASON}`, "Recent matches", '<a class="text-link" href="/matches">All matches ↗</a>')}<div class="result-rows">${rows || `<p class="fine">${season?.status === "unavailable" ? "Recent results are temporarily unavailable." : "No results yet this season."}</p>`}</div>${season?.status === "stale" ? '<small class="fine">Latest available results.</small>' : ""}</section>`;
 }

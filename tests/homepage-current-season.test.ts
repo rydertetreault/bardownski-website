@@ -122,12 +122,12 @@ test("current results are the latest four finite-timestamp public finals, newest
   assertCurrentOnly(root);
   assert.deepEqual(root.querySelectorAll("#results .result-row").map(row => ({
     tag: row.tagName, opponent: text(row, ".result-team b"), date: text(row, ".result-team small"),
-    score: text(row, "strong"), result: text(row, ".result-letter"), href: row.getAttribute("href"),
+    score: text(row, "strong"), result: text(row, ".result-letter"), href: row.getAttribute("href"), finals: row.hasAttribute("data-finals"),
   })), [
-    { tag: "A", opponent: "Current opponent latest", date: "September 16, 2026", score: "12–3", result: "W", href: "/matches/latest?season=2026-2027" },
-    { tag: "A", opponent: "Current opponent second", date: "September 15, 2026", score: "2–4", result: "L", href: "/matches/second?season=2026-2027" },
-    { tag: "A", opponent: "Current opponent third", date: "September 12, 2026", score: "0–1", result: "L", href: "/matches/third?season=2026-2027" },
-    { tag: "A", opponent: "Current opponent fourth", date: "September 10, 2026", score: "2–2", result: "T", href: "/matches/fourth?season=2026-2027" },
+    { tag: "A", opponent: "Current opponent latest", date: "September 16, 2026", score: "12–3", result: "W", href: "/matches/latest?season=2026-2027", finals: false },
+    { tag: "A", opponent: "Current opponent second", date: "September 15, 2026", score: "2–4", result: "L", href: "/matches/second?season=2026-2027", finals: false },
+    { tag: "A", opponent: "Current opponent third", date: "September 12, 2026 ★ Finals", score: "0–1", result: "L", href: "/matches/third?season=2026-2027", finals: true },
+    { tag: "A", opponent: "Current opponent fourth", date: "September 10, 2026", score: "2–2", result: "T", href: "/matches/fourth?season=2026-2027", finals: false },
   ]);
   assert.equal(one(root, "#results .text-link").getAttribute("href"), "/matches");
   assert.deepEqual(season, before, "Rendering must not reorder or rewrite the shared tracker snapshot");

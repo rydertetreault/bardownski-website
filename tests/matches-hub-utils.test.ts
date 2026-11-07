@@ -374,3 +374,15 @@ describe("bestWinRun", async () => {
     assert.equal(bestWinRun(games), 3);
   });
 });
+
+it("finals record counts only tracked finals; OTL is EA result code 6 with flag bits stripped", async () => {
+  const { finalsRecord } = await import("../src/app/matches/hub-utils");
+  const { readFileSync } = await import("node:fs");
+  const archive = JSON.parse(readFileSync("src/lib/archives/nhl26-match-history.json", "utf8"));
+  const games = (Array.isArray(archive) ? archive : archive.matches ?? Object.values(archive))
+    .map((m: object) => ({ ...m, status: "final" }));
+  const run = games.filter((m: { matchType: string; timestamp: number }) => m.matchType === "finals" && m.timestamp >= Date.parse("2026-04-01") / 1000);
+  assert.deepEqual(finalsRecord(run), { wins: 16, losses: 2, otl: 1 }, "matches the Season 4 title run");
+  assert.deepEqual(finalsRecord(games.filter((m: { matchType: string }) => m.matchType !== "finals")), { wins: 0, losses: 0, otl: 0 });
+  assert.deepEqual(finalsRecord([]), { wins: 0, losses: 0, otl: 0 });
+});

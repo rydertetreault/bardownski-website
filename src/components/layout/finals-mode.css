@@ -1,0 +1,25 @@
+/* Club Finals dress-up. Only active while FINALS_MODE (src/lib/finals-mode.ts)
+   adds .finals-mode to the hockey shell; delete this file once finals are over. */
+.finals-mode {
+  --finals-gold: #f0c75e;
+  --finals-gold-text: linear-gradient(100deg,#b8861b,#f8de8a 35%,#d9a93a 60%,#fff1c2 80%,#c9962a);
+}
+
+/* Header: gold accents and a gold rule under the page strip. */
+.hockey-site.finals-mode .legacy-site-header { --hockey-accent: var(--finals-gold); }
+.hockey-site.finals-mode .legacy-subnav { border-bottom: 2px solid; border-image: linear-gradient(90deg,#8a6512,#f5d77c 50%,#8a6512) 1; }
+.finals-mode-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; background: linear-gradient(135deg,#f8de8a,#d9a93a 55%,#f3d27a); background-size: 200% 100%; color: #3b2700 !important; font-weight: 800; text-transform: uppercase; white-space: nowrap; animation: finals-shimmer 4s ease-in-out infinite alternate; }
+.finals-mode-pill:hover { filter: brightness(1.08); }
+.finals-mode-pill:focus-visible { outline: 2px solid var(--finals-gold); outline-offset: 3px; }
+@keyframes finals-shimmer { to { background-position: 100% 0; } }
+
+/* Gold headline words on the homepage and match centre heroes. */
+.finals-mode :is(.bd-home .cinema-hero h1 em, .matches-hub .hub-hero h1 em) {
+  background: var(--finals-gold-text); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.finals-mode .bd-home .cinema-hero .eyebrow,
+.finals-mode .matches-hub .hub-hero .hub-eyebrow { color: var(--finals-gold); }
+.finals-mode .matches-hub .hub-hero::before { background: linear-gradient(118deg,transparent 37%,#d9a93a1c 37%,#d9a93a1c 54%,transparent 54%); }
+
+@media (max-width:560px) { .finals-mode-pill { display: none; } }
+@media (prefers-reduced-motion:reduce) { .finals-mode-pill { animation: none; } }

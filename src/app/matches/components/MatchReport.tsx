@@ -212,7 +212,7 @@ export default function MatchReport({ match, season, titleId, standalone = false
             <span className="match-report__score-dash" aria-hidden="true">–</span>
             <span aria-hidden="true" data-winner={outcome === "loss"}><Stat value={match.scoreThem} /></span>
           </p>
-          <span className="match-report__match-type">{matchType}</span>
+          <span className="match-report__match-type" data-finals={match.matchType === "finals" || undefined}>{match.matchType === "finals" && <span aria-hidden="true">★ </span>}{matchType}</span>
         </div>
         <div className="match-report__team match-report__team--opposition">
           <OpponentCrest opponent={match.opponent} crest={match.opponentCrest} className="match-report__opponent-crest" />
