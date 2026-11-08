@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import type { Article } from "@/lib/news";
 import { createHomeRuntime } from "./runtime";
+import SubscribePrompt from "../SubscribePrompt";
 import { initMotion } from "./motion";
 import { initRefinedMotion } from "./refined-motion";
 import { initContentMotion } from "./content-motion";
@@ -30,5 +31,6 @@ export default function HomepageClient({ markup, articles }: Props) {
   return <div ref={root} className="bd-home demo demo-10 hybrid">
     <a className="skip-link" href="#home-content">Skip to homepage content</a>
     <div ref={content} id="home-content" data-home-content className="hybrid-main" dangerouslySetInnerHTML={{ __html: markup }} />
+    <SubscribePrompt />
   </div>;
 }

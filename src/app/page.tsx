@@ -6,6 +6,7 @@ import { getHockeySeason } from "@/lib/hockey-season";
 import { getAllArticles } from "@/lib/articles";
 import "@/components/homepage/homepage.css";
 import "@/components/homepage/production.css";
+import "@/components/subscribe.css";
 
 export const metadata: Metadata = {
   title: "Bardownski Hockey | 2026–2027",

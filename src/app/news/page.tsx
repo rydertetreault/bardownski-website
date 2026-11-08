@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { featureArticles } from "@/lib/featured-news";
 import NewsClient from "./NewsClient";
+import SubscribeForm from "@/components/SubscribeForm";
+import "@/components/subscribe.css";
 import { getAllArticles } from "@/lib/articles";
 import "./news.css";
 import { newsExcerpt } from "./excerpt";
@@ -19,6 +21,7 @@ export default async function NewsPage() {
         <p className="news-eyebrow">Bardownski / Club news</p>
         <h1 id="news-title">Around<br /><em>the club.</em></h1>
         <p className="news-masthead-intro">Results, player stories, and life at Bardownski.</p>
+        <SubscribeForm />
       </div>
       <Image className="news-masthead-mark" src="/images/logo/B-logo.png" width={512} height={512} alt="" aria-hidden="true" sizes="(max-width: 480px) 1px, 28vw" />
     </header>
