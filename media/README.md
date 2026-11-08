@@ -94,6 +94,7 @@ source resolution). Photos render black and white site-wide by design, see
 | `team/b-roll/ryder-save-bRoll.mov` @ 2.60 s     | `images/players/ryder-crease.webp`          | JRT IV player photo (`src/lib/player-photos.ts`), gallery. |
 | `team/b-roll/ryder-matt-bRoll-alt.mov` @ 2.40 s | `images/players/matt-alt.webp`              | Matt Hut player photo, gallery. |
 | `team/b-roll/ryder-matt-bRoll-away.mov` @ 2.15 s | `images/2026-2027/ryder-matt-away-bw.webp` | "Season Update (October 2026)" news article + homepage news card. Grayscale baked in, 1280×720, WebP q85. Sharpest frame by Laplacian variance. |
+| `team/b-roll/ryder-standing-bRoll.mov` @ 1.1 s | `images/2026-2027/jrt-standing-bw.webp` | "MVP race / Club Finals (November 2026)" news article, gallery ("Puck Drop"). Grayscale baked in, 1280×720, WebP q85. Sharpest sampled frame by Laplacian variance. |
 | `team/b-roll/*.mov` (all five)                  | `videos/b-roll/<same name>.mp4`             | Gallery videos. Lossless remux (`-c copy -movflags +faststart`), no re-encode. JRT IV / Matt Hut clips are also in `/highlights` (posters `images/highlights/r7–r10, m8, m9.webp` @ 2.60 / 0.60 / 2.40 / 2.15 s). |
 | `team/jerseys/BD - Home/Away/Alt.mp4`           | `videos/BD - Home/Away/Alt.mp4`             | Not in the gallery (jersey showcases are excluded). |
 | `players/matt/b-roll/matt-bRoll-image-alt.png`  | `images/gallery/screenshots/matt-alt-2027.webp` | Gallery. 1920×1080. |

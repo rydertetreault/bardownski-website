@@ -33,6 +33,23 @@ export const articles: Article[] = [
     ].join("\n\n"),
   },
   {
+    id: "mvp-race-finals-november-2026",
+    title: "Three Contenders, One Trophy: The MVP Race Is Dead Even as Club Finals Begin",
+    date: "2026-11-08",
+    category: "Club News",
+    // Still @ 1.1 s of media/team/b-roll/ryder-standing-bRoll.mov (2026–27), grayscale.
+    image: "/images/2026-2027/jrt-standing-bw.webp",
+    summary: [
+      "Three weeks ago, this looked like Matt Hut's race. It doesn't anymore. Bardownski is 93–76–11 through 180 games, with 680 goals for and 647 against, and the MVP tracker has nearly erased the gap between its top three. Xavier Laflamme sits at +262, JRT IV at +263 and Matt Hut at +272. Their chances are 27.6%, 27.5% and 26.9%, so each of them is close to a one-in-four shot. Each has led at some point this season, and each has a case. All of it is happening as Club Finals get underway.",
+      "Matt Hut built the early lead. Over the first four weeks of the season he scored 144 goals in 62 games, 10 of them game-winners, and won Player of the Week three weeks in a row. By the October 19 update he was +101, roughly even money against the entire field, with Xavier Laflamme at +276 and JRT IV well back at +439. He has not slowed down much since. He has 261 goals and 391 points in 124 games, plus a club-high 19 game-winners, and he still leads the club in goals and points. The two players behind him simply got hotter.",
+      "JRT IV went first. From October 5 to November 1 he played 97 games in goal and stopped 1,177 of 1,517 shots, a 77.6% save percentage. Over the first four weeks of the season he had been at 71.9%. He won Player of the Week three times in a row, including a 54-game week with 707 saves. On October 30 against Human Spirit he made 27 saves in a single game, a new club record that beat his own mark of 19 from last season. By the end of that run he had moved past Matt Hut for first in the MVP race. He is now 81–67–9 with 1,799 saves, a 75% save percentage and nine shutouts.",
+      "Then the captain came back. Since October 26, Xavier Laflamme has 47 goals and 45 assists in 21 games, 92 points in all, and the club is 15–6 when he plays. He won Player of the Week for the week of October 26 with 28 goals and 50 points in 11 games. He had a five-goal night against Fizzle Pops on November 1. That run took first place from JRT IV. He has 159 goals and 295 points in 73 games, still the best scoring rate on the roster at 4.0 points a game, and he is +59. He leads JRT IV by a single point on the odds board. The Player of the Week count is just as tight: Matt Hut 3, JRT IV 3, Xavier Laflamme 2. This week's standings could narrow it again. Wolfgang Mozart leads with 46 points in 13 games, Xavier Laflamme is second with 42 in 10, and Wolfgang Mozart is a clear fourth in the MVP race at +660.",
+      "Now the games matter more. The club opened Club Finals with a 3–1 night and won the first round. Wins over Pictou Porkies (4–3), 2x2 (6–5) and Toyotathon (6–5) came before a 5–4 loss to Sons Of Sancus. Xavier Laflamme had 9 goals and 10 assists across the four games, and Wolfgang Mozart added 10 goals and 6 assists. Round two began the next night with a 5–4 win over Midjet AAA, along with losses to NIGHTMARE ON EASHELM ST and Hamburg Howitzers V2. Matt Hut scored 8 goals with 4 assists in those three games. JRT IV has played every finals game in goal. This is the same club that went 16–2–1 to win its first title last season, and it is back in finals play with three MVP contenders in the lineup.",
+      "The record book has also been busy. Along with JRT IV's 27 saves, Wolfgang Mozart set the club record for assists in a game with 8 against Bar Chez Stan on October 25, passing Matt Hut's 7 from last March. In the October 30 game against Human Spirit, where JRT IV set the saves record, Wolfgang Mozart also had 10 takeaways, another club record. Top G set the single-game hits record with 18 against Plombiers Venimeux on October 2, well past the old mark of 14. Matt Hut was the first to reach 5 blocked shots in a game, on September 18 against BarnMuckers HC. Top G, Wolfgang Mozart and Matt Hut himself have since matched it.",
+      "Three players are separated by less than a percentage point, and the finals are underway. Matt Hut has the goals, JRT IV has the saves and Xavier Laflamme has the momentum. The MVP tracker updates as games are played, and the next Player of the Week is announced when Sunday's games wrap up at midnight Central.",
+    ].join("\n\n"),
+  },
+  {
     id: "season-update-october-2026",
     title: "Season Update: Matt Hut Leads the MVP Race and the Player of the Week Count",
     date: "2026-10-19",
