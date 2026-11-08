@@ -1,10 +1,12 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import SubscribeForm from "./SubscribeForm";
+import { isSplashDone, SPLASH_DONE_EVENT } from "./layout/splash-config";
 
 export const PROMPT_NEVER_KEY = "bd-subscribe-prompt"; // localStorage: "never" or "subscribed"
 export const PROMPT_SESSION_KEY = "bd-subscribe-prompt-closed"; // sessionStorage: closed this visit
-export const PROMPT_DELAY_MS = 8000; // after the splash opener (max 6 s) has cleared
+export const PROMPT_DELAY_MS = 1200; // after the splash opener has cleared
+export const PROMPT_FALLBACK_MS = 7000; // if the opener never reports in
 
 function store(kind: "local" | "session", key: string, value?: string): string | null {
   try {
@@ -21,11 +23,21 @@ export default function SubscribePrompt() {
 
   useEffect(() => {
     if (store("local", PROMPT_NEVER_KEY) || store("session", PROMPT_SESSION_KEY)) return;
-    const timer = setTimeout(() => {
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    let shown = false; // opens once per page load, even if the fallback timer fires later
+    const open = () => {
+      if (shown) return;
+      shown = true;
       const dialog = ref.current;
       if (dialog && !dialog.open && typeof dialog.showModal === "function") dialog.showModal();
-    }, PROMPT_DELAY_MS);
-    return () => clearTimeout(timer);
+    };
+    const afterSplash = () => { timers.push(setTimeout(open, PROMPT_DELAY_MS)); };
+    if (isSplashDone()) afterSplash();
+    else {
+      window.addEventListener(SPLASH_DONE_EVENT, afterSplash, { once: true });
+      timers.push(setTimeout(open, PROMPT_FALLBACK_MS));
+    }
+    return () => { timers.forEach(clearTimeout); window.removeEventListener(SPLASH_DONE_EVENT, afterSplash); };
   }, []);
 
   const close = (forever = false) => {

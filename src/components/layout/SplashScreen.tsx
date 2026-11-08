@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SPLASH_SRC, SPLASH_SESSION_KEY } from "./splash-config";
+import { SPLASH_SRC, SPLASH_SESSION_KEY, signalSplashDone } from "./splash-config";
 
 /**
  * Site opener: the tail of the "loading flash" ident plays once per browser
@@ -106,6 +106,13 @@ export default function SplashScreen() {
   useEffect(() => {
     if (done) document.documentElement.style.overflow = "";
   }, [done]);
+
+  // Tell anything waiting on the opener (the homepage email prompt) that the site is clear.
+  useEffect(() => {
+    if (enabled === false) signalSplashDone();
+    // Wait out the 0.4 s fade so nothing pops over the tail of the video.
+    else if (done) { const t = setTimeout(signalSplashDone, 400); return () => clearTimeout(t); }
+  }, [enabled, done]);
 
   // Already seen / reduced motion: drop straight out, no exit animation.
   if (enabled === false) return null;

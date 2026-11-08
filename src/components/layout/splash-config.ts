@@ -6,3 +6,11 @@ export const SPLASH_SRC = "/videos/splash/loading-flash.mp4";
 
 /** sessionStorage flag: the opener has played in this browser session. */
 export const SPLASH_SESSION_KEY = "bardownski:splash-seen";
+
+/** Window event (and flag) fired once the opener is gone, played or skipped. */
+export const SPLASH_DONE_EVENT = "bardownski:splash-done";
+export function signalSplashDone(): void {
+  (window as Window & { __bdSplashDone?: boolean }).__bdSplashDone = true;
+  window.dispatchEvent(new Event(SPLASH_DONE_EVENT));
+}
+export const isSplashDone = (): boolean => !!(window as Window & { __bdSplashDone?: boolean }).__bdSplashDone;

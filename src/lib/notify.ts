@@ -56,10 +56,16 @@ function layout(body: string, link?: string): string {
   const footer = link
     ? `<p style="color:#4c6063;font-size:12px;margin-top:32px">You're getting this because you subscribed to Bardownski updates. <a href="${escape(link)}" style="color:#006775">Unsubscribe</a></p>`
     : "";
-  return `<!doctype html><html><body style="margin:0;background:#f0efeb;font-family:Arial,Helvetica,sans-serif;color:#152c30">
-<div style="max-width:560px;margin:0 auto;padding:32px 24px">
-<p style="color:#006775;font-size:11px;font-weight:700;letter-spacing:1.7px;text-transform:uppercase;margin:0 0 16px">Bardownski Hockey Club</p>
-${body}${footer}</div></body></html>`;
+  // Dark masthead like the site header; the white B logo needs a dark ground. Table layout for Outlook.
+  const logo = `${siteUrl()}/images/logo/email-logo.png`;
+  return `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><meta charset="utf-8"></head><body style="margin:0;background:#f0efeb;font-family:Arial,Helvetica,sans-serif;color:#152c30">
+<div style="max-width:560px;margin:0 auto">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0b0c0e;border-bottom:3px solid #006775"><tr>
+<td style="padding:18px 24px;width:48px"><a href="${escape(siteUrl())}"><img src="${escape(logo)}" width="48" height="48" alt="Bardownski" style="display:block;border:0"></a></td>
+<td style="padding:18px 24px 18px 0"><div style="color:#ffffff;font-size:20px;font-weight:800;letter-spacing:1px">BARDOWNSKI</div>
+<div style="color:#8a9aa0;font-size:10px;letter-spacing:2px;margin-top:4px">NEWFOUNDLAND / HOCKEY CLUB</div></td></tr></table>
+<div style="padding:28px 24px 32px">
+${body}${footer}</div></div></body></html>`;
 }
 
 const button = (href: string, label: string) =>
