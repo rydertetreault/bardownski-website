@@ -11,6 +11,8 @@ const PLAYER_PHOTOS: Readonly<Record<string, PlayerPhoto>> = {
   "XAVIER LAFLAMME": { src: "/images/players/xavier-celebration.webp", alt: "Xavier Laflamme celebrating by the bench" },
   "MATT HUT": { src: "/images/players/matt-alt.webp", alt: "Matt Hut celebrating with JRT IV at the net" },
   "GOTTA BE": { src: "/images/highlights/k1.webp", alt: "Gotta Be raising his stick, from the club film room" },
+  // No photo of Wolfgang yet; the "Net Drive" gallery still stands in.
+  "WOLFGANG MOZART": { src: "/images/gallery/screenshots/milestone-highlight.webp", alt: "Bardownski skater driving the net, from the club gallery" },
   "SLOBBY ROBBY": { src: "/images/highlights/sr1.webp", alt: "Slobby Robby play of the game card, from the club film room" },
 };
 

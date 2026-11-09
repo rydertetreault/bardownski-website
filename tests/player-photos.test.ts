@@ -11,3 +11,11 @@ test("Xavier's award photo uses the close-up highlight frame for every name alia
     assert.ok(existsSync(`public${photo.src}`));
   }
 });
+
+test("Wolfgang's award photo uses the Net Drive gallery still for every name alias", () => {
+  for (const name of ["COLIN", "WOLFGANG MOZART", " Wolfgang Mozart "]) {
+    const photo = getPlayerPhoto(name);
+    assert.equal(photo.src, "/images/gallery/screenshots/milestone-highlight.webp");
+    assert.ok(existsSync(`public${photo.src}`));
+  }
+});
