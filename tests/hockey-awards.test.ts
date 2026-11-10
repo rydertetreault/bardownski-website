@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { calculateHockeyAwards, calculateSeasonMvp } from "../src/lib/hockey-awards";
-import { americanOddsFromProbability, computeMvpOddsFromMembers, mvpMarketFromScores, type ChelstatsData, type ClubMatch, type ClubMember, type MatchPlayerStat } from "../src/lib/chelstats";
+import { americanOddsFromProbability, computeMvpOddsFromMembers, mvpForwardPerGame, mvpMarketFromScores, type ChelstatsData, type ClubMatch, type ClubMember, type MatchPlayerStat } from "../src/lib/chelstats";
 import { parseNhl27Snapshot } from "../src/lib/nhl27-api";
 
 // Weeks are Central Time: Monday 2026-09-14 00:00 CDT is 05:00 UTC; the last second of Sunday is 04:59:59 UTC.
@@ -78,6 +78,15 @@ const q = (n: number) => Math.round(n * 10) / 10;
   assert.ok(tied[2].probability < tied[0].probability);
 });
 
+test("forward shooting % weight ramps with shot volume", () => {
+  const base = { ppg: 0, goalsPerGame: 0, plusMinusPerGame: 0, gwgPerGame: 0, shotPct: 50, hitsPerGame: 0,
+    blockedShotsPerGame: 0, takeawaysPerGame: 0, giveawaysPerGame: 0 };
+  assert.equal(mvpForwardPerGame({ ...base, shots: 0 }), 0);
+  assert.equal(mvpForwardPerGame({ ...base, shots: 2 }), 1.5);
+  assert.equal(mvpForwardPerGame({ ...base, shots: 20 }), 15);
+  assert.equal(mvpForwardPerGame({ ...base, shots: 200 }), 15);
+});
+
 test("MVP market conversion is shared, index-aligned and safe at the edges", () => {
   assert.deepEqual(mvpMarketFromScores([]), []);
   assert.deepEqual(mvpMarketFromScores([50]), [{ probability: 1, americanOdds: "—" }], "A one-player field has no line, never -Infinity");
@@ -108,7 +117,8 @@ test("weekly forward, defense and goalie weights follow the season MVP model", (
   const result = completed(rows);
   const byName = Object.fromEntries(result.standings.map(p => [p.name, p]));
   // Per game: 1 G, 1 A, +1, 2 hits, 4 shots (25%), 1 block, 2 takeaways, 1 giveaway.
-  assert.equal(byName.F.score, q((2 * 20 + 15 + 8 + 25 * .3 + 2 * .5 + 2 * .5 - .3) * Math.sqrt(3)));
+  // 12 shots total, so shooting % carries 12/20 of its weight.
+  assert.equal(byName.F.score, q((2 * 20 + 15 + 8 + 25 * .3 * 12 / 20 + 2 * .5 + 2 * .5 - .3) * Math.sqrt(3)));
   assert.equal(byName.D.score, q((2 * 28 + 22 + 18 + 2 * 1.2 + 2 + 2 * 1.5 - .8) * Math.sqrt(3)));
   // 90% SV, 1.00 GAA, no shutout periods, 3-0: no per-save workload credit.
   // Plus the sustained bonus: 1 point per SV% point above .700, per game.

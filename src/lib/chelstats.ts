@@ -865,7 +865,12 @@ export interface MvpSkaterRates {
   /** 0–100 */
   shotPct: number; hitsPerGame: number; blockedShotsPerGame: number;
   takeawaysPerGame: number; giveawaysPerGame: number;
+  /** Shots behind shotPct; its weight ramps linearly to full at SHOT_PCT_FULL_WEIGHT_SHOTS. */
+  shots: number;
 }
+
+/** Shots needed before shooting % counts fully, so 1-for-2 doesn't read as 50% finishing. */
+export const SHOT_PCT_FULL_WEIGHT_SHOTS = 20;
 
 /** Forward per-game score. Shared by the season MVP race and Player of the Week. */
 export function mvpForwardPerGame(r: MvpSkaterRates): number {
@@ -873,7 +878,7 @@ export function mvpForwardPerGame(r: MvpSkaterRates): number {
     r.goalsPerGame * 15 +
     r.plusMinusPerGame * 8 +
     r.gwgPerGame * 30 +
-    r.shotPct * 0.3 +
+    r.shotPct * 0.3 * Math.min(Math.max(r.shots, 0) / SHOT_PCT_FULL_WEIGHT_SHOTS, 1) +
     r.hitsPerGame * 0.5 +
     r.takeawaysPerGame * 0.5 -
     r.giveawaysPerGame * 0.3;
@@ -921,7 +926,7 @@ export function computeMvpOddsFromMembers(
         ppg: m.ppg, goalsPerGame: m.goals / gp, plusMinusPerGame: Math.max(m.plusMinus, 0) / gp,
         gwgPerGame: m.gwg / gp, shotPct: m.shotPct, hitsPerGame: m.hits / gp,
         blockedShotsPerGame: m.blockedShots / gp, takeawaysPerGame: m.takeaways / gp,
-        giveawaysPerGame: m.giveaways / gp,
+        giveawaysPerGame: m.giveaways / gp, shots: m.shots,
       };
       const perGame = bucket === "defense" ? mvpDefensePerGame(rates) : mvpForwardPerGame(rates);
 

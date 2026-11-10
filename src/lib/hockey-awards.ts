@@ -197,7 +197,7 @@ function perGameScore(t: Totals): number {
     plusMinusPerGame: Math.max(t.plusMinus, 0) / gp, gwgPerGame: t.gwg / gp,
     shotPct: t.shots > 0 ? t.goals / t.shots * 100 : 0, hitsPerGame: t.hits / gp,
     blockedShotsPerGame: t.blockedShots / gp, takeawaysPerGame: t.takeaways / gp,
-    giveawaysPerGame: t.giveaways / gp };
+    giveawaysPerGame: t.giveaways / gp, shots: t.shots };
   return t.position === "D" ? mvpDefensePerGame(rates) : mvpForwardPerGame(rates);
 }
 /** Club roster keys. Match rows carry resolved display names ("MATT") or raw gamertags
