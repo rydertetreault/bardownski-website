@@ -56,7 +56,7 @@ export default function Announcement({ announcement }: { announcement: HockeyAnn
           </p>
         )}
         <Link href={`/news/${SEASON_REVEAL.articleId}`}>Read the reveal story ↗</Link>
-        <Link href="/roster#leadership">Meet the captain and assistant ↗</Link>
+        <Link href="/roster#leadership">Meet the leadership group ↗</Link>
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import { getHockeySeason } from "@/lib/hockey-season";
 import { SEASON_REVEAL } from "@/lib/season-reveal";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "2026–2027 Roster | Bardownski Hockey", description: "Meet the 2026–2027 Bardownski roster: forwards, defense, goalies, captain Xavier Laflamme and assistant captain Matt Hut. One room. All in." };
+export const metadata: Metadata = { title: "2026–2027 Roster | Bardownski Hockey", description: "Meet the 2026–2027 Bardownski roster: forwards, defense, goalies, captain Xavier Laflamme and assistant captains Matt Hut and Wolfgang Mozart. One room. All in." };
 import { getNickname } from "@/lib/nicknames";
 import RosterClient from "./RosterClient";
 import { getCurrentSeasonScoutingReport, getScoutingReport, type ScoutingReport } from "./scouting";
@@ -53,11 +53,13 @@ const JERSEY_NUMBERS: Record<string, number> = {
   showbizmay10: 10,
 };
 
-// Keep the established captain and assistant consistent with the club’s shared leadership data.
+// Leaders named in the reveal film come from the shared reveal data; later
+// appointments (not in the film) are added here only.
 const ROSTER_LEADERS = [
-  SEASON_REVEAL.leadership.captain,
-  ...SEASON_REVEAL.leadership.assistants,
-];
+  { ...SEASON_REVEAL.leadership.captain, description: "Xavier Laflamme captains Bardownski. The playmaker at the heart of the attack, wearing the C and setting the standard every shift." },
+  { ...SEASON_REVEAL.leadership.assistants[0], description: "Matt Hut wears the A. A scorer with a lethal release, helping lead the room and keeping the pressure on in the offensive zone." },
+  { name: "Wolfgang Mozart", profileName: "COLIN", letter: "A", role: "Assistant captain", description: "Wolfgang Mozart wears the A. A utility player who has answered the call on the wing and in goal, helping lead the room wherever the lineup needs him." },
+] as const;
 
 function getPositionGroup(
   position: string
@@ -159,21 +161,17 @@ export default async function RosterPage() {
         <div className="roster-inner">
           <div className="roster-leaders-heading">
             <div><p className="roster-eyebrow">04 / Leadership</p><h2 id="leadership-title">The standard.<br /><em>Every night.</em></h2></div>
-            <p>Leading the room. Setting the tone.<br />Our captain and assistant, on the ice and behind the crest.</p>
+            <p>Leading the room. Setting the tone.<br />Our captain and assistants, on the ice and behind the crest.</p>
           </div>
           <div className="roster-leader-list">
-            {ROSTER_LEADERS.map(({ name, letter, role }) => (
-              <article className="roster-leader" key={letter}>
+            {ROSTER_LEADERS.map(({ name, profileName, letter, role, description }) => (
+              <article className="roster-leader" key={profileName}>
                 <span className="roster-leader-letter" aria-hidden="true">{letter}</span>
                 <div className="roster-leader-name">
                   <p className="roster-eyebrow">{role} / 2026–2027</p>
                   <h3>{name}</h3>
                 </div>
-                <p className="roster-leader-description">
-                  {letter === "C"
-                    ? "Xavier Laflamme captains Bardownski. The playmaker at the heart of the attack, wearing the C and setting the standard every shift."
-                    : "Matt Hut wears the A. A scorer with a lethal release, helping lead the room and keeping the pressure on in the offensive zone."}
-                </p>
+                <p className="roster-leader-description">{description}</p>
               </article>
             ))}
           </div>
