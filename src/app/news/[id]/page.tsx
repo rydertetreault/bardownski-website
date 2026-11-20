@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ArticleVideo from "../ArticleVideo";
+import ArticleImageCarousel from "../ArticleImageCarousel";
 import { ZoomableImage } from "@/components/ui/MediaLightbox";
 import revealTranscript from "@/lib/season-reveal-transcript.json";
 import { SEASON_REVEAL } from "@/lib/season-reveal";
@@ -78,13 +79,15 @@ export default async function ArticlePage({
         ) : article.image ? (
           <div className="article-hero-image relative w-full rounded-xl overflow-hidden mb-10 border border-border">
             {/* Natural aspect ratio (never cropped). Click: full size, in colour. */}
-            <ZoomableImage
+            {article.images?.length ? (
+              <ArticleImageCarousel images={[article.image, ...article.images]} title={article.title} />
+            ) : <ZoomableImage
               src={article.image}
               alt={article.title}
               sizes="(max-width: 900px) 100vw, 840px"
               className="block w-full h-auto"
               priority
-            />
+            />}
           </div>
         ) : null}
 

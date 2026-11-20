@@ -7,6 +7,8 @@ export interface Article {
   summary: string;
   date: string;
   image?: string;
+  /** Extra header photos; with `image` they form a flip-through carousel on the article page. */
+  images?: string[];
   video?: string;
   captions?: string;
   featured?: boolean;
@@ -14,6 +16,39 @@ export interface Article {
 }
 
 export const articles: Article[] = [
+  {
+    id: "club-finals-game-7-november-2026",
+    title: "Heartbreak: Bardownski Falls 3–1 in Game 7, Club Finals Run Comes to an End",
+    date: "2026-11-19",
+    category: "Club News",
+    // From media/team/photos/Screenshot 2026-11-19 233514.png (2026–27), grayscale.
+    image: "/images/2026-2027/game7-bench-bw.webp",
+    summary: [
+      "Some seasons end quietly. This one ended with the whole room on its feet, two minutes from overtime, with the puck on our sticks and the net in front of us. Bardownski fought its way to the fourth and final round of Club Finals, came back from the edge of elimination and forced a Game 7. Then, in the last two minutes of the third period, it slipped away. The final was 3–1. It will hurt for a long time, and it should.",
+      "To understand Game 7, you have to understand how we got there. Five games into the final round, Bardownski trailed the series 3–2, one more loss from going home. Plenty of clubs fold there. This one didn't.",
+      "Game 6 was the statement. Facing elimination, Bardownski played its most complete hockey of the playoffs and shut the door completely: a 3–0 shutout. Every lane was closed, every rebound was cleared and every shift was won. The series was tied 3–3, and it would all come down to one game.",
+      "Bardownski struck first in Game 7, and for a moment it felt like the comeback was going to finish the way comebacks are supposed to. The answer came quickly. The other side tied it 1–1, and from there it became the kind of hockey you only see when everything is on the line. Nobody gave an inch. Bardownski defended as well as it had all playoffs, blocking lanes, winning battles and keeping the game level for period after period. It was 1–1, then it was still 1–1, and soon there were two minutes left in the third.",
+      "The chances came, and they were the kind you dream about. Xavier Laflamme, the captain, broke in all alone with nothing between him and the goalie. A wide-open breakaway in Game 7 is the moment every kid replays in the driveway. This time it didn't go in. Then Matt Hut was hauled down and awarded a penalty shot. One shooter, one goalie, a whole season riding on one move. It didn't go in either. Two of the best players the club has ever had got two of the best looks you can get, and both times the puck stayed out.",
+      "Hockey punishes missed chances, and it punished this one fast. Moments later, the other team found the go-ahead goal and took a 2–1 lead in the final two minutes. Bardownski had no reason to hold anything back. It went all in, pushed numbers forward and threw everything at the net trying to force overtime. That aggression opened space at the other end, and they cashed in again to make it 3–1. The horn sounded on the season shortly after.",
+      "It is a brutal way to lose. But nobody should forget what this team did to get there. Down 3–2 in the final round, Bardownski answered with a shutout in an elimination game and took Game 7 down to its last two minutes. A few inches either way on the breakaway or the penalty shot and this is a very different story. That is how close it was.",
+      "To everyone who played, watched, and stayed up for every one of those games: thank you. This one stings because it mattered, and it mattered because of the people in this room. The finals are over. The hunger isn't. Bardownski will be back.",
+    ].join("\n\n"),
+  },
+  {
+    id: "xavier-laflamme-ltir-november-2026",
+    title: "Bardownski Places Captain Xavier Laflamme on Long-Term Injured Reserve",
+    date: "2026-11-19",
+    category: "Announcements",
+    image: "/images/2026-2027/club-statement-logo.webp",
+    // From media/players/dylan/b-roll/ryder-dylan.png (2026–27), grayscale.
+    images: ["/images/2026-2027/xavier-jrt-bw.webp"],
+    summary: [
+      "NEWFOUNDLAND – The Bardownski Hockey Club announced today that captain Xavier Laflamme has been placed on long-term injured reserve (LTIR).",
+      "Laflamme will be unavailable for play while on LTIR. No timetable for his return has been set, and the club will provide further updates as appropriate.",
+      "Assistant captains Matt Hut and Wolfgang Mozart will lead the team in Laflamme's absence.",
+      "Out of respect for the player's privacy, the club will have no further comment at this time.",
+    ].join("\n\n"),
+  },
   {
     id: SEASON_REVEAL.articleId,
     title: SEASON_REVEAL.title,

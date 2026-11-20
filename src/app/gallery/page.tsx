@@ -19,6 +19,8 @@ const photos: GalleryPhoto[] = [
   // 2026–27
   { src: "/images/2026-2027/ryder-matt-away-bw.webp", title: "Matt Hut Celebrates in Front of the Net", alt: "Matt Hut Celebrates in Front of the Net" },
   { src: "/images/2026-2027/jrt-standing-bw.webp", title: "Puck Drop", alt: "Puck Drop" },
+  { src: "/images/2026-2027/game7-bench-bw.webp", title: "Bench Erupts", alt: "Bench Erupts" },
+  { src: "/images/2026-2027/xavier-jrt-bw.webp", title: "Captain and Keeper", alt: "Captain and Keeper" },
   { src: "/images/players/matt-alt.webp", title: "Matt Hut Celebrates With JRT IV", alt: "Matt Hut Celebrates With JRT IV" },
   { src: "/images/gallery/screenshots/matt-alt-2027.webp", title: "Matt Hut Carrying the Puck Behind the Net", alt: "Matt Hut Carrying the Puck Behind the Net" },
   { src: "/images/players/ryder-crease.webp", title: "JRT IV Lunging for the Save", alt: "JRT IV Lunging for the Save" },

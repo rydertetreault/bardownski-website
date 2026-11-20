@@ -132,3 +132,12 @@ test("only club finals games get the gold row and Finals tag, including the feat
   assert.equal((html.match(/hub-finals-tag/g) ?? []).length, 2);
   assert.match(html, /href="\/matches\/final-game\?season=2026-2027"/);
 });
+
+test("finals game gold and tags never depend on FINALS_MODE or its removable stylesheet", () => {
+  const modeCss = readFileSync("src/components/layout/finals-mode.css", "utf8");
+  assert.doesNotMatch(modeCss, /data-finals|hub-finals-tag|result-finals|hub-pulse/);
+  assert.match(readFileSync("src/app/matches/matches-hub.css", "utf8"), /\.hub-match-row\[data-finals\]/);
+  assert.match(readFileSync("src/components/homepage/homepage.css", "utf8"), /\.result-row\[data-finals\]/);
+  const client = readFileSync("src/app/matches/MatchesClient.tsx", "utf8");
+  assert.doesNotMatch(client, /Club finals record|FINALS_MODE/, "finals are over: no finals record on the matches page");
+});
