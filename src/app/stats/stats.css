@@ -52,7 +52,7 @@
 .stats-edition .season-tracking-notice.tracking-unavailable { border-left-color: #704183; }
 .stats-edition .tracking-unavailable .tracking-dot { background: #704183; }
 .stats-mvp-layout { display: grid; grid-template-columns: .85fr 1.35fr; gap: 38px; align-items: start; }
-.stats-mvp-feature { --stat-gold: #dfc1ef; position: relative; isolation: isolate; overflow: hidden; background: #40234f; color: #fffefa; padding: 34px; }
+.stats-mvp-feature { container-type: inline-size; --stat-gold: #dfc1ef; position: relative; isolation: isolate; overflow: hidden; background: #40234f; color: #fffefa; padding: 34px; }
 .stats-mvp-watermark { position: absolute; z-index: -1; right: -6px; top: 18px; color: #775087; opacity: .35; font: 800 180px/.85 var(--stat-display); }
 .stats-mvp-watermark::before { content: "MVP"; }
 .stats-mvp-feature h3 { margin-top: 60px; font: 800 clamp(40px,4.4vw,65px)/1 var(--stat-display); text-transform: uppercase; }
@@ -61,8 +61,12 @@
 .stats-mvp-odds strong { font: 800 clamp(30px,3.4vw,48px)/1 var(--stat-display); color: var(--stat-gold); font-variant-numeric: tabular-nums; }
 .stats-mvp-line { border-top: 1px solid #ac86bc66; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 28px; padding-top: 22px; }
 .stats-mvp-line div { display: flex; flex-direction: column-reverse; gap: 6px; min-width: 0; }
-.stats-mvp-line dd { font: 800 clamp(28px,3.2vw,44px)/1 var(--stat-display); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.stats-mvp-line dd { font: 800 clamp(28px,3.2vw,44px)/1 var(--stat-display); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .stats-mvp-line dt { color: #e0d4e7; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; }
+/* Keep full stat values (including %) together even in the narrow desktop card. */
+@container (max-width: 480px) {
+  .stats-mvp-line { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 .stats-mvp-feature > a { display: inline-block; margin-top: 24px; font-size: 12px; color: #dfc1ef; font-weight: 700; }
 .stats-mvp-board { min-width: 0; }
 .stats-ranking-wrap { max-height: 570px; overflow: auto; scrollbar-color: #006775 #dce9e5; }

@@ -235,3 +235,10 @@ test("weekly results browse completed weeks with winners, latest first, with qua
   const none = renderToStaticMarkup(<WeeklyHonors history={historyWith()} members={[]} stale={false} />);
   assert.doesNotMatch(none, /stats-week-results/);
 });
+
+test("MVP feature keeps percentages on one line and adapts to card width", () => {
+  const css = readFileSync("src/app/stats/stats.css", "utf8");
+  assert.match(css, /\.stats-mvp-feature\s*\{[^}]*container-type: inline-size/);
+  assert.match(css, /\.stats-mvp-line dd\s*\{[^}]*white-space: nowrap/);
+  assert.match(css, /@container \(max-width: 480px\)\s*\{\s*\.stats-mvp-line\s*\{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
+});
