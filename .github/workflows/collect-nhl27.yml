@@ -5,6 +5,9 @@ on:
     # Best effort (GitHub may delay jobs); avoid the top of the hour.
     - cron: '2-59/5 * * * *'
   workflow_dispatch:
+  # New articles email right away instead of waiting on GitHub's throttled schedule.
+  push:
+    branches: [master]
 
 permissions:
   contents: read
@@ -16,7 +19,7 @@ concurrency:
 jobs:
   collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -37,3 +40,5 @@ jobs:
           UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           NOTIFY_FROM: ${{ secrets.NOTIFY_FROM }}
+          # On push, wait for Vercel to deploy new articles before giving up until the next run.
+          NOTIFY_DEPLOY_WAIT_SECONDS: ${{ github.event_name == 'push' && '420' || '0' }}

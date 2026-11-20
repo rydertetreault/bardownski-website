@@ -24,13 +24,23 @@ async function isLive(url: string): Promise<boolean> {
   try { return (await fetch(url, { method: "HEAD", redirect: "follow" })).ok; } catch { return false; }
 }
 
+/** Polls until the page is live or NOTIFY_DEPLOY_WAIT_SECONDS (shared by all articles this run) runs out. */
+const deployDeadline = Date.now() + Number(process.env.NOTIFY_DEPLOY_WAIT_SECONDS || 0) * 1000;
+async function waitUntilLive(url: string): Promise<boolean> {
+  while (!(await isLive(url))) {
+    if (Date.now() >= deployDeadline) return false;
+    await new Promise(r => setTimeout(r, 15_000));
+  }
+  return true;
+}
+
 async function notifyArticles(redis: Redis): Promise<void> {
   const articles = await getAllArticles();
   // An article committed to git isn't live until Vercel finishes deploying; wait for it.
   const known = new Set(await redis.smembers(KEYS.sentArticles));
   const candidates = [];
   for (const a of articles) {
-    if (known.size && !known.has(a.id) && !(await isLive(`${siteUrl()}/news/${encodeURIComponent(a.id)}`))) {
+    if (known.size && !known.has(a.id) && !(await waitUntilLive(`${siteUrl()}/news/${encodeURIComponent(a.id)}`))) {
       console.log(`[notify] article ${a.id} not live yet; will retry`); continue;
     }
     candidates.push(a);
