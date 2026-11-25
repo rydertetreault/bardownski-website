@@ -26,6 +26,7 @@ const CLUB_ID = "149602";
 const GAMERTAG_TO_NAME: Record<string, string> = {
   "Rydayro": "RYDER",
   "JeneReneTetreau": "RYDER",
+  "Rydarrius": "RYDER",
   "S1obbyRobby": "ROB",
   "Mhut8": "MATT",
   "u4 Pablo": "DYLAN",

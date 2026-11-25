@@ -419,6 +419,7 @@ test("stored games without a mode are backfilled from our player count", () => {
 
 test("NHL27 gamertags resolve to the player's club name", () => {
   assert.equal(resolveNhl27Name("JeneReneTetreau"), "RYDER");
+  assert.equal(resolveNhl27Name("Rydarrius"), "RYDER");
 });
 
 test("EA 'Access Denied' HTML proxied in a recent group is classified as an upstream block", () => {
